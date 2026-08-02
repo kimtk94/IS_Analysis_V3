@@ -1,0 +1,3 @@
+ancestry	gene_symbol	source_file	url	expected_size_bytes	sha256	md5	synapse_id	synapse_parent_id	pipeline_batch_id	raw_lifecycle	raw_cleanup_at	raw_cleanup_reason
+EUR	IDO1	IDO1_EUR.tar	https://www.synapse.org/Synapse:syn00000001	12		00000000000000000000000000000000	syn00000001	syn00000000	batch_001	retained		
+EAS	IDO1	IDO1_EAS.tar	https://www.synapse.org/Synapse:syn00000002	12		00000000000000000000000000000000	syn00000002	syn00000000	batch_001	retained		
