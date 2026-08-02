@@ -211,6 +211,39 @@ class BatchRunnerTests(unittest.TestCase):
             self.assertTrue(target.read_bytes().endswith(b"\n"))
             self.assertEqual(source.read_text().splitlines()[:2], other.read_text().splitlines())
 
+    def test_write_test_sample_byte_limit_discards_partial_final_line(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = ROOT / "tests/fixtures/gene_coordinates_hg38.tsv"
+            destination = Path(tmp) / "sample.tsv"
+
+            runner.write_test_sample(source, destination, "bytes", 80)
+
+            sample = destination.read_bytes()
+            self.assertLessEqual(len(sample), 80)
+            self.assertTrue(sample.endswith(b"\n"))
+            self.assertEqual(source.read_bytes().splitlines(keepends=True)[:2],
+                             sample.splitlines(keepends=True))
+
+    def test_write_test_sample_line_limit_stops_at_requested_line(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = ROOT / "tests/fixtures/gene_coordinates_hg38.tsv"
+            destination = Path(tmp) / "sample.tsv"
+
+            runner.write_test_sample(source, destination, "lines", 2)
+
+            self.assertEqual(source.read_bytes().splitlines(keepends=True)[:2],
+                             destination.read_bytes().splitlines(keepends=True))
+
+    def test_write_test_sample_removes_partial_destination_on_no_data_rows(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = ROOT / "tests/fixtures/gigastroke.tsv"
+            destination = Path(tmp) / "sample.tsv"
+
+            with self.assertRaisesRegex(ValueError, "sample contains no complete data rows"):
+                runner.write_test_sample(source, destination, "bytes", 50)
+
+            self.assertFalse(destination.exists())
+
     def test_test_data_mode_preserves_multiple_assays_for_gene_and_ancestry(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
