@@ -277,7 +277,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         p.add_argument(f"--{name}", required=True, type=Path)
     p.add_argument("--batch-size", type=int, default=15)
     p.add_argument("--focus-gene")
-    p.add_argument("--focus-max-bytes", type=int, default=20_000_000)
+    focus_limit = p.add_mutually_exclusive_group()
+    focus_limit.add_argument(
+        "--focus-max-file-lines", type=int, default=500_000,
+        help="maximum decompressed lines for the focus gene, including the header",
+    )
+    focus_limit.add_argument(
+        "--focus-max-bytes", type=int,
+        help="legacy alternative: maximum decompressed bytes for the focus gene",
+    )
     p.add_argument("--other-max-file-lines", type=int, default=1_000)
     p.add_argument("--p-value-threshold", type=float, default=5e-8)
     p.add_argument("--f-statistic-threshold", type=float, default=10.0)
@@ -294,7 +302,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--reuse-unverified", action="store_true",
                    help="reuse existing downloads when the manifest has no size or checksum")
     args = p.parse_args(argv)
-    if args.batch_size < 1 or args.focus_max_bytes < 1 or args.other_max_file_lines < 2:
+    focus_limit_value = (args.focus_max_bytes if args.focus_max_bytes is not None
+                         else args.focus_max_file_lines)
+    if args.batch_size < 1 or focus_limit_value < 2 or args.other_max_file_lines < 2:
         p.error("batch size/limits must be positive (line limit must include header and data)")
     return args
 
@@ -319,8 +329,13 @@ def main(argv: list[str] | None = None) -> int:
     for batch_number, genes in selected:
         for row in source_rows:
             if row["gene"] in genes:
-                limit_type = "bytes" if row["gene"] == focus else "lines"
-                limit = args.focus_max_bytes if limit_type == "bytes" else args.other_max_file_lines
+                is_focus = row["gene"] == focus
+                limit_type = "bytes" if is_focus and args.focus_max_bytes is not None else "lines"
+                if is_focus:
+                    limit = (args.focus_max_bytes if args.focus_max_bytes is not None
+                             else args.focus_max_file_lines)
+                else:
+                    limit = args.other_max_file_lines
                 plan.append({"batch_id": f"batch_{batch_number:03d}", "gene": row["gene"],
                              "ancestry": row["ancestry"], "source_key": row["source_key"],
                              "source_file": row.get("source_file", ""),
@@ -342,6 +357,7 @@ def main(argv: list[str] | None = None) -> int:
                 "test_data_only": args.test_data_only,
                 "reuse_unverified": args.reuse_unverified,
                 "batch_size": args.batch_size, "focus_gene": focus,
+                "focus_max_file_lines": args.focus_max_file_lines,
                 "focus_max_bytes": args.focus_max_bytes,
                 "other_max_file_lines": args.other_max_file_lines,
                 "download_manifest_sha256": file_digests(
