@@ -297,7 +297,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     execution.add_argument("--download-only", action="store_true",
                            help="download the selected batch without running the preparation script")
     execution.add_argument("--test-data-only", action="store_true",
-                           help="download the selected batch and write bounded TSV test samples")
+                           help="reuse existing raw files when available, otherwise download the "
+                                "selected batch, and write bounded TSV test samples")
     p.add_argument("--stop-on-error", action="store_true")
     p.add_argument("--reuse-unverified", action="store_true",
                    help="reuse existing downloads when the manifest has no size or checksum")
@@ -380,8 +381,11 @@ def main(argv: list[str] | None = None) -> int:
         row = task
         suffix = row.get("source_file") or Path(row["source_url"]).name or f"{row['gene']}.tar"
         try:
-            archive = stage(row, args.base / row["ancestry"] / suffix,
-                            reuse_unverified=args.reuse_unverified)
+            archive = stage(
+                row,
+                args.base / row["ancestry"] / suffix,
+                reuse_unverified=args.reuse_unverified or args.test_data_only,
+            )
             if args.download_only:
                 task["status"] = "downloaded"
                 continue

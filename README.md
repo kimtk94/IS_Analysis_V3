@@ -89,8 +89,12 @@ python3 scripts/ukb_ppp_batch_manifest_runner_fast.py \
   --other-max-file-lines 1000 --test-data-only --stop-on-error
 ```
 
-The downloaded raw files may be gzip-compressed; `--test-data-only` reads their
-decompressed contents (equivalent to `zcat`) before applying the line limits.
+`--test-data-only` first checks the expected path under `--base` and reuses an
+existing raw file, including one without manifest size or checksum metadata.
+A missing file is downloaded; when validation metadata is available, an
+existing file that fails validation is also replaced. Raw files may be
+gzip-compressed; `--test-data-only` reads their decompressed contents
+(equivalent to `zcat`) before applying the line limits.
 The resulting plain TSV files are written under
 `$IDO1_TEST_OUTDIR/test_data/{EUR,EAS}`. To retain only the downloaded archives
 without creating these samples, use `--download-only` instead.
