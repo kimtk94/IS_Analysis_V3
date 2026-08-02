@@ -137,8 +137,43 @@ def test_sample_name(row: dict[str, str]) -> str:
     return f"{identifier}.tsv"
 
 
-def stage(row: dict[str, str], destination: Path) -> Path:
+def validation_error(row: dict[str, str], path: Path) -> str | None:
+    """Return the first manifest validation failure for *path*, if any."""
+    expected_size = row.get("size_bytes", "")
+    if expected_size and path.stat().st_size != int(expected_size):
+        return "size"
+    expected_sha256 = row.get("sha256", "").lower()
+    if expected_sha256 and sha256(path) != expected_sha256:
+        return "checksum"
+    expected_md5 = row.get("md5", "").lower()
+    if expected_md5 and md5(path) != expected_md5:
+        return "MD5"
+    return None
+
+
+def stage(row: dict[str, str], destination: Path, *, reuse_unverified: bool = False) -> Path:
+    """Download a source, reusing an existing destination only when it is safe.
+
+    Existing regular files must pass every validation value supplied by the
+    manifest.  With no supplied values, the safe default is to redownload;
+    callers must explicitly set ``reuse_unverified`` to reuse such a file.
+    """
     destination.parent.mkdir(parents=True, exist_ok=True)
+    validations = [row.get(name, "") for name in ("size_bytes", "sha256", "md5")]
+    if destination.is_file():
+        if any(validations):
+            failure = validation_error(row, destination)
+            if failure is None:
+                return destination
+            print(f"Existing destination {failure} mismatch; redownloading {destination}",
+                  file=sys.stderr)
+        elif reuse_unverified:
+            return destination
+        else:
+            print(f"Existing destination has no manifest validation; redownloading {destination}",
+                  file=sys.stderr)
+        destination.unlink()
+
     url = row["source_url"]
     if url.startswith("file://"):
         shutil.copy2(url[7:], destination)
@@ -156,18 +191,10 @@ def stage(row: dict[str, str], destination: Path) -> Path:
             raise FileNotFoundError(f"Synapse download did not create {destination}")
     else:
         urllib.request.urlretrieve(url, destination)
-    expected = row.get("sha256", "").lower()
-    if expected and sha256(destination) != expected:
+    failure = validation_error(row, destination)
+    if failure:
         destination.unlink(missing_ok=True)
-        raise ValueError(f"checksum mismatch for {row['gene']} {row['ancestry']}")
-    expected_size = row.get("size_bytes", "")
-    if expected_size and destination.stat().st_size != int(expected_size):
-        destination.unlink(missing_ok=True)
-        raise ValueError(f"size mismatch for {row['gene']} {row['ancestry']}")
-    expected_md5 = row.get("md5", "").lower()
-    if expected_md5 and md5(destination) != expected_md5:
-        destination.unlink(missing_ok=True)
-        raise ValueError(f"MD5 mismatch for {row['gene']} {row['ancestry']}")
+        raise ValueError(f"{failure} mismatch for {row['gene']} {row['ancestry']}")
     return destination
 
 
@@ -226,6 +253,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     execution.add_argument("--test-data-only", action="store_true",
                            help="download the selected batch and write bounded TSV test samples")
     p.add_argument("--stop-on-error", action="store_true")
+    p.add_argument("--reuse-unverified", action="store_true",
+                   help="reuse existing downloads when the manifest has no size or checksum")
     args = p.parse_args(argv)
     if args.batch_size < 1 or args.focus_max_bytes < 1 or args.other_max_file_lines < 2:
         p.error("batch size/limits must be positive (line limit must include header and data)")
@@ -273,6 +302,7 @@ def main(argv: list[str] | None = None) -> int:
     metadata = {"started_at": datetime.now(timezone.utc).isoformat(), "run": args.run,
                 "download_only": args.download_only,
                 "test_data_only": args.test_data_only,
+                "reuse_unverified": args.reuse_unverified,
                 "batch_size": args.batch_size, "focus_gene": focus,
                 "focus_max_bytes": args.focus_max_bytes,
                 "other_max_file_lines": args.other_max_file_lines,
@@ -294,7 +324,8 @@ def main(argv: list[str] | None = None) -> int:
         row = task
         suffix = row.get("source_file") or Path(row["source_url"]).name or f"{row['gene']}.tar"
         try:
-            archive = stage(row, args.base / row["ancestry"] / suffix)
+            archive = stage(row, args.base / row["ancestry"] / suffix,
+                            reuse_unverified=args.reuse_unverified)
             if args.download_only:
                 task["status"] = "downloaded"
                 continue
