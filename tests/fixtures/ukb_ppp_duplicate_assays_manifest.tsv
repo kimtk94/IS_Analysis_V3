@@ -1,0 +1,5 @@
+gene	ancestry	source_url	source_file	synapse_id
+IDO1	EUR	tests/fixtures/gigastroke.tsv	IDO1_EUR_assay_a.tsv	
+IDO1	EUR	tests/fixtures/gene_coordinates_hg38.tsv	IDO1_EUR_assay_b.tsv	
+IDO1	EAS	tests/fixtures/gigastroke.tsv	IDO1_EAS_assay_a.tsv	
+IDO1	EAS	tests/fixtures/gene_coordinates_hg38.tsv	IDO1_EAS_assay_b.tsv	

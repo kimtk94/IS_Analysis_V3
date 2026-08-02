@@ -74,6 +74,30 @@ class BatchRunnerTests(unittest.TestCase):
                 progress = list(csv.DictReader(handle, delimiter="\t"))
             self.assertEqual({"downloaded"}, {row["status"] for row in progress})
 
+    def test_duplicate_gene_ancestry_sources_are_each_staged_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            raw = root / "raw"
+            qc = root / "qc"
+            command = [sys.executable, str(ROOT / "scripts/ukb_ppp_batch_manifest_runner_fast.py"),
+                "--base", str(raw), "--qc-dir", str(qc), "--outdir", str(root / "out"),
+                "--standardized-dir", str(root / "std"), "--instrument-dir", str(root / "inst"),
+                "--download-manifest", str(ROOT / "tests/fixtures/ukb_ppp_duplicate_assays_manifest.tsv"),
+                "--gene-coordinate-file", str(ROOT / "tests/fixtures/gene_coordinates_hg38.tsv"),
+                "--batch-size", "1", "--focus-gene", "IDO1", "--download-only"]
+            subprocess.run(command, check=True, capture_output=True, text=True, cwd=ROOT)
+
+            staged = sorted(path.name for path in raw.glob("*/*"))
+            self.assertEqual([
+                "IDO1_EAS_assay_a.tsv", "IDO1_EAS_assay_b.tsv",
+                "IDO1_EUR_assay_a.tsv", "IDO1_EUR_assay_b.tsv"], staged)
+            with (qc / "batch_progress.tsv").open() as handle:
+                progress = list(csv.DictReader(handle, delimiter="\t"))
+            self.assertEqual(4, len(progress))
+            self.assertEqual(4, len({row["source_key"] for row in progress}))
+            self.assertEqual(set(staged), {row["source_file"] for row in progress})
+            self.assertEqual({"downloaded"}, {row["status"] for row in progress})
+
     def test_test_data_mode_applies_focus_bytes_and_other_line_limits(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -61,6 +61,25 @@ def paired_batches(rows: list[dict[str, str]], size: int) -> list[list[str]]:
     return [genes[i : i + size] for i in range(0, len(genes), size)]
 
 
+def add_source_keys(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Return manifest rows with a stable key that is unique within the manifest."""
+    keyed_rows = []
+    occurrences: dict[str, int] = {}
+    for row in rows:
+        if row.get("synapse_id"):
+            base_key = f"synapse:{row['synapse_id']}"
+        else:
+            identity = "\0".join(row.get(field, "") for field in
+                                  ("gene", "ancestry", "source_file", "source_url"))
+            base_key = f"source:{hashlib.sha256(identity.encode()).hexdigest()}"
+        occurrences[base_key] = occurrences.get(base_key, 0) + 1
+        source_key = base_key
+        if occurrences[base_key] > 1:
+            source_key = f"{base_key}#{occurrences[base_key]}"
+        keyed_rows.append({**row, "source_key": source_key})
+    return keyed_rows
+
+
 def write_tsv(path: Path, fields: list[str], rows: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as handle:
@@ -204,7 +223,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    rows = read_tsv(args.download_manifest)
+    rows = add_source_keys(read_tsv(args.download_manifest))
     batches = paired_batches(rows, args.batch_size)
     focus = args.focus_gene.upper() if args.focus_gene else None
     selected = [(i + 1, b) for i, b in enumerate(batches) if not focus or focus in b]
@@ -216,8 +235,8 @@ def main(argv: list[str] | None = None) -> int:
     batch_rows = [{"batch_id": f"batch_{i:03d}", "gene_count": len(b), "genes": ",".join(b)}
                   for i, b in enumerate(batches, 1)]
     write_tsv(args.qc_dir / "batch_manifest.tsv", ["batch_id", "gene_count", "genes"], batch_rows)
-    selected_keys = {(gene, anc) for _, genes in selected for gene in genes for anc in ("EUR", "EAS")}
-    source_rows = [r for r in rows if (r["gene"], r["ancestry"]) in selected_keys]
+    selected_genes = {gene for _, genes in selected for gene in genes}
+    source_rows = [row for row in rows if row["gene"] in selected_genes]
     plan = []
     for batch_number, genes in selected:
         for row in source_rows:
@@ -225,10 +244,18 @@ def main(argv: list[str] | None = None) -> int:
                 limit_type = "bytes" if row["gene"] == focus else "lines"
                 limit = args.focus_max_bytes if limit_type == "bytes" else args.other_max_file_lines
                 plan.append({"batch_id": f"batch_{batch_number:03d}", "gene": row["gene"],
-                             "ancestry": row["ancestry"], "source_url": row["source_url"],
+                             "ancestry": row["ancestry"], "source_key": row["source_key"],
+                             "source_file": row.get("source_file", ""),
+                             "synapse_id": row.get("synapse_id", ""),
+                             "source_url": row["source_url"],
+                             "size_bytes": row.get("size_bytes", ""),
+                             "sha256": row.get("sha256", ""), "md5": row.get("md5", ""),
                              "limit_type": limit_type, "limit": limit, "status": "planned"})
+    plan_fields = ["batch_id", "gene", "ancestry", "source_key", "source_file",
+                   "synapse_id", "source_url", "size_bytes", "sha256", "md5",
+                   "limit_type", "limit", "status"]
     write_tsv(args.qc_dir / "execution_plan.tsv",
-              ["batch_id", "gene", "ancestry", "source_url", "limit_type", "limit", "status"], plan)
+              plan_fields, plan)
     base_parents = args.base.resolve().parents
     inferred_work_root = base_parents[3] if len(base_parents) > 3 else args.base.resolve().parent
     execute_downloads = args.run or args.download_only or args.test_data_only
@@ -250,9 +277,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Dry run: wrote {len(plan)} source tasks to {args.qc_dir}")
         return 0
     failures = 0
-    source_lookup = {(row["gene"], row["ancestry"]): row for row in source_rows}
     for task in plan:
-        row = source_lookup[(task["gene"], task["ancestry"])]
+        # The plan retains all source metadata, so execution cannot select a
+        # different assay when gene and ancestry are shared by multiple rows.
+        row = task
         suffix = row.get("source_file") or Path(row["source_url"]).name or f"{row['gene']}.tar"
         try:
             archive = stage(row, args.base / row["ancestry"] / suffix)
@@ -281,7 +309,7 @@ def main(argv: list[str] | None = None) -> int:
             if args.stop_on_error:
                 break
     write_tsv(args.qc_dir / "batch_progress.tsv",
-              ["batch_id", "gene", "ancestry", "source_url", "limit_type", "limit", "status"], plan)
+              plan_fields, plan)
     return 1 if failures else 0
 
 
