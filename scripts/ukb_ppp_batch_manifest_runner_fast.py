@@ -147,6 +147,34 @@ def write_test_sample(source: Path, destination: Path, limit_type: str, limit: i
     return destination
 
 
+def write_test_sample(source: Path, destination: Path, limit_type: str, limit: int) -> Path:
+    """Write a bounded, complete-line sample from a plain file or first tar member."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with contextlib.ExitStack() as stack:
+        if tarfile.is_tarfile(source):
+            archive = stack.enter_context(tarfile.open(source, mode="r:*"))
+            member = next((item for item in archive if item.isfile()), None)
+            if member is None:
+                raise ValueError(f"{source}: archive contains no regular member")
+            stream = archive.extractfile(member)
+            if stream is None:
+                raise ValueError(f"{source}: cannot read archive member {member.name}")
+            handle = stack.enter_context(stream)
+        else:
+            handle = stack.enter_context(source.open("rb"))
+
+        if limit_type == "lines":
+            content = b"".join(handle.readline() for _ in range(limit))
+        else:
+            content = handle.read(limit)
+            if content and not content.endswith(b"\n"):
+                content = content.rsplit(b"\n", 1)[0] + b"\n" if b"\n" in content else b""
+    if content.count(b"\n") < 2:
+        raise ValueError(f"{source}: sample contains no complete data rows")
+    destination.write_bytes(content)
+    return destination
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser()
     for name in ("base", "qc-dir", "outdir", "standardized-dir", "instrument-dir",
