@@ -1,0 +1,17 @@
+# Runtime data and analysis products belong on persistent storage, not in Git.
+data/rawdata/
+results/
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.log
+*.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.Rhistory
+.DS_Store
+
+# Keep only deliberately committed, tiny fixtures.
+!tests/fixtures/**

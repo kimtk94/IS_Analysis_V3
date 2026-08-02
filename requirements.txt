@@ -1,0 +1,2 @@
+# The orchestration and fixture tests use only the Python standard library.
+# Downstream scientific commands are optional and documented in config/defaults.yaml.
