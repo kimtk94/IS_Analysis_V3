@@ -376,10 +376,22 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     failures = 0
     test_sources: dict[str, Path] = {}
+    test_samples: dict[str, Path] = {}
     if args.test_data_only:
+        test_samples = {
+            task["source_key"]: (args.outdir / "test_data" / task["ancestry"] /
+                                 test_sample_name(task))
+            for task in plan
+        }
+        if all(sample.is_file() for sample in test_samples.values()):
+            for task in plan:
+                task["status"] = "sampled"
+            write_tsv(args.qc_dir / "batch_progress.tsv", plan_fields, plan)
+            return 0
+
         # Complete the raw-file preflight for the whole selected batch before
-        # writing any samples.  This prevents a failed late download from
-        # leaving behind test data for only part of a batch.
+        # writing any missing samples.  This prevents a failed late download
+        # from creating additional test data for only part of a batch.
         for task in plan:
             suffix = (task.get("source_file") or Path(task["source_url"]).name
                       or f"{task['gene']}.tar")
@@ -417,9 +429,9 @@ def main(argv: list[str] | None = None) -> int:
                 task["status"] = "downloaded"
                 continue
             if args.test_data_only:
-                sample = (args.outdir / "test_data" / row["ancestry"] /
-                          test_sample_name(row))
-                write_test_sample(archive, sample, task["limit_type"], int(task["limit"]))
+                sample = test_samples[row["source_key"]]
+                if not sample.is_file():
+                    write_test_sample(archive, sample, task["limit_type"], int(task["limit"]))
                 task["status"] = "sampled"
                 continue
             command = ["Rscript", str(args.prepare_script), "--archive", str(archive),

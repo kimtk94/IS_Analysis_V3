@@ -95,8 +95,10 @@ A missing file is downloaded; when validation metadata is available, an
 existing file that fails validation is also replaced. Raw files may be
 gzip-compressed; `--test-data-only` reads their decompressed contents
 (equivalent to `zcat`) before applying the line limits.
-All raw files for the selected batch are checked or downloaded before any test
-sample is written, so an incomplete batch does not leave partial test data.
+If all expected test TSVs already exist, the batch is treated as sampled without
+checking or downloading raw files. Otherwise, all raw files for the selected
+batch are checked or downloaded before missing test samples are written;
+existing test TSVs are preserved rather than overwritten.
 The resulting plain TSV files are written under
 `$IDO1_TEST_OUTDIR/test_data/{EUR,EAS}`. To retain only the downloaded archives
 without creating these samples, use `--download-only` instead.

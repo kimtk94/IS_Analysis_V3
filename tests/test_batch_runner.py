@@ -384,6 +384,41 @@ class BatchRunnerTests(unittest.TestCase):
             self.assertEqual("raw_ready", progress[0]["status"])
             self.assertTrue(progress[1]["status"].startswith("failed:"))
 
+    def test_test_data_mode_reuses_complete_existing_test_data_batch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest = root / "manifest.tsv"
+            existing_content = b"variant\tbeta\nexisting\t1\n"
+            with manifest.open("w", newline="", encoding="utf-8") as handle:
+                fields = ["gene", "ancestry", "source_url", "source_file"]
+                writer = csv.DictWriter(handle, fieldnames=fields, delimiter="\t")
+                writer.writeheader()
+                for ancestry in ("EUR", "EAS"):
+                    source_file = f"IDO1_{ancestry}.tsv"
+                    writer.writerow({"gene": "IDO1", "ancestry": ancestry,
+                                     "source_url": "/missing/source.tsv",
+                                     "source_file": source_file})
+                    sample = root / "out/test_data" / ancestry / source_file
+                    sample.parent.mkdir(parents=True)
+                    sample.write_bytes(existing_content)
+
+            command = [sys.executable, str(ROOT / "scripts/ukb_ppp_batch_manifest_runner_fast.py"),
+                "--base", str(root / "raw"), "--qc-dir", str(root / "qc"),
+                "--outdir", str(root / "out"), "--standardized-dir", str(root / "std"),
+                "--instrument-dir", str(root / "inst"), "--download-manifest", str(manifest),
+                "--gene-coordinate-file", str(ROOT / "tests/fixtures/gene_coordinates_hg38.tsv"),
+                "--batch-size", "1", "--focus-gene", "IDO1", "--focus-max-file-lines", "2",
+                "--test-data-only"]
+            subprocess.run(command, check=True, capture_output=True, text=True, cwd=ROOT)
+
+            samples = list((root / "out/test_data").glob("*/*.tsv"))
+            self.assertEqual(2, len(samples))
+            self.assertTrue(all(sample.read_bytes() == existing_content for sample in samples))
+            self.assertFalse((root / "raw").exists())
+            with (root / "qc/batch_progress.tsv").open() as handle:
+                progress = list(csv.DictReader(handle, delimiter="\t"))
+            self.assertEqual({"sampled"}, {row["status"] for row in progress})
+
     def test_write_test_sample_refuses_to_overwrite_existing_destination(self):
         with tempfile.TemporaryDirectory() as tmp:
             destination = Path(tmp) / "sample.tsv"
