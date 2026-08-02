@@ -67,4 +67,18 @@ class BatchRunnerTests(unittest.TestCase):
                 progress = list(csv.DictReader(handle, delimiter="\t"))
             self.assertEqual({"downloaded"}, {row["status"] for row in progress})
 
+    def test_test_data_mode_applies_focus_bytes_and_other_line_limits(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = ROOT / "tests/fixtures/gene_coordinates_hg38.tsv"
+            target = root / "target.tsv"
+            other = root / "other.tsv"
+
+            runner.write_test_sample(source, target, "bytes", 80)
+            runner.write_test_sample(source, other, "lines", 2)
+
+            self.assertLessEqual(target.stat().st_size, 80)
+            self.assertTrue(target.read_bytes().endswith(b"\n"))
+            self.assertEqual(source.read_text().splitlines()[:2], other.read_text().splitlines())
+
 if __name__ == "__main__": unittest.main()

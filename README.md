@@ -73,6 +73,29 @@ python3 scripts/ukb_ppp_batch_manifest_runner_fast.py \
   --other-max-file-lines 1000 --download-only --stop-on-error
 ```
 
+For a bounded test dataset instead of archive-only downloads, replace
+`--download-only` with `--test-data-only`. The selected target gene is written
+up to `--focus-max-bytes` (20 MB below), and every other gene in its batch is
+written up to `--other-max-file-lines` (1,000 lines including the header):
+
+```bash
+python3 -u "$CODE_ROOT/scripts/ukb_ppp_batch_manifest_runner_fast.py" \
+  --base "$WORK_ROOT/data/rawdata/pqtl/selected_targets" \
+  --qc-dir "$IDO1_TEST_QC_DIR" \
+  --outdir "$IDO1_TEST_OUTDIR" \
+  --standardized-dir "$IDO1_TEST_STANDARDIZED_DIR" \
+  --instrument-dir "$IDO1_TEST_INSTRUMENT_DIR" \
+  --download-manifest "$WORK_ROOT/data/metadata/ukb_ppp_download_manifest.tsv" \
+  --gene-coordinate-file "$WORK_ROOT/data/reference/gene_coordinates_hg38.tsv" \
+  --batch-size 15 --focus-gene IDO1 \
+  --focus-max-bytes 20000000 --other-max-file-lines 1000 \
+  --test-data-only --stop-on-error
+```
+
+Test samples are recreated under
+`$IDO1_TEST_OUTDIR/test_data/{EUR,EAS}/<GENE>.tsv`; current task states are
+rewritten to `batch_progress.tsv` and successful samples have status `sampled`.
+
 Omit both `--download-only` and `--run` for a safe dry run. Use `--run` instead
 to download the selected batch and run the R preparation step for each archive.
 

@@ -27,8 +27,9 @@ V3 files.
    workflow entry points.
 
 The runner always writes `batch_manifest.tsv`, `execution_plan.tsv`, and
-`run_metadata.json`. `--download-only` downloads without preparing, while
-`--run` downloads and prepares. Without either option, no archives are
+`run_metadata.json`. `--download-only` downloads without preparing,
+`--test-data-only` downloads and writes bounded complete-line test samples, and
+`--run` downloads and prepares. Without any of these options, no archives are
 downloaded or processed. Raw cleanup is intentionally not implemented in
 focused testing.
 

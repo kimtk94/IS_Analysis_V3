@@ -8,12 +8,14 @@ supported for deterministic testing; HTTP downloads use urllib.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import csv
 import hashlib
 import json
 import shutil
 import subprocess
 import sys
+import tarfile
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -78,6 +80,34 @@ def stage(row: dict[str, str], destination: Path) -> Path:
     return destination
 
 
+def write_test_sample(source: Path, destination: Path, limit_type: str, limit: int) -> Path:
+    """Write a bounded, complete-line sample from a plain file or first tar member."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with contextlib.ExitStack() as stack:
+        if tarfile.is_tarfile(source):
+            archive = stack.enter_context(tarfile.open(source, mode="r:*"))
+            member = next((item for item in archive if item.isfile()), None)
+            if member is None:
+                raise ValueError(f"{source}: archive contains no regular member")
+            stream = archive.extractfile(member)
+            if stream is None:
+                raise ValueError(f"{source}: cannot read archive member {member.name}")
+            handle = stack.enter_context(stream)
+        else:
+            handle = stack.enter_context(source.open("rb"))
+
+        if limit_type == "lines":
+            content = b"".join(handle.readline() for _ in range(limit))
+        else:
+            content = handle.read(limit)
+            if content and not content.endswith(b"\n"):
+                content = content.rsplit(b"\n", 1)[0] + b"\n" if b"\n" in content else b""
+    if content.count(b"\n") < 2:
+        raise ValueError(f"{source}: sample contains no complete data rows")
+    destination.write_bytes(content)
+    return destination
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser()
     for name in ("base", "qc-dir", "outdir", "standardized-dir", "instrument-dir",
@@ -96,6 +126,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                            help="download the selected batch and run the preparation script")
     execution.add_argument("--download-only", action="store_true",
                            help="download the selected batch without running the preparation script")
+    execution.add_argument("--test-data-only", action="store_true",
+                           help="download the selected batch and write bounded TSV test samples")
     p.add_argument("--stop-on-error", action="store_true")
     args = p.parse_args(argv)
     if args.batch_size < 1 or args.focus_max_bytes < 1 or args.other_max_file_lines < 2:
@@ -132,9 +164,10 @@ def main(argv: list[str] | None = None) -> int:
               ["batch_id", "gene", "ancestry", "source_url", "limit_type", "limit", "status"], plan)
     base_parents = args.base.resolve().parents
     inferred_work_root = base_parents[3] if len(base_parents) > 3 else args.base.resolve().parent
-    execute_downloads = args.run or args.download_only
+    execute_downloads = args.run or args.download_only or args.test_data_only
     metadata = {"started_at": datetime.now(timezone.utc).isoformat(), "run": args.run,
                 "download_only": args.download_only,
+                "test_data_only": args.test_data_only,
                 "batch_size": args.batch_size, "focus_gene": focus,
                 "focus_max_bytes": args.focus_max_bytes,
                 "other_max_file_lines": args.other_max_file_lines,
@@ -158,6 +191,11 @@ def main(argv: list[str] | None = None) -> int:
             archive = stage(row, args.base / row["ancestry"] / suffix)
             if args.download_only:
                 task["status"] = "downloaded"
+                continue
+            if args.test_data_only:
+                sample = args.outdir / "test_data" / row["ancestry"] / f"{row['gene']}.tsv"
+                write_test_sample(archive, sample, task["limit_type"], int(task["limit"]))
+                task["status"] = "sampled"
                 continue
             command = ["Rscript", str(args.prepare_script), "--archive", str(archive),
                        "--gene", row["gene"], "--ancestry", row["ancestry"],
