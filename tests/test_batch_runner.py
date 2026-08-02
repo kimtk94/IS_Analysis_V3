@@ -1,8 +1,11 @@
 import csv
+import gzip
 import hashlib
 import importlib.util
+import io
 import subprocess
 import sys
+import tarfile
 import tempfile
 import unittest
 from unittest import mock
@@ -13,6 +16,36 @@ SPEC = importlib.util.spec_from_file_location("runner", ROOT / "scripts/ukb_ppp_
 runner = importlib.util.module_from_spec(SPEC); SPEC.loader.exec_module(runner)
 
 class BatchRunnerTests(unittest.TestCase):
+    def test_write_test_sample_uncompresses_plain_gzip_and_tar_member_gzip(self):
+        content = b"variant\tbeta\nrs1\t0.1\nrs2\t0.2\n"
+        expected_rows = [{"variant": "rs1", "beta": "0.1"},
+                         {"variant": "rs2", "beta": "0.2"}]
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            plain = root / "input.tsv"
+            standalone = root / "input.tsv.gz"
+            archive = root / "input.tar"
+            plain.write_bytes(content)
+            with gzip.open(standalone, "wb") as handle:
+                handle.write(content)
+            compressed = gzip.compress(content)
+            with tarfile.open(archive, "w") as handle:
+                info = tarfile.TarInfo("nested/input.tsv.gz")
+                info.size = len(compressed)
+                handle.addfile(info, io.BytesIO(compressed))
+
+            for number, source in enumerate((plain, standalone, archive)):
+                with self.subTest(source=source.name):
+                    destination = root / f"sample-{number}.tsv"
+                    runner.write_test_sample(source, destination, "lines", 3)
+
+                    self.assertEqual(".tsv", destination.suffix)
+                    self.assertNotEqual(b"\x1f\x8b", destination.read_bytes()[:2])
+                    with destination.open(newline="", encoding="utf-8") as handle:
+                        reader = csv.DictReader(handle, delimiter="\t")
+                        self.assertEqual(["variant", "beta"], reader.fieldnames)
+                        self.assertEqual(expected_rows, list(reader))
+
     def test_stage_reuses_existing_file_when_all_manifest_values_match(self):
         with tempfile.TemporaryDirectory() as tmp:
             destination = Path(tmp) / "download.tsv"
@@ -258,7 +291,7 @@ class BatchRunnerTests(unittest.TestCase):
                     for number, source in enumerate(sources, 1):
                         writer.writerow({"gene": "IDO1", "ancestry": ancestry,
                                          "source_url": str(source),
-                                         "source_file": f"IDO1_{ancestry}_assay_{number}.tsv.tar.gz",
+                                         "source_file": f"IDO1_{ancestry}_assay_{number}.tsv",
                                          "synapse_id": f"syn{ancestry}{number}"})
 
             command = [sys.executable, str(ROOT / "scripts/ukb_ppp_batch_manifest_runner_fast.py"),
