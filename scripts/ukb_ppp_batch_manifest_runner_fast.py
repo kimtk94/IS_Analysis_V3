@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import csv
+import gzip
 import hashlib
 import json
 import re
@@ -210,7 +211,7 @@ def stage(row: dict[str, str], destination: Path, *, reuse_unverified: bool = Fa
 
 
 def write_test_sample(source: Path, destination: Path, limit_type: str, limit: int) -> Path:
-    """Write a bounded, complete-line sample from a plain file or first tar member."""
+    """Write a bounded, uncompressed sample from a plain or archived text file."""
     destination.parent.mkdir(parents=True, exist_ok=True)
     with contextlib.ExitStack() as stack:
         if tarfile.is_tarfile(source):
@@ -222,8 +223,15 @@ def write_test_sample(source: Path, destination: Path, limit_type: str, limit: i
             if stream is None:
                 raise ValueError(f"{source}: cannot read archive member {member.name}")
             handle = stack.enter_context(stream)
+            if member.name.lower().endswith(".gz"):
+                handle = stack.enter_context(gzip.GzipFile(fileobj=handle, mode="rb"))
         else:
-            handle = stack.enter_context(source.open("rb"))
+            with source.open("rb") as probe:
+                gzip_magic = probe.read(2) == b"\x1f\x8b"
+            if gzip_magic or source.name.lower().endswith(".gz"):
+                handle = stack.enter_context(gzip.open(source, "rb"))
+            else:
+                handle = stack.enter_context(source.open("rb"))
 
         try:
             output = stack.enter_context(destination.open("xb"))
@@ -232,7 +240,7 @@ def write_test_sample(source: Path, destination: Path, limit_type: str, limit: i
                 f"refusing to overwrite existing test sample: {destination}"
             ) from exc
 
-        newline_count = 0
+        complete_lines = 0
         bytes_written = 0
         try:
             if limit_type == "lines":
@@ -241,27 +249,18 @@ def write_test_sample(source: Path, destination: Path, limit_type: str, limit: i
                     if not line:
                         break
                     output.write(line)
-                    newline_count += line.count(b"\n")
+                    complete_lines += 1
                     bytes_written += len(line)
             else:
-                chunk_size = 64 * 1024
-                bytes_read = 0
-                pending = b""
-                while bytes_read < limit:
-                    chunk = handle.read(min(chunk_size, limit - bytes_read))
-                    if not chunk:
+                while bytes_written < limit:
+                    line = handle.readline(limit - bytes_written + 1)
+                    if not line or len(line) > limit - bytes_written:
                         break
-                    bytes_read += len(chunk)
-                    pending += chunk
-                    complete_end = pending.rfind(b"\n") + 1
-                    if complete_end:
-                        complete = pending[:complete_end]
-                        output.write(complete)
-                        newline_count += complete.count(b"\n")
-                        bytes_written += len(complete)
-                        pending = pending[complete_end:]
+                    output.write(line)
+                    complete_lines += 1
+                    bytes_written += len(line)
 
-            if newline_count < 2:
+            if complete_lines < 2:
                 raise ValueError(f"{source}: sample contains no complete data rows")
             assert bytes_written <= limit or limit_type == "lines"
         except Exception:
