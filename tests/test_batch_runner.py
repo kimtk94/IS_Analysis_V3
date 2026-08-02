@@ -1,9 +1,11 @@
 import csv
+import hashlib
 import importlib.util
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
@@ -11,6 +13,59 @@ SPEC = importlib.util.spec_from_file_location("runner", ROOT / "scripts/ukb_ppp_
 runner = importlib.util.module_from_spec(SPEC); SPEC.loader.exec_module(runner)
 
 class BatchRunnerTests(unittest.TestCase):
+    def test_stage_reuses_existing_file_when_all_manifest_values_match(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            destination = Path(tmp) / "download.tsv"
+            destination.write_bytes(b"verified fixture\n")
+            row = {"gene": "IDO1", "ancestry": "EUR", "source_url": "https://invalid.test/file",
+                   "size_bytes": str(destination.stat().st_size),
+                   "sha256": runner.sha256(destination), "md5": runner.md5(destination)}
+
+            with mock.patch.object(runner.urllib.request, "urlretrieve") as download:
+                self.assertEqual(destination, runner.stage(row, destination))
+
+            download.assert_not_called()
+
+    def test_stage_redownloads_checksum_mismatch_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            destination = Path(tmp) / "download.tsv"
+            expected = b"replacement fixture\n"
+            destination.write_bytes(b"x" * len(expected))
+            expected_sha256 = hashlib.sha256(expected).hexdigest()
+            row = {"gene": "IDO1", "ancestry": "EAS", "source_url": "https://example.test/file",
+                   "size_bytes": str(len(expected)), "sha256": expected_sha256, "md5": ""}
+
+            def download(_url, path):
+                Path(path).write_bytes(expected)
+
+            with mock.patch.object(runner.urllib.request, "urlretrieve",
+                                   side_effect=download) as mocked_download:
+                runner.stage(row, destination)
+
+            mocked_download.assert_called_once_with(row["source_url"], destination)
+            self.assertEqual(expected, destination.read_bytes())
+
+    def test_stage_redownloads_unverified_file_unless_opted_in(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            destination = Path(tmp) / "download.tsv"
+            destination.write_bytes(b"existing\n")
+            row = {"gene": "IDO1", "ancestry": "EUR", "source_url": "https://example.test/file",
+                   "size_bytes": "", "sha256": "", "md5": ""}
+
+            def download(_url, path):
+                Path(path).write_bytes(b"fresh\n")
+
+            with mock.patch.object(runner.urllib.request, "urlretrieve",
+                                   side_effect=download) as mocked_download:
+                runner.stage(row, destination)
+            mocked_download.assert_called_once()
+            self.assertEqual(b"fresh\n", destination.read_bytes())
+
+            with mock.patch.object(runner.urllib.request, "urlretrieve") as mocked_download:
+                runner.stage(row, destination, reuse_unverified=True)
+            mocked_download.assert_not_called()
+            self.assertEqual(b"fresh\n", destination.read_bytes())
+
     def test_read_tsv_normalizes_production_synapse_schema(self):
         rows = runner.read_tsv(ROOT / "tests/fixtures/ukb_ppp_download_manifest_synapse.tsv")
         self.assertEqual("IDO1", rows[0]["gene"])
