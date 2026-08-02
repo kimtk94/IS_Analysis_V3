@@ -91,7 +91,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--f-statistic-threshold", type=float, default=10.0)
     p.add_argument("--cis-window-bp", type=int, default=1_000_000)
     p.add_argument("--prepare-script", type=Path, default=Path(__file__).with_name("01_prepare_exposure_fast.R"))
-    p.add_argument("--run", action="store_true")
+    execution = p.add_mutually_exclusive_group()
+    execution.add_argument("--run", action="store_true",
+                           help="download the selected batch and run the preparation script")
+    execution.add_argument("--download-only", action="store_true",
+                           help="download the selected batch without running the preparation script")
     p.add_argument("--stop-on-error", action="store_true")
     args = p.parse_args(argv)
     if args.batch_size < 1 or args.focus_max_bytes < 1 or args.other_max_file_lines < 2:
@@ -128,7 +132,9 @@ def main(argv: list[str] | None = None) -> int:
               ["batch_id", "gene", "ancestry", "source_url", "limit_type", "limit", "status"], plan)
     base_parents = args.base.resolve().parents
     inferred_work_root = base_parents[3] if len(base_parents) > 3 else args.base.resolve().parent
+    execute_downloads = args.run or args.download_only
     metadata = {"started_at": datetime.now(timezone.utc).isoformat(), "run": args.run,
+                "download_only": args.download_only,
                 "batch_size": args.batch_size, "focus_gene": focus,
                 "focus_max_bytes": args.focus_max_bytes,
                 "other_max_file_lines": args.other_max_file_lines,
@@ -140,7 +146,7 @@ def main(argv: list[str] | None = None) -> int:
                 "cis_window_bp": args.cis_window_bp,
                 "raw_cleanup": False}
     (args.qc_dir / "run_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
-    if not args.run:
+    if not execute_downloads:
         print(f"Dry run: wrote {len(plan)} source tasks to {args.qc_dir}")
         return 0
     failures = 0
@@ -148,17 +154,20 @@ def main(argv: list[str] | None = None) -> int:
     for task in plan:
         row = source_lookup[(task["gene"], task["ancestry"])]
         suffix = Path(row["source_url"]).name or f"{row['gene']}.tar"
-        archive = stage(row, args.base / row["ancestry"] / suffix)
-        command = ["Rscript", str(args.prepare_script), "--archive", str(archive),
-                   "--gene", row["gene"], "--ancestry", row["ancestry"],
-                   "--coordinates", str(args.gene_coordinate_file),
-                   "--standardized-dir", str(args.standardized_dir),
-                   "--instrument-dir", str(args.instrument_dir), "--legacy-dir", str(args.outdir),
-                   "--limit-type", task["limit_type"], "--limit", str(task["limit"]),
-                   "--p-value-threshold", str(args.p_value_threshold),
-                   "--f-statistic-threshold", str(args.f_statistic_threshold),
-                   "--cis-window-bp", str(args.cis_window_bp)]
         try:
+            archive = stage(row, args.base / row["ancestry"] / suffix)
+            if args.download_only:
+                task["status"] = "downloaded"
+                continue
+            command = ["Rscript", str(args.prepare_script), "--archive", str(archive),
+                       "--gene", row["gene"], "--ancestry", row["ancestry"],
+                       "--coordinates", str(args.gene_coordinate_file),
+                       "--standardized-dir", str(args.standardized_dir),
+                       "--instrument-dir", str(args.instrument_dir), "--legacy-dir", str(args.outdir),
+                       "--limit-type", task["limit_type"], "--limit", str(task["limit"]),
+                       "--p-value-threshold", str(args.p_value_threshold),
+                       "--f-statistic-threshold", str(args.f_statistic_threshold),
+                       "--cis-window-bp", str(args.cis_window_bp)]
             subprocess.run(command, check=True)
             task["status"] = "complete"
         except Exception as exc:
