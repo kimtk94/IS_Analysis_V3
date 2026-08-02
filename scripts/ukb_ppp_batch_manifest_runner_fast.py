@@ -12,6 +12,7 @@ import contextlib
 import csv
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -104,6 +105,38 @@ def md5(path: Path) -> str:
     return digest.hexdigest()
 
 
+ARCHIVE_SUFFIXES = (".tar.gz", ".tar.bz2", ".tar.xz", ".tgz", ".tbz2", ".txz",
+                    ".zip", ".tar", ".gz", ".bz2", ".xz")
+DATA_SUFFIXES = (".tsv", ".txt", ".csv")
+
+
+def safe_source_stem(name: str) -> str:
+    """Return a filesystem-safe assay identifier, including for compound archives."""
+    stem = Path(name).name
+    lowered = stem.lower()
+    for suffix in ARCHIVE_SUFFIXES:
+        if lowered.endswith(suffix):
+            stem = stem[:-len(suffix)]
+            lowered = lowered[:-len(suffix)]
+            break
+    for suffix in DATA_SUFFIXES:
+        if lowered.endswith(suffix):
+            stem = stem[:-len(suffix)]
+            break
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", stem).strip("._-")
+
+
+def test_sample_name(row: dict[str, str]) -> str:
+    """Build a sample name that preserves the manifest source identity."""
+    source_name = row.get("source_file", "") or Path(row.get("source_url", "")).name
+    identifier = safe_source_stem(source_name) if source_name else ""
+    if not identifier:
+        identifier = safe_source_stem(row.get("synapse_id", ""))
+    if not identifier:
+        raise ValueError(f"cannot derive sample name for {row['gene']} {row['ancestry']}")
+    return f"{identifier}.tsv"
+
+
 def stage(row: dict[str, str], destination: Path) -> Path:
     destination.parent.mkdir(parents=True, exist_ok=True)
     url = row["source_url"]
@@ -162,35 +195,13 @@ def write_test_sample(source: Path, destination: Path, limit_type: str, limit: i
                 content = content.rsplit(b"\n", 1)[0] + b"\n" if b"\n" in content else b""
     if content.count(b"\n") < 2:
         raise ValueError(f"{source}: sample contains no complete data rows")
-    destination.write_bytes(content)
-    return destination
-
-
-def write_test_sample(source: Path, destination: Path, limit_type: str, limit: int) -> Path:
-    """Write a bounded, complete-line sample from a plain file or first tar member."""
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    with contextlib.ExitStack() as stack:
-        if tarfile.is_tarfile(source):
-            archive = stack.enter_context(tarfile.open(source, mode="r:*"))
-            member = next((item for item in archive if item.isfile()), None)
-            if member is None:
-                raise ValueError(f"{source}: archive contains no regular member")
-            stream = archive.extractfile(member)
-            if stream is None:
-                raise ValueError(f"{source}: cannot read archive member {member.name}")
-            handle = stack.enter_context(stream)
-        else:
-            handle = stack.enter_context(source.open("rb"))
-
-        if limit_type == "lines":
-            content = b"".join(handle.readline() for _ in range(limit))
-        else:
-            content = handle.read(limit)
-            if content and not content.endswith(b"\n"):
-                content = content.rsplit(b"\n", 1)[0] + b"\n" if b"\n" in content else b""
-    if content.count(b"\n") < 2:
-        raise ValueError(f"{source}: sample contains no complete data rows")
-    destination.write_bytes(content)
+    try:
+        with destination.open("xb") as handle:
+            handle.write(content)
+    except FileExistsError as exc:
+        raise FileExistsError(
+            f"refusing to overwrite existing test sample: {destination}"
+        ) from exc
     return destination
 
 
@@ -288,7 +299,8 @@ def main(argv: list[str] | None = None) -> int:
                 task["status"] = "downloaded"
                 continue
             if args.test_data_only:
-                sample = args.outdir / "test_data" / row["ancestry"] / f"{row['gene']}.tsv"
+                sample = (args.outdir / "test_data" / row["ancestry"] /
+                          test_sample_name(row))
                 write_test_sample(archive, sample, task["limit_type"], int(task["limit"]))
                 task["status"] = "sampled"
                 continue

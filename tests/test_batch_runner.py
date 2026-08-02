@@ -112,4 +112,49 @@ class BatchRunnerTests(unittest.TestCase):
             self.assertTrue(target.read_bytes().endswith(b"\n"))
             self.assertEqual(source.read_text().splitlines()[:2], other.read_text().splitlines())
 
+    def test_test_data_mode_preserves_multiple_assays_for_gene_and_ancestry(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest = root / "manifest.tsv"
+            sources = [ROOT / "tests/fixtures/gene_coordinates_hg38.tsv",
+                       ROOT / "tests/fixtures/gigastroke.tsv"]
+            with manifest.open("w", newline="", encoding="utf-8") as handle:
+                fields = ["gene", "ancestry", "source_url", "source_file", "synapse_id"]
+                writer = csv.DictWriter(handle, fieldnames=fields, delimiter="\t")
+                writer.writeheader()
+                for ancestry in ("EUR", "EAS"):
+                    for number, source in enumerate(sources, 1):
+                        writer.writerow({"gene": "IDO1", "ancestry": ancestry,
+                                         "source_url": str(source),
+                                         "source_file": f"IDO1_{ancestry}_assay_{number}.tsv.tar.gz",
+                                         "synapse_id": f"syn{ancestry}{number}"})
+
+            command = [sys.executable, str(ROOT / "scripts/ukb_ppp_batch_manifest_runner_fast.py"),
+                "--base", str(root / "raw"), "--qc-dir", str(root / "qc"),
+                "--outdir", str(root / "out"), "--standardized-dir", str(root / "std"),
+                "--instrument-dir", str(root / "inst"), "--download-manifest", str(manifest),
+                "--gene-coordinate-file", str(ROOT / "tests/fixtures/gene_coordinates_hg38.tsv"),
+                "--batch-size", "1", "--focus-gene", "IDO1", "--focus-max-bytes", "10000",
+                "--test-data-only"]
+            subprocess.run(command, check=True, capture_output=True, text=True, cwd=ROOT)
+
+            samples = sorted((root / "out/test_data").glob("*/*.tsv"))
+            self.assertEqual(4, len(samples))
+            self.assertEqual({
+                "IDO1_EAS_assay_1.tsv", "IDO1_EAS_assay_2.tsv",
+                "IDO1_EUR_assay_1.tsv", "IDO1_EUR_assay_2.tsv",
+            }, {sample.name for sample in samples})
+            for sample in samples:
+                expected = sources[int(sample.stem.rsplit("_", 1)[1]) - 1].read_bytes()
+                self.assertEqual(expected, sample.read_bytes())
+
+    def test_write_test_sample_refuses_to_overwrite_existing_destination(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            destination = Path(tmp) / "sample.tsv"
+            destination.write_text("existing\ncontent\n", encoding="utf-8")
+            with self.assertRaisesRegex(FileExistsError, "refusing to overwrite"):
+                runner.write_test_sample(ROOT / "tests/fixtures/gigastroke.tsv",
+                                         destination, "lines", 2)
+            self.assertEqual("existing\ncontent\n", destination.read_text())
+
 if __name__ == "__main__": unittest.main()
