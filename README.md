@@ -73,7 +73,9 @@ synapse get syn52363617 --downloadLocation /tmp/synapse_download_check
 
 Do not put a Synapse password or authentication token in the manifest or Git.
 
-Download the 15-gene batch containing IDO1 without running the preparation step:
+Download and decompress a bounded test sample for the 15-gene batch containing
+IDO1 without running the preparation step. IDO1 is capped at 500,000 lines and
+each other gene is capped at 1,000 lines (both counts include the header):
 
 ```bash
 python3 scripts/ukb_ppp_batch_manifest_runner_fast.py \
@@ -83,14 +85,15 @@ python3 scripts/ukb_ppp_batch_manifest_runner_fast.py \
   --instrument-dir "$IDO1_TEST_INSTRUMENT_DIR" \
   --download-manifest "$WORK_ROOT/data/metadata/ukb_ppp_download_manifest.tsv" \
   --gene-coordinate-file "$WORK_ROOT/data/reference/gene_coordinates_hg38.tsv" \
-  --batch-size 15 --focus-gene IDO1 --focus-max-bytes 20000000 \
-  --other-max-file-lines 1000 --download-only --stop-on-error
+  --batch-size 15 --focus-gene IDO1 --focus-max-file-lines 500000 \
+  --other-max-file-lines 1000 --test-data-only --stop-on-error
 ```
 
-For a bounded test dataset instead of archive-only downloads, replace
-`--download-only` with `--test-data-only`. The selected target gene is written
-up to `--focus-max-bytes` (20 MB below), and every other gene in its batch is
-written up to `--other-max-file-lines` (1,000 lines including the header):
+The downloaded raw files may be gzip-compressed; `--test-data-only` reads their
+decompressed contents (equivalent to `zcat`) before applying the line limits.
+The resulting plain TSV files are written under
+`$IDO1_TEST_OUTDIR/test_data/{EUR,EAS}`. To retain only the downloaded archives
+without creating these samples, use `--download-only` instead.
 
 ```bash
 python3 -u "$CODE_ROOT/scripts/ukb_ppp_batch_manifest_runner_fast.py" \
@@ -102,7 +105,7 @@ python3 -u "$CODE_ROOT/scripts/ukb_ppp_batch_manifest_runner_fast.py" \
   --download-manifest "$WORK_ROOT/data/metadata/ukb_ppp_download_manifest.tsv" \
   --gene-coordinate-file "$WORK_ROOT/data/reference/gene_coordinates_hg38.tsv" \
   --batch-size 15 --focus-gene IDO1 \
-  --focus-max-bytes 20000000 --other-max-file-lines 1000 \
+  --focus-max-file-lines 500000 --other-max-file-lines 1000 \
   --test-data-only --stop-on-error
 ```
 
