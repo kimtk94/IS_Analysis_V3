@@ -1,0 +1,9 @@
+batch_size: 15
+genome_build: GRCh38
+cis_window_bp: 1000000
+p_value_threshold: 5.0e-8
+f_statistic_threshold: 10.0
+focus_gene: IDO1
+focus_max_bytes: 20000000
+other_max_file_lines: 1000
+raw_cleanup: false
