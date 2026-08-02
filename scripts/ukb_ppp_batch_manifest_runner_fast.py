@@ -375,17 +375,44 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Dry run: wrote {len(plan)} source tasks to {args.qc_dir}")
         return 0
     failures = 0
+    test_sources: dict[str, Path] = {}
+    if args.test_data_only:
+        # Complete the raw-file preflight for the whole selected batch before
+        # writing any samples.  This prevents a failed late download from
+        # leaving behind test data for only part of a batch.
+        for task in plan:
+            suffix = (task.get("source_file") or Path(task["source_url"]).name
+                      or f"{task['gene']}.tar")
+            try:
+                test_sources[task["source_key"]] = stage(
+                    task,
+                    args.base / task["ancestry"] / suffix,
+                    reuse_unverified=True,
+                )
+                task["status"] = "raw_ready"
+            except Exception as exc:
+                failures += 1
+                task["status"] = f"failed: {exc}"
+                if args.stop_on_error:
+                    break
+        if failures:
+            write_tsv(args.qc_dir / "batch_progress.tsv", plan_fields, plan)
+            return 1
+
     for task in plan:
         # The plan retains all source metadata, so execution cannot select a
         # different assay when gene and ancestry are shared by multiple rows.
         row = task
         suffix = row.get("source_file") or Path(row["source_url"]).name or f"{row['gene']}.tar"
         try:
-            archive = stage(
-                row,
-                args.base / row["ancestry"] / suffix,
-                reuse_unverified=args.reuse_unverified or args.test_data_only,
-            )
+            if args.test_data_only:
+                archive = test_sources[row["source_key"]]
+            else:
+                archive = stage(
+                    row,
+                    args.base / row["ancestry"] / suffix,
+                    reuse_unverified=args.reuse_unverified,
+                )
             if args.download_only:
                 task["status"] = "downloaded"
                 continue
