@@ -225,21 +225,49 @@ def write_test_sample(source: Path, destination: Path, limit_type: str, limit: i
         else:
             handle = stack.enter_context(source.open("rb"))
 
-        if limit_type == "lines":
-            content = b"".join(handle.readline() for _ in range(limit))
-        else:
-            content = handle.read(limit)
-            if content and not content.endswith(b"\n"):
-                content = content.rsplit(b"\n", 1)[0] + b"\n" if b"\n" in content else b""
-    if content.count(b"\n") < 2:
-        raise ValueError(f"{source}: sample contains no complete data rows")
-    try:
-        with destination.open("xb") as handle:
-            handle.write(content)
-    except FileExistsError as exc:
-        raise FileExistsError(
-            f"refusing to overwrite existing test sample: {destination}"
-        ) from exc
+        try:
+            output = stack.enter_context(destination.open("xb"))
+        except FileExistsError as exc:
+            raise FileExistsError(
+                f"refusing to overwrite existing test sample: {destination}"
+            ) from exc
+
+        newline_count = 0
+        bytes_written = 0
+        try:
+            if limit_type == "lines":
+                for _ in range(limit):
+                    line = handle.readline()
+                    if not line:
+                        break
+                    output.write(line)
+                    newline_count += line.count(b"\n")
+                    bytes_written += len(line)
+            else:
+                chunk_size = 64 * 1024
+                bytes_read = 0
+                pending = b""
+                while bytes_read < limit:
+                    chunk = handle.read(min(chunk_size, limit - bytes_read))
+                    if not chunk:
+                        break
+                    bytes_read += len(chunk)
+                    pending += chunk
+                    complete_end = pending.rfind(b"\n") + 1
+                    if complete_end:
+                        complete = pending[:complete_end]
+                        output.write(complete)
+                        newline_count += complete.count(b"\n")
+                        bytes_written += len(complete)
+                        pending = pending[complete_end:]
+
+            if newline_count < 2:
+                raise ValueError(f"{source}: sample contains no complete data rows")
+            assert bytes_written <= limit or limit_type == "lines"
+        except Exception:
+            output.close()
+            destination.unlink(missing_ok=True)
+            raise
     return destination
 
 
