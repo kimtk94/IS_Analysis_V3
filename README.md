@@ -21,9 +21,11 @@ bash scripts/codex_smoke_test.sh
 The batch runner does not discover UKB-PPP URLs or gene coordinates by itself.
 It requires these two reviewed TSV inputs:
 
-* `ukb_ppp_download_manifest.tsv`: one row per gene and ancestry, with the
-  required columns `gene`, `ancestry`, and `source_url`. Optional `sha256` and
-  `size_bytes` columns enable download validation.
+* `ukb_ppp_download_manifest.tsv`: one row per gene and ancestry. The runner
+  accepts either its compact columns (`gene`, `ancestry`, `source_url`,
+  `size_bytes`) or the production columns (`gene_symbol`, `ancestry`, `url`,
+  `expected_size_bytes`). `source_file`, `synapse_id`, `sha256`, and `md5` are
+  used for deterministic naming, authenticated downloads, and validation.
 * `gene_coordinates_hg38.tsv`: gene locations with the columns `gene`, `chr`,
   `start`, `end`, and `genome_build` (`GRCh38`).
 
@@ -58,6 +60,18 @@ The manifest should show two IDO1 rows (`EUR` and `EAS`), while the coordinate
 file should show one IDO1 GRCh38 row. If the V2 files do not exist, obtain and
 review these inputs from the project data owner; do not substitute the synthetic
 files under `tests/fixtures` for a real download.
+
+Production URLs of the form `https://www.synapse.org/Synapse:syn...` are landing
+pages, not archive download URLs. Install and authenticate the Synapse CLI before
+running a production download; the runner uses the manifest's `synapse_id`:
+
+```bash
+python3 -m pip install -r "$CODE_ROOT/requirements.txt"
+synapse login
+synapse get syn52363617 --downloadLocation /tmp/synapse_download_check
+```
+
+Do not put a Synapse password or authentication token in the manifest or Git.
 
 Download the 15-gene batch containing IDO1 without running the preparation step:
 

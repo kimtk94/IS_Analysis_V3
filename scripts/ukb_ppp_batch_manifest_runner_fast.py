@@ -20,16 +20,33 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-REQUIRED = {"gene", "ancestry", "source_url"}
+MANIFEST_ALIASES = {
+    "gene": ("gene", "gene_symbol"),
+    "ancestry": ("ancestry",),
+    "source_url": ("source_url", "url"),
+    "source_file": ("source_file",),
+    "size_bytes": ("size_bytes", "expected_size_bytes"),
+    "sha256": ("sha256",),
+    "md5": ("md5",),
+    "synapse_id": ("synapse_id",),
+}
 
 
 def read_tsv(path: Path) -> list[dict[str, str]]:
     with path.open(newline="", encoding="utf-8-sig") as handle:
         reader = csv.DictReader(handle, delimiter="\t")
-        missing = REQUIRED - set(reader.fieldnames or [])
+        fields = set(reader.fieldnames or [])
+        missing = {canonical for canonical in ("gene", "ancestry", "source_url")
+                   if not any(alias in fields for alias in MANIFEST_ALIASES[canonical])}
         if missing:
             raise ValueError(f"{path}: missing columns: {', '.join(sorted(missing))}")
-        rows = [{k: (v or "").strip() for k, v in row.items()} for row in reader]
+        rows = []
+        for raw in reader:
+            raw = {k: (v or "").strip() for k, v in raw.items()}
+            row = dict(raw)
+            for canonical, aliases in MANIFEST_ALIASES.items():
+                row[canonical] = next((raw[name] for name in aliases if raw.get(name)), "")
+            rows.append(row)
     for row in rows:
         row["gene"] = row["gene"].upper()
         row["ancestry"] = row["ancestry"].upper()
@@ -60,6 +77,14 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def md5(path: Path) -> str:
+    digest = hashlib.md5(usedforsecurity=False)
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def stage(row: dict[str, str], destination: Path) -> Path:
     destination.parent.mkdir(parents=True, exist_ok=True)
     url = row["source_url"]
@@ -67,6 +92,16 @@ def stage(row: dict[str, str], destination: Path) -> Path:
         shutil.copy2(url[7:], destination)
     elif Path(url).is_file():
         shutil.copy2(url, destination)
+    elif row.get("synapse_id"):
+        if not shutil.which("synapse"):
+            raise RuntimeError("Synapse CLI is required: install synapseclient and run 'synapse login'")
+        subprocess.run(["synapse", "get", row["synapse_id"],
+                        "--downloadLocation", str(destination.parent)], check=True)
+        downloaded = destination.parent / (row.get("source_file") or destination.name)
+        if downloaded != destination:
+            shutil.move(downloaded, destination)
+        if not destination.is_file():
+            raise FileNotFoundError(f"Synapse download did not create {destination}")
     else:
         urllib.request.urlretrieve(url, destination)
     expected = row.get("sha256", "").lower()
@@ -77,6 +112,38 @@ def stage(row: dict[str, str], destination: Path) -> Path:
     if expected_size and destination.stat().st_size != int(expected_size):
         destination.unlink(missing_ok=True)
         raise ValueError(f"size mismatch for {row['gene']} {row['ancestry']}")
+    expected_md5 = row.get("md5", "").lower()
+    if expected_md5 and md5(destination) != expected_md5:
+        destination.unlink(missing_ok=True)
+        raise ValueError(f"MD5 mismatch for {row['gene']} {row['ancestry']}")
+    return destination
+
+
+def write_test_sample(source: Path, destination: Path, limit_type: str, limit: int) -> Path:
+    """Write a bounded, complete-line sample from a plain file or first tar member."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with contextlib.ExitStack() as stack:
+        if tarfile.is_tarfile(source):
+            archive = stack.enter_context(tarfile.open(source, mode="r:*"))
+            member = next((item for item in archive if item.isfile()), None)
+            if member is None:
+                raise ValueError(f"{source}: archive contains no regular member")
+            stream = archive.extractfile(member)
+            if stream is None:
+                raise ValueError(f"{source}: cannot read archive member {member.name}")
+            handle = stack.enter_context(stream)
+        else:
+            handle = stack.enter_context(source.open("rb"))
+
+        if limit_type == "lines":
+            content = b"".join(handle.readline() for _ in range(limit))
+        else:
+            content = handle.read(limit)
+            if content and not content.endswith(b"\n"):
+                content = content.rsplit(b"\n", 1)[0] + b"\n" if b"\n" in content else b""
+    if content.count(b"\n") < 2:
+        raise ValueError(f"{source}: sample contains no complete data rows")
+    destination.write_bytes(content)
     return destination
 
 
@@ -186,7 +253,7 @@ def main(argv: list[str] | None = None) -> int:
     source_lookup = {(row["gene"], row["ancestry"]): row for row in source_rows}
     for task in plan:
         row = source_lookup[(task["gene"], task["ancestry"])]
-        suffix = Path(row["source_url"]).name or f"{row['gene']}.tar"
+        suffix = row.get("source_file") or Path(row["source_url"]).name or f"{row['gene']}.tar"
         try:
             archive = stage(row, args.base / row["ancestry"] / suffix)
             if args.download_only:

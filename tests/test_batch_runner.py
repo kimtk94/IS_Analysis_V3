@@ -11,6 +11,13 @@ SPEC = importlib.util.spec_from_file_location("runner", ROOT / "scripts/ukb_ppp_
 runner = importlib.util.module_from_spec(SPEC); SPEC.loader.exec_module(runner)
 
 class BatchRunnerTests(unittest.TestCase):
+    def test_read_tsv_normalizes_production_synapse_schema(self):
+        rows = runner.read_tsv(ROOT / "tests/fixtures/ukb_ppp_download_manifest_synapse.tsv")
+        self.assertEqual("IDO1", rows[0]["gene"])
+        self.assertEqual("https://www.synapse.org/Synapse:syn00000001", rows[0]["source_url"])
+        self.assertEqual("12", rows[0]["size_bytes"])
+        self.assertEqual("IDO1_EUR.tar", rows[0]["source_file"])
+
     def test_paired_batches_exclude_unpaired_and_are_stable(self):
         rows = runner.read_tsv(ROOT / "tests/fixtures/ukb_ppp_download_manifest.tsv")
         batches = runner.paired_batches(rows, 15)
