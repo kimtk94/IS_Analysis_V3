@@ -89,20 +89,30 @@ def write_tsv(path: Path, fields: list[str], rows: list[dict[str, object]]) -> N
         writer.writerows(rows)
 
 
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
+def file_digests(path: Path, names: tuple[str, ...] | list[str]) -> dict[str, str]:
+    """Calculate the requested supported digests in a single read pass."""
+    unsupported = set(names) - {"sha256", "md5"}
+    if unsupported:
+        raise ValueError(f"unsupported digest(s): {', '.join(sorted(unsupported))}")
+    digests = {
+        name: hashlib.sha256() if name == "sha256" else hashlib.md5(usedforsecurity=False)
+        for name in dict.fromkeys(names)
+    }
+    if not digests:
+        return {}
     with path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+            for digest in digests.values():
+                digest.update(chunk)
+    return {name: digest.hexdigest() for name, digest in digests.items()}
+
+
+def sha256(path: Path) -> str:
+    return file_digests(path, ["sha256"])["sha256"]
 
 
 def md5(path: Path) -> str:
-    digest = hashlib.md5(usedforsecurity=False)
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    return file_digests(path, ["md5"])["md5"]
 
 
 ARCHIVE_SUFFIXES = (".tar.gz", ".tar.bz2", ".tar.xz", ".tgz", ".tbz2", ".txz",
@@ -142,11 +152,12 @@ def validation_error(row: dict[str, str], path: Path) -> str | None:
     expected_size = row.get("size_bytes", "")
     if expected_size and path.stat().st_size != int(expected_size):
         return "size"
-    expected_sha256 = row.get("sha256", "").lower()
-    if expected_sha256 and sha256(path) != expected_sha256:
+    expected = {name: row.get(name, "").lower() for name in ("sha256", "md5")
+                if row.get(name, "")}
+    actual = file_digests(path, list(expected))
+    if expected.get("sha256") and actual["sha256"] != expected["sha256"]:
         return "checksum"
-    expected_md5 = row.get("md5", "").lower()
-    if expected_md5 and md5(path) != expected_md5:
+    if expected.get("md5") and actual["md5"] != expected["md5"]:
         return "MD5"
     return None
 
@@ -306,8 +317,10 @@ def main(argv: list[str] | None = None) -> int:
                 "batch_size": args.batch_size, "focus_gene": focus,
                 "focus_max_bytes": args.focus_max_bytes,
                 "other_max_file_lines": args.other_max_file_lines,
-                "download_manifest_sha256": sha256(args.download_manifest),
-                "gene_coordinates_sha256": sha256(args.gene_coordinate_file),
+                "download_manifest_sha256": file_digests(
+                    args.download_manifest, ["sha256"])["sha256"],
+                "gene_coordinates_sha256": file_digests(
+                    args.gene_coordinate_file, ["sha256"])["sha256"],
                 "code_root": str(Path.cwd()), "work_root": str(inferred_work_root),
                 "p_value_threshold": args.p_value_threshold,
                 "f_statistic_threshold": args.f_statistic_threshold,

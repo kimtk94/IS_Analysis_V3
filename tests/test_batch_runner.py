@@ -21,10 +21,54 @@ class BatchRunnerTests(unittest.TestCase):
                    "size_bytes": str(destination.stat().st_size),
                    "sha256": runner.sha256(destination), "md5": runner.md5(destination)}
 
-            with mock.patch.object(runner.urllib.request, "urlretrieve") as download:
+            with mock.patch.object(runner.urllib.request, "urlretrieve") as download, \
+                    mock.patch.object(runner, "file_digests",
+                                      wraps=runner.file_digests) as calculate:
                 self.assertEqual(destination, runner.stage(row, destination))
 
             download.assert_not_called()
+            calculate.assert_called_once_with(destination, ["sha256", "md5"])
+
+    def test_file_digests_calculates_sha256_and_md5_together(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source.tsv"
+            content = b"simultaneously verified fixture\n"
+            source.write_bytes(content)
+
+            self.assertEqual({
+                "sha256": hashlib.sha256(content).hexdigest(),
+                "md5": hashlib.md5(content, usedforsecurity=False).hexdigest(),
+            }, runner.file_digests(source, ["sha256", "md5"]))
+
+    def test_stage_rejects_sha256_mismatch_when_md5_matches(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source.tsv"
+            destination = Path(tmp) / "download.tsv"
+            content = b"dual digest fixture\n"
+            source.write_bytes(content)
+            row = {"gene": "IDO1", "ancestry": "EUR", "source_url": str(source),
+                   "size_bytes": str(len(content)), "sha256": "0" * 64,
+                   "md5": hashlib.md5(content, usedforsecurity=False).hexdigest()}
+
+            with self.assertRaisesRegex(ValueError, "checksum mismatch"):
+                runner.stage(row, destination)
+
+            self.assertFalse(destination.exists())
+
+    def test_stage_rejects_md5_mismatch_when_sha256_matches(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source.tsv"
+            destination = Path(tmp) / "download.tsv"
+            content = b"dual digest fixture\n"
+            source.write_bytes(content)
+            row = {"gene": "IDO1", "ancestry": "EAS", "source_url": str(source),
+                   "size_bytes": str(len(content)),
+                   "sha256": hashlib.sha256(content).hexdigest(), "md5": "0" * 32}
+
+            with self.assertRaisesRegex(ValueError, "MD5 mismatch"):
+                runner.stage(row, destination)
+
+            self.assertFalse(destination.exists())
 
     def test_stage_redownloads_checksum_mismatch_once(self):
         with tempfile.TemporaryDirectory() as tmp:
