@@ -40,14 +40,31 @@ if (a[["limit-type"]] == "lines") {
   if (length(lines) && !endsWith(text, "\n")) lines <- lines[-length(lines)]
 }
 if (length(lines) < 2) stop("summary stream has no complete data rows")
-tab <- read.delim(textConnection(paste(lines, collapse="\n")), check.names=FALSE,
-                  stringsAsFactors=FALSE)
+input_text <- paste(lines, collapse="\n")
+header <- lines[[1]]
+if (grepl("\t", header, fixed=TRUE)) {
+  tab <- read.delim(textConnection(input_text), check.names=FALSE,
+                    stringsAsFactors=FALSE)
+} else {
+  tab <- read.table(textConnection(input_text), header=TRUE, sep="",
+                    check.names=FALSE, stringsAsFactors=FALSE)
+}
 
 aliases <- list(chr=c("chr","chromosome"), pos=c("pos","position","bp"),
   effect_allele=c("effect_allele","ea","alt"), other_allele=c("other_allele","oa","ref"),
   beta=c("beta","effect"), se=c("se","stderr"), p_value=c("p_value","p","pval"),
   eaf=c("eaf","effect_allele_frequency"), rsid=c("rsid","snp","variant_id"))
 lower <- tolower(names(tab))
+required_columns <- c("chr", "pos", "effect_allele", "other_allele", "beta", "se", "p_value")
+missing_columns <- required_columns[!vapply(aliases[required_columns], function(keys) {
+  any(lower %in% keys)
+}, logical(1))]
+if (ncol(tab) == 1 || length(missing_columns)) {
+  details <- if (ncol(tab) == 1) "parsed only one column" else
+    paste("missing required UKB-PPP columns:", paste(missing_columns, collapse=", "))
+  stop(sprintf("failed to parse UKB-PPP summary '%s': %s; discovered header: %s",
+               archive, details, paste(names(tab), collapse=" | ")))
+}
 pick <- function(keys, required=TRUE) {
   hit <- which(lower %in% keys)
   if (!length(hit)) { if (required) stop(paste("missing column:", keys[[1]])); return(rep(NA, nrow(tab))) }

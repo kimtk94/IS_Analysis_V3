@@ -1,8 +1,36 @@
-import csv, json, subprocess, sys, tempfile, unittest
+import csv, json, shutil, subprocess, sys, tempfile, unittest
 from pathlib import Path
 ROOT=Path(__file__).parents[1]
 
 class WorkflowTests(unittest.TestCase):
+    @unittest.skipUnless(shutil.which("Rscript"), "Rscript is not installed")
+    def test_ukb_ppp_delimiters_produce_same_canonical_schema(self):
+        outputs = []
+        with tempfile.TemporaryDirectory() as tmp:
+            for fixture in ("ukb_ppp_exposure_tab.tsv", "ukb_ppp_exposure_spaces.txt"):
+                root = Path(tmp) / fixture
+                command = [
+                    "Rscript", str(ROOT / "scripts/01_prepare_exposure_fast.R"),
+                    "--archive", str(ROOT / "tests/fixtures" / fixture),
+                    "--gene", "IDO1", "--ancestry", "EUR",
+                    "--coordinates", str(ROOT / "tests/fixtures/gene_coordinates_hg38.tsv"),
+                    "--standardized-dir", str(root / "standardized"),
+                    "--instrument-dir", str(root / "instruments"),
+                    "--legacy-dir", str(root / "legacy"),
+                    "--limit-type", "lines", "--limit", "100",
+                ]
+                subprocess.run(command, cwd=ROOT, check=True, capture_output=True, text=True)
+                output = root / "standardized/EUR/batch_001/IDO1.tsv"
+                with output.open() as stream:
+                    outputs.append(list(csv.DictReader(stream, delimiter="\t")))
+
+        self.assertEqual(outputs[0], outputs[1])
+        self.assertEqual(
+            ["gene", "ancestry", "chr", "pos", "rsid", "effect_allele",
+             "other_allele", "beta", "se", "p_value", "eaf", "f_statistic"],
+            list(outputs[0][0]),
+        )
+
     def test_gigastroke_alias_adapter(self):
         with tempfile.TemporaryDirectory() as tmp:
             out=Path(tmp)/"out.tsv"
