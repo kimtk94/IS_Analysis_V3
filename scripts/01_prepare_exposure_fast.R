@@ -40,8 +40,15 @@ if (a[["limit-type"]] == "lines") {
   if (length(lines) && !endsWith(text, "\n")) lines <- lines[-length(lines)]
 }
 if (length(lines) < 2) stop("summary stream has no complete data rows")
-tab <- read.delim(textConnection(paste(lines, collapse="\n")), check.names=FALSE,
-                  stringsAsFactors=FALSE)
+input_text <- paste(lines, collapse="\n")
+header <- lines[[1]]
+if (grepl("\t", header, fixed=TRUE)) {
+  tab <- read.delim(textConnection(input_text), check.names=FALSE,
+                    stringsAsFactors=FALSE)
+} else {
+  tab <- read.table(textConnection(input_text), header=TRUE, sep="",
+                    check.names=FALSE, stringsAsFactors=FALSE)
+}
 
 # UKB-PPP uses the BOLT-LMM summary-statistic convention: BETA is the effect
 # per copy of ALLELE1, and A1FREQ is the frequency of that same allele.  Keep
