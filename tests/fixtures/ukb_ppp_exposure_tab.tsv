@@ -1,0 +1,3 @@
+chromosome	position	variant_id	effect_allele	other_allele	effect	stderr	pval	effect_allele_frequency
+8	39910000	rs100	A	G	0.20	0.02	1e-10	0.40
+8	39920000	rs200	C	T	-0.15	0.03	2e-9	0.25
