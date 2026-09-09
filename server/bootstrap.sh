@@ -40,8 +40,8 @@ python3 scripts/storage_guard.py \
   --path "$ROOT" \
   --staging "$ROOT/data/staging" \
   --min-free-gib "${MIN_FREE_GIB:-40}" \
-  --max-staging-gib "${MAX_STAGING_GIB:-45}"
+  --max-staging-gib "${MAX_STAGING_GIB:-35}"
 
 echo
 echo "Bootstrap complete: $ROOT"
-echo "Next: copy reviewed V2/V3 metadata/reference files, then run the smoke test."
+echo "Next: configure server/.env and run: bash server/smoke_test.sh"
