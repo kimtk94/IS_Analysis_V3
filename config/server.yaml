@@ -1,0 +1,49 @@
+server:
+  root: /srv/is-analysis
+  code_root: /srv/is-analysis/app
+  data_root: /srv/is-analysis/data
+  staging_root: /srv/is-analysis/data/staging
+  standardized_root: /srv/is-analysis/data/standardized
+  reference_root: /srv/is-analysis/data/reference
+  results_root: /srv/is-analysis/results
+  reports_root: /srv/is-analysis/reports
+  manifests_root: /srv/is-analysis/manifests
+  logs_root: /srv/is-analysis/logs
+  state_root: /srv/is-analysis/state
+
+storage:
+  # Server currently has ~202 GiB free on a 231 GiB root LV.
+  # Never start a new download below this free-space floor.
+  min_free_gib: 40
+  # Raw archives are staging-only. Keep this intentionally small.
+  max_staging_gib: 45
+  max_parallel_downloads: 1
+  raw_retention: delete_after_verified
+  keep_failed_raw: true
+  keep_last_successful_raw_batches: 0
+
+execution:
+  max_parallel_jobs: 2
+  default_ancestries: [EUR, EAS]
+  rerun_incomplete: true
+  stop_on_storage_guard_failure: true
+
+backup:
+  enabled: true
+  rclone_remote: gdrive
+  remote_root: IS_Analysis_Server
+  include:
+    - manifests
+    - reports
+    - results
+    - logs
+  exclude:
+    - data/staging
+    - data/rawdata
+  raw_backup: false
+
+database:
+  host: postgres
+  port: 5432
+  name: is_analysis
+  user: is_analysis
