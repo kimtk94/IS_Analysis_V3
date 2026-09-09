@@ -2,6 +2,8 @@ services:
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
+    cpus: "0.50"
+    mem_limit: 768m
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-is_analysis}
       POSTGRES_USER: ${POSTGRES_USER:-is_analysis}
@@ -21,11 +23,18 @@ services:
       context: ..
       dockerfile: server/Dockerfile
     working_dir: /app
+    # This host also runs a latency-sensitive Toss API/trading service.
+    # Keep scientific work bounded and in the background.
+    cpus: "2.00"
+    mem_limit: 3g
     env_file:
       - .env
     environment:
       WORK_ROOT: ${IS_ANALYSIS_ROOT:-/srv/is-analysis}
       DATABASE_URL: postgresql://${POSTGRES_USER:-is_analysis}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-is_analysis}
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
     volumes:
       - ${IS_ANALYSIS_ROOT:-/srv/is-analysis}:${IS_ANALYSIS_ROOT:-/srv/is-analysis}
     depends_on:
