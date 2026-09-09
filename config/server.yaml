@@ -11,22 +11,36 @@ server:
   logs_root: /srv/is-analysis/logs
   state_root: /srv/is-analysis/state
 
+host_profile:
+  shared_host: true
+  cpu_model: Intel Celeron J4125
+  logical_cpus: 4
+  memory_gib: 7.6
+  swap_gib: 4
+  # The host also runs the Toss API/trading service. IS Analysis must remain background work.
+  latency_sensitive_service_reserved: true
+
 storage:
-  # Server currently has ~202 GiB free on a 231 GiB root LV.
+  # Root filesystem is ~231 GiB usable with ~202 GiB free at initial inspection.
   # Never start a new download below this free-space floor.
   min_free_gib: 40
-  # Raw archives are staging-only. Keep this intentionally small.
-  max_staging_gib: 45
+  # Raw archives are staging-only. Keep this intentionally small on the shared host.
+  max_staging_gib: 35
   max_parallel_downloads: 1
   raw_retention: delete_after_verified
   keep_failed_raw: true
   keep_last_successful_raw_batches: 0
 
 execution:
-  max_parallel_jobs: 2
+  # Conservative defaults for a 4-core / 7.6-GiB shared host.
+  max_parallel_jobs: 1
+  pipeline_cpu_limit: 2.0
+  pipeline_memory_limit_gib: 3
   default_ancestries: [EUR, EAS]
   rerun_incomplete: true
   stop_on_storage_guard_failure: true
+  # Latency-sensitive services such as the Toss API take priority over analysis work.
+  background_priority: true
 
 backup:
   enabled: true
