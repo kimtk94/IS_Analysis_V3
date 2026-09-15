@@ -26,8 +26,9 @@ jobs:
             --dest /tmp/ckd-data \
             --data-id ckdgen_stanzick2021_egfr_eur \
             --data-id ckdgen_wuttke2019_ckd_eur \
+            --data-id eas_chen2024_egfr_meta \
             --dry-run
-      - name: Probe CKDGen binary endpoints
+      - name: Probe reviewed binary endpoints
         run: |
           set -euo pipefail
           urls=(
@@ -35,16 +36,11 @@ jobs:
             'https://ckdgen.imbi.uni-freiburg.de/files/Wuttke2019/CKD_overall_EA_JW_20180223_nstud23.dbgap.txt.gz'
             'https://ckdgen.imbi.uni-freiburg.de/files/Wuttke2019/BUN_overall_EA_YL_20171108_METAL1_nstud24.dbgap.txt.gz'
             'https://ckdgen.imbi.uni-freiburg.de/files/Gorski2017/CKDGen_1000Genomes_DiscoveryMeta_eGFRcys_overall.csv.gz'
+            'https://ndownloader.figshare.com/files/42774049'
+            'https://ndownloader.figshare.com/files/43218600'
           )
           for u in "${urls[@]}"; do
             echo "PROBE $u"
             curl -L --fail --retry 3 --range 0-4095 -o /tmp/probe.bin "$u"
             test -s /tmp/probe.bin
           done
-      - name: Resolve EAS Figshare dataset
-        run: |
-          python3 scripts/download_ckd_public_data.py \
-            --dest /tmp/ckd-data \
-            --data-id eas_chen2024_egfr_meta \
-            --figshare-list | tee /tmp/figshare.txt
-          grep -q 'FIGSHARE eas_chen2024_egfr_meta:' /tmp/figshare.txt
