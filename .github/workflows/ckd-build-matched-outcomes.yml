@@ -36,7 +36,8 @@ jobs:
             --data-id ckdgen_stanzick2021_egfr_eur \
             --data-id ckdgen_wuttke2019_ckd_eur \
             --data-id ckdgen_wuttke2019_bun_eur \
-            --data-id ckdgen_gorski2017_egfrcys_eur
+            --data-id ckdgen_gorski2017_egfrcys_eur \
+            --data-id ckdgen_teumer2019_uacr_eur
 
       - name: Download EAS outcomes
         run: |
@@ -69,6 +70,10 @@ jobs:
             --input /tmp/ckd/raw/support/EUR/ckdgen_gorski2017_egfrcys_eur/CKDGen_1000Genomes_DiscoveryMeta_eGFRcys_overall.csv.gz \
             --instruments "$I" --output "$O/EUR/eGFRcys.tsv.gz" --summary "$O/EUR/eGFRcys.summary.json" \
             --phenotype eGFRcys --ancestry EUR
+          python3 scripts/extract_ckd_matched_outcomes.py --schema teumer_uacr \
+            --input /tmp/ckd/raw/support/EUR/ckdgen_teumer2019_uacr_eur/formatted_20180517-UACR_overall-EA-nstud_18-SumMac_400.tbl.rsid.gz \
+            --instruments "$I" --output "$O/EUR/UACR.tsv.gz" --summary "$O/EUR/UACR.summary.json" \
+            --phenotype UACR --ancestry EUR
 
       - name: Extract matched EAS outcomes
         run: |
@@ -85,6 +90,13 @@ jobs:
             --output "$O/EAS/BUN.tsv.gz" --summary "$O/EAS/BUN.summary.json" \
             --phenotype BUN --ancestry EAS
 
+      - name: Package canonical instruments
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ckd/matched/instruments
+          cp /tmp/ckd/instruments/UKBPPP_ST16_cis_independent.tsv.gz /tmp/ckd/matched/instruments/
+          cp /tmp/ckd/instruments/UKBPPP_ST16_cis_independent.summary.json /tmp/ckd/matched/instruments/
+
       - name: Validate matched data and inventory
         run: |
           set -euo pipefail
@@ -97,7 +109,7 @@ jobs:
               x=json.loads(p.read_text())
               assert x['matched_rows'] > 0, x
               summaries.append(x)
-          assert len(summaries) == 6, len(summaries)
+          assert len(summaries) == 7, len(summaries)
           Path('/tmp/ckd/matched/MATCH_SUMMARY.json').write_text(json.dumps(summaries,indent=2)+'\n')
           print(json.dumps(summaries,indent=2))
           PY
@@ -106,7 +118,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ckd-ukbppp-cis-matched-outcomes
+          name: ckd-thesis-analysis-ready-v1
           path: /tmp/ckd/matched
           compression-level: 0
           retention-days: 14

@@ -30,6 +30,11 @@ SCHEMAS = {
         "beta": "Effect", "se": "StdErr", "p": "P-value", "eaf": "Freq1",
         "n": "n_total_sum", "chr": "Chr", "pos": "Pos_b37", "effect_scale": "beta",
     },
+    "teumer_uacr": {
+        "delimiter": None, "rsid": "RSID", "ea": "Allele1", "oa": "Allele2",
+        "beta": "Effect", "se": "StdErr", "p": "P-value", "eaf": "Freq1",
+        "n": "n_total_sum", "chr": "Chr", "pos": "Pos_b37", "effect_scale": "beta",
+    },
     "gorski_egfrcys": {
         "delimiter": ",", "rsid": "rsID", "ea": "allele1", "oa": "allele2",
         "beta": "beta", "se": "se", "p": "pval", "eaf": "freqA1",
