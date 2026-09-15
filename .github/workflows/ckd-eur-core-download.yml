@@ -1,0 +1,70 @@
+name: CKD EUR core data download
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ckd-eur-core-download.yml'
+  workflow_dispatch:
+
+jobs:
+  fetch-eur-core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check runner storage
+        run: |
+          set -euo pipefail
+          df -h /
+          df -B1 --output=avail / | tail -1
+
+      - name: Download EUR kidney GWAS core
+        run: |
+          set -euo pipefail
+          DEST=/tmp/ckd-eur-core
+          mkdir -p "$DEST"
+          python3 scripts/download_ckd_public_data.py \
+            --dest "$DEST" \
+            --data-id ckdgen_stanzick2021_egfr_eur \
+            --data-id ckdgen_wuttke2019_ckd_eur \
+            --data-id ckdgen_wuttke2019_bun_eur \
+            --data-id ckdgen_gorski2017_egfrcys_eur
+
+      - name: Verify and inventory
+        run: |
+          set -euo pipefail
+          DEST=/tmp/ckd-eur-core
+          find "$DEST" -type f -name '*.gz' -print0 | while IFS= read -r -d '' f; do
+            gzip -t "$f"
+            echo "GZIP_OK $f"
+          done
+          find "$DEST" -type f -print0 | sort -z | xargs -0 sha256sum > "$DEST/SHA256SUMS.txt"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('/tmp/ckd-eur-core')
+          metas=sorted(root.rglob('*.download.json'))
+          assert len(metas)==4, f"expected 4 metadata files, got {len(metas)}"
+          rows=[]
+          for p in metas:
+              x=json.loads(p.read_text())
+              assert x['bytes'] > 0
+              assert len(x['sha256']) == 64
+              rows.append({
+                  'data_id':x['data_id'],'phenotype':x['phenotype'],
+                  'ancestry':x['ancestry'],'bytes':x['bytes'],
+                  'sha256':x['sha256'],'file':x['file'],
+              })
+          (root/'ACQUISITION_SUMMARY.json').write_text(json.dumps(rows,indent=2)+'\n')
+          print(json.dumps(rows,indent=2))
+          PY
+          du -sh "$DEST"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-eur-core-gwas
+          path: /tmp/ckd-eur-core
+          compression-level: 0
+          retention-days: 7
