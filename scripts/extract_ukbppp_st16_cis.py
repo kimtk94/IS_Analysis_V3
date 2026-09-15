@@ -91,7 +91,7 @@ def main() -> int:
     with opener(args.output, "wt", encoding="utf-8", newline="") as fh:
         writer = csv.writer(fh, delimiter="\t", lineterminator="\n")
         writer.writerow(out_header)
-        for raw in rows[4:]:
+        for raw in rows[5:]:
             vals = ["" if v is None else str(v).strip() for v in raw]
             if len(vals) < len(header):
                 vals += [""] * (len(header) - len(vals))
