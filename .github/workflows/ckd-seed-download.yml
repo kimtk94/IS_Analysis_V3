@@ -1,0 +1,37 @@
+name: CKD seed data download
+
+on:
+  pull_request:
+    paths:
+      - 'data/metadata/ckd_public_download_manifest.tsv'
+      - 'scripts/download_ckd_public_data.py'
+      - 'docs/ckd_data_acquisition.md'
+  workflow_dispatch:
+
+jobs:
+  fetch-eas-seed:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'ckd-data-acquisition-v1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download EAS eGFR and BUN
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ckd-seed
+          python3 scripts/download_ckd_public_data.py \
+            --dest /tmp/ckd-seed \
+            --data-id eas_chen2024_egfr_meta \
+            --data-id eas_chen2024_bun_meta
+          find /tmp/ckd-seed -type f -maxdepth 6 -print -exec ls -lh {} \;
+      - name: Build seed manifest
+        run: |
+          set -euo pipefail
+          find /tmp/ckd-seed -type f \( -name '*.gz' -o -name '*.json' \) -print0 | sort -z | xargs -0 sha256sum > /tmp/ckd-seed/SHA256SUMS.txt
+          cat /tmp/ckd-seed/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-eas-seed-chen2024
+          path: /tmp/ckd-seed
+          compression-level: 0
+          retention-days: 7
