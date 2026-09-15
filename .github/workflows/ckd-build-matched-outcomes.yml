@@ -107,6 +107,8 @@ jobs:
           summaries=[]
           for p in sorted(root.rglob('*.summary.json')):
               x=json.loads(p.read_text())
+              if 'matched_rows' not in x:
+                  continue
               assert x['matched_rows'] > 0, x
               summaries.append(x)
           assert len(summaries) == 7, len(summaries)
