@@ -1,9 +1,21 @@
 name: CKD data acquisition CI
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/download_ckd_public_data.py'
+      - 'scripts/extract_ckd_matched_outcomes.py'
+      - 'scripts/extract_ukbppp_st16_cis.py'
+      - 'server/ckd_acquire_public_data.sh'
+      - 'data/metadata/ckd_public_download_manifest.tsv'
+      - '.github/workflows/ckd-data-acquisition-ci.yml'
   pull_request:
     paths:
       - 'scripts/download_ckd_public_data.py'
+      - 'scripts/extract_ckd_matched_outcomes.py'
+      - 'scripts/extract_ukbppp_st16_cis.py'
+      - 'server/ckd_acquire_public_data.sh'
       - 'data/metadata/ckd_public_download_manifest.tsv'
       - '.github/workflows/ckd-data-acquisition-ci.yml'
   workflow_dispatch:
@@ -14,8 +26,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - name: Compile downloader
-        run: python3 -m py_compile scripts/download_ckd_public_data.py
+      - name: Compile CKD Python tools
+        run: |
+          python3 -m py_compile scripts/download_ckd_public_data.py
+          python3 -m py_compile scripts/extract_ckd_matched_outcomes.py
+          python3 -m py_compile scripts/extract_ukbppp_st16_cis.py
+      - name: Validate server acquisition script
+        run: bash -n server/ckd_acquire_public_data.sh
       - name: List reviewed datasets
         run: |
           python3 scripts/download_ckd_public_data.py \
@@ -36,6 +53,7 @@ jobs:
             'https://ckdgen.imbi.uni-freiburg.de/files/Wuttke2019/CKD_overall_EA_JW_20180223_nstud23.dbgap.txt.gz'
             'https://ckdgen.imbi.uni-freiburg.de/files/Wuttke2019/BUN_overall_EA_YL_20171108_METAL1_nstud24.dbgap.txt.gz'
             'https://ckdgen.imbi.uni-freiburg.de/files/Gorski2017/CKDGen_1000Genomes_DiscoveryMeta_eGFRcys_overall.csv.gz'
+            'https://ckdgen.imbi.uni-freiburg.de/files/Teumer2019/formatted_20180517-UACR_overall-EA-nstud_18-SumMac_400.tbl.rsid.gz'
             'https://ndownloader.figshare.com/files/42774049'
             'https://ndownloader.figshare.com/files/43218600'
           )
