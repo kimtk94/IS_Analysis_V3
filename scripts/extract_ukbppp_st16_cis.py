@@ -59,7 +59,7 @@ def main() -> int:
 
     # Published workbook layout:
     # row 1 title, row 2 note, row 3 grouped headers, row 4 leaf headers.
-    header = ["" if v is None else str(v).strip() for v in rows[3]]
+    header = ["" if v is None else str(v).strip() for v in rows[4]]
     header[0] = "UKBPPP ProteinID"
     index = {name: i for i, name in enumerate(header)}
     required = [
