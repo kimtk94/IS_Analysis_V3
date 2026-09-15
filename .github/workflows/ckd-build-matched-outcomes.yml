@@ -1,0 +1,112 @@
+name: CKD matched outcome datasets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ckd-build-matched-outcomes.yml'
+      - 'scripts/extract_ckd_matched_outcomes.py'
+      - 'scripts/extract_ukbppp_st16_cis.py'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Acquire and extract UKB-PPP cis instruments
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ckd/instruments
+          curl -L --fail --retry 5 --retry-all-errors \
+            'https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-023-06592-6/MediaObjects/41586_2023_6592_MOESM3_ESM.xlsx' \
+            -o /tmp/ckd/instruments/Sun2023.xlsx
+          python3 -m pip install --quiet openpyxl
+          python3 scripts/extract_ukbppp_st16_cis.py \
+            --xlsx /tmp/ckd/instruments/Sun2023.xlsx \
+            --output /tmp/ckd/instruments/UKBPPP_ST16_cis_independent.tsv.gz \
+            --summary /tmp/ckd/instruments/UKBPPP_ST16_cis_independent.summary.json
+
+      - name: Download EUR outcomes
+        run: |
+          set -euo pipefail
+          python3 scripts/download_ckd_public_data.py --dest /tmp/ckd/raw \
+            --data-id ckdgen_stanzick2021_egfr_eur \
+            --data-id ckdgen_wuttke2019_ckd_eur \
+            --data-id ckdgen_wuttke2019_bun_eur \
+            --data-id ckdgen_gorski2017_egfrcys_eur
+
+      - name: Download EAS outcomes
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ckd/raw/eas
+          curl -L --fail --retry 5 --retry-all-errors https://ndownloader.figshare.com/files/42774049 -o /tmp/ckd/raw/eas/eGFR.gz
+          curl -L --fail --retry 5 --retry-all-errors https://ndownloader.figshare.com/files/43218600 -o /tmp/ckd/raw/eas/BUN.gz
+          gzip -t /tmp/ckd/raw/eas/eGFR.gz
+          gzip -t /tmp/ckd/raw/eas/BUN.gz
+
+      - name: Extract matched EUR outcomes
+        run: |
+          set -euo pipefail
+          I=/tmp/ckd/instruments/UKBPPP_ST16_cis_independent.tsv.gz
+          O=/tmp/ckd/matched
+          mkdir -p "$O/EUR"
+          python3 scripts/extract_ckd_matched_outcomes.py --schema stanzick_egfr \
+            --input /tmp/ckd/raw/outcome/EUR/ckdgen_stanzick2021_egfr_eur/metal_eGFR_meta_ea1.TBL.map.annot.gc.gz \
+            --instruments "$I" --output "$O/EUR/eGFRcrea.tsv.gz" --summary "$O/EUR/eGFRcrea.summary.json" \
+            --phenotype eGFRcrea --ancestry EUR
+          python3 scripts/extract_ckd_matched_outcomes.py --schema wuttke_ckd \
+            --input /tmp/ckd/raw/outcome/EUR/ckdgen_wuttke2019_ckd_eur/CKD_overall_EA_JW_20180223_nstud23.dbgap.txt.gz \
+            --instruments "$I" --output "$O/EUR/CKD.tsv.gz" --summary "$O/EUR/CKD.summary.json" \
+            --phenotype CKD --ancestry EUR
+          python3 scripts/extract_ckd_matched_outcomes.py --schema wuttke_bun \
+            --input /tmp/ckd/raw/support/EUR/ckdgen_wuttke2019_bun_eur/BUN_overall_EA_YL_20171108_METAL1_nstud24.dbgap.txt.gz \
+            --instruments "$I" --output "$O/EUR/BUN.tsv.gz" --summary "$O/EUR/BUN.summary.json" \
+            --phenotype BUN --ancestry EUR
+          python3 scripts/extract_ckd_matched_outcomes.py --schema gorski_egfrcys \
+            --input /tmp/ckd/raw/support/EUR/ckdgen_gorski2017_egfrcys_eur/CKDGen_1000Genomes_DiscoveryMeta_eGFRcys_overall.csv.gz \
+            --instruments "$I" --output "$O/EUR/eGFRcys.tsv.gz" --summary "$O/EUR/eGFRcys.summary.json" \
+            --phenotype eGFRcys --ancestry EUR
+
+      - name: Extract matched EAS outcomes
+        run: |
+          set -euo pipefail
+          I=/tmp/ckd/instruments/UKBPPP_ST16_cis_independent.tsv.gz
+          O=/tmp/ckd/matched
+          mkdir -p "$O/EAS"
+          python3 scripts/extract_ckd_matched_outcomes.py --schema chen_egfr \
+            --input /tmp/ckd/raw/eas/eGFR.gz --instruments "$I" \
+            --output "$O/EAS/eGFRcrea.tsv.gz" --summary "$O/EAS/eGFRcrea.summary.json" \
+            --phenotype eGFRcrea --ancestry EAS
+          python3 scripts/extract_ckd_matched_outcomes.py --schema chen_bun \
+            --input /tmp/ckd/raw/eas/BUN.gz --instruments "$I" \
+            --output "$O/EAS/BUN.tsv.gz" --summary "$O/EAS/BUN.summary.json" \
+            --phenotype BUN --ancestry EAS
+
+      - name: Validate matched data and inventory
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('/tmp/ckd/matched')
+          summaries=[]
+          for p in sorted(root.rglob('*.summary.json')):
+              x=json.loads(p.read_text())
+              assert x['matched_rows'] > 0, x
+              summaries.append(x)
+          assert len(summaries) == 6, len(summaries)
+          Path('/tmp/ckd/matched/MATCH_SUMMARY.json').write_text(json.dumps(summaries,indent=2)+'\n')
+          print(json.dumps(summaries,indent=2))
+          PY
+          find /tmp/ckd/matched -type f -print0 | sort -z | xargs -0 sha256sum > /tmp/ckd/matched/SHA256SUMS.txt
+          du -sh /tmp/ckd/matched
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-ukbppp-cis-matched-outcomes
+          path: /tmp/ckd/matched
+          compression-level: 0
+          retention-days: 14
