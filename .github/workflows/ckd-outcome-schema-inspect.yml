@@ -1,0 +1,38 @@
+name: CKD outcome schema inspection
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ckd-outcome-schema-inspect.yml'
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect EUR source headers
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/schema
+          python3 scripts/download_ckd_public_data.py --dest /tmp/schema \
+            --data-id ckdgen_stanzick2021_egfr_eur \
+            --data-id ckdgen_wuttke2019_ckd_eur \
+            --data-id ckdgen_wuttke2019_bun_eur \
+            --data-id ckdgen_gorski2017_egfrcys_eur
+          for f in $(find /tmp/schema -name '*.gz' -type f); do
+            echo "===== $f ====="
+            gzip -dc "$f" | head -n 3 || true
+          done
+      - name: Inspect EAS source headers
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/eas
+          curl -L --fail --retry 4 https://ndownloader.figshare.com/files/42774049 -o /tmp/eas/eGFR.gz
+          curl -L --fail --retry 4 https://ndownloader.figshare.com/files/43218600 -o /tmp/eas/BUN.gz
+          for f in /tmp/eas/*.gz; do
+            echo "===== $f ====="
+            gzip -dc "$f" | head -n 3 || true
+          done
