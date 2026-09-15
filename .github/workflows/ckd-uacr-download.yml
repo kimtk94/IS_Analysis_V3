@@ -1,0 +1,34 @@
+name: CKD UACR data download
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ckd-uacr-download.yml'
+  workflow_dispatch:
+
+jobs:
+  fetch-uacr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and verify UACR
+        run: |
+          set -euo pipefail
+          DEST=/tmp/ckd-uacr
+          python3 scripts/download_ckd_public_data.py \
+            --dest "$DEST" \
+            --data-id ckdgen_teumer2019_uacr_eur
+          find "$DEST" -type f -name '*.gz' -print0 | while IFS= read -r -d '' f; do
+            gzip -t "$f"
+            echo "GZIP_OK $f"
+          done
+          find "$DEST" -type f -print0 | sort -z | xargs -0 sha256sum > "$DEST/SHA256SUMS.txt"
+          du -sh "$DEST"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-eur-uacr
+          path: /tmp/ckd-uacr
+          compression-level: 0
+          retention-days: 7
