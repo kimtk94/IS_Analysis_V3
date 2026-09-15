@@ -1,6 +1,12 @@
 name: CKD seed data download
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/metadata/ckd_public_download_manifest.tsv'
+      - 'scripts/download_ckd_public_data.py'
+      - 'docs/ckd_data_acquisition.md'
   pull_request:
     paths:
       - 'data/metadata/ckd_public_download_manifest.tsv'
@@ -10,7 +16,7 @@ on:
 
 jobs:
   fetch-eas-seed:
-    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'ckd-data-acquisition-v1'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.head_ref == 'ckd-data-acquisition-v1'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
