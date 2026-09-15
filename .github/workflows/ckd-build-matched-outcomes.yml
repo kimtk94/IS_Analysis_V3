@@ -115,7 +115,7 @@ jobs:
           Path('/tmp/ckd/matched/MATCH_SUMMARY.json').write_text(json.dumps(summaries,indent=2)+'\n')
           print(json.dumps(summaries,indent=2))
           PY
-          find /tmp/ckd/matched -type f -print0 | sort -z | xargs -0 sha256sum > /tmp/ckd/matched/SHA256SUMS.txt
+          find /tmp/ckd/matched -type f ! -name 'SHA256SUMS.txt' -print0 | sort -z | xargs -0 sha256sum > /tmp/ckd/matched/SHA256SUMS.txt
           du -sh /tmp/ckd/matched
 
       - uses: actions/upload-artifact@v4

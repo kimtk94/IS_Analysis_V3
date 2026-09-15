@@ -61,7 +61,7 @@ match chen_egfr "$RAW/eas/eGFR.gz" eGFRcrea EAS
 match chen_bun "$RAW/eas/BUN.gz" BUN EAS
 
 echo "[6/6] Integrity inventory"
-find "$READY" -type f -print0 | sort -z | xargs -0 sha256sum > "$READY/SHA256SUMS.txt"
+find "$READY" -type f ! -name 'SHA256SUMS.txt' -print0 | sort -z | xargs -0 sha256sum > "$READY/SHA256SUMS.txt"
 "$PYTHON" - "$READY" <<'PY'
 import json, sys
 from pathlib import Path
