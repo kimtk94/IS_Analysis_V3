@@ -6,10 +6,18 @@ Data acquisition precedes downstream MR/colocalization workflow development.
 
 1. EUR outcomes: CKDGen Stanzick 2021 eGFRcrea and Wuttke 2019 binary CKD.
 2. Renal support traits: BUN, eGFRcys, then UACR.
-3. EAS outcome: Chen 2024 Taiwan + Japan eGFR meta-GWAS from Figshare article 24356587.
+3. EAS outcome/support: Chen 2024 Taiwan + Japan eGFR and BUN meta-GWAS.
 4. Plasma pQTL screening instruments: UKB-PPP cis/independent pQTL signals.
 5. Candidate-only UKB-PPP full cis-region summary statistics for colocalization.
 6. KoGES individual-level data only after CODA approval; never commit or publicly upload restricted data.
+
+## Pinned Chen 2024 EAS files
+
+- eGFR: `TWB2_BBJ_eGFR_hg19_METAL_FUMA_noNA.gz`, Figshare file 42774049, 111,041,990 bytes.
+- BUN: `TWB2_BBJ_BUN_hg19_METAL_FUMA_noNA.gz`, Figshare file 43218600, 132,381,963 bytes.
+
+The seed download workflow fetches both files completely, validates gzip integrity,
+creates SHA256 sidecars/manifests, and keeps a short-lived GitHub Actions artifact for transfer testing.
 
 ## Why UKB-PPP raw data are not bulk-downloaded first
 
@@ -33,12 +41,13 @@ python3 scripts/download_ckd_public_data.py \
   --data-id ckdgen_wuttke2019_ckd_eur
 ```
 
-Resolve the EAS Figshare file inventory before selecting the genome-wide summary-statistics file:
+Download the pinned EAS eGFR and BUN files:
 
 ```bash
 python3 scripts/download_ckd_public_data.py \
   --dest "$WORK_ROOT/data/rawdata/ckd" \
-  --data-id eas_chen2024_egfr_meta --figshare-list
+  --data-id eas_chen2024_egfr_meta \
+  --data-id eas_chen2024_bun_meta
 ```
 
 Every downloaded file is gzip-tested when applicable and gets a sidecar `.download.json` containing source URL, byte size, SHA256, phenotype, ancestry, genome build and acquisition timestamp.
