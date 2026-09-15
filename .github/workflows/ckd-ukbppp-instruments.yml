@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/ckd-ukbppp-instruments.yml'
+      - 'scripts/extract_ukbppp_st16_cis.py'
   workflow_dispatch:
 
 jobs:
@@ -24,77 +25,42 @@ jobs:
           file /tmp/ukbppp/Sun2023_UKBPPP_Supplementary_Tables.xlsx
           sha256sum /tmp/ukbppp/Sun2023_UKBPPP_Supplementary_Tables.xlsx | tee /tmp/ukbppp/workbook.sha256
 
-      - name: Extract Supplementary Table 16 cis signals
+      - name: Extract canonical cis instruments
         run: |
           set -euo pipefail
           python3 -m pip install --quiet openpyxl
-          python3 - <<'PY'
-          import csv, json, re
-          from pathlib import Path
-          import openpyxl
+          python3 scripts/extract_ukbppp_st16_cis.py \
+            --xlsx /tmp/ukbppp/Sun2023_UKBPPP_Supplementary_Tables.xlsx \
+            --output /tmp/ukbppp/UKBPPP_ST16_cis_independent.tsv.gz \
+            --summary /tmp/ukbppp/UKBPPP_ST16_cis_independent.summary.json
 
-          src=Path('/tmp/ukbppp/Sun2023_UKBPPP_Supplementary_Tables.xlsx')
-          wb=openpyxl.load_workbook(src, read_only=True, data_only=True)
-          print('SHEETS', wb.sheetnames)
-          matches=[s for s in wb.sheetnames if re.search(r'(^|\D)16(\D|$)', s)]
-          if not matches:
-              # Fall back to the 16th supplementary-table-like worksheet.
-              table_sheets=[s for s in wb.sheetnames if 'table' in s.lower()]
-              if len(table_sheets) >= 16:
-                  matches=[table_sheets[15]]
-          if not matches:
-              raise SystemExit('Could not identify Supplementary Table 16 worksheet')
-          sheet=matches[0]
-          ws=wb[sheet]
-          rows=list(ws.iter_rows(values_only=True))
-          # Drop entirely empty rows/columns at the edges.
-          rows=[list(r) for r in rows if any(v is not None for v in r)]
-          if not rows:
-              raise SystemExit('Supplementary Table 16 is empty')
-          maxcol=max(max(i for i,v in enumerate(r) if v is not None)+1 for r in rows)
-          rows=[r[:maxcol] + [None]*max(0,maxcol-len(r)) for r in rows]
-          out=Path('/tmp/ukbppp/Supplementary_Table_16.tsv')
-          with out.open('w', newline='', encoding='utf-8') as f:
-              w=csv.writer(f, delimiter='\t', lineterminator='\n')
-              w.writerows(rows)
-          # Find likely header and cis column/value counts without assuming schema.
-          header_idx=None
-          for i,r in enumerate(rows[:50]):
-              vals=[str(v).strip().lower() if v is not None else '' for v in r]
-              if any('protein' in v for v in vals) and any(('variant' in v or 'snp' in v or 'rsid' in v) for v in vals):
-                  header_idx=i; break
-          summary={'sheet':sheet,'rows':len(rows),'columns':maxcol,'header_row_0based':header_idx}
-          if header_idx is not None:
-              hdr=[str(v).strip() if v is not None else '' for v in rows[header_idx]]
-              summary['header']=hdr
-              cis_cols=[j for j,h in enumerate(hdr) if 'cis' in h.lower() or 'region' in h.lower() or 'location' in h.lower()]
-              summary['candidate_cis_columns']=[hdr[j] for j in cis_cols]
-              cis_hits=0
-              for r in rows[header_idx+1:]:
-                  if any(str(r[j]).strip().lower() in {'cis','1','true','yes'} or str(r[j]).strip().lower().startswith('cis') for j in cis_cols):
-                      cis_hits += 1
-              summary['rows_matching_cis_candidates']=cis_hits
-          Path('/tmp/ukbppp/Supplementary_Table_16_summary.json').write_text(json.dumps(summary,indent=2)+'\n')
-          print(json.dumps(summary,indent=2))
-          PY
-
-      - name: Validate expected scale
+      - name: Validate published counts
         run: |
           set -euo pipefail
-          ls -lh /tmp/ukbppp
           python3 - <<'PY'
-          import json
-          x=json.load(open('/tmp/ukbppp/Supplementary_Table_16_summary.json'))
-          assert x['rows'] > 10000, x
-          assert x['columns'] >= 5, x
-          print('TABLE16_SCALE_OK')
+          import gzip, json
+          p='/tmp/ukbppp/UKBPPP_ST16_cis_independent.tsv.gz'
+          with gzip.open(p,'rt') as f:
+              header=f.readline().rstrip('\n').split('\t')
+              rows=sum(1 for _ in f)
+          assert rows == 10750, rows
+          assert 'protein_id' in header and 'beta_cond' in header and 'se_cond' in header
+          s=json.load(open('/tmp/ukbppp/UKBPPP_ST16_cis_independent.summary.json'))
+          assert s['n_cis_signals'] == 10750
+          assert s['n_unique_protein_ids'] == 1966
+          assert s['n_unique_variant_ids'] == 10580
+          print(json.dumps(s, indent=2))
+          print('CIS_INSTRUMENT_VALIDATION_PASS')
           PY
+          ls -lh /tmp/ukbppp
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ukbppp-sun2023-independent-pqtl
-          path: /tmp/ukbppp
+          name: ukbppp-sun2023-cis-instruments
+          path: |
+            /tmp/ukbppp/Sun2023_UKBPPP_Supplementary_Tables.xlsx
+            /tmp/ukbppp/UKBPPP_ST16_cis_independent.tsv.gz
+            /tmp/ukbppp/UKBPPP_ST16_cis_independent.summary.json
+            /tmp/ukbppp/workbook.sha256
           compression-level: 0
           retention-days: 7
-
-# bootstrap-triggered after workflow registration
