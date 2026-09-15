@@ -1,0 +1,50 @@
+name: CKD data acquisition CI
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/download_ckd_public_data.py'
+      - 'data/metadata/ckd_public_download_manifest.tsv'
+      - '.github/workflows/ckd-data-acquisition-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile downloader
+        run: python3 -m py_compile scripts/download_ckd_public_data.py
+      - name: List reviewed datasets
+        run: |
+          python3 scripts/download_ckd_public_data.py \
+            --dest /tmp/ckd-data --public-core --list
+      - name: Dry run core downloader
+        run: |
+          python3 scripts/download_ckd_public_data.py \
+            --dest /tmp/ckd-data \
+            --data-id ckdgen_stanzick2021_egfr_eur \
+            --data-id ckdgen_wuttke2019_ckd_eur \
+            --dry-run
+      - name: Probe CKDGen binary endpoints
+        run: |
+          set -euo pipefail
+          urls=(
+            'https://ckdgen.imbi.uni-freiburg.de/files/Stanzick2021/metal_eGFR_meta_ea1.TBL.map.annot.gc.gz'
+            'https://ckdgen.imbi.uni-freiburg.de/files/Wuttke2019/CKD_overall_EA_JW_20180223_nstud23.dbgap.txt.gz'
+            'https://ckdgen.imbi.uni-freiburg.de/files/Wuttke2019/BUN_overall_EA_YL_20171108_METAL1_nstud24.dbgap.txt.gz'
+            'https://ckdgen.imbi.uni-freiburg.de/files/Gorski2017/CKDGen_1000Genomes_DiscoveryMeta_eGFRcys_overall.csv.gz'
+          )
+          for u in "${urls[@]}"; do
+            echo "PROBE $u"
+            curl -L --fail --retry 3 --range 0-4095 -o /tmp/probe.bin "$u"
+            test -s /tmp/probe.bin
+          done
+      - name: Resolve EAS Figshare dataset
+        run: |
+          python3 scripts/download_ckd_public_data.py \
+            --dest /tmp/ckd-data \
+            --data-id eas_chen2024_egfr_meta \
+            --figshare-list | tee /tmp/figshare.txt
+          grep -q 'FIGSHARE eas_chen2024_egfr_meta:' /tmp/figshare.txt
