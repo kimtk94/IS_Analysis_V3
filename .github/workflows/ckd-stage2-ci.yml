@@ -1,0 +1,48 @@
+name: CKD Stage 2 CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/run_ckd_stage2_candidates.py'
+      - 'scripts/download_ckd_stage2_pqtl.py'
+      - 'scripts/inspect_ckd_stage2_pqtl.py'
+      - 'server/ckd_run_stage2.sh'
+      - 'docs/ckd_stage2.md'
+      - '.github/workflows/ckd-stage2-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/run_ckd_stage2_candidates.py'
+      - 'scripts/download_ckd_stage2_pqtl.py'
+      - 'scripts/inspect_ckd_stage2_pqtl.py'
+      - 'server/ckd_run_stage2.sh'
+      - '.github/workflows/ckd-stage2-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile Stage 2 Python
+        run: |
+          python3 -m py_compile scripts/run_ckd_stage2_candidates.py
+          python3 -m py_compile scripts/download_ckd_stage2_pqtl.py
+          python3 -m py_compile scripts/inspect_ckd_stage2_pqtl.py
+      - name: Validate shell
+        run: bash -n server/ckd_run_stage2.sh
+      - name: Validate production assay rows for current candidate genes
+        run: |
+          python3 - <<'PY'
+          import csv
+          genes={'UMOD','INHBC','SDCCAG8','ACP1','GSTA3','GSTA1','HLA-E','F12','CPVL'}
+          with open('data/metadata/ukb_ppp_download_manifest.tsv',encoding='utf-8-sig') as f:
+              rows=list(csv.DictReader(f,delimiter='\t'))
+          x=[r for r in rows if r['gene_symbol'] in genes]
+          assert len(x)==18, len(x)
+          for g in genes:
+              y=[r for r in x if r['gene_symbol']==g]
+              assert {r['ancestry'] for r in y}=={'EUR','EAS'}, (g,y)
+              assert len(y)==2, (g,len(y))
+          print('STAGE2_MANIFEST_PASS',len(x))
+          PY
