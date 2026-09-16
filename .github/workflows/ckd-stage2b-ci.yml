@@ -1,0 +1,33 @@
+name: CKD Stage 2B CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/prepare_ckd_stage2b_coloc.py'
+      - 'scripts/run_ckd_stage2b_coloc.R'
+      - 'server/ckd_run_stage2b.sh'
+      - 'tests/test_ckd_stage2b.py'
+      - 'docs/ckd_stage2b_coloc.md'
+      - '.github/workflows/ckd-stage2b-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/prepare_ckd_stage2b_coloc.py'
+      - 'scripts/run_ckd_stage2b_coloc.R'
+      - 'server/ckd_run_stage2b.sh'
+      - 'tests/test_ckd_stage2b.py'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python compile
+        run: python3 -m py_compile scripts/prepare_ckd_stage2b_coloc.py
+      - name: Unit tests
+        run: python3 -m unittest tests.test_ckd_stage2b -v
+      - name: Shell syntax
+        run: bash -n server/ckd_run_stage2b.sh
+      - name: R syntax
+        run: Rscript -e 'parse(file="scripts/run_ckd_stage2b_coloc.R")'
