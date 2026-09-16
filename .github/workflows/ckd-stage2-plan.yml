@@ -1,0 +1,55 @@
+name: CKD Stage 2 plan
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ckd-stage2-plan.yml'
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Stage 1 results
+        uses: actions/download-artifact@v4
+        with:
+          name: ckd-stage1-mr-results
+          path: /tmp/ckd-stage1
+          github-token: ${{ github.token }}
+          run-id: 35086782704
+      - name: Build Stage 2 plan
+        run: |
+          set -euo pipefail
+          python3 scripts/run_ckd_stage2_candidates.py \
+            --stage1-root /tmp/ckd-stage1 \
+            --download-manifest data/metadata/ukb_ppp_download_manifest.tsv \
+            --output-root /tmp/ckd-stage2
+          python3 - <<'PY'
+          import csv, json
+          from pathlib import Path
+          root=Path('/tmp/ckd-stage2')
+          s=json.loads((root/'STAGE2_PLAN_SUMMARY.json').read_text())
+          assert s['n_candidates']==9, s
+          assert s['n_download_rows']==18, s
+          assert s['n_primary_eur_downloads']==9, s
+          rows=list(csv.DictReader((root/'stage2_pqtl_download_manifest.tsv').open(),delimiter='\t'))
+          assert sum(int(r['download_now']) for r in rows)==9
+          print(json.dumps(s,indent=2))
+          print((root/'stage2_candidates.tsv').read_text())
+          PY
+      - name: Hash plan
+        run: |
+          cd /tmp/ckd-stage2
+          find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
+          sha256sum -c SHA256SUMS.txt
+      - name: Upload plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckd-stage2-plan
+          path: /tmp/ckd-stage2
+          retention-days: 30
