@@ -1,0 +1,60 @@
+name: CKD Stage 1 analysis
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ckd-stage1-analysis.yml'
+
+jobs:
+  stage1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download verified analysis-ready CKD bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: ckd-thesis-analysis-ready-v1
+          path: /tmp/ckd-ready
+          github-token: ${{ github.token }}
+          run-id: 34992912515
+
+      - name: Inspect bundle
+        run: |
+          set -euo pipefail
+          find /tmp/ckd-ready -maxdepth 3 -type f | sort
+          test -f /tmp/ckd-ready/MATCH_SUMMARY.json
+          test -f /tmp/ckd-ready/SHA256SUMS.txt
+
+      - name: Run Stage 1 MR
+        run: |
+          set -euo pipefail
+          python3 scripts/run_ckd_stage1_mr.py \
+            --ready-root /tmp/ckd-ready \
+            --output-root /tmp/ckd-stage1
+          echo "===== STAGE1 SUMMARY ====="
+          cat /tmp/ckd-stage1/STAGE1_SUMMARY.json
+          echo "===== EUR eGFR FDR<0.05 HITS ====="
+          awk 'NR<=31 {print}' /tmp/ckd-stage1/stage1_eur_egfr_fdr05_hits.tsv
+          echo "===== PROTEIN SUMMARY TOP 20 ====="
+          awk 'NR<=21 {print}' /tmp/ckd-stage1/stage1_protein_summary.tsv
+
+      - name: Validate output
+        run: |
+          set -euo pipefail
+          cd /tmp/ckd-stage1
+          find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
+          sha256sum -c SHA256SUMS.txt
+
+      - name: Upload Stage 1 results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckd-stage1-mr-results
+          path: /tmp/ckd-stage1
+          retention-days: 14
