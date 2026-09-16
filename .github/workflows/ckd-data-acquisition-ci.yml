@@ -8,6 +8,8 @@ on:
       - 'scripts/extract_ckd_matched_outcomes.py'
       - 'scripts/extract_ukbppp_st16_cis.py'
       - 'server/ckd_acquire_public_data.sh'
+      - 'server/ckd_server_bootstrap.sh'
+      - 'server/ckd_sync_to_drive.sh'
       - 'data/metadata/ckd_public_download_manifest.tsv'
       - '.github/workflows/ckd-data-acquisition-ci.yml'
   pull_request:
