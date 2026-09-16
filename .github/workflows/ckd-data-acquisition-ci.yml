@@ -64,3 +64,5 @@ jobs:
             curl -L --fail --retry 3 --range 0-4095 -o /tmp/probe.bin "$u"
             test -s /tmp/probe.bin
           done
+
+# server-drive-v1
