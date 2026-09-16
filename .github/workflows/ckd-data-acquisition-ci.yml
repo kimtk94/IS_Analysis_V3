@@ -33,8 +33,16 @@ jobs:
           python3 -m py_compile scripts/download_ckd_public_data.py
           python3 -m py_compile scripts/extract_ckd_matched_outcomes.py
           python3 -m py_compile scripts/extract_ukbppp_st16_cis.py
-      - name: Validate server acquisition script
-        run: bash -n server/ckd_acquire_public_data.sh
+      - name: Validate server scripts
+        run: |
+          bash -n server/ckd_acquire_public_data.sh
+          bash -n server/ckd_server_bootstrap.sh
+          bash -n server/ckd_sync_to_drive.sh
+      - name: Exercise isolated CKD venv
+        run: |
+          CKD_VENV="$RUNNER_TEMP/ckd-venv" CKD_ENV_ONLY=1 \
+            bash server/ckd_acquire_public_data.sh
+          "$RUNNER_TEMP/ckd-venv/bin/python" -c "import openpyxl; assert openpyxl.__version__ == '3.1.5'"
       - name: List reviewed datasets
         run: |
           python3 scripts/download_ckd_public_data.py \
