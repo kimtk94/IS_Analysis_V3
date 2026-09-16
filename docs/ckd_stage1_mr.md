@@ -39,7 +39,8 @@ Default threshold:
 ST16 already contains SuSiE/conditional independent signals, but multiple signals
 within one cis region may retain residual LD. Therefore:
 
-- Primary screen: strongest-F harmonized cis instrument per protein, Wald ratio.
+- Primary screen: pre-specified strongest-F cis instrument per protein, Wald ratio.
+- The same exposure anchor SNP is required across outcomes/ancestries; if that SNP is unavailable or fails harmonization for an outcome, another SNP is **not** substituted for the primary Wald estimate.
 - Sensitivity: fixed-effect IVW across all available ST16 signals.
 - Do not treat IVW sensitivity as definitive until ancestry-matched LD/covariance
   is explicitly checked.
@@ -56,6 +57,7 @@ Rules:
 - swapped allele match: flip beta
 - non-palindromic strand complement: keep/flip as appropriate
 - palindromic A/T or C/G:
+  - require the outcome allele pair to match the exposure allele pair
   - require exposure ALT frequency and outcome EAF
   - drop if exposure MAF > 0.42
   - use frequency concordance within 0.10 to choose orientation

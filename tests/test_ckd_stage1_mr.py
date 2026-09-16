@@ -49,6 +49,12 @@ class TestCKDStage1MR(unittest.TestCase):
             ("palindrome_no_frequency", None),
         )
 
+    def test_palindrome_wrong_pair_is_dropped(self):
+        self.assertEqual(
+            M.harmonize(self.exp("A", "T", "0.1"), self.out("C", "G", "0.1"), .42, .1),
+            ("palindrome_allele_mismatch", None),
+        )
+
     def test_bh(self):
         q = M.bh_adjust([0.01, 0.04, 0.03, None])
         self.assertAlmostEqual(q[0], 0.03)

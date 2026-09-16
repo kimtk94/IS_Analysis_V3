@@ -6,7 +6,7 @@ Primary screen:
 - Exposure effect allele = ALT in Variant ID (REF:ALT); beta_cond is ALT effect.
 - F = beta_cond^2 / se_cond^2; exclude F < threshold.
 - Explicit allele/strand harmonization; conservative palindromic handling.
-- Strongest-F harmonized cis instrument per protein -> Wald ratio.
+- Pre-specified strongest-F cis instrument per protein -> Wald ratio; no outcome-specific SNP substitution.
 - Fixed-effect IVW across all harmonized ST16 signals is sensitivity only.
 - EUR eGFRcrea is primary; BH-FDR across tested proteins.
 """
@@ -102,6 +102,10 @@ def harmonize(exp, out, maf_threshold, freq_tolerance):
         return "missing_allele", None
 
     if is_pal(alt, ref):
+        # Palindromic variants cannot be strand-resolved from allele letters alone,
+        # but the outcome allele pair must still be the same biological pair.
+        if frozenset((ea, oa)) != frozenset((alt, ref)):
+            return "palindrome_allele_mismatch", None
         afx, afo = fnum(exp.get("alt_freq")), fnum(out.get("eaf"))
         if afx is None or afo is None:
             return "palindrome_no_frequency", None
@@ -228,13 +232,19 @@ def outcome_result(ancestry, phenotype, outcome, by_rsid, anchors, maf_threshold
     results = []
     for protein, insts in per_protein.items():
         insts.sort(key=lambda x: (x["f_stat"], fnum(x.get("pip")) or -1), reverse=True)
-        top = insts[0]
-        b, s, p = wald(top)
-        bivw, sivw, pivw, qivw = ivw(insts)
         anchor = anchors.get(protein)
         anchor_rsid = anchor["rsid"] if anchor else ""
         anchor_match = next((x for x in insts if x["rsid"] == anchor_rsid), None)
-        ab, ase, ap = wald(anchor_match) if anchor_match else (None, None, None)
+
+        # Do not substitute a different SNP when the pre-specified strongest
+        # exposure anchor is absent from an outcome. This keeps the primary
+        # Wald estimate for a protein on the same IV across phenotypes/ancestries.
+        if anchor_match is None:
+            continue
+
+        top = anchor_match
+        b, s, p = wald(top)
+        bivw, sivw, pivw, qivw = ivw(insts)
         results.append({
             "protein_id": protein, "gene_symbol": top["gene_symbol"],
             "ancestry": ancestry, "phenotype": phenotype,
@@ -242,8 +252,8 @@ def outcome_result(ancestry, phenotype, outcome, by_rsid, anchors, maf_threshold
             "top_rsid": top["rsid"], "top_f_stat": top["f_stat"], "top_pip": top["pip"],
             "wald_beta": b, "wald_se": s, "wald_p": p,
             "wald_or": math.exp(b) if top["effect_scale"] == "log_odds" else "",
-            "anchor_rsid": anchor_rsid, "anchor_available": int(anchor_match is not None),
-            "anchor_wald_beta": ab, "anchor_wald_se": ase, "anchor_wald_p": ap,
+            "anchor_rsid": anchor_rsid, "anchor_available": 1,
+            "anchor_wald_beta": b, "anchor_wald_se": s, "anchor_wald_p": p,
             "ivw_beta_sensitivity": bivw, "ivw_se_sensitivity": sivw,
             "ivw_p_sensitivity": pivw, "ivw_q_sensitivity": qivw,
             "ivw_df_sensitivity": max(len(insts) - 1, 0),
@@ -400,7 +410,7 @@ def main():
         "stage": "CKD Stage 1 proteome-wide MR screen",
         "primary_ancestry": "EUR",
         "primary_outcome": "eGFRcrea",
-        "primary_method": "strongest-F harmonized cis instrument per protein; Wald ratio",
+        "primary_method": "pre-specified strongest-F cis anchor per protein; Wald ratio; no outcome-specific SNP substitution",
         "sensitivity_method": (
             "fixed-effect IVW across all harmonized Sun ST16 conditional cis signals; "
             "interpret cautiously if residual LD remains"
@@ -420,6 +430,7 @@ def main():
         "primary_fdr05_hits": len(hits),
         "notes": [
             "EUR eGFRcrea BH-FDR is the Stage 1 discovery screen.",
+            "Primary Wald estimates use the same pre-specified strongest-F exposure anchor across outcomes; proteins are omitted for an outcome if that anchor is unavailable.",
             "CKD/BUN/eGFRcys/UACR are supporting renal phenotypes, not extra discovery endpoints.",
             "EAS direct-rsID coverage is incomplete and palindromic variants lack EAF in current compact files.",
             "Colocalization is required before causal prioritization; Stage 1 MR hits are screening signals only.",
