@@ -29,5 +29,9 @@ jobs:
         run: python3 -m unittest tests.test_ckd_stage2b -v
       - name: Shell syntax
         run: bash -n server/ckd_run_stage2b.sh
+      - name: Install minimal R
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq r-base-core
       - name: R syntax
         run: Rscript -e 'parse(file="scripts/run_ckd_stage2b_coloc.R")'
