@@ -8,10 +8,37 @@ set -euo pipefail
 ROOT="${ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 RAW="${CKD_DATA_ROOT:-$ROOT/data/rawdata/ckd}"
 READY="${CKD_READY_ROOT:-$ROOT/data/analysis_ready/ckd}"
-PYTHON="${PYTHON:-python3}"
+BASE_PYTHON="${PYTHON:-python3}"
+VENV="${CKD_VENV:-$ROOT/.venv-ckd}"
 
 command -v curl >/dev/null
-"$PYTHON" -c 'import openpyxl' 2>/dev/null || "$PYTHON" -m pip install --user openpyxl
+command -v "$BASE_PYTHON" >/dev/null
+
+if [[ ! -x "$VENV/bin/python" ]]; then
+  echo "[env] creating CKD virtual environment: $VENV"
+  if ! "$BASE_PYTHON" -m venv "$VENV"; then
+    cat >&2 <<'EOF'
+ERROR: Python venv support is not installed.
+On Ubuntu/Debian install it once, then rerun this script:
+
+  sudo apt update
+  sudo apt install -y python3-venv
+
+Do not use --break-system-packages.
+EOF
+    exit 2
+  fi
+fi
+
+PYTHON="$VENV/bin/python"
+
+if ! "$PYTHON" -c 'import openpyxl' 2>/dev/null; then
+  echo "[env] installing openpyxl into $VENV"
+  "$PYTHON" -m pip install --disable-pip-version-check 'openpyxl==3.1.5'
+fi
+
+echo "[env] python=$PYTHON"
+"$PYTHON" -c 'import openpyxl; print("[env] openpyxl=" + openpyxl.__version__)'
 
 mkdir -p "$RAW" "$READY" "$RAW/eas" "$RAW/instruments"
 
