@@ -40,6 +40,11 @@ fi
 echo "[env] python=$PYTHON"
 "$PYTHON" -c 'import openpyxl; print("[env] openpyxl=" + openpyxl.__version__)'
 
+if [[ "${CKD_ENV_ONLY:-0}" == "1" ]]; then
+  echo "CKD_ENV_PASS"
+  exit 0
+fi
+
 mkdir -p "$RAW" "$READY" "$RAW/eas" "$RAW/instruments"
 
 echo "[1/6] EUR public kidney outcomes"
