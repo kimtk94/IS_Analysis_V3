@@ -27,14 +27,14 @@ if [[ "${STAGE2_DOWNLOAD:-0}" == "1" ]]; then
     "$PYTHON" -m pip install --disable-pip-version-check synapseclient
   fi
   export PATH="$(dirname "$PYTHON"):$PATH"
-  if ! synapse config show >/dev/null 2>&1; then
+  if ! "$PYTHON" -c 'import synapseclient; synapseclient.login(silent=True)' >/dev/null 2>&1; then
     cat >&2 <<'EOF'
-Synapse authentication is required once on this server.
-Run:
-  cd /srv/is-analysis/IS_Analysis_V3
-  export PATH="$PWD/.venv-ckd/bin:$PATH"
-  synapse login
-Then rerun with STAGE2_DOWNLOAD=1.
+Synapse authentication is not available to non-interactive Python/CLI calls.
+Configure one persistent method, then rerun:
+  1) ~/.synapseConfig via: synapse config
+  2) or environment variable: SYNAPSE_AUTH_TOKEN
+Verification:
+  python -c 'import synapseclient; synapseclient.login()'
 EOF
     exit 4
   fi
