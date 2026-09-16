@@ -1,0 +1,31 @@
+name: CKD Stage 1 MR CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/run_ckd_stage1_mr.py'
+      - 'server/ckd_run_stage1_mr.sh'
+      - 'tests/test_ckd_stage1_mr.py'
+      - 'docs/ckd_stage1_mr.md'
+      - '.github/workflows/ckd-stage1-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/run_ckd_stage1_mr.py'
+      - 'server/ckd_run_stage1_mr.sh'
+      - 'tests/test_ckd_stage1_mr.py'
+      - '.github/workflows/ckd-stage1-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile Stage 1 Python
+        run: python3 -m py_compile scripts/run_ckd_stage1_mr.py
+      - name: Validate server runner
+        run: bash -n server/ckd_run_stage1_mr.sh
+      - name: Run Stage 1 unit tests
+        run: python3 -m unittest tests.test_ckd_stage1_mr -v
