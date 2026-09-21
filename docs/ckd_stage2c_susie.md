@@ -19,9 +19,11 @@ region. Stage 2C re-runs all 9 candidate loci with `coloc.susie`.
 - Variants must be common in the reference (MAF >= 0.01), biallelic A/C/G/T SNPs,
   and match Stage 2B by GRCh37 position + allele pair.
 
-PLINK2 computes signed unphased correlation with `ref-based`. The matrix is then
-sign-flipped variant-by-variant so LD is oriented to the same pQTL effect allele
-used by both harmonized beta vectors.
+PLINK2 computes signed unphased correlation in its default major-allele orientation.
+The runner also computes EUR reference frequencies with `--freq`, identifies the
+major allele for each biallelic SNP, and sign-flips the LD matrix variant-by-variant
+to the pQTL effect allele used by both harmonized beta vectors. This avoids relying
+on the `ref-based` modifier, which was introduced after the server's alpha-6 build.
 
 The same 1KG EUR reference LD is used for plasma pQTL and EUR eGFR. This is a
 reference-LD sensitivity analysis, not study-specific LD.

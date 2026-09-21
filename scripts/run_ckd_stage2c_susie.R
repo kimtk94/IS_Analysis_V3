@@ -36,7 +36,7 @@ read_ld <- function(gene, dat) {
   LD <- matrix(vals, nrow=n, ncol=n, byrow=TRUE)
   # Matrix is symmetric, but explicitly symmetrize tiny binary/read artifacts.
   LD <- (LD + t(LD)) / 2
-  signs <- as.numeric(meta$effect_vs_ref_sign)
+  signs <- as.numeric(meta$effect_vs_ld_major_sign)
   if (any(!signs %in% c(-1,1))) stop(paste(gene, "invalid LD orientation sign"))
   LD <- LD * tcrossprod(signs)
   diag(LD) <- 1

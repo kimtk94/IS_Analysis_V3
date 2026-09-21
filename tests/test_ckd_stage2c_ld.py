@@ -37,6 +37,16 @@ class Stage2CLDTests(unittest.TestCase):
             "https://hgdownload.soe.ucsc.edu/gbdb/hg19/1000Genomes/phase3/ALL.chr6.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
         )
 
+    def test_parse_afreq(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "x.afreq"
+            p.write_text("#CHROM\tID\tREF\tALT\tALT_FREQS\tOBS_CT\n1\tv1\tG\tA\t0.8\t1000\n1\tv2\tC\tT\t0.2\t1000\n")
+            got = m.parse_afreq(p)
+            self.assertAlmostEqual(got["v1"]["alt_freq"], 0.8)
+            self.assertEqual(got["v1"]["ref"], "G")
+            self.assertEqual(got["v1"]["alt"], "A")
+
     def test_match_reference_orientation(self):
         summary=[
           {"pos37":"100","allele0_pqtl":"G","allele1_pqtl":"A","snp":"rs1"},
@@ -48,8 +58,8 @@ class Stage2CLDTests(unittest.TestCase):
         ]
         got,missing,amb=m.match_reference(summary,pvar)
         self.assertEqual((missing,amb,len(got)),(0,0,2))
-        self.assertEqual(got[0]["_ld_sign"],-1)
-        self.assertEqual(got[1]["_ld_sign"],1)
+        self.assertEqual(got[0]["_effect_vs_ref_sign"],-1)
+        self.assertEqual(got[1]["_effect_vs_ref_sign"],1)
 
 
 if __name__ == "__main__":

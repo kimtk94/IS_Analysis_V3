@@ -197,6 +197,36 @@ def parse_pvar(path: Path):
     return rows
 
 
+def parse_afreq(path: Path):
+    out = {}
+    with path.open("r", encoding="utf-8", errors="replace", newline="") as fh:
+        reader = csv.DictReader(fh, delimiter="\t")
+        fields = reader.fieldnames or []
+        id_col = "ID" if "ID" in fields else "#ID" if "#ID" in fields else None
+        if id_col is None:
+            # PLINK headers usually prefix CHROM, not ID, with '#'.
+            id_col = "ID"
+        for r in reader:
+            vid = (r.get(id_col) or r.get("ID") or "").strip()
+            if not vid:
+                continue
+            ref = norm_a(r.get("REF", ""))
+            alt = norm_a(r.get("ALT1") or r.get("ALT") or "")
+            af = fnum(r.get("ALT1_FREQ"))
+            if af is None:
+                raw = (r.get("ALT_FREQS") or "").strip()
+                if raw and "," not in raw:
+                    af = fnum(raw)
+            if af is None:
+                rf = fnum(r.get("REF_FREQ"))
+                if rf is not None:
+                    af = 1.0 - rf
+            if af is None or not (0 <= af <= 1):
+                continue
+            out[vid] = {"ref": ref, "alt": alt, "alt_freq": af}
+    return out
+
+
 def match_reference(summary_rows, pvar_rows):
     by_pos = defaultdict(list)
     for r in pvar_rows:
@@ -237,7 +267,7 @@ def match_reference(summary_rows, pvar_rows):
             "_ref_id": r["id"],
             "_ref_ref": r["ref"],
             "_ref_alt": r["alt"],
-            "_ld_sign": sign,
+            "_effect_vs_ref_sign": sign,
         })
     return matched, missing, ambiguous
 
@@ -436,12 +466,13 @@ def main():
         "ld_block_url": LDETECT_URL,
         "ld_population": "1000 Genomes Phase 3 EUR",
         "ld_build": "GRCh37/hg19",
-        "ld_statistic": "signed unphased dosage correlation, REF-based then sign-flipped to pQTL effect allele",
+        "ld_statistic": "signed unphased dosage correlation using PLINK default major-allele orientation, then sign-flipped to pQTL effect allele",
         "eur_samples_in_panel": len(eur_ids),
         "eur_samples_after_deg1_removal": len(eur_unrelated),
         "sample_selection": "panel EUR -> degree-1 removal -> exact intersection with chromosome VCF header",
         "remove_related_resource": "deg1_phase3.king.cutoff.out.id",
         "min_reference_maf": args.min_reference_maf,
+        "plink_compatibility": "No ref-based modifier required; compatible with PLINK2 alpha-6 by explicit major-allele reorientation from --freq.",
         "threads": args.threads,
         "memory_mb": args.memory_mb,
     }
@@ -506,6 +537,49 @@ def main():
                     f"{gene}: only {len(matched)} summary SNPs matched 1KG EUR reference"
                 )
 
+            # PLINK alpha-6 predates the 2024-01-03 'ref-based'
+            # --r-unphased modifier.  Its signed r matrix is major-allele based.
+            # Obtain the EUR reference allele frequencies so the matrix can be
+            # reoriented to the pQTL effect allele after calculation.
+            freqprefix = args.work_root / "freq" / gene
+            freqprefix.parent.mkdir(parents=True, exist_ok=True)
+            run([
+                args.plink2,
+                "--pfile", regprefix,
+                "--freq",
+                "--threads", args.threads,
+                "--memory", args.memory_mb, "require",
+                "--out", freqprefix,
+            ])
+            afreq = parse_afreq(Path(str(freqprefix) + ".afreq"))
+            by_ref_all = {r["_ref_id"]: r for r in matched}
+            matched_major = []
+            ties_dropped = 0
+            for r in matched:
+                fr = afreq.get(r["_ref_id"])
+                if fr is None:
+                    continue
+                af = fr["alt_freq"]
+                # With exactly 0.5 frequency the identity of PLINK's chosen
+                # major allele is not a stable orientation contract. Drop it.
+                if abs(af - 0.5) < 1e-12:
+                    ties_dropped += 1
+                    continue
+                major = fr["alt"] if af > 0.5 else fr["ref"]
+                effect = norm_a(r["allele1_pqtl"])
+                if effect not in {fr["ref"], fr["alt"]}:
+                    continue
+                r = dict(r)
+                r["_reference_alt_freq"] = af
+                r["_reference_major"] = major
+                r["_effect_vs_major_sign"] = 1 if effect == major else -1
+                matched_major.append(r)
+            matched = matched_major
+            if len(matched) < args.min_ld_snps:
+                raise RuntimeError(
+                    f"{gene}: only {len(matched)} SNPs remain after major-allele orientation"
+                )
+
             # PLINK extraction is by reference variant ID.
             extract_ids = args.work_root / "extract" / f"{gene}.ids"
             extract_ids.parent.mkdir(parents=True, exist_ok=True)
@@ -518,7 +592,7 @@ def main():
                 args.plink2,
                 "--pfile", regprefix,
                 "--extract", extract_ids,
-                "--r-unphased", "square", "bin4", "ref-based",
+                "--r-unphased", "square", "bin4",
                 "--threads", args.threads,
                 "--memory", args.memory_mb, "require",
                 "--out", outprefix,
@@ -548,7 +622,9 @@ def main():
                     "other_allele": r["allele0_pqtl"],
                     "reference_ref": r["_ref_ref"],
                     "reference_alt": r["_ref_alt"],
-                    "effect_vs_ref_sign": r["_ld_sign"],
+                    "reference_alt_freq": r["_reference_alt_freq"],
+                    "reference_major_allele": r["_reference_major"],
+                    "effect_vs_ld_major_sign": r["_effect_vs_major_sign"],
                 })
             if len(ordered) < args.min_ld_snps:
                 raise RuntimeError(f"{gene}: LD matrix only has {len(ordered)} variants")
@@ -570,6 +646,7 @@ def main():
                 "summary_reference_matched": len(matched),
                 "summary_reference_missing": missing,
                 "summary_reference_ambiguous": ambiguous,
+                "major_allele_ties_dropped": ties_dropped,
                 "ld_matrix_snps": len(ordered),
                 "ld_reference_samples": count_psam(region_psam),
                 "eur_samples_in_vcf_header": len(chr_eur),
