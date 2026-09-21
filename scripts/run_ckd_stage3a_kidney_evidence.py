@@ -200,7 +200,9 @@ def write_tsv(path: Path, rows, fields=None):
 
 
 def is_valid_xlsx(path: Path):
-    if not path.is_file() or path.stat().st_size < 100_000:
+    # XLSX is a ZIP container; structural validation is stronger than an
+    # arbitrary file-size cutoff and also rejects HTML/error bodies.
+    if not path.is_file() or path.stat().st_size == 0:
         return False
     if not zipfile.is_zipfile(path):
         return False
