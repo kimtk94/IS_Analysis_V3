@@ -50,6 +50,21 @@ class Stage3ATests(unittest.TestCase):
                 z.writestr("padding.bin", b"0" * 120000)
             self.assertTrue(m.is_valid_xlsx(p))
 
+    def test_workbook_supplement_heuristic(self):
+        import tempfile
+        import openpyxl
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "supp.xlsx"
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            ws.title = "Supplementary Table 1"
+            ws["A1"] = "Supplementary Table 1"
+            for i in range(2, 5):
+                wb.create_sheet(f"Supplementary Table {i}")
+            wb.save(p)
+            # Naming/text evidence is enough even when the synthetic file is small.
+            self.assertTrue(m.workbook_looks_like_supp_tables(p))
+
     def test_gene_match_exact_and_multivalue(self):
         genes = {"F12", "GSTA3", "ACP1"}
         self.assertEqual(m.exact_gene_in_cell("F12", genes), "F12")

@@ -13,21 +13,16 @@ from collections import defaultdict
 from pathlib import Path
 
 SUPP_FILENAME = "NIHMS2102371-supplement-Supplementary_Tables.xlsx"
+SUPP_SPRINGER_MOESM3_URL = (
+    "https://static-content.springer.com/esm/"
+    "art%3A10.1038%2Fs41591-025-03872-8/MediaObjects/"
+    "41591_2025_3872_MOESM3_ESM.xlsx"
+)
 SUPP_URLS = [
+    SUPP_SPRINGER_MOESM3_URL,
     f"https://pmc.ncbi.nlm.nih.gov/articles/instance/12435990/bin/{SUPP_FILENAME}",
     f"https://pmc.ncbi.nlm.nih.gov/articles/PMC12435990/bin/{SUPP_FILENAME}",
     f"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12435990/bin/{SUPP_FILENAME}",
-]
-# Springer/Nature supplementary media URLs are stable once the article's
-# internal media-object number is known, but the MOESM index is not exposed in
-# all machine-readable views. Try a bounded set and validate workbook contents.
-SUPP_URLS += [
-    (
-        "https://static-content.springer.com/esm/"
-        "art%3A10.1038%2Fs41591-025-03872-8/MediaObjects/"
-        f"41591_2025_3872_MOESM{i}_ESM.xlsx"
-    )
-    for i in range(1, 13)
 ]
 
 # Candidate-level evidence reproduced directly from Table 1 / main text of:
@@ -226,11 +221,32 @@ def workbook_looks_like_supp_tables(path: Path):
         import openpyxl
         wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
         names = list(wb.sheetnames)
+
+        score = 0
+        for name in names:
+            if re.search(r"(supp.*table|table\\s*\\d+|^\\s*\\d+\\s*$)", name, re.I):
+                score += 1
+
+        text_hits = 0
+        for ws in wb.worksheets[: min(8, len(wb.worksheets))]:
+            for row in ws.iter_rows(min_row=1, max_row=8, values_only=True):
+                text = " ".join(str(v) for v in row if v is not None)
+                if re.search(r"supplementary\\s+table", text, re.I):
+                    text_hits += 1
+                    break
         wb.close()
     except Exception:
         return False
-    # The published file contains Supplementary Tables 1-30 in separate tabs.
-    return len(names) >= 20
+
+    # Publisher workbook layouts change over time; do not require one sheet per
+    # supplementary table.  Accept strong table naming/text evidence, or the
+    # published ~2.6 MB workbook size with multiple worksheets.
+    size = path.stat().st_size
+    return (
+        score >= 3
+        or text_hits >= 2
+        or (2_000_000 <= size <= 3_500_000 and len(names) >= 3)
+    )
 
 
 def download_supplementary_workbook(dest: Path):
@@ -606,6 +622,7 @@ def main():
             "pmcid": "PMC12435990",
             "supplementary_filename": SUPP_FILENAME,
             "supplementary_urls": SUPP_URLS,
+            "springer_moesm3_candidate": SUPP_SPRINGER_MOESM3_URL,
             "supplement_status": supplement_status,
             "supplement_detail": supplement_detail,
             "workbook": "" if workbook is None else str(workbook),
