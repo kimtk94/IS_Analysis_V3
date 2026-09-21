@@ -60,9 +60,25 @@ Rscript "$ROOT/scripts/run_ckd_stage2c_susie.R" \
 
 if [[ "${SYNC_DRIVE:-0}" == "1" ]]; then
   RCLONE_REMOTE="${RCLONE_REMOTE:-gdrive}"
-  rclone copy "$OUT" "${RCLONE_REMOTE}:IS_Analysis_V3/results/ckd/stage2c_susie" \
-    --checksum --transfers 1 --checkers 2 --progress
-  echo "CKD_STAGE2C_DRIVE_SYNC_PASS"
+  DEST="${RCLONE_REMOTE}:IS_Analysis_V3/results/ckd/stage2c_susie"
+
+  if [[ "${STAGE2C_SYNC_FULL:-0}" == "1" ]]; then
+    rclone copy "$OUT" "$DEST" \
+      --checksum --transfers 1 --checkers 2 --progress
+    echo "CKD_STAGE2C_DRIVE_SYNC_FULL_PASS"
+  else
+    # Default lightweight sync: scientific summaries/QC only.
+    # Large RDS checkpoints and reproducible susie_input bundles stay local
+    # unless STAGE2C_SYNC_FULL=1 is explicitly requested.
+    rclone copy "$OUT" "$DEST" \
+      --checksum --transfers 1 --checkers 2 --progress \
+      --include '/STAGE2C_*.tsv' \
+      --include '/STAGE2C_*.json' \
+      --include '/SHA256SUMS.txt' \
+      --include '/susie_results/STAGE2C_*.tsv' \
+      --exclude '*'
+    echo "CKD_STAGE2C_DRIVE_SYNC_SUMMARY_PASS"
+  fi
 fi
 
 echo "CKD_STAGE2C_PASS"

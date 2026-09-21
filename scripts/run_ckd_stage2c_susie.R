@@ -293,20 +293,32 @@ for (f in files) {
 
 all_df <- if (length(all_rows)) do.call(rbind, all_rows) else data.frame()
 gene_df <- if (length(gene_rows)) do.call(rbind, gene_rows) else data.frame()
-gene_df <- do.call(rbind, gene_rows)
-all_df <- all_df[order(all_df$gene_symbol, all_df$p12, -all_df$PP.H4), ]
-gene_df <- gene_df[order(-gene_df$max_PP.H4), ]
 
-write.table(
-  all_df,
-  file=file.path(output_dir, "STAGE2C_SUSIE_ALL_PRIORS.tsv"),
-  sep="\t", quote=FALSE, row.names=FALSE
-)
-write.table(
-  gene_df,
-  file=file.path(output_dir, "STAGE2C_SUSIE_DEFAULT.tsv"),
-  sep="\t", quote=FALSE, row.names=FALSE
-)
-
-cat("CKD_STAGE2C_SUSIE_PASS\n")
+if (nrow(all_df)) {
+  all_df <- all_df[order(all_df$gene_symbol, all_df$p12, -all_df$PP.H4), ]
+  write.table(
+    all_df,
+    file=file.path(output_dir, "STAGE2C_SUSIE_ALL_PRIORS.tsv"),
+    sep="\t", quote=FALSE, row.names=FALSE
+  )
+}
+if (nrow(gene_df)) {
+  gene_df <- gene_df[order(-gene_df$max_PP.H4, na.last=TRUE), ]
+  write.table(
+    gene_df,
+    file=file.path(output_dir, "STAGE2C_SUSIE_DEFAULT.tsv"),
+    sep="\t", quote=FALSE, row.names=FALSE
+  )
+}
+if (length(failures)) {
+  fail_df <- do.call(rbind, failures)
+  write.table(
+    fail_df,
+    file=file.path(output_dir, "STAGE2C_SUSIE_FAILURES.tsv"),
+    sep="\t", quote=FALSE, row.names=FALSE
+  )
+  cat("CKD_STAGE2C_SUSIE_PARTIAL_PASS failures=", nrow(fail_df), "\n", sep="")
+} else {
+  cat("CKD_STAGE2C_SUSIE_PASS\n")
+}
 print(gene_df)
