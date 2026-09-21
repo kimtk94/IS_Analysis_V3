@@ -7,8 +7,9 @@ region. Stage 2C re-runs all 9 candidate loci with `coloc.susie`.
 
 - Summary-statistic build: GRCh37/hg19 after Stage 2B harmonization.
 - LD reference: 1000 Genomes Project Phase 3 European-ancestry samples.
-- Reference genotypes: chromosome-split GRCh37 PLINK2 resources.
-- Close relatives: PLINK resource `deg1_phase3.king.cutoff.out.id` is removed.
+- Reference genotypes: 1000 Genomes Phase 3 GRCh37 autosomal VCFs, accessed as indexed region slices from the UCSC mirror.
+- The runner no longer parses the JavaScript-driven PLINK resources page for download links.
+- Close relatives: PLINK `deg1_phase3.king.cutoff.out.id` IDs are removed from the EUR sample list before regional VCF extraction.
 - Default region: the published Berisa-Pickrell EUR hg19 approximately-independent
   LD block containing the pre-specified Stage 1 anchor SNP.
 - If a block cannot be resolved, fallback is anchor +/-500 kb.
@@ -39,11 +40,11 @@ flagged as stronger evidence. These are analysis flags, not causal verdicts.
 
 ## Server run
 
-Install PLINK2 once if needed:
+Install PLINK2 and bcftools once if needed:
 
 ```bash
 sudo apt update
-sudo apt install -y plink2
+sudo apt install -y plink2 bcftools
 ```
 
 Then:
@@ -63,8 +64,7 @@ RCLONE_REMOTE=gdrive \
   server/ckd_run_stage2c_susie.sh
 ```
 
-By default the large chromosome-level PLINK reference downloads are deleted after
-all candidate loci on that chromosome have been converted to regional LD data.
+By default the small regional VCF slices are deleted after they have been converted to regional LD data.
 Set `STAGE2C_CLEANUP_CHR_CACHE=0` to retain them.
 
 ## Outputs

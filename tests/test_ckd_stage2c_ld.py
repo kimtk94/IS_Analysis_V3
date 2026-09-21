@@ -23,6 +23,12 @@ class Stage2CLDTests(unittest.TestCase):
         self.assertEqual((lo,hi),(100,200))
         self.assertEqual(trunc,1)
 
+    def test_phase3_vcf_url(self):
+        self.assertEqual(
+            m.phase3_vcf_url("6"),
+            "https://hgdownload.soe.ucsc.edu/gbdb/hg19/1000Genomes/phase3/ALL.chr6.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
+        )
+
     def test_match_reference_orientation(self):
         summary=[
           {"pos37":"100","allele0_pqtl":"G","allele1_pqtl":"A","snp":"rs1"},

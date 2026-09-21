@@ -16,6 +16,10 @@ test -d "$STAGE2B/coloc_input"
 test -f "$STAGE2B/coloc_results/STAGE2B_COLOC_DEFAULT.tsv"
 command -v curl >/dev/null || { echo "curl is required" >&2; exit 7; }
 command -v Rscript >/dev/null || { echo "Rscript is required" >&2; exit 7; }
+command -v bcftools >/dev/null || {
+  echo "bcftools is required. Ubuntu: sudo apt update && sudo apt install -y bcftools" >&2
+  exit 8
+}
 command -v "$PLINK2" >/dev/null || {
   echo "plink2 is required. Ubuntu 24.04: sudo apt update && sudo apt install -y plink2" >&2
   exit 8

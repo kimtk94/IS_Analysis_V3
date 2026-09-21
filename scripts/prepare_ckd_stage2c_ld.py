@@ -32,15 +32,29 @@ import urllib.request
 from collections import defaultdict
 from pathlib import Path
 
-PLINK_RESOURCES = "https://www.cog-genomics.org/plink/2.0/resources"
 PANEL_URL = (
     "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/"
     "integrated_call_samples_v3.20130502.ALL.panel"
 )
+RELATED_URL = (
+    "https://www.dropbox.com/s/0omyj2tyu7jmmw9/"
+    "deg1_phase3.king.cutoff.out.id?dl=1"
+)
+VCF_BASE = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/1000Genomes/phase3"
 LDETECT_URL = (
     "https://bitbucket.org/nygcresearch/ldetect-data/raw/master/"
     "EUR/fourier_ls-all.bed"
 )
+
+def phase3_vcf_url(chrom: str) -> str:
+    if str(chrom).upper() == "X":
+        name = "ALL.chrX.phase3_shapeit2_mvncall_integrated_v1b.20130502.genotypes.vcf.gz"
+    else:
+        name = (
+            f"ALL.chr{chrom}.phase3_shapeit2_mvncall_integrated_v5a."
+            "20130502.genotypes.vcf.gz"
+        )
+    return f"{VCF_BASE}/{name}"
 
 
 def open_text(path: Path):
@@ -87,12 +101,6 @@ def write_tsv_gz(path: Path, rows, fields):
         w.writerows(rows)
 
 
-def fetch_text(url: str) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 CKD-Stage2C"})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return r.read().decode("utf-8", errors="replace")
-
-
 def download(url: str, dest: Path):
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.is_file() and dest.stat().st_size > 0:
@@ -108,17 +116,17 @@ def download(url: str, dest: Path):
     part.replace(dest)
 
 
-def find_resource_href(page: str, visible_text: str) -> str:
-    pat = re.compile(
-        r'<a\s+[^>]*href=["\']([^"\']+)["\'][^>]*>\s*' +
-        re.escape(visible_text) + r'\s*</a>',
-        re.I,
-    )
-    m = pat.search(page)
-    if not m:
-        raise RuntimeError(f"PLINK resource link not found: {visible_text}")
-    href = html_lib.unescape(m.group(1))
-    return urllib.parse.urljoin(PLINK_RESOURCES, href)
+def parse_related_ids(path: Path):
+    out = set()
+    with path.open("r", encoding="utf-8", errors="replace") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            vals = re.split(r"\\s+", line)
+            if vals:
+                out.add(vals[-1])
+    return out
 
 
 def parse_ld_blocks(path: Path):
@@ -285,6 +293,8 @@ def main():
 
     if shutil.which(args.plink2) is None:
         raise SystemExit("plink2 not found; on Ubuntu install with: sudo apt update && sudo apt install -y plink2")
+    if shutil.which("bcftools") is None:
+        raise SystemExit("bcftools not found; on Ubuntu install with: sudo apt update && sudo apt install -y bcftools")
     if shutil.which("curl") is None:
         raise SystemExit("curl is required")
 
@@ -306,24 +316,25 @@ def main():
     # Public reference metadata.
     panel = refroot / "integrated_call_samples_v3.20130502.ALL.panel"
     download(PANEL_URL, panel)
-    eur_keep = refroot / "EUR.keep"
     eur_ids = []
     with panel.open("r", encoding="utf-8", errors="replace") as fh:
         reader = csv.DictReader(fh, delimiter="\t")
         for r in reader:
             if (r.get("super_pop") or "").upper() == "EUR":
                 eur_ids.append(r["sample"])
-    eur_keep.write_text("\n".join(eur_ids) + "\n", encoding="utf-8")
     if len(eur_ids) < 400:
         raise RuntimeError(f"unexpectedly few 1KG EUR samples: {len(eur_ids)}")
 
-    resources_html = fetch_text(PLINK_RESOURCES)
-    psam_url = find_resource_href(resources_html, "phase3_corrected.psam")
-    rel_url = find_resource_href(resources_html, "deg1_phase3.king.cutoff.out.id")
-    common_psam = refroot / "phase3_corrected.psam"
     related = refroot / "deg1_phase3.king.cutoff.out.id"
-    download(psam_url, common_psam)
-    download(rel_url, related)
+    download(RELATED_URL, related)
+    related_ids = parse_related_ids(related)
+    eur_unrelated = [x for x in eur_ids if x not in related_ids]
+    eur_keep = refroot / "EUR.unrelated.samples"
+    eur_keep.write_text("\\n".join(eur_unrelated) + "\\n", encoding="utf-8")
+    if len(eur_unrelated) < 450:
+        raise RuntimeError(
+            f"unexpectedly few unrelated 1KG EUR samples: {len(eur_unrelated)}"
+        )
 
     ldetect = refroot / "EUR_fourier_ls-all.bed"
     blocks = {}
@@ -382,13 +393,16 @@ def main():
 
     qc = []
     provenance = {
-        "plink_resources_page": PLINK_RESOURCES,
         "panel_url": PANEL_URL,
+        "related_ids_url": RELATED_URL,
+        "vcf_base": VCF_BASE,
+        "vcf_access": "bcftools indexed remote region extraction",
         "ld_block_url": LDETECT_URL,
         "ld_population": "1000 Genomes Phase 3 EUR",
         "ld_build": "GRCh37/hg19",
         "ld_statistic": "signed unphased dosage correlation, REF-based then sign-flipped to pQTL effect allele",
         "eur_samples_in_panel": len(eur_ids),
+        "eur_samples_after_deg1_removal": len(eur_unrelated),
         "remove_related_resource": "deg1_phase3.king.cutoff.out.id",
         "min_reference_maf": args.min_reference_maf,
         "threads": args.threads,
@@ -396,31 +410,32 @@ def main():
     }
 
     for chrom in sorted(genes_by_chr, key=lambda x: int(x) if x.isdigit() else 100):
-        pgen_url = find_resource_href(resources_html, f"chr{chrom}_phase3.pgen.zst")
-        pvar_url = find_resource_href(resources_html, f"chr{chrom}_phase3_noannot.pvar.zst")
-        prefix = refroot / f"chr{chrom}_phase3"
-        pgen_zst = Path(str(prefix) + ".pgen.zst")
-        pgen = Path(str(prefix) + ".pgen")
-        pvar_zst = Path(str(prefix) + ".pvar.zst")
-        psam = Path(str(prefix) + ".psam")
-        download(pgen_url, pgen_zst)
-        download(pvar_url, pvar_zst)
-        if not psam.exists():
-            shutil.copy2(common_psam, psam)
-        if not pgen.exists():
-            run([args.plink2, "--zst-decompress", pgen_zst, pgen])
+        vcf_url = phase3_vcf_url(chrom)
 
         for gene in sorted(genes_by_chr[chrom]):
             info = per_gene[gene]
             regprefix = regionroot / gene
+            region_vcf = regionroot / f"{gene}.1kg_eur.hg19.vcf.gz"
+
+            # htslib performs indexed HTTP range requests against the public
+            # chromosome VCF, so only this locus is transferred.
+            if not region_vcf.is_file() or region_vcf.stat().st_size == 0:
+                run([
+                    "bcftools", "view",
+                    "--regions", f"{chrom}:{info['lo']}-{info['hi']}",
+                    "--samples-file", eur_keep,
+                    "--min-alleles", "2",
+                    "--max-alleles", "2",
+                    "--types", "snps",
+                    "--output-type", "z",
+                    "--output-file", region_vcf,
+                    vcf_url,
+                ])
+            run(["bcftools", "index", "--force", "--tbi", region_vcf])
+
             run([
                 args.plink2,
-                "--pfile", prefix, "vzs",
-                "--keep", eur_keep,
-                "--remove", related,
-                "--chr", chrom,
-                "--from-bp", info["lo"],
-                "--to-bp", info["hi"],
+                "--vcf", region_vcf,
                 "--snps-only", "just-acgt",
                 "--maf", args.min_reference_maf,
                 "--set-all-var-ids", "@:#:$r:$a",
@@ -510,8 +525,11 @@ def main():
             })
 
         if args.cleanup_chromosome_cache:
-            for p in (pgen_zst, pgen, pvar_zst, psam):
+            # Regional VCFs are reproducible from the indexed UCSC/1000G mirror.
+            for gene in genes_by_chr[chrom]:
+                p = regionroot / f"{gene}.1kg_eur.hg19.vcf.gz"
                 p.unlink(missing_ok=True)
+                Path(str(p) + ".tbi").unlink(missing_ok=True)
 
     write_tsv(args.output_root / "STAGE2C_REGIONS.tsv", region_rows, list(region_rows[0]))
     write_tsv(args.output_root / "STAGE2C_LD_QC.tsv", qc, list(qc[0]))
@@ -522,6 +540,7 @@ def main():
         "genes": genes,
         "chromosomes": sorted(genes_by_chr),
         "eur_panel_n": len(eur_ids),
+        "eur_unrelated_n": len(eur_unrelated),
         "ld_qc": qc,
     }, indent=2))
     print(f"CKD_STAGE2C_LD_PASS output={args.output_root} ld={ldroot}")
