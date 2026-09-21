@@ -98,7 +98,7 @@ def validate_gzip(path: Path):
 
 
 def figshare_file_id(url: str):
-    m = re.search(r"/files/(\\d+)", url)
+    m = re.search(r"/files/(\d+)", url)
     return int(m.group(1)) if m else None
 
 
