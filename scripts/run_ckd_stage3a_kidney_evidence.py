@@ -18,6 +18,60 @@ SUPP_URLS = [
     f"https://pmc.ncbi.nlm.nih.gov/articles/PMC12435990/bin/{SUPP_FILENAME}",
     f"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12435990/bin/{SUPP_FILENAME}",
 ]
+# Springer/Nature supplementary media URLs are stable once the article's
+# internal media-object number is known, but the MOESM index is not exposed in
+# all machine-readable views. Try a bounded set and validate workbook contents.
+SUPP_URLS += [
+    (
+        "https://static-content.springer.com/esm/"
+        "art%3A10.1038%2Fs41591-025-03872-8/MediaObjects/"
+        f"41591_2025_3872_MOESM{i}_ESM.xlsx"
+    )
+    for i in range(1, 13)
+]
+
+# Candidate-level evidence reproduced directly from Table 1 / main text of:
+# Hirohama et al., Nature Medicine 2025, doi:10.1038/s41591-025-03872-8.
+# These rows allow Stage 3A to remain informative even when publisher
+# supplementary-file endpoints reject scripted downloads.
+HIROHAMA_MAIN_TEXT = {
+    "ACP1": {
+        "kidney_pqtl_present": 1,
+        "egfr_gwas_snp": "rs79154857",
+        "kidney_pqtl_snp": "rs62114548",
+        "kidney_pqtl_alt": "G",
+        "kidney_pqtl_beta": 0.986,
+        "kidney_pqtl_p": 8.5e-79,
+        "kidney_egfr_pph4": 0.999,
+        "kidney_smr_p": 5.8e-14,
+        "kidney_heidi_p": 0.167,
+        "main_text_note": "Kidney pQTL identified; ACP1 was noted as not previously seen in kidney eQTL analyses.",
+    },
+    "GSTA1": {
+        "kidney_pqtl_present": 1,
+        "egfr_gwas_snp": "rs6423287",
+        "kidney_pqtl_snp": "rs9382146",
+        "kidney_pqtl_alt": "A",
+        "kidney_pqtl_beta": 0.249,
+        "kidney_pqtl_p": 3.0e-22,
+        "kidney_egfr_pph4": 0.999,
+        "kidney_smr_p": 1.5e-11,
+        "kidney_heidi_p": 0.067,
+        "main_text_note": "Kidney protein prioritized by both colocalization and SMR/HEIDI for eGFR.",
+    },
+    "INHBC": {
+        "kidney_pqtl_present": 1,
+        "egfr_gwas_snp": "rs7964492",
+        "kidney_pqtl_snp": "rs7971133",
+        "kidney_pqtl_alt": "T",
+        "kidney_pqtl_beta": -0.625,
+        "kidney_pqtl_p": 1.2e-25,
+        "kidney_egfr_pph4": 0.875,
+        "kidney_smr_p": 3.9e-16,
+        "kidney_heidi_p": 0.086,
+        "main_text_note": "Kidney pQTL identified; INHBC was noted as not previously seen in kidney eQTL analyses.",
+    },
+}
 EQTL_META_URL = "https://figshare.com/ndownloader/files/33957947"
 EQTL_TUBULE_URL = "https://figshare.com/ndownloader/files/38295906"
 EQTL_GLOM_URL = "https://figshare.com/ndownloader/files/38295879"
@@ -100,11 +154,25 @@ def is_valid_xlsx(path: Path):
         return False
 
 
-def download_supplementary_workbook(dest: Path) -> Path:
+def workbook_looks_like_supp_tables(path: Path):
+    if not is_valid_xlsx(path):
+        return False
+    try:
+        import openpyxl
+        wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+        names = list(wb.sheetnames)
+        wb.close()
+    except Exception:
+        return False
+    # The published file contains Supplementary Tables 1-30 in separate tabs.
+    return len(names) >= 20
+
+
+def download_supplementary_workbook(dest: Path):
     dest.parent.mkdir(parents=True, exist_ok=True)
 
-    if is_valid_xlsx(dest):
-        return dest
+    if workbook_looks_like_supp_tables(dest):
+        return dest, "downloaded_or_cached", ""
 
     dest.unlink(missing_ok=True)
     errors = []
@@ -113,25 +181,25 @@ def download_supplementary_workbook(dest: Path) -> Path:
         part.unlink(missing_ok=True)
         try:
             run([
-                "curl", "-L", "--fail", "--retry", "3", "--retry-delay", "2",
+                "curl", "-L", "--fail", "--retry", "2", "--retry-delay", "1",
                 "-A", "Mozilla/5.0 CKD-Stage3A",
                 "-o", part, url
             ])
-            if is_valid_xlsx(part):
+            if workbook_looks_like_supp_tables(part):
                 part.replace(dest)
-                return dest
+                return dest, "downloaded", url
             size = part.stat().st_size if part.exists() else 0
-            errors.append(f"{url} -> invalid XLSX ({size} bytes)")
+            errors.append(f"{url} -> not Supplementary Tables workbook ({size} bytes)")
         except subprocess.CalledProcessError as exc:
             errors.append(f"{url} -> curl exit {exc.returncode}")
         finally:
             part.unlink(missing_ok=True)
 
-    raise RuntimeError(
-        "Could not download a valid Hirohama 2025 Supplementary Tables workbook. "
-        "Tried direct PMC URLs for " + SUPP_FILENAME + ". "
-        "Errors: " + " | ".join(errors)
-    )
+    # This is intentionally non-fatal. Publisher/PMC anti-bot behavior can
+    # block scripted supplementary downloads while the article itself remains
+    # publicly readable. Main-text Table 1 evidence plus independent kidney
+    # eQTL datasets are still valid Stage 3A inputs.
+    return None, "unavailable_nonfatal", " | ".join(errors)
 
 def sheet_table_number(title: str):
     m = re.search(r"(?:table|supp(?:lementary)?\s*table)?\s*(\d{1,2})",
@@ -337,12 +405,22 @@ def aggregate(stage2_rows, supplement_hits, eqtl_counts, output: Path):
         else:
             next_action = "supporting_or_negative_control_evidence"
 
+        mt = HIROHAMA_MAIN_TEXT.get(gene, {})
         rows.append({
             "gene_symbol": gene,
             "stage2_class": stage2_class,
             "stage2_comparison_status": row.get("comparison_status", ""),
             "stage2_abf_h4": row.get("stage2b_ABF_PP.H4", ""),
             "stage2_susie_max_h4": row.get("max_PP.H4", ""),
+            "hirohama_maintext_kidney_pqtl": mt.get("kidney_pqtl_present", 0),
+            "hirohama_maintext_egfr_gwas_snp": mt.get("egfr_gwas_snp", ""),
+            "hirohama_maintext_kidney_pqtl_snp": mt.get("kidney_pqtl_snp", ""),
+            "hirohama_maintext_kidney_pqtl_beta": mt.get("kidney_pqtl_beta", ""),
+            "hirohama_maintext_kidney_pqtl_p": mt.get("kidney_pqtl_p", ""),
+            "hirohama_maintext_egfr_pph4": mt.get("kidney_egfr_pph4", ""),
+            "hirohama_maintext_smr_p": mt.get("kidney_smr_p", ""),
+            "hirohama_maintext_heidi_p": mt.get("kidney_heidi_p", ""),
+            "hirohama_maintext_note": mt.get("main_text_note", ""),
             "kidney_pqtl_significant_supp_hits":
                 supp[gene]["kidney_cis_pqtl_significant"],
             "kidney_eqtl_same_study_supp_hits":
@@ -390,8 +468,8 @@ def main():
     (args.raw_root / "hirohama2025_europepmc_supplementary.zip").unlink(
         missing_ok=True
     )
-    workbook = download_supplementary_workbook(
-        args.raw_root / SUPP_FILENAME
+    workbook, supplement_status, supplement_detail = (
+        download_supplementary_workbook(args.raw_root / SUPP_FILENAME)
     )
 
     eqtl_sources = {
@@ -415,11 +493,28 @@ def main():
     for _, (url, path, _) in eqtl_sources.items():
         download(url, path)
 
-    supplement_hits = extract_candidate_supplement_hits(
-        workbook,
-        genes,
-        args.output_root / "STAGE3A_HIROHAMA_SUPPLEMENT_HITS.tsv",
+    supplement_hits_path = (
+        args.output_root / "STAGE3A_HIROHAMA_SUPPLEMENT_HITS.tsv"
     )
+    if workbook is not None:
+        supplement_hits = extract_candidate_supplement_hits(
+            workbook, genes, supplement_hits_path
+        )
+    else:
+        supplement_hits = []
+        write_tsv(
+            supplement_hits_path,
+            [],
+            [
+                "gene_symbol", "sheet", "table_number", "evidence_type",
+                "matched_column", "row_index", "row_json"
+            ],
+        )
+        print(
+            "WARNING: Hirohama Supplementary Tables workbook unavailable; "
+            "continuing with main-text Table 1 evidence and kidney eQTL datasets.",
+            flush=True,
+        )
 
     eqtl_counts = {}
     for name, (_, path, sample_n) in eqtl_sources.items():
@@ -446,7 +541,10 @@ def main():
             "pmcid": "PMC12435990",
             "supplementary_filename": SUPP_FILENAME,
             "supplementary_urls": SUPP_URLS,
-            "workbook": str(workbook),
+            "supplement_status": supplement_status,
+            "supplement_detail": supplement_detail,
+            "workbook": "" if workbook is None else str(workbook),
+            "main_text_candidate_evidence": HIROHAMA_MAIN_TEXT,
             "kidney_pqtl_sample_n": 337,
             "same_study_eqtl_sample_n": 315,
         },

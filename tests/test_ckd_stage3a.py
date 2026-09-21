@@ -10,6 +10,17 @@ spec.loader.exec_module(m)
 
 
 class Stage3ATests(unittest.TestCase):
+    def test_main_text_candidate_evidence(self):
+        self.assertAlmostEqual(
+            m.HIROHAMA_MAIN_TEXT["ACP1"]["kidney_egfr_pph4"], 0.999
+        )
+        self.assertAlmostEqual(
+            m.HIROHAMA_MAIN_TEXT["GSTA1"]["kidney_egfr_pph4"], 0.999
+        )
+        self.assertAlmostEqual(
+            m.HIROHAMA_MAIN_TEXT["INHBC"]["kidney_egfr_pph4"], 0.875
+        )
+
     def test_valid_xlsx_guard(self):
         import tempfile, zipfile
         with tempfile.TemporaryDirectory() as td:

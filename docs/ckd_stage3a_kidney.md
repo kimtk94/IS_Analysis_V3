@@ -71,3 +71,22 @@ The primary Stage 2 shared-signal candidates (`SDCCAG8`, `GSTA3`, `ACP1`) are
 carried forward first for tissue replication. `INHBC` and `GSTA1` remain explicit
 discordance/sensitivity candidates rather than being silently discarded. `UMOD`
 remains a special multi-signal/LD diagnostic locus.
+
+
+## Supplementary workbook fallback
+
+Publisher and PMC supplementary-file endpoints may return anti-bot HTML or a
+small metadata response to scripted `curl` requests. The Stage 3A runner
+therefore treats the Supplementary Tables workbook as optional:
+
+- it tries PMC and bounded Nature/Springer media-object URLs;
+- every candidate file must validate as a real XLSX with >=20 worksheets;
+- if all scripted downloads fail, Stage 3A continues instead of aborting;
+- candidate-level values directly printed in Hirohama et al. Table 1/main text
+  are preserved for ACP1, GSTA1, and INHBC;
+- independent kidney eQTL meta/tubule/glomerulus downloads still run normally;
+- provenance records whether the workbook was available.
+
+The fallback must not be interpreted as a negative result for candidates absent
+from the hard-coded main-text rows; it means the supplementary workbook could
+not be programmatically retrieved in that run.
