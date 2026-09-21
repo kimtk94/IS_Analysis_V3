@@ -37,6 +37,18 @@ class Stage2CLDTests(unittest.TestCase):
             "https://hgdownload.soe.ucsc.edu/gbdb/hg19/1000Genomes/phase3/ALL.chr6.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
         )
 
+    def test_discover_matrix_files_alpha6(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "GENE"
+            matrix = Path(str(p) + ".unphased.vcor1.bin")
+            vars_path = Path(str(matrix) + ".vars")
+            matrix.write_bytes(b"1234")
+            vars_path.write_text("v1\n")
+            got_matrix, got_vars = m.discover_matrix_files(p)
+            self.assertEqual(got_matrix, matrix)
+            self.assertEqual(got_vars, vars_path)
+
     def test_parse_afreq(self):
         import tempfile
         with tempfile.TemporaryDirectory() as td:

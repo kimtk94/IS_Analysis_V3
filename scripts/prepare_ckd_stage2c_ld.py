@@ -273,22 +273,30 @@ def match_reference(summary_rows, pvar_rows):
 
 
 def discover_matrix_files(prefix: Path):
-    candidates = list(prefix.parent.glob(prefix.name + "*.vcor1.bin"))
+    candidates = sorted(prefix.parent.glob(prefix.name + "*.vcor1.bin"))
     if len(candidates) != 1:
         raise RuntimeError(f"{prefix}: expected one vcor1.bin, found {candidates}")
     matrix = candidates[0]
+
+    # PLINK2 output naming changed across alpha releases.
+    # alpha-6 writes: <prefix>.unphased.vcor1.bin.vars
+    # newer builds may write: <prefix>.unphased.vcor1.vars
     vars_candidates = [
-        matrix.with_suffix("").with_suffix(".vars"),
-        Path(str(matrix).replace(".bin", ".vars")),
+        Path(str(matrix) + ".vars"),
+        Path(str(matrix).replace(".vcor1.bin", ".vcor1.vars")),
+        prefix.parent / (prefix.name + ".unphased.vcor1.bin.vars"),
         prefix.parent / (prefix.name + ".unphased.vcor1.vars"),
     ]
     vars_path = next((p for p in vars_candidates if p.is_file()), None)
     if vars_path is None:
-        extra = list(prefix.parent.glob(prefix.name + "*.vcor1.vars"))
+        extra = sorted(prefix.parent.glob(prefix.name + "*.vcor1*.vars"))
         if len(extra) == 1:
             vars_path = extra[0]
     if vars_path is None:
-        raise RuntimeError(f"{prefix}: matrix .vars companion not found")
+        raise RuntimeError(
+            f"{prefix}: matrix .vars companion not found; "
+            f"looked for {vars_candidates}"
+        )
     return matrix, vars_path
 
 
