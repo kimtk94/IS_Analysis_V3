@@ -267,6 +267,28 @@ def run(cmd):
     subprocess.run([str(x) for x in cmd], check=True)
 
 
+def write_sample_list(path: Path, sample_ids):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(sample_ids) + "\n", encoding="utf-8")
+    # Defensive invariant: one sample ID per physical line, never literal "\\n".
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if lines != list(sample_ids):
+        raise RuntimeError(f"{path}: sample list serialization failed")
+    if any("\\n" in x or "\\r" in x for x in lines):
+        raise RuntimeError(f"{path}: literal escaped newline found in sample ID")
+
+
+def remote_vcf_samples(url: str):
+    cp = subprocess.run(
+        ["bcftools", "query", "-l", url],
+        check=True, text=True, capture_output=True
+    )
+    samples = [x.strip() for x in cp.stdout.splitlines() if x.strip()]
+    if len(samples) < 1000:
+        raise RuntimeError(f"unexpectedly few samples in remote VCF header: {len(samples)}")
+    return samples
+
+
 def count_psam(path: Path):
     n = 0
     with path.open("r", encoding="utf-8", errors="replace") as fh:
@@ -330,7 +352,7 @@ def main():
     related_ids = parse_related_ids(related)
     eur_unrelated = [x for x in eur_ids if x not in related_ids]
     eur_keep = refroot / "EUR.unrelated.samples"
-    eur_keep.write_text("\\n".join(eur_unrelated) + "\\n", encoding="utf-8")
+    write_sample_list(eur_keep, eur_unrelated)
     if len(eur_unrelated) < 450:
         raise RuntimeError(
             f"unexpectedly few unrelated 1KG EUR samples: {len(eur_unrelated)}"
@@ -403,6 +425,7 @@ def main():
         "ld_statistic": "signed unphased dosage correlation, REF-based then sign-flipped to pQTL effect allele",
         "eur_samples_in_panel": len(eur_ids),
         "eur_samples_after_deg1_removal": len(eur_unrelated),
+        "sample_selection": "panel EUR -> degree-1 removal -> exact intersection with chromosome VCF header",
         "remove_related_resource": "deg1_phase3.king.cutoff.out.id",
         "min_reference_maf": args.min_reference_maf,
         "threads": args.threads,
@@ -411,6 +434,16 @@ def main():
 
     for chrom in sorted(genes_by_chr, key=lambda x: int(x) if x.isdigit() else 100):
         vcf_url = phase3_vcf_url(chrom)
+        vcf_sample_set = set(remote_vcf_samples(vcf_url))
+        chr_eur = [x for x in eur_unrelated if x in vcf_sample_set]
+        if len(chr_eur) < 450:
+            missing_chr = [x for x in eur_unrelated if x not in vcf_sample_set]
+            raise RuntimeError(
+                f"chr{chrom}: only {len(chr_eur)} unrelated EUR samples exist in VCF; "
+                f"missing examples={missing_chr[:10]}"
+            )
+        chr_keep = refroot / f"EUR.unrelated.chr{chrom}.samples"
+        write_sample_list(chr_keep, chr_eur)
 
         for gene in sorted(genes_by_chr[chrom]):
             info = per_gene[gene]
@@ -423,7 +456,7 @@ def main():
                 run([
                     "bcftools", "view",
                     "--regions", f"{chrom}:{info['lo']}-{info['hi']}",
-                    "--samples-file", eur_keep,
+                    "--samples-file", chr_keep,
                     "--min-alleles", "2",
                     "--max-alleles", "2",
                     "--types", "snps",
@@ -519,6 +552,7 @@ def main():
                 "summary_reference_ambiguous": ambiguous,
                 "ld_matrix_snps": len(ordered),
                 "ld_reference_samples": count_psam(region_psam),
+                "eur_samples_in_vcf_header": len(chr_eur),
                 "ld_matrix_bytes": actual_bytes,
                 "ld_matrix": str(final_matrix),
                 "ld_meta": str(ldroot / f"{gene}.ld.meta.tsv"),

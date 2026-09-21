@@ -10,6 +10,7 @@ region. Stage 2C re-runs all 9 candidate loci with `coloc.susie`.
 - Reference genotypes: 1000 Genomes Phase 3 GRCh37 autosomal VCFs, accessed as indexed region slices from the UCSC mirror.
 - The runner no longer parses the JavaScript-driven PLINK resources page for download links.
 - Close relatives: PLINK `deg1_phase3.king.cutoff.out.id` IDs are removed from the EUR sample list before regional VCF extraction.
+- For each chromosome, `bcftools query -l` reads the actual VCF header and the unrelated EUR list is intersected with those exact sample IDs before subsetting.
 - Default region: the published Berisa-Pickrell EUR hg19 approximately-independent
   LD block containing the pre-specified Stage 1 anchor SNP.
 - If a block cannot be resolved, fallback is anchor +/-500 kb.

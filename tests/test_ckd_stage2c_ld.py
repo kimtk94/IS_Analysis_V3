@@ -23,6 +23,14 @@ class Stage2CLDTests(unittest.TestCase):
         self.assertEqual((lo,hi),(100,200))
         self.assertEqual(trunc,1)
 
+    def test_write_sample_list_uses_real_newlines(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "samples.txt"
+            m.write_sample_list(p, ["HG00096", "NA12878"])
+            self.assertEqual(p.read_bytes(), b"HG00096\nNA12878\n")
+            self.assertEqual(p.read_text().splitlines(), ["HG00096", "NA12878"])
+
     def test_phase3_vcf_url(self):
         self.assertEqual(
             m.phase3_vcf_url("6"),
