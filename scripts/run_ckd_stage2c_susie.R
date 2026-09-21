@@ -51,15 +51,52 @@ cs_count <- function(x) {
   length(x$sets$cs)
 }
 
-safe_susie <- function(d, suffix) {
+safe_susie <- function(d, suffix, maxit=1000L) {
   check_dataset(d, req="LD")
-  runsusie(
-    d,
-    suffix=suffix,
-    maxit=200,
-    repeat_until_convergence=TRUE,
-    L=min(10L, max(1L, length(d$snp)-1L))
+  tryCatch(
+    {
+      fit <- runsusie(
+        d,
+        suffix=suffix,
+        maxit=maxit,
+        repeat_until_convergence=FALSE,
+        L=min(10L, max(1L, length(d$snp)-1L))
+      )
+      list(ok=TRUE, fit=fit, error="")
+    },
+    error=function(e) {
+      list(ok=FALSE, fit=NULL, error=conditionMessage(e))
+    }
   )
+}
+
+save_checkpoint <- function(all_rows, gene_rows, failures, output_dir) {
+  if (length(all_rows)) {
+    all_df <- do.call(rbind, all_rows)
+    all_df <- all_df[order(all_df$gene_symbol, all_df$p12, -all_df$PP.H4), ]
+    write.table(
+      all_df,
+      file=file.path(output_dir, "STAGE2C_SUSIE_ALL_PRIORS.tsv"),
+      sep="\t", quote=FALSE, row.names=FALSE
+    )
+  }
+  if (length(gene_rows)) {
+    gene_df <- do.call(rbind, gene_rows)
+    gene_df <- gene_df[order(-gene_df$max_PP.H4, na.last=TRUE), ]
+    write.table(
+      gene_df,
+      file=file.path(output_dir, "STAGE2C_SUSIE_DEFAULT.tsv"),
+      sep="\t", quote=FALSE, row.names=FALSE
+    )
+  }
+  if (length(failures)) {
+    fail_df <- do.call(rbind, failures)
+    write.table(
+      fail_df,
+      file=file.path(output_dir, "STAGE2C_SUSIE_FAILURES.tsv"),
+      sep="\t", quote=FALSE, row.names=FALSE
+    )
+  }
 }
 
 abf <- read.delim(abf_file, stringsAsFactors=FALSE, check.names=FALSE)
@@ -68,6 +105,7 @@ if (!length(files)) stop("no Stage 2C input files")
 
 all_rows <- list()
 gene_rows <- list()
+failures <- list()
 
 for (f in files) {
   gene <- sub("\\.tsv\\.gz$", "", basename(f))
@@ -116,11 +154,69 @@ for (f in files) {
   )
 
   cat("Stage2C SuSiE:", gene, "n=", nrow(dat), "\n")
-  S1 <- safe_susie(d1, paste0(gene, "_pqtl"))
-  S2 <- safe_susie(d2, paste0(gene, "_egfr"))
-  saveRDS(S1, file=file.path(output_dir, paste0(gene, "_pqtl_susie.rds")))
-  saveRDS(S2, file=file.path(output_dir, paste0(gene, "_egfr_susie.rds")))
+  p1_rds <- file.path(output_dir, paste0(gene, "_pqtl_susie.rds"))
+  p2_rds <- file.path(output_dir, paste0(gene, "_egfr_susie.rds"))
 
+  if (file.exists(p1_rds)) {
+    S1 <- readRDS(p1_rds)
+    s1 <- list(ok=isTRUE(S1$converged), fit=S1,
+               error=if (isTRUE(S1$converged)) "" else "cached pQTL fit not converged")
+  } else {
+    s1 <- safe_susie(d1, paste0(gene, "_pqtl"))
+    if (s1$ok) saveRDS(s1$fit, file=p1_rds)
+  }
+
+  if (file.exists(p2_rds)) {
+    S2 <- readRDS(p2_rds)
+    s2 <- list(ok=isTRUE(S2$converged), fit=S2,
+               error=if (isTRUE(S2$converged)) "" else "cached eGFR fit not converged")
+  } else {
+    s2 <- safe_susie(d2, paste0(gene, "_egfr"))
+    if (s2$ok) saveRDS(s2$fit, file=p2_rds)
+  }
+
+  if (!s1$ok || !s2$ok) {
+    failures[[length(failures)+1]] <- data.frame(
+      gene_symbol=gene,
+      nsnps=nrow(dat),
+      pqtl_status=if (s1$ok) "converged" else "failed_or_nonconverged",
+      egfr_status=if (s2$ok) "converged" else "failed_or_nonconverged",
+      pqtl_message=s1$error,
+      egfr_message=s2$error,
+      stringsAsFactors=FALSE
+    )
+    a <- abf[abf$gene_symbol == gene, , drop=FALSE]
+    abf_h4 <- if (nrow(a)) as.numeric(a$PP.H4[1]) else NA_real_
+    abf_h3 <- if (nrow(a)) as.numeric(a$PP.H3[1]) else NA_real_
+    gene_rows[[length(gene_rows)+1]] <- data.frame(
+      gene_symbol=gene,
+      nsnps=nrow(dat),
+      pqtl_credible_sets=if (s1$ok) cs_count(s1$fit) else NA_integer_,
+      egfr_credible_sets=if (s2$ok) cs_count(s2$fit) else NA_integer_,
+      signal_pairs_default=0L,
+      max_PP.H4=NA_real_,
+      PP.H3_at_best_pair=NA_real_,
+      best_pqtl_signal="",
+      best_egfr_signal="",
+      any_H4_ge_0.8=0L,
+      any_H4_ge_0.9=0L,
+      stage2b_ABF_PP.H3=abf_h3,
+      stage2b_ABF_PP.H4=abf_h4,
+      comparison_status="SuSiE_nonconverged_or_failed",
+      N_pqtl=n1,
+      N_egfr=n2,
+      stringsAsFactors=FALSE
+    )
+    save_checkpoint(all_rows, gene_rows, failures, output_dir)
+    cat("Stage2C SuSiE nonconvergence/failure:", gene,
+        "pQTL=", s1$error, "eGFR=", s2$error, "\n")
+    rm(LD, d1, d2)
+    gc()
+    next
+  }
+
+  S1 <- s1$fit
+  S2 <- s2$fit
   default_res <- NULL
   for (p12 in c(1e-6, 1e-5, 1e-4)) {
     res <- coloc.susie(S1, S2, p1=1e-4, p2=1e-4, p12=p12)
@@ -190,11 +286,13 @@ for (f in files) {
     N_egfr=n2,
     stringsAsFactors=FALSE
   )
+  save_checkpoint(all_rows, gene_rows, failures, output_dir)
   rm(LD, S1, S2, d1, d2)
   gc()
 }
 
-all_df <- do.call(rbind, all_rows)
+all_df <- if (length(all_rows)) do.call(rbind, all_rows) else data.frame()
+gene_df <- if (length(gene_rows)) do.call(rbind, gene_rows) else data.frame()
 gene_df <- do.call(rbind, gene_rows)
 all_df <- all_df[order(all_df$gene_symbol, all_df$p12, -all_df$PP.H4), ]
 gene_df <- gene_df[order(-gene_df$max_PP.H4), ]

@@ -89,3 +89,17 @@ Set `STAGE2C_CLEANUP_CHR_CACHE=0` to retain them.
 Large derived LD matrices stay in
 `/srv/is-analysis/data/ckd/stage2c_ld/ld` and are not copied to Drive by this
 runner. They are reproducible from the public 1000 Genomes reference.
+
+
+## Non-convergence policy
+
+`coloc::runsusie()` normally repeats until convergence and can escalate a
+non-converged fit to very large iteration counts. Stage 2C deliberately caps each
+fit at 1000 iterations with `repeat_until_convergence=FALSE`. A non-converged
+locus is recorded in `STAGE2C_SUSIE_FAILURES.tsv` and does not abort the other
+candidate loci. Existing converged per-gene RDS files are reused on reruns.
+
+This is important with out-of-sample 1000 Genomes LD: slow convergence may reflect
+summary-statistic/LD-reference mismatch rather than a need for arbitrarily more
+iterations. Such loci should be treated as unresolved and followed with LD
+diagnostics or a larger ancestry-matched reference panel.
