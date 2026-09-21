@@ -1,0 +1,29 @@
+name: CKD Stage 3A kidney evidence CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/run_ckd_stage3a_kidney_evidence.py'
+      - 'server/ckd_run_stage3a.sh'
+      - 'tests/test_ckd_stage3a.py'
+      - 'docs/ckd_stage3a_kidney.md'
+      - '.github/workflows/ckd-stage3a-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/run_ckd_stage3a_kidney_evidence.py'
+      - 'server/ckd_run_stage3a.sh'
+      - 'tests/test_ckd_stage3a.py'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python syntax and unit tests
+        run: |
+          python3 -m py_compile scripts/run_ckd_stage3a_kidney_evidence.py
+          python3 -m unittest -v tests/test_ckd_stage3a.py
+      - name: Shell syntax
+        run: bash -n server/ckd_run_stage3a.sh

@@ -1,0 +1,71 @@
+# CKD Stage 3A: kidney-specific QTL evidence
+
+Stage 3A attaches kidney-tissue genetic evidence to the nine Stage 2 candidates.
+It is deliberately evidence-preserving rather than score-based.
+
+## Public data sources
+
+1. Hirohama et al., Nature Medicine 2025, human kidney proteogenomics
+   - kidney proteomics/pQTL: n=337
+   - same-study kidney eQTL: n=315
+   - Supplementary Tables 1-30 are retrieved through the Europe PMC supplementary-files API.
+2. Susztak kidney eQTL meta-analysis: n=686, significant SNP-gene pairs at q<0.01.
+3. Tubule eQTL: n=356, significant SNP-gene pairs at FDR<0.05.
+4. Glomerulus eQTL: n=303, significant SNP-gene pairs at FDR<0.05.
+
+The eQTL bulk downloads contain significant pairs only. A zero candidate hit must
+not be interpreted as proof that the gene is not expressed or has no cis genetic
+regulation.
+
+## Data-use boundary
+
+The Susztak Kidney Biobank publishes a user agreement. The runner does not accept
+that agreement on the user's behalf. It requires `ACCEPT_SUSZTAK_TERMS=1` after
+the user has reviewed the current agreement at:
+
+https://susztaklab.com/agree.php
+
+Raw kidney QTL files are stored only under
+`/srv/is-analysis/data/ckd/stage3a_kidney` and are not copied to GitHub or Google
+Drive by this runner. Only candidate-level derived evidence tables are eligible for
+Drive sync.
+
+## Run
+
+```bash
+cd /srv/is-analysis/IS_Analysis_V3
+git pull --ff-only origin main
+
+ACCEPT_SUSZTAK_TERMS=1 \
+CKD_STAGE2C_ROOT=/srv/is-analysis/results/ckd/stage2c_susie \
+CKD_STAGE3A_RAW_ROOT=/srv/is-analysis/data/ckd/stage3a_kidney \
+CKD_STAGE3A_ROOT=/srv/is-analysis/results/ckd/stage3a_kidney \
+SYNC_DRIVE=1 \
+RCLONE_REMOTE=gdrive \
+  server/ckd_run_stage3a.sh
+```
+
+## Outputs
+
+```text
+/srv/is-analysis/results/ckd/stage3a_kidney/
+├── STAGE3A_KIDNEY_EVIDENCE.tsv
+├── STAGE3A_HIROHAMA_SUPPLEMENT_HITS.tsv
+├── STAGE3A_EQTL_META686_HITS.tsv
+├── STAGE3A_EQTL_TUBULE356_HITS.tsv
+├── STAGE3A_EQTL_GLOMERULUS303_HITS.tsv
+├── STAGE3A_PROVENANCE.json
+└── SHA256SUMS.txt
+```
+
+`STAGE3A_KIDNEY_EVIDENCE.tsv` is the primary candidate-level table. It combines
+Stage 2 ABF/SuSiE status with kidney pQTL, same-study kidney eQTL, published eGFR
+colocalization supplement hits, and independent kidney meta/tubule/glomerulus eQTL
+hit counts.
+
+## Interpretation order
+
+The primary Stage 2 shared-signal candidates (`SDCCAG8`, `GSTA3`, `ACP1`) are
+carried forward first for tissue replication. `INHBC` and `GSTA1` remain explicit
+discordance/sensitivity candidates rather than being silently discarded. `UMOD`
+remains a special multi-signal/LD diagnostic locus.
