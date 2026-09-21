@@ -10,6 +10,18 @@ spec.loader.exec_module(m)
 
 
 class Stage3ATests(unittest.TestCase):
+    def test_valid_xlsx_guard(self):
+        import tempfile, zipfile
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "x.xlsx"
+            p.write_bytes(b"<html>not xlsx</html>")
+            self.assertFalse(m.is_valid_xlsx(p))
+            with zipfile.ZipFile(p, "w") as z:
+                z.writestr("[Content_Types].xml", "<Types/>")
+                z.writestr("xl/worksheets/sheet1.xml", "<worksheet/>")
+                z.writestr("padding.bin", b"0" * 120000)
+            self.assertTrue(m.is_valid_xlsx(p))
+
     def test_gene_match_exact_and_multivalue(self):
         genes = {"F12", "GSTA3", "ACP1"}
         self.assertEqual(m.exact_gene_in_cell("F12", genes), "F12")

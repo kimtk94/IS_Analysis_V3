@@ -8,7 +8,9 @@ It is deliberately evidence-preserving rather than score-based.
 1. Hirohama et al., Nature Medicine 2025, human kidney proteogenomics
    - kidney proteomics/pQTL: n=337
    - same-study kidney eQTL: n=315
-   - Supplementary Tables 1-30 are retrieved through the Europe PMC supplementary-files API.
+   - Supplementary Tables 1-30 are retrieved as the published PMC workbook
+     `NIHMS2102371-supplement-Supplementary_Tables.xlsx`.
+   - The downloader validates that the response is a real XLSX container before parsing; short HTML/XML error responses are rejected.
 2. Susztak kidney eQTL meta-analysis: n=686, significant SNP-gene pairs at q<0.01.
 3. Tubule eQTL: n=356, significant SNP-gene pairs at FDR<0.05.
 4. Glomerulus eQTL: n=303, significant SNP-gene pairs at FDR<0.05.

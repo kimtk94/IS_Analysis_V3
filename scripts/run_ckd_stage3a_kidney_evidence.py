@@ -12,7 +12,12 @@ import zipfile
 from collections import defaultdict
 from pathlib import Path
 
-SUPP_ZIP_URL = "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12435990/supplementaryFiles"
+SUPP_FILENAME = "NIHMS2102371-supplement-Supplementary_Tables.xlsx"
+SUPP_URLS = [
+    f"https://pmc.ncbi.nlm.nih.gov/articles/instance/12435990/bin/{SUPP_FILENAME}",
+    f"https://pmc.ncbi.nlm.nih.gov/articles/PMC12435990/bin/{SUPP_FILENAME}",
+    f"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12435990/bin/{SUPP_FILENAME}",
+]
 EQTL_META_URL = "https://figshare.com/ndownloader/files/33957947"
 EQTL_TUBULE_URL = "https://figshare.com/ndownloader/files/38295906"
 EQTL_GLOM_URL = "https://figshare.com/ndownloader/files/38295879"
@@ -80,32 +85,53 @@ def write_tsv(path: Path, rows, fields=None):
         w.writerows(rows)
 
 
-def find_supplementary_workbook(zip_path: Path, out_dir: Path) -> Path:
-    if not zipfile.is_zipfile(zip_path):
-        raise RuntimeError(
-            f"Europe PMC supplementaryFiles response is not a ZIP: {zip_path}. "
-            "Inspect the file or download the Supplementary Tables workbook manually."
-        )
-    out_dir.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(zip_path) as zf:
-        names = zf.namelist()
-        candidates = [
-            n for n in names
-            if n.lower().endswith(".xlsx")
-            and "supplementary" in n.lower()
-            and "table" in n.lower()
-        ]
-        if not candidates:
-            candidates = [n for n in names if n.lower().endswith(".xlsx")]
-        if not candidates:
-            raise RuntimeError("No XLSX found in Europe PMC supplementary ZIP")
-        candidates.sort(key=lambda n: zf.getinfo(n).file_size, reverse=True)
-        chosen = candidates[0]
-        target = out_dir / Path(chosen).name
-        with zf.open(chosen) as src, target.open("wb") as dst:
-            shutil.copyfileobj(src, dst)
-    return target
+def is_valid_xlsx(path: Path):
+    if not path.is_file() or path.stat().st_size < 100_000:
+        return False
+    if not zipfile.is_zipfile(path):
+        return False
+    try:
+        with zipfile.ZipFile(path) as zf:
+            names = set(zf.namelist())
+            return "[Content_Types].xml" in names and any(
+                n.startswith("xl/worksheets/") for n in names
+            )
+    except zipfile.BadZipFile:
+        return False
 
+
+def download_supplementary_workbook(dest: Path) -> Path:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+
+    if is_valid_xlsx(dest):
+        return dest
+
+    dest.unlink(missing_ok=True)
+    errors = []
+    for url in SUPP_URLS:
+        part = dest.with_suffix(dest.suffix + ".part")
+        part.unlink(missing_ok=True)
+        try:
+            run([
+                "curl", "-L", "--fail", "--retry", "3", "--retry-delay", "2",
+                "-A", "Mozilla/5.0 CKD-Stage3A",
+                "-o", part, url
+            ])
+            if is_valid_xlsx(part):
+                part.replace(dest)
+                return dest
+            size = part.stat().st_size if part.exists() else 0
+            errors.append(f"{url} -> invalid XLSX ({size} bytes)")
+        except subprocess.CalledProcessError as exc:
+            errors.append(f"{url} -> curl exit {exc.returncode}")
+        finally:
+            part.unlink(missing_ok=True)
+
+    raise RuntimeError(
+        "Could not download a valid Hirohama 2025 Supplementary Tables workbook. "
+        "Tried direct PMC URLs for " + SUPP_FILENAME + ". "
+        "Errors: " + " | ".join(errors)
+    )
 
 def sheet_table_number(title: str):
     m = re.search(r"(?:table|supp(?:lementary)?\s*table)?\s*(\d{1,2})",
@@ -359,10 +385,13 @@ def main():
     args.raw_root.mkdir(parents=True, exist_ok=True)
     args.output_root.mkdir(parents=True, exist_ok=True)
 
-    supp_zip = args.raw_root / "hirohama2025_europepmc_supplementary.zip"
-    download(SUPP_ZIP_URL, supp_zip)
-    workbook = find_supplementary_workbook(
-        supp_zip, args.raw_root / "hirohama2025_supplementary"
+    # Remove the obsolete short Europe PMC response from the first
+    # implementation if it is still present.
+    (args.raw_root / "hirohama2025_europepmc_supplementary.zip").unlink(
+        missing_ok=True
+    )
+    workbook = download_supplementary_workbook(
+        args.raw_root / SUPP_FILENAME
     )
 
     eqtl_sources = {
@@ -415,7 +444,8 @@ def main():
         "candidate_genes": genes,
         "hirohama2025": {
             "pmcid": "PMC12435990",
-            "supplementary_zip": SUPP_ZIP_URL,
+            "supplementary_filename": SUPP_FILENAME,
+            "supplementary_urls": SUPP_URLS,
             "workbook": str(workbook),
             "kidney_pqtl_sample_n": 337,
             "same_study_eqtl_sample_n": 315,
