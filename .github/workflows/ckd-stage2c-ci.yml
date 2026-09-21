@@ -1,0 +1,37 @@
+name: CKD Stage 2C SuSiE CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/prepare_ckd_stage2c_ld.py'
+      - 'scripts/run_ckd_stage2c_susie.R'
+      - 'server/ckd_run_stage2c_susie.sh'
+      - 'tests/test_ckd_stage2c_ld.py'
+      - 'docs/ckd_stage2c_susie.md'
+      - '.github/workflows/ckd-stage2c-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/prepare_ckd_stage2c_ld.py'
+      - 'scripts/run_ckd_stage2c_susie.R'
+      - 'server/ckd_run_stage2c_susie.sh'
+      - 'tests/test_ckd_stage2c_ld.py'
+      - '.github/workflows/ckd-stage2c-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python syntax and unit tests
+        run: |
+          python3 -m py_compile scripts/prepare_ckd_stage2c_ld.py
+          python3 -m pytest -q tests/test_ckd_stage2c_ld.py
+      - name: Shell syntax
+        run: bash -n server/ckd_run_stage2c_susie.sh
+      - name: R syntax
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq r-base-core
+          Rscript -e 'parse(file="scripts/run_ckd_stage2c_susie.R"); cat("R_PARSE_PASS\n")'
