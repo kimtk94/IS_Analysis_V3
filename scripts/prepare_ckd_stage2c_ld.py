@@ -278,15 +278,29 @@ def write_sample_list(path: Path, sample_ids):
         raise RuntimeError(f"{path}: literal escaped newline found in sample ID")
 
 
-def remote_vcf_samples(url: str):
+def query_vcf_samples(source):
     cp = subprocess.run(
-        ["bcftools", "query", "-l", url],
+        ["bcftools", "query", "-l", str(source)],
         check=True, text=True, capture_output=True
     )
-    samples = [x.strip() for x in cp.stdout.splitlines() if x.strip()]
+    return [x.strip() for x in cp.stdout.splitlines() if x.strip()]
+
+
+def remote_vcf_samples(url: str):
+    samples = query_vcf_samples(url)
     if len(samples) < 1000:
         raise RuntimeError(f"unexpectedly few samples in remote VCF header: {len(samples)}")
     return samples
+
+
+def cached_region_vcf_ok(path: Path, expected_samples):
+    if not path.is_file() or path.stat().st_size == 0:
+        return False
+    try:
+        samples = query_vcf_samples(path)
+    except subprocess.CalledProcessError:
+        return False
+    return samples == list(expected_samples)
 
 
 def count_psam(path: Path):
@@ -452,7 +466,9 @@ def main():
 
             # htslib performs indexed HTTP range requests against the public
             # chromosome VCF, so only this locus is transferred.
-            if not region_vcf.is_file() or region_vcf.stat().st_size == 0:
+            if not cached_region_vcf_ok(region_vcf, chr_eur):
+                region_vcf.unlink(missing_ok=True)
+                Path(str(region_vcf) + ".tbi").unlink(missing_ok=True)
                 run([
                     "bcftools", "view",
                     "--regions", f"{chrom}:{info['lo']}-{info['hi']}",
@@ -464,6 +480,10 @@ def main():
                     "--output-file", region_vcf,
                     vcf_url,
                 ])
+                if not cached_region_vcf_ok(region_vcf, chr_eur):
+                    raise RuntimeError(
+                        f"{gene}: regional VCF was created but sample header validation failed"
+                    )
             run(["bcftools", "index", "--force", "--tbi", region_vcf])
 
             run([
