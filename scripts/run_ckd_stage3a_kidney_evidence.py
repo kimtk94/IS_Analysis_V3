@@ -72,9 +72,12 @@ HIROHAMA_MAIN_TEXT = {
         "main_text_note": "Kidney pQTL identified; INHBC was noted as not previously seen in kidney eQTL analyses.",
     },
 }
-EQTL_META_URL = "https://figshare.com/ndownloader/files/33957947"
-EQTL_TUBULE_URL = "https://figshare.com/ndownloader/files/38295906"
-EQTL_GLOM_URL = "https://figshare.com/ndownloader/files/38295879"
+EQTL_META_FILE_ID = 33957947
+EQTL_TUBULE_FILE_ID = 38295906
+EQTL_GLOM_FILE_ID = 38295879
+EQTL_META_URL = f"https://figshare.com/ndownloader/files/{EQTL_META_FILE_ID}"
+EQTL_TUBULE_URL = f"https://figshare.com/ndownloader/files/{EQTL_TUBULE_FILE_ID}"
+EQTL_GLOM_URL = f"https://figshare.com/ndownloader/files/{EQTL_GLOM_FILE_ID}"
 SUSZTAK_AGREEMENT_URL = "https://susztaklab.com/agree.php"
 
 
@@ -83,15 +86,77 @@ def run(cmd):
     subprocess.run([str(x) for x in cmd], check=True)
 
 
+def validate_gzip(path: Path):
+    if not path.is_file() or path.stat().st_size == 0:
+        return False
+    try:
+        with gzip.open(path, "rb") as fh:
+            fh.read(64)
+        return True
+    except Exception:
+        return False
+
+
+def figshare_file_id(url: str):
+    m = re.search(r"/files/(\\d+)", url)
+    return int(m.group(1)) if m else None
+
+
 def download(url: str, dest: Path):
     dest.parent.mkdir(parents=True, exist_ok=True)
+    expect_gzip = dest.suffix == ".gz"
+
     if dest.is_file() and dest.stat().st_size > 0:
-        return
+        if not expect_gzip or validate_gzip(dest):
+            return
+        dest.unlink(missing_ok=True)
+
+    candidates = [url]
+    file_id = figshare_file_id(url)
+    if file_id is not None:
+        candidates = [
+            f"https://api.figshare.com/v2/file/download/{file_id}",
+            f"https://ndownloader.figshare.com/files/{file_id}",
+            f"https://figshare.com/ndownloader/files/{file_id}",
+        ]
+
+    errors = []
     part = dest.with_suffix(dest.suffix + ".part")
-    run(["curl", "-L", "--fail", "--retry", "5", "--retry-delay", "2", "-o", part, url])
-    if not part.is_file() or part.stat().st_size == 0:
-        raise RuntimeError(f"download failed or empty: {url}")
-    part.replace(dest)
+    for candidate in candidates:
+        part.unlink(missing_ok=True)
+        cmd = [
+            "curl", "--http1.1", "-L", "--fail",
+            "--retry", "4", "--retry-delay", "2", "--retry-all-errors",
+            "--connect-timeout", "30",
+            "-A", "Mozilla/5.0 CKD-Stage3A",
+            "-o", part, candidate,
+        ]
+        if file_id is not None:
+            cmd[1:1] = [
+                "-H", "Accept: application/octet-stream",
+                "-e", "https://susztaklab.com/Kidney_eQTL/download.php",
+            ]
+        try:
+            run(cmd)
+        except subprocess.CalledProcessError as exc:
+            errors.append(f"{candidate} -> curl exit {exc.returncode}")
+            continue
+
+        size = part.stat().st_size if part.exists() else 0
+        if size == 0:
+            errors.append(f"{candidate} -> empty response")
+            continue
+        if expect_gzip and not validate_gzip(part):
+            errors.append(f"{candidate} -> invalid gzip ({size} bytes)")
+            continue
+
+        part.replace(dest)
+        return
+
+    part.unlink(missing_ok=True)
+    raise RuntimeError(
+        f"download failed for {dest.name}; tried: " + " | ".join(errors)
+    )
 
 
 def read_tsv(path: Path):
@@ -549,9 +614,25 @@ def main():
             "same_study_eqtl_sample_n": 315,
         },
         "kidney_eqtl": {
-            "meta686": EQTL_META_URL,
-            "tubule356": EQTL_TUBULE_URL,
-            "glomerulus303": EQTL_GLOM_URL,
+            "meta686": {
+                "source_page": "https://susztaklab.com/Kidney_eQTL/download.php",
+                "figshare_file_id": EQTL_META_FILE_ID,
+                "canonical_url": EQTL_META_URL,
+            },
+            "tubule356": {
+                "source_page": "https://susztaklab.com/Kidney_eQTL/download.php",
+                "figshare_file_id": EQTL_TUBULE_FILE_ID,
+                "canonical_url": EQTL_TUBULE_URL,
+            },
+            "glomerulus303": {
+                "source_page": "https://susztaklab.com/Kidney_eQTL/download.php",
+                "figshare_file_id": EQTL_GLOM_FILE_ID,
+                "canonical_url": EQTL_GLOM_URL,
+            },
+            "download_policy": (
+                "Try Figshare public API, ndownloader.figshare.com, then "
+                "figshare.com/ndownloader; require a valid gzip response."
+            ),
         },
         "license_note": {
             "agreement": SUSZTAK_AGREEMENT_URL,

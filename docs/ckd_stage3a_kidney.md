@@ -90,3 +90,19 @@ therefore treats the Supplementary Tables workbook as optional:
 The fallback must not be interpreted as a negative result for candidates absent
 from the hard-coded main-text rows; it means the supplementary workbook could
 not be programmatically retrieved in that run.
+
+
+## Figshare download fallback
+
+The Susztak eQTL download page currently links the meta-analysis, tubule and
+glomerulus files through Figshare file IDs 33957947, 38295906 and 38295879.
+Some servers receive 403 or zero-byte responses from
+`figshare.com/ndownloader/files/<id>`.
+
+Stage 3A therefore tries the same public file in this order:
+
+1. `https://api.figshare.com/v2/file/download/<file_id>`
+2. `https://ndownloader.figshare.com/files/<file_id>`
+3. `https://figshare.com/ndownloader/files/<file_id>`
+
+Every downloaded eQTL file must pass gzip validation before it is accepted.

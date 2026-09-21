@@ -10,6 +10,23 @@ spec.loader.exec_module(m)
 
 
 class Stage3ATests(unittest.TestCase):
+    def test_figshare_file_id(self):
+        self.assertEqual(
+            m.figshare_file_id("https://figshare.com/ndownloader/files/33957947"),
+            33957947,
+        )
+        self.assertIsNone(m.figshare_file_id("https://example.org/x"))
+
+    def test_validate_gzip(self):
+        import gzip, tempfile
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "x.txt.gz"
+            with gzip.open(p, "wb") as fh:
+                fh.write(b"hello\n")
+            self.assertTrue(m.validate_gzip(p))
+            p.write_bytes(b"<html>blocked</html>")
+            self.assertFalse(m.validate_gzip(p))
+
     def test_main_text_candidate_evidence(self):
         self.assertAlmostEqual(
             m.HIROHAMA_MAIN_TEXT["ACP1"]["kidney_egfr_pph4"], 0.999
