@@ -226,14 +226,14 @@ def workbook_looks_like_supp_tables(path: Path):
 
         score = 0
         for name in names:
-            if re.search(r"(supp.*table|table\\s*\\d+|^\\s*\\d+\\s*$)", name, re.I):
+            if re.search(r"(supp.*table|table\s*\d+|^\s*\d+\s*$)", name, re.I):
                 score += 1
 
         text_hits = 0
         for ws in wb.worksheets[: min(8, len(wb.worksheets))]:
             for row in ws.iter_rows(min_row=1, max_row=8, values_only=True):
                 text = " ".join(str(v) for v in row if v is not None)
-                if re.search(r"supplementary\\s+table", text, re.I):
+                if re.search(r"supplementary\s+table", text, re.I):
                     text_hits += 1
                     break
         wb.close()
