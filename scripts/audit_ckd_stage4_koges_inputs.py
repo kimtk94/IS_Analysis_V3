@@ -7,6 +7,7 @@ import csv
 import gzip
 import json
 import lzma
+import os
 import re
 import shutil
 import subprocess
@@ -29,8 +30,11 @@ ROLE_PATTERNS = {
     "age": [r"(^|_)age($|_)"],
     "sex": [r"(^|_)sex($|_)", r"gender"],
     "bmi": [r"(^|_)bmi($|_)"],
-    "diabetes": [r"diabet", r"dm"],
-    "hypertension": [r"hypert", r"htn", r"blood.?pressure", r"(^|_)sbp($|_)", r"(^|_)dbp($|_)"],
+    "diabetes": [r"diabet", r"(^|_)dm($|_)"],
+    "hypertension": [
+        r"hypert", r"(^|_)htn($|_)", r"blood.?pressure",
+        r"(^|_)sbp($|_)", r"(^|_)dbp($|_)",
+    ],
 }
 
 
@@ -79,7 +83,7 @@ def open_text(path: Path):
         return lzma.open(path, "rt", encoding="utf-8", errors="replace", newline="")
     if name.endswith(".zst"):
         if not shutil.which("zstdcat"):
-            raise RuntimeError("zstdcat is required for .zst pvar files")
+            raise RuntimeError("zstdcat is required for .zst files")
         proc = subprocess.Popen(
             ["zstdcat", str(path)],
             stdout=subprocess.PIPE,
@@ -108,11 +112,26 @@ def load_anchor_panel(path: Path):
     return out
 
 
-def discover_genotype_metadata(root: Path):
+def iter_files(root: Path, max_files: int):
+    seen = 0
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [
+            d for d in dirnames
+            if d not in {".git", "__pycache__", ".cache", "tmp", "temp"}
+        ]
+        for name in filenames:
+            seen += 1
+            if max_files and seen > max_files:
+                raise RuntimeError(
+                    f"file scan exceeded --max-files={max_files}; "
+                    "narrow --koges-root to the cohort directory"
+                )
+            yield Path(dirpath) / name
+
+
+def discover_genotype_metadata(root: Path, max_files: int):
     found = []
-    for p in root.rglob("*"):
-        if not p.is_file():
-            continue
+    for p in iter_files(root, max_files):
         low = p.name.lower()
         kind = None
         if low.endswith(".pvar.zst") or low.endswith(".pvar.gz"):
@@ -182,7 +201,35 @@ def parse_pvar(path: Path):
             }
 
 
-def parse_vcf_with_bcftools(path: Path, anchors):
+def target_variant(rec, target_rsids, target_positions, allow_position):
+    if rec.get("id") in target_rsids:
+        return True
+    if allow_position and (rec.get("chrom"), str(rec.get("pos"))) in target_positions:
+        return True
+    return False
+
+
+def scan_text_variant_file(path: Path, kind: str, anchors, build_confirmed):
+    target_rsids = {a["rsid"] for a in anchors if a.get("rsid")}
+    target_positions = {
+        (a["chrom_hg19"], a["pos_hg19"])
+        for a in anchors if a["chrom_hg19"] and a["pos_hg19"]
+    }
+    parser = parse_bim if kind == "plink1_bim" else parse_pvar
+    matches = []
+    n_scanned = 0
+    for rec in parser(path):
+        n_scanned += 1
+        if target_variant(
+            rec, target_rsids, target_positions, build_confirmed
+        ):
+            matches.append(rec)
+    return matches, n_scanned
+
+
+def parse_vcf_with_bcftools(path: Path, anchors, build_confirmed):
+    if not build_confirmed:
+        return [], "skipped_vcf_coordinate_query_build_unknown"
     if not shutil.which("bcftools"):
         return [], "bcftools_missing"
     regions = sorted({
@@ -207,11 +254,11 @@ def parse_vcf_with_bcftools(path: Path, anchors):
             continue
         rows.append({
             "source": str(path), "source_kind": "vcf",
-            "line": i, "chrom": norm_chr(v[0]), "pos": v[1],
-            "id": v[2], "ref": norm_allele(v[3]),
+            "line": i, "chrom": norm_chr(v[0]), "id": v[2],
+            "pos": v[1], "ref": norm_allele(v[3]),
             "alt": norm_allele(v[4]), "a1": "", "a2": "",
         })
-    return rows, "queried"
+    return rows, f"queried_target_regions={len(regions)}"
 
 
 def allele_status(anchor, rec):
@@ -237,21 +284,18 @@ def match_anchors(records, anchors, build_confirmed):
     for r in records:
         if r.get("id") and r["id"] != ".":
             by_id[r["id"]].append(r)
-        by_pos[(r["chrom"], str(r["pos"]))].append(r)
+        if build_confirmed:
+            by_pos[(r["chrom"], str(r["pos"]))].append(r)
 
     out = []
     for a in anchors:
         matches = list(by_id.get(a["rsid"], []))
         match_type = "rsid"
-        if not matches:
+        if not matches and build_confirmed:
             matches = list(by_pos.get(
                 (a["chrom_hg19"], a["pos_hg19"]), []
             ))
-            match_type = (
-                "chrpos_hg19_confirmed"
-                if build_confirmed else
-                "chrpos_hg19_unconfirmed_build"
-            )
+            match_type = "chrpos_hg19_confirmed"
         if not matches:
             out.append({
                 "gene_symbol": a["gene_symbol"], "rsid": a["rsid"],
@@ -322,18 +366,19 @@ def inspect_header(path: Path):
     ]
 
 
-def discover_phenotype_schema(root: Path, limit=500):
+def discover_phenotype_schema(root: Path, limit=100, max_files=20000):
     rows = []
     n = 0
-    for p in root.rglob("*"):
+    for p in iter_files(root, max_files):
         if n >= limit:
             break
-        if not p.is_file():
-            continue
         low = p.name.lower()
         if not any(low.endswith(ext) for ext in PHENO_EXTS):
             continue
-        if any(x in low for x in [".pvar", ".vcf", ".bim", ".fam", ".psam"]):
+        if any(
+            x in low for x in
+            [".pvar", ".vcf", ".bim", ".fam", ".psam", ".bed", ".pgen", ".bgen"]
+        ):
             continue
         hdr = inspect_header(p)
         if hdr and any(r["candidate_role"] for r in hdr):
@@ -348,8 +393,17 @@ def main():
     ap.add_argument("--anchor-panel", type=Path, required=True)
     ap.add_argument("--output-root", type=Path, required=True)
     ap.add_argument(
-        "--genome-build", choices=["unknown", "hg19", "GRCh37", "hg38", "GRCh38"],
+        "--genome-build",
+        choices=["unknown", "hg19", "GRCh37", "hg38", "GRCh38"],
         default="unknown"
+    )
+    ap.add_argument(
+        "--max-files", type=int, default=20000,
+        help="Safety cap for recursive file discovery."
+    )
+    ap.add_argument(
+        "--skip-phenotype-scan", action="store_true",
+        help="Only audit genotype metadata/anchor coverage."
     )
     args = ap.parse_args()
 
@@ -357,36 +411,67 @@ def main():
         raise SystemExit(f"KoGES root not found: {args.koges_root}")
 
     anchors = load_anchor_panel(args.anchor_panel)
-    inventory = discover_genotype_metadata(args.koges_root)
     args.output_root.mkdir(parents=True, exist_ok=True)
+    build_confirmed = args.genome_build in {"hg19", "GRCh37"}
 
-    records = []
+    print(
+        f"[audit] root={args.koges_root} anchors={len(anchors)} "
+        f"build={args.genome_build}",
+        flush=True,
+    )
+    inventory = discover_genotype_metadata(
+        args.koges_root, args.max_files
+    )
+    print(
+        f"[audit] genotype metadata files={len(inventory)}",
+        flush=True,
+    )
+
+    # Critical memory-safety rule: never retain the complete KoGES variant
+    # catalogue.  Stream each metadata file and keep only the 9 target anchors.
+    target_records = []
     source_status = []
-    for item in inventory:
+    for i, item in enumerate(inventory, 1):
         p = Path(item["path"])
+        print(
+            f"[audit] {i}/{len(inventory)} {item['kind']} {p}",
+            flush=True,
+        )
         try:
-            if item["kind"] == "plink1_bim":
-                recs = list(parse_bim(p))
-                records.extend(recs)
-                status = f"parsed_variants={len(recs)}"
-            elif item["kind"] == "plink2_pvar":
-                recs = list(parse_pvar(p))
-                records.extend(recs)
-                status = f"parsed_variants={len(recs)}"
+            if item["kind"] in {"plink1_bim", "plink2_pvar"}:
+                recs, n_scanned = scan_text_variant_file(
+                    p, item["kind"], anchors, build_confirmed
+                )
+                target_records.extend(recs)
+                status = (
+                    f"stream_scanned_variants={n_scanned};"
+                    f"target_matches={len(recs)}"
+                )
             elif item["kind"] == "vcf":
-                recs, status = parse_vcf_with_bcftools(p, anchors)
-                records.extend(recs)
+                recs, status = parse_vcf_with_bcftools(
+                    p, anchors, build_confirmed
+                )
+                target_records.extend(recs)
             else:
                 status = "metadata_only_sidecar_required"
         except Exception as exc:
-            status = "error:" + type(exc).__name__
+            status = f"error:{type(exc).__name__}:{exc}"
         x = dict(item)
         x["audit_status"] = status
         source_status.append(x)
 
-    build_confirmed = args.genome_build in {"hg19", "GRCh37"}
-    coverage = match_anchors(records, anchors, build_confirmed)
-    pheno = discover_phenotype_schema(args.koges_root)
+    coverage = match_anchors(
+        target_records, anchors, build_confirmed
+    )
+
+    if args.skip_phenotype_scan:
+        pheno = []
+        print("[audit] phenotype scan skipped", flush=True)
+    else:
+        print("[audit] scanning phenotype headers only", flush=True)
+        pheno = discover_phenotype_schema(
+            args.koges_root, limit=100, max_files=args.max_files
+        )
 
     write_tsv(
         args.output_root / "STAGE4_KOGES_INPUT_INVENTORY.tsv",
@@ -423,18 +508,23 @@ def main():
         "missing_or_incompatible_anchor_genes":
             sorted(set(all_genes) - set(found_genes)),
         "genotype_metadata_files": len(source_status),
+        "target_variant_records_retained": len(target_records),
         "candidate_phenotype_columns": sum(
             bool(r["candidate_role"]) for r in pheno
         ),
+        "memory_safety": (
+            "Variant metadata are streamed; only target-anchor matches are "
+            "retained in memory."
+        ),
         "privacy": (
-            "Only local file metadata, variant metadata, and phenotype column "
-            "names are written. Individual-level genotype/phenotype values "
-            "are not exported."
+            "Only local file metadata, target-variant metadata, and phenotype "
+            "column names are written. Individual-level genotype/phenotype "
+            "values are not exported."
         ),
         "build_warning": (
-            "GRCh37/hg19 chromosome-position fallback is only trusted when "
-            "--genome-build hg19/GRCh37 is explicitly supplied. rsID matches "
-            "remain usable independent of the coordinate-build fallback."
+            "GRCh37/hg19 chromosome-position fallback is disabled unless "
+            "--genome-build hg19/GRCh37 is explicitly supplied. With build "
+            "unknown, only rsID matches are accepted."
         ),
     }
     (args.output_root / "STAGE4_KOGES_AUDIT.json").write_text(
