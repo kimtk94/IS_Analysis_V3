@@ -1,0 +1,27 @@
+name: CKD Stage 3B-4 prep CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/refine_ckd_stage3b_specificity.py'
+      - 'scripts/prepare_ckd_stage4_koges_panel.py'
+      - 'tests/test_ckd_stage3b_stage4_prep.py'
+      - '.github/workflows/ckd-stage3b-stage4-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/refine_ckd_stage3b_specificity.py'
+      - 'scripts/prepare_ckd_stage4_koges_panel.py'
+      - 'tests/test_ckd_stage3b_stage4_prep.py'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python syntax and unit tests
+        run: |
+          python3 -m py_compile scripts/refine_ckd_stage3b_specificity.py
+          python3 -m py_compile scripts/prepare_ckd_stage4_koges_panel.py
+          python3 -m unittest -v tests/test_ckd_stage3b_stage4_prep.py
