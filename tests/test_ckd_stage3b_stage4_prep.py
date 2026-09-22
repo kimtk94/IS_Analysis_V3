@@ -46,6 +46,11 @@ class Tests(unittest.TestCase):
     def test_public_slope(self):
         self.assertAlmostEqual(s4p.ols_slope([(2000,100),(2002,90)]),-5.0)
 
+    def test_public_date_parser(self):
+        d=s4p.parse_yyyymm("200412")
+        self.assertEqual((d.year,d.month),(2004,12))
+        self.assertIsNone(s4p.parse_yyyymm("999999"))
+
     def test_summary_patterns(self):
         rows=[
           {"gene_symbol":"A","cell_type":"x proximal tubule","expression":"10"},
