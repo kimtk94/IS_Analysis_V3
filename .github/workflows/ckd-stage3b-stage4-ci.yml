@@ -7,6 +7,7 @@ on:
       - 'scripts/refine_ckd_stage3b_specificity.py'
       - 'scripts/prepare_ckd_stage4_koges_panel.py'
       - 'scripts/audit_ckd_stage4_koges_inputs.py'
+      - 'scripts/prototype_ckd_stage4_public_phenotypes.py'
       - 'tests/test_ckd_stage3b_stage4_prep.py'
       - '.github/workflows/ckd-stage3b-stage4-ci.yml'
   pull_request:
@@ -26,4 +27,5 @@ jobs:
           python3 -m py_compile scripts/refine_ckd_stage3b_specificity.py
           python3 -m py_compile scripts/prepare_ckd_stage4_koges_panel.py
           python3 -m py_compile scripts/audit_ckd_stage4_koges_inputs.py
+          python3 -m py_compile scripts/prototype_ckd_stage4_public_phenotypes.py
           python3 -m unittest -v tests/test_ckd_stage3b_stage4_prep.py
