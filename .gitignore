@@ -15,3 +15,9 @@ __pycache__/
 
 # Keep only deliberately committed, tiny fixtures.
 !tests/fixtures/**
+
+# Restricted individual-level cohort data must never enter Git.
+data/koges/
+data/KoGES/
+**/koges_raw/
+**/KoGES_raw/
