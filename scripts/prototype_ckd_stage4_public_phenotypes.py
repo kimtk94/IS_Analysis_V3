@@ -166,21 +166,59 @@ def main():
                 valid.append((x, y, r))
         slope = ols_slope([(x, y) for x, y, _ in valid])
 
-        baseline = valid[0][1] if valid else None
-        lows = [int(y < 60.0) for _, y, _ in valid]
-        two_consecutive_low = any(
-            lows[i] == 1 and lows[i + 1] == 1
-            for i in range(max(0, len(lows) - 1))
+        # Primary baseline is fixed to TRAIN_F0. Do not silently shift baseline
+        # to a later wave when F0 eGFR is missing.
+        f0 = next(
+            (
+                (x, y, r)
+                for x, y, r in valid
+                if r["wave"] == "TRAIN_F0"
+            ),
+            None,
         )
-        incident_strict = int(
-            baseline is not None
-            and baseline >= 60.0
-            and two_consecutive_low
+        baseline_f0 = None if f0 is None else f0[1]
+        followup_years = (
+            valid[-1][0] - valid[0][0]
+            if len(valid) >= 2 else None
+        )
+        primary_slope_eligible = int(
+            len(valid) >= 3
+            and followup_years is not None
+            and followup_years >= 2.0
+        )
+
+        later = [
+            (x, y, r)
+            for x, y, r in valid
+            if r["wave_index"] > 0
+        ]
+        persistent_low = False
+        for i in range(len(later) - 1):
+            x1, y1, _ = later[i]
+            x2, y2, _ = later[i + 1]
+            # KDIGO chronicity requires >=3 months. With this training cohort
+            # visits are usually years apart, but retain an explicit >=90-day
+            # equivalent threshold for production portability.
+            if (
+                y1 < 60.0
+                and y2 < 60.0
+                and (x2 - x1) >= (90.0 / 365.25)
+            ):
+                persistent_low = True
+                break
+
+        incident_primary = int(
+            baseline_f0 is not None
+            and baseline_f0 >= 60.0
+            and persistent_low
+        )
+        prevalent_ckd_f0 = int(
+            baseline_f0 is not None and baseline_f0 < 60.0
         )
         any_later_low = int(
-            baseline is not None
-            and baseline >= 60.0
-            and any(y < 60.0 for _, y, _ in valid[1:])
+            baseline_f0 is not None
+            and baseline_f0 >= 60.0
+            and any(y < 60.0 for _, y, _ in later)
         )
 
         subject_rows.append({
@@ -188,10 +226,14 @@ def main():
             "sex_code": rows[0]["sex_code"] if rows else "",
             "n_waves_total": len(rows),
             "n_egfr_valid": len(valid),
-            "baseline_egfr": "" if baseline is None else baseline,
+            "baseline_f0_available": int(baseline_f0 is not None),
+            "baseline_f0_egfr": "" if baseline_f0 is None else baseline_f0,
+            "prevalent_ckd_f0_lt60": prevalent_ckd_f0,
             "last_egfr": "" if not valid else valid[-1][1],
+            "followup_years_observed": "" if followup_years is None else followup_years,
             "egfr_slope_ml_min_1.73m2_per_year": "" if slope is None else slope,
-            "incident_ckd_two_consecutive_lt60_prototype": incident_strict,
+            "primary_slope_eligible_ge3_measures_ge2y": primary_slope_eligible,
+            "incident_ckd_primary_f0_ge60_persistent_lt60": incident_primary,
             "any_later_egfr_lt60_sensitivity": any_later_low,
         })
 
@@ -209,10 +251,21 @@ def main():
         fnum(r["egfr_ckdepi2021_raw_training"]) is not None for r in long_rows
     )
     slope_n = sum(
-        fnum(r["egfr_slope_ml_min_1.73m2_per_year"]) is not None for r in subject_rows
+        fnum(r["egfr_slope_ml_min_1.73m2_per_year"]) is not None
+        for r in subject_rows
+    )
+    primary_slope_n = sum(
+        int(r["primary_slope_eligible_ge3_measures_ge2y"])
+        for r in subject_rows
+    )
+    baseline_f0_n = sum(
+        int(r["baseline_f0_available"]) for r in subject_rows
+    )
+    prevalent_f0_n = sum(
+        int(r["prevalent_ckd_f0_lt60"]) for r in subject_rows
     )
     strict_events = sum(
-        int(r["incident_ckd_two_consecutive_lt60_prototype"])
+        int(r["incident_ckd_primary_f0_ge60_persistent_lt60"])
         for r in subject_rows
     )
     meta = {
@@ -223,8 +276,11 @@ def main():
         "participants": len(subject_rows),
         "long_rows": len(long_rows),
         "valid_egfr_rows": valid_egfr_n,
-        "subjects_with_slope": slope_n,
-        "prototype_incident_ckd_events": strict_events,
+        "subjects_with_any_slope": slope_n,
+        "subjects_primary_slope_eligible_ge3_measures_ge2y": primary_slope_n,
+        "subjects_with_f0_egfr": baseline_f0_n,
+        "prevalent_ckd_f0_lt60": prevalent_f0_n,
+        "prototype_incident_ckd_events_primary": strict_events,
         "egfr_equation": (
             "2021 CKD-EPI creatinine equation: race-free; "
             "sex code 1=male, 2=female."
@@ -234,7 +290,9 @@ def main():
             "The public BASE_* files use a different synthetic ID namespace and are not joined to FOLLOW_*.",
             "KoGES assay/device creatinine conversion guidance has not been applied here.",
             "Manuscript-level genotype association requires controlled-access individual KoGES data via CODA.",
-            "Strict incident-CKD prototype requires baseline eGFR >=60 and two consecutive later eGFR values <60; this is a workflow definition, not a claim of adjudicated clinical CKD."
+            "Primary incident-CKD prototype fixes baseline to TRAIN_F0, requires F0 eGFR >=60, and requires two consecutive later eGFR values <60 separated by at least 90 days.",
+            "Primary slope eligibility requires at least 3 valid eGFR measurements spanning at least 2 years.",
+            "These are workflow definitions for QA, not claims of adjudicated clinical CKD."
         ],
     }
     (args.output_root / "STAGE4_PUBLIC_PROTOTYPE.json").write_text(
