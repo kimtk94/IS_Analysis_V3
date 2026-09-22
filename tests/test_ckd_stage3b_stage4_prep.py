@@ -10,6 +10,7 @@ def load(name,path):
 
 s3=load("s3",ROOT/"scripts/refine_ckd_stage3b_specificity.py")
 s4a=load("s4a",ROOT/"scripts/audit_ckd_stage4_koges_inputs.py")
+s4p=load("s4p",ROOT/"scripts/prototype_ckd_stage4_public_phenotypes.py")
 
 class Tests(unittest.TestCase):
     def test_compartments(self):
@@ -33,6 +34,17 @@ class Tests(unittest.TestCase):
         self.assertEqual(out[0]["found"],1)
         self.assertEqual(out[0]["match_type"],"rsid")
         self.assertEqual(out[0]["allele_status"],"ref_alt_match")
+
+    def test_public_egfr_formula(self):
+        male=s4p.egfr_ckdepi_2021(1.0,50,1)
+        female=s4p.egfr_ckdepi_2021(1.0,50,2)
+        self.assertTrue(50 < male < 120)
+        self.assertTrue(50 < female < 120)
+        self.assertIsNone(s4p.egfr_ckdepi_2021(None,50,1))
+        self.assertIsNone(s4p.egfr_ckdepi_2021(1.0,50,9))
+
+    def test_public_slope(self):
+        self.assertAlmostEqual(s4p.ols_slope([(2000,100),(2002,90)]),-5.0)
 
     def test_summary_patterns(self):
         rows=[
