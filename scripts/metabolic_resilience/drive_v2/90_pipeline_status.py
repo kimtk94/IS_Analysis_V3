@@ -26,6 +26,9 @@ checks = [
     ("Stage5B KoGES feasibility", ROOT/"results/metabolic_resilience/stage5_koges/STAGE5B_KOGES_FEASIBILITY_SUMMARY.json"),
     ("Stage5C GRS coverage", ROOT/"results/metabolic_resilience/stage5_koges/STAGE5C_GRS_VARIANT_COVERAGE.json"),
     ("Stage5D analysis contract", ROOT/"results/metabolic_resilience/stage5_koges/STAGE5D_ANALYSIS_CONTRACT.json"),
+    ("Stage5E incident MetS Cox", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5E_INCIDENT_METS_COX_SUMMARY.json"),
+    ("Stage5F repeated MBI LMM", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5F_REPEATED_MBI_LMM_SUMMARY.json"),
+    ("Stage5G PA interaction", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5G_PA_INTERACTION_SUMMARY.json"),
 ]
 
 print("="*92)
