@@ -1,12 +1,12 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "source": "Google Drive",
   "source_folder_id": "1J5NkxmjTmGRpFKOHf9JFLnvEu2u0MwMW",
   "source_folder_url": "https://drive.google.com/drive/folders/1J5NkxmjTmGRpFKOHf9JFLnvEu2u0MwMW",
   "project": "MASTER_DEGREE / METABOLIC_RESILIENCE_CODE",
   "sync_policy": "All active non-ARCHIVE .py/.sh/.R Drive files must match Git drive_v2 by filename, except explicitly allowlisted repo-native utilities. Runner v3 and docs are Drive orchestration/documentation.",
-  "file_count": 50,
-  "code_file_count": 47,
+  "file_count": 55,
+  "code_file_count": 52,
   "files": [
     {
       "id": "1XaQje2Mw0J9Fs7q19nZplfirX00p8ZLT",
@@ -305,12 +305,28 @@
       "url": "https://drive.google.com/file/d/1g58vkhhAt4phduIxRPusJkxTQjsGsuJL/view?usp=drivesdk"
     },
     {
+      "id": "1enreinoI0sjBrS_7VItEUc6op1lLXoz3",
+      "title": "74_stage5e_run_incident_mets_cox.R",
+      "mime_type": "application/octet-stream",
+      "size": 2911,
+      "modified_time": "2026-09-26T16:48:58.292Z",
+      "url": "https://drive.google.com/file/d/1enreinoI0sjBrS_7VItEUc6op1lLXoz3/view?usp=drivesdk"
+    },
+    {
       "id": "1k8-R0ssTfGRs-NW-cv7Rm4tvzg3ZuJb8",
       "title": "75_stage5f_koges_pa_interaction.R",
       "mime_type": "application/octet-stream",
       "size": 1551,
       "modified_time": "2026-09-26T16:33:05.644Z",
       "url": "https://drive.google.com/file/d/1k8-R0ssTfGRs-NW-cv7Rm4tvzg3ZuJb8/view?usp=drivesdk"
+    },
+    {
+      "id": "19xTc4Bt2NtfJwKcEp_DEeLBGG9zDStlt",
+      "title": "75_stage5f_run_repeated_mbi_lmm.R",
+      "mime_type": "application/octet-stream",
+      "size": 2809,
+      "modified_time": "2026-09-26T16:49:03.564Z",
+      "url": "https://drive.google.com/file/d/19xTc4Bt2NtfJwKcEp_DEeLBGG9zDStlt/view?usp=drivesdk"
     },
     {
       "id": "1ZPxBhHycD4qjS_8xNzqa-hGuhCpgFlUT",
@@ -321,12 +337,36 @@
       "url": "https://drive.google.com/file/d/1ZPxBhHycD4qjS_8xNzqa-hGuhCpgFlUT/view?usp=drivesdk"
     },
     {
+      "id": "1GY_JmC6-TnTGm6fa0FHt9TfAL-hCEXOT",
+      "title": "76_stage5g_run_pa_interaction.R",
+      "mime_type": "application/octet-stream",
+      "size": 3738,
+      "modified_time": "2026-09-26T16:49:13.330Z",
+      "url": "https://drive.google.com/file/d/1GY_JmC6-TnTGm6fa0FHt9TfAL-hCEXOT/view?usp=drivesdk"
+    },
+    {
       "id": "1kFTj4IKQcOzVNtO_kdBjJRLna2pj8tag",
       "title": "77_stage5h_model_diagnostics.R",
       "mime_type": "application/octet-stream",
       "size": 1288,
       "modified_time": "2026-09-26T16:36:54.249Z",
       "url": "https://drive.google.com/file/d/1kFTj4IKQcOzVNtO_kdBjJRLna2pj8tag/view?usp=drivesdk"
+    },
+    {
+      "id": "1NEPY8vE_TeywL9PvNycyG80Ba6R0Uh-a",
+      "title": "77_stage5h_run_baseline_pa_fallback.R",
+      "mime_type": "application/octet-stream",
+      "size": 3626,
+      "modified_time": "2026-09-26T16:49:18.162Z",
+      "url": "https://drive.google.com/file/d/1NEPY8vE_TeywL9PvNycyG80Ba6R0Uh-a/view?usp=drivesdk"
+    },
+    {
+      "id": "1aO_zzQk_CNlw8tLrQQ_Fzo-wGYNhkpQh",
+      "title": "78_stage5i_build_protein_grs.py",
+      "mime_type": "text/x-python",
+      "size": 3931,
+      "modified_time": "2026-09-26T16:49:23.084Z",
+      "url": "https://drive.google.com/file/d/1aO_zzQk_CNlw8tLrQQ_Fzo-wGYNhkpQh/view?usp=drivesdk"
     },
     {
       "id": "1buJWbZSI6YPeqmr0iRbwMWcNFtpRlBns",
