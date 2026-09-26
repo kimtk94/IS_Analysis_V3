@@ -201,6 +201,56 @@ def scientific_contract_checks() -> list[str]:
         r"incident MetS.*Cox proportional hazards.*Repeated continuous Metabolic Burden Index.*linear mixed model",
         "Stage5 contract locks incident MetS primary and repeated MBI secondary",
     )
+    errors += require(
+        v2 / "46_stage3d6_multiple_testing_overlap.py",
+        r"T2D_VALIDATION.*BH-FDR within prespecified metabolic domain",
+        "T2D is a separate validation family and metabolic multiplicity is prespecified",
+    )
+    errors += require(
+        v2 / "47_stage3d7_steiger_sensitivity.py",
+        r"HOLD_BINARY_LIABILITY_ASSUMPTIONS",
+        "binary-outcome Steiger remains HOLD without liability-scale assumptions",
+    )
+    errors += require(
+        v2 / "54_stage3e4_multisignal_coloc_gate.py",
+        r"RUN_MULTISIGNAL_COLOC.*OPTIONAL_MULTISIGNAL_SENSITIVITY.*ABF_SINGLE_SIGNAL_ACCEPTABLE",
+        "multi-signal loci are explicitly routed to conditional/SuSiE sensitivity",
+    )
+    errors += require(
+        v2 / "55_stage3f0_variant_artifact_audit.py",
+        r"EXCLUDE_AND_RERUN_MR_COLOC",
+        "protein-altering/coding/splice variants trigger exclusion sensitivity",
+    )
+    errors += require(
+        v2 / "65_stage4f_eas_ld_reference_plan.py",
+        r"eur_ld_allowed_primary.*0",
+        "EUR LD is prohibited as the primary EAS LD reference",
+    )
+    errors += require(
+        v2 / "74_stage5e_koges_longitudinal_models.R",
+        r"coxph.*LMM_MBI_SLOPE",
+        "KoGES primary Cox and secondary longitudinal MBI models are implemented",
+    )
+    errors += require(
+        v2 / "75_stage5f_koges_pa_interaction.R",
+        r"physical_activity.*time_years",
+        "KoGES physical-activity interaction model includes longitudinal interaction",
+    )
+    errors += require(
+        v2 / "80_stage6a_functional_annotation_scaffold.py",
+        r"must not override MR/coloc evidence",
+        "functional annotation remains supportive rather than causal evidence",
+    )
+    errors += require(
+        v2 / "91_master_analysis_gate.py",
+        r"HOLD_CORE_INCOMPLETE.*PASS_CORE_READY",
+        "master manuscript gate blocks incomplete core causal claims",
+    )
+    errors += require(
+        v2 / "92_environment_snapshot.sh",
+        r"pip freeze.*sessionInfo",
+        "reproducibility snapshot captures Python and R environments",
+    )
 
     return errors
 
