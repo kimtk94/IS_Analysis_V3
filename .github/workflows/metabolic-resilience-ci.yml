@@ -27,6 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install repository test dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements.txt openpyxl
+
       - name: Repository smoke test
         run: bash scripts/codex_smoke_test.sh
 
