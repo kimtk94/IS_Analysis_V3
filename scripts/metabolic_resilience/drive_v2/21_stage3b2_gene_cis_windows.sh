@@ -5,13 +5,9 @@ set +e
 set +u
 set +o pipefail 2>/dev/null || true
 
-SHORT="$ROOT/results/metabolic_resilience/stage2_gwas/final_shortlist/STAGE2_FINAL_SCREENING_SHORTLIST.tsv"
-EXP="$ROOT/results/metabolic_resilience/stage2_gwas/exposure_marginal/UKBPPP_ST9_STRONGEST_CIS_PER_PROTEIN.tsv.gz"
 OUTDIR="$ROOT/results/metabolic_resilience/stage3_full_pgwas/audit"
 PAYLOAD="$OUTDIR/STAGE3B2_ENSEMBL_PAYLOAD.json"
 JSON="$OUTDIR/STAGE3B2_ENSEMBL_GRCH37_LOOKUP.json"
-OUT="$OUTDIR/STAGE3B2_GENE_CIS_WINDOWS.tsv"
-SUMMARY="$OUTDIR/STAGE3B2_GENE_CIS_WINDOWS_SUMMARY.json"
 mkdir -p "$OUTDIR"
 
 python3 - <<'PY'
@@ -37,11 +33,7 @@ python3 - <<'PY'
 from pathlib import Path
 import csv,gzip,json
 ROOT=Path('/srv/is-analysis')
-SHORT=ROOT/'results/metabolic_resilience/stage2_gwas/final_shortlist/STAGE2_FINAL_SCREENING_SHORTLIST.tsv'
-EXP=ROOT/'results/metabolic_resilience/stage2_gwas/exposure_marginal/UKBPPP_ST9_STRONGEST_CIS_PER_PROTEIN.tsv.gz'
 JSON=ROOT/'results/metabolic_resilience/stage3_full_pgwas/audit/STAGE3B2_ENSEMBL_GRCH37_LOOKUP.json'
-OUT=ROOT/'results/metabolic_resilience/stage3_full_pgwas/audit/STAGE3B2_GENE_CIS_WINDOWS.tsv'
-SUMMARY=ROOT/'results/metabolic_resilience/stage3_full_pgwas/audit/STAGE3B2_GENE_CIS_WINDOWS_SUMMARY.json'
 with SHORT.open() as f: short=list(csv.DictReader(f,delimiter='\t'))
 anchors={}
 with gzip.open(EXP,'rt') as f:
