@@ -171,6 +171,37 @@ def scientific_contract_checks() -> list[str]:
         "1000G Phase 3 v5b reference",
     )
 
+    errors += require(
+        v2 / "62_stage4c_select_eur_candidates.py",
+        r"MR_FDR\s*=\s*0\.05.*COLOC_H4\s*=\s*0\.80",
+        "EUR candidate gate requires MR FDR 0.05 and coloc H4 0.80",
+    )
+    errors += require(
+        v2 / "62_stage4c_select_eur_candidates.py",
+        r"len\(domains\)\s*>=\s*2",
+        "multi-domain EUR priority requires at least 2 metabolic domains",
+    )
+    errors += require(
+        v2 / "64_stage4e_cross_ancestry_summarize.py",
+        r"CONCORDANT_SIGNIFICANT.*CONCORDANT_NONSIGNIFICANT.*OPPOSITE_DIRECTION.*NOT_TESTABLE",
+        "EAS replication keeps four interpretation classes",
+    )
+    errors += require(
+        v2 / "71_stage5b_koges_feasibility_gate.py",
+        r"n_gen_long\s*>=\s*4000",
+        "KoGES genotype-longitudinal GO gate requires N >= 4000",
+    )
+    errors += require(
+        v2 / "71_stage5b_koges_feasibility_gate.py",
+        r"physical_activity_usable_waves.*<\s*3.*USE_BASELINE_PA_STRATIFICATION",
+        "KoGES PA fallback uses baseline stratification when repeated PA <3 waves",
+    )
+    errors += require(
+        v2 / "73_stage5d_write_analysis_contract.py",
+        r"incident MetS.*Cox proportional hazards.*Repeated continuous Metabolic Burden Index.*linear mixed model",
+        "Stage5 contract locks incident MetS primary and repeated MBI secondary",
+    )
+
     return errors
 
 
