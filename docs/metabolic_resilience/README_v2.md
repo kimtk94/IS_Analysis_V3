@@ -79,3 +79,10 @@ Do not automatically advance past a gate when the prior stage returns `REVIEW`, 
   - Secondary repeated MBI mixed model; primary term is `ProteinGRS x Time`.
 - `76_stage5g_run_pa_interaction.R`
   - Repeated physical-activity interaction; automatically HOLDs when PA is usable in <3 waves.
+
+
+- `77_stage5h_run_baseline_pa_fallback.R`
+  - Baseline-PA fallback route when repeated PA is usable in <3 waves.
+- `78_stage5i_build_protein_grs.py`
+  - Participant-level ProteinGRS = sum(dosage × external pQTL beta).
+  - Complete intended GRS is explicitly distinguished from partial scores.
