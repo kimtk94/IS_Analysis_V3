@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Static CI checks for metabolic-resilience server scripts."""
+"""Static and scientific-contract CI checks for metabolic-resilience code."""
 
 from __future__ import annotations
 
 import ast
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 
@@ -18,7 +19,9 @@ ERREXIT_RE = re.compile(
 SECRET_RE = re.compile(
     r"(?i)(?:api[_-]?key|secret|token|password)\s*=\s*['\"][^'\"]{8,}['\"]"
 )
-HARDCODED_ROOT_RE = re.compile(r"(?m)^\s*ROOT=['\"]/srv/is-analysis['\"]\s*$")
+HARDCODED_ROOT_RE = re.compile(
+    r"(?m)^\s*ROOT=['\"]/srv/is-analysis['\"]\s*$"
+)
 PY_START_RE = re.compile(
     r"^\s*python3?\s+-\s+<<['\"]?([A-Za-z_][A-Za-z0-9_]*)['\"]?\s*$"
 )
@@ -33,7 +36,7 @@ def check_bash_syntax(path: pathlib.Path) -> list[str]:
     )
     if proc.returncode == 0:
         return []
-    return [f"{path}: bash -n failed:\n{proc.stderr.strip()}"]
+    return [f"{path}: bash -n failed: {proc.stderr.strip()}"]
 
 
 def extract_python_heredocs(text: str) -> list[tuple[int, str]]:
@@ -62,26 +65,51 @@ def extract_python_heredocs(text: str) -> list[tuple[int, str]]:
     return blocks
 
 
-def check_python_heredocs(path: pathlib.Path, text: str) -> list[str]:
+def check_embedded_python(path: pathlib.Path, text: str) -> list[str]:
     errors: list[str] = []
 
     for start_line, code in extract_python_heredocs(text):
         try:
             ast.parse(code, filename=f"{path}:heredoc@{start_line}")
         except SyntaxError as exc:
-            shell_line = start_line + (exc.lineno or 1) - 1
+            line = start_line + (exc.lineno or 1) - 1
             errors.append(
                 f"{path}: embedded Python syntax error near shell line "
-                f"{shell_line}: {exc.msg}"
+                f"{line}: {exc.msg}"
             )
 
     return errors
 
 
+def check_python(path: pathlib.Path) -> list[str]:
+    try:
+        ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        return []
+    except SyntaxError as exc:
+        return [f"{path}:{exc.lineno}: Python syntax error: {exc.msg}"]
+
+
+def check_r(path: pathlib.Path) -> list[str]:
+    if not shutil.which("Rscript"):
+        return [f"{path}: Rscript unavailable on CI runner"]
+
+    proc = subprocess.run(
+        ["Rscript", "-e", f"parse(file={str(path)!r})"],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    if proc.returncode == 0:
+        return []
+
+    return [f"{path}: R parse failed: {proc.stderr.strip()}"]
+
+
 def policy_checks(path: pathlib.Path, text: str) -> list[str]:
     errors: list[str] = []
 
-    if ERREXIT_RE.search(text):
+    if path.suffix == ".sh" and ERREXIT_RE.search(text):
         errors.append(f"{path}: prohibited errexit/set -e usage")
 
     if SECRET_RE.search(text):
@@ -90,30 +118,91 @@ def policy_checks(path: pathlib.Path, text: str) -> list[str]:
     if HARDCODED_ROOT_RE.search(text):
         errors.append(
             f"{path}: hard-coded ROOT=/srv/is-analysis; "
-            "use a configurable IS_ANALYSIS_ROOT with /srv/is-analysis as the default"
+            "use configurable IS_ANALYSIS_ROOT with /srv/is-analysis as default"
         )
 
     return errors
 
 
-def main() -> int:
-    scripts = sorted(SCRIPT_DIR.glob("*.sh"))
+def require(path: pathlib.Path, pattern: str, description: str) -> list[str]:
+    if not path.exists():
+        return [f"missing scientific-contract file: {path}"]
 
-    if not scripts:
-        print(f"[INFO] no metabolic-resilience shell scripts yet under {SCRIPT_DIR}")
-        return 0
+    text = path.read_text(encoding="utf-8", errors="replace")
+
+    if re.search(pattern, text, flags=re.I | re.M | re.S):
+        return []
+
+    return [f"{path}: missing locked contract: {description}"]
+
+
+def scientific_contract_checks() -> list[str]:
+    v2 = SCRIPT_DIR / "drive_v2"
+    errors: list[str] = []
+
+    errors += require(
+        v2 / "43_stage3d3_mr.R",
+        r"if\s*\(\s*k\s*>=\s*3\s*\).*?WEIGHTED_MEDIAN",
+        "weighted median only when k >= 3",
+    )
+    errors += require(
+        v2 / "43_stage3d3_mr.R",
+        r"if\s*\(\s*k\s*>=\s*10\s*\).*?MR_EGGER",
+        "MR-Egger only when k >= 10",
+    )
+    errors += require(
+        v2 / "50_stage3e0_coloc_preflight.sh",
+        r"T2D.*HOLD.*case proportion",
+        "T2D coloc HOLD until verified case proportion",
+    )
+    errors += require(
+        v2 / "52_stage3e2_coloc_abf.R",
+        r"1e-6.*1e-5.*1e-4",
+        "coloc p12 sensitivity at 1e-6, 1e-5, 1e-4",
+    )
+    errors += require(
+        v2 / "32_stage3c1_ld_clump.py",
+        r"0\.01",
+        "LD clumping r2 threshold 0.01",
+    )
+    errors += require(
+        v2 / "31_stage3c0r_build_1000g_eur_references.sh",
+        r"integrated_v5b",
+        "1000G Phase 3 v5b reference",
+    )
+
+    return errors
+
+
+def main() -> int:
+    files = sorted(
+        p for p in SCRIPT_DIR.rglob("*")
+        if p.is_file() and p.suffix in {".sh", ".py", ".R"}
+    )
+
+    if not files:
+        print(f"[FAIL] no source files found under {SCRIPT_DIR}", file=sys.stderr)
+        return 1
 
     failures: list[str] = []
 
-    print(f"[INFO] checking {len(scripts)} scripts")
+    print(f"[INFO] checking {len(files)} metabolic-resilience source files")
 
-    for path in scripts:
-        text = path.read_text(encoding="utf-8")
+    for path in files:
+        text = path.read_text(encoding="utf-8", errors="replace")
         print(f"[CHECK] {path.relative_to(ROOT)}")
 
-        failures.extend(check_bash_syntax(path))
-        failures.extend(check_python_heredocs(path, text))
+        if path.suffix == ".sh":
+            failures.extend(check_bash_syntax(path))
+            failures.extend(check_embedded_python(path, text))
+        elif path.suffix == ".py":
+            failures.extend(check_python(path))
+        elif path.suffix == ".R":
+            failures.extend(check_r(path))
+
         failures.extend(policy_checks(path, text))
+
+    failures.extend(scientific_contract_checks())
 
     if failures:
         print("\n[FAIL] metabolic-resilience CI findings:", file=sys.stderr)
@@ -121,7 +210,7 @@ def main() -> int:
             print(f"- {item}", file=sys.stderr)
         return 1
 
-    print("\n[PASS] all metabolic-resilience static checks passed")
+    print("\n[PASS] syntax, policy, and scientific contracts passed")
     return 0
 
 
