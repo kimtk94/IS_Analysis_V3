@@ -2,7 +2,7 @@
 from __future__ import annotations
 import json,os
 from pathlib import Path
-REPO=Path(os.environ.get('IS_ANALYSIS_REPO','/srv/is-analysis/IS_Analysis_V3'))
+REPO=Path(os.environ.get('IS_ANALYSIS_REPO',str(Path(__file__).resolve().parents[3])))
 MAN=REPO/'docs/metabolic_resilience/DRIVE_SOURCE_MANIFEST.json'
 CODE=REPO/'scripts/metabolic_resilience/drive_v2'
 if not MAN.exists(): raise SystemExit('Drive manifest missing')
