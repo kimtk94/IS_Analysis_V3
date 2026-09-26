@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-cd /srv/is-analysis
+ROOT="${IS_ANALYSIS_ROOT:-/srv/is-analysis}"
+cd "$ROOT" || exit 1
 set +e
 set +u
 set +o pipefail 2>/dev/null || true
 
-ROOT="/srv/is-analysis"
 PY="$ROOT/.venv-ukbppp/bin/python"
 DATA="$ROOT/data/metabolic_resilience/stage3_full_pgwas/ukbppp_eur"
 AUDIT="$ROOT/results/metabolic_resilience/stage3_full_pgwas/audit"
