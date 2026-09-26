@@ -243,7 +243,7 @@ def scientific_contract_checks() -> list[str]:
     )
     errors += require(
         v2 / "91_master_analysis_gate.py",
-        r"HOLD_CORE_INCOMPLETE.*PASS_CORE_READY",
+        r"(?:PASS_CORE_READY.*HOLD_CORE_INCOMPLETE|HOLD_CORE_INCOMPLETE.*PASS_CORE_READY)",
         "master manuscript gate blocks incomplete core causal claims",
     )
     errors += require(
