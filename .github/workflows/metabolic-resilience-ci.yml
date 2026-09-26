@@ -43,6 +43,9 @@ jobs:
       - name: Syntax, policy, and scientific-contract checks
         run: python3 scripts/ci/check_metabolic_resilience_scripts.py
 
+      - name: Drive-to-Git source-set drift audit
+        run: python3 scripts/metabolic_resilience/drive_v2/93_drive_git_drift_audit.py
+
       - name: ShellCheck metabolic-resilience shell scripts
         shell: bash
         run: |
