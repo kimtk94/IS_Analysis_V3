@@ -7,7 +7,6 @@ set +o pipefail 2>/dev/null || true
 
 LDROOT="$ROOT/data/metabolic_resilience/stage2_gwas/ld_reference_1kg_eur"
 WINDOWS="$ROOT/results/metabolic_resilience/stage3_full_pgwas/audit/STAGE3B2_GENE_CIS_WINDOWS.tsv"
-PRECLUMP="$ROOT/results/metabolic_resilience/stage3_full_pgwas/ld_clump"
 EUR="$LDROOT/EUR503.samples"
 VCFDIR="$LDROOT/stage3_regional_vcf"
 PGENDIR="$LDROOT/stage3_regional_pgen"
@@ -86,7 +85,7 @@ for CHR in $CHROMS; do
   "$BCFTOOLS" index -n "$VCF" >/dev/null 2>&1; INDEX_RC=$?
   if [ "$INDEX_RC" != "0" ]; then echo "[FAIL] chr$CHR source/index"; rm -f "$VCF" "$TBI"; continue; fi
 
-  while IFS=$'\t' read -r PID GENE GCHR START END; do
+  while IFS=$'\t' read -r _ GENE GCHR START END; do
     [ "$GCHR" != "$CHR" ] && continue
     OUTVCF="$VCFDIR/$GENE.1000G_EUR.b37.vcf.gz"; TMP="$VCFDIR/$GENE.tmp.vcf.gz"; PREFIX="$PGENDIR/$GENE.1000G_EUR.b37"
     rm -f "$TMP" "$TMP.tbi" "$OUTVCF" "$OUTVCF.tbi"
