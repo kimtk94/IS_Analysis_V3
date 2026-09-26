@@ -29,6 +29,8 @@ checks = [
     ("Stage5E incident MetS Cox", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5E_INCIDENT_METS_COX_SUMMARY.json"),
     ("Stage5F repeated MBI LMM", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5F_REPEATED_MBI_LMM_SUMMARY.json"),
     ("Stage5G PA interaction", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5G_PA_INTERACTION_SUMMARY.json"),
+    ("Stage5H baseline PA fallback", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5H_BASELINE_PA_FALLBACK_SUMMARY.json"),
+    ("Stage5I participant ProteinGRS", ROOT/"results/metabolic_resilience/stage5_koges/STAGE5I_PROTEIN_GRS_SUMMARY.json"),
 ]
 
 print("="*92)
