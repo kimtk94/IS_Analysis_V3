@@ -1,1 +1,46 @@
-name: Metabolic Resilience CI\n\non:\n  push:\n    branches:\n      - main\n      - 'research/metabolic-resilience-*'\n    paths:\n      - 'scripts/metabolic_resilience/**'\n      - 'scripts/ci/check_metabolic_resilience_scripts.py'\n      - '.github/workflows/metabolic-resilience-ci.yml'\n  pull_request:\n    paths:\n      - 'scripts/metabolic_resilience/**'\n      - 'scripts/ci/check_metabolic_resilience_scripts.py'\n      - '.github/workflows/metabolic-resilience-ci.yml'\n  workflow_dispatch:\n\njobs:\n  static-review:\n    runs-on: ubuntu-24.04\n\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Repository smoke test\n        run: bash scripts/codex_smoke_test.sh\n\n      - name: Install ShellCheck\n        run: |\n          sudo apt-get update\n          sudo apt-get install -y shellcheck\n\n      - name: Bash, embedded Python, and project-policy checks\n        run: python3 scripts/ci/check_metabolic_resilience_scripts.py\n\n      - name: ShellCheck metabolic-resilience scripts\n        shell: bash\n        run: |\n          shopt -s nullglob\n          files=(scripts/metabolic_resilience/*.sh)\n          if ((${#files[@]} == 0)); then\n            echo "No metabolic-resilience scripts committed yet."\n            exit 0\n          fi\n          shellcheck -x -S warning "${files[@]}"\n
+name: Metabolic Resilience CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'research/metabolic-resilience-*'
+    paths:
+      - 'scripts/metabolic_resilience/**'
+      - 'scripts/ci/check_metabolic_resilience_scripts.py'
+      - '.github/workflows/metabolic-resilience-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/metabolic_resilience/**'
+      - 'scripts/ci/check_metabolic_resilience_scripts.py'
+      - '.github/workflows/metabolic-resilience-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  static-review:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Repository smoke test
+        run: bash scripts/codex_smoke_test.sh
+
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Bash, embedded Python, and project-policy checks
+        run: python3 scripts/ci/check_metabolic_resilience_scripts.py
+
+      - name: ShellCheck metabolic-resilience scripts
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=(scripts/metabolic_resilience/*.sh)
+          if ((${#files[@]} == 0)); then
+            echo "No metabolic-resilience scripts committed yet."
+            exit 0
+          fi
+          shellcheck -x -S warning "${files[@]}"
