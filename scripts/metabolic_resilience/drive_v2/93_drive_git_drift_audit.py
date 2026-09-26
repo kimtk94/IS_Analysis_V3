@@ -12,4 +12,4 @@ git={x.name for x in CODE.iterdir() if x.is_file() and x.suffix in {'.py','.sh',
 repo_native_allow={'audit_metabolic_resilience_koges_inputs.py'}
 git_mirror=git-repo_native_allow
 res={'drive_only':sorted(drive-git_mirror),'git_only':sorted(git_mirror-drive),'repo_native_allow':sorted(repo_native_allow & git),'matched':len(drive&git_mirror),'status':'PASS' if drive==git_mirror else 'DRIFT'}
-out=REPO/'docs/metabolic_resilience/DRIVE_GIT_DRIFT_AUDIT.json';out.write_text(json.dumps(res,indent=2)+'\n');print(json.dumps(res,indent=2));raise SystemExit(0 if drive==git else 2)
+out=REPO/'docs/metabolic_resilience/DRIVE_GIT_DRIFT_AUDIT.json';out.write_text(json.dumps(res,indent=2)+'\n');print(json.dumps(res,indent=2));raise SystemExit(0 if drive==git_mirror else 2)
