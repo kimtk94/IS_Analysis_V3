@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-cd /srv/is-analysis
+ROOT="${IS_ANALYSIS_ROOT:-/srv/is-analysis}"
+cd "$ROOT" || exit 1
 
 set +e
 set +u
 set +o pipefail 2>/dev/null || true
 
-ROOT="/srv/is-analysis"
 R_LIB="$ROOT/.R-metabolic-resilience"
 REG="$ROOT/results/metabolic_resilience/stage3_confirmatory_mr/STAGE3D0_OUTCOME_REGISTRY.tsv"
 CIS="$ROOT/results/metabolic_resilience/stage3_full_pgwas/cis_marginal"
