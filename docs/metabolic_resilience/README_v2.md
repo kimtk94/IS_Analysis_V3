@@ -48,3 +48,24 @@
 ## Execution gate
 
 Do not automatically advance past a gate when the prior stage returns `REVIEW`, `HOLD`, `WARN_LOW_NSNP`, or `FAIL`. Review the audit file first.
+
+
+## Stage 4-5 continuation added in Git
+
+- `62_stage4c_select_eur_candidates.py`
+  - EUR-only gate before EAS replication.
+  - MR FDR <0.05 + favorable direction + coloc PP.H4 >=0.80.
+  - Multi-domain priority requires support in >=2 metabolic domains.
+- `63_stage4d_eas_registry_validate.py`
+  - Explicit CKB / KoGES / BBJ / TWB schema and sample-overlap registry.
+  - Resource-specific schema is never guessed.
+- `64_stage4e_cross_ancestry_summarize.py`
+  - Separates concordant-significant, concordant-nonsignificant,
+    opposite-direction, and not-testable EAS results.
+- `71_stage5b_koges_feasibility_gate.py`
+  - Implements the prespecified KoGES GO / MODIFY / NO-GO logic.
+- `72_stage5c_validate_grs_variant_coverage.py`
+  - Audits KoGES genotype coverage and dosage-allele orientation for external
+    cis-pQTL GRS weights before participant-level scoring.
+- `73_stage5d_write_analysis_contract.py`
+  - Locks incident MetS as primary and repeated MBI as secondary before fitting.
