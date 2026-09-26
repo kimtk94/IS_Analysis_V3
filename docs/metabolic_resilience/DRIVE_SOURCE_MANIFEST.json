@@ -1,10 +1,12 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source": "Google Drive",
   "source_folder_id": "1J5NkxmjTmGRpFKOHf9JFLnvEu2u0MwMW",
   "source_folder_url": "https://drive.google.com/drive/folders/1J5NkxmjTmGRpFKOHf9JFLnvEu2u0MwMW",
   "project": "MASTER_DEGREE / METABOLIC_RESILIENCE_CODE",
-  "sync_policy": "Non-ARCHIVE Drive files are the upstream working-copy snapshot imported into this Git branch; Git CI is the review gate.",
+  "sync_policy": "Non-ARCHIVE Drive code files must match scripts/metabolic_resilience/drive_v2 in Git. Colab runner and README remain Drive-facing orchestration/docs.",
+  "file_count": 49,
+  "code_file_count": 47,
   "files": [
     {
       "id": "1gs18ZTrEE8INWZA3lKqOuDwILD31eKcX",
@@ -151,6 +153,22 @@
       "url": "https://drive.google.com/file/d/16BMRG0AeXmxnILcScPQNssilgUefOjg7/view?usp=drivesdk"
     },
     {
+      "id": "1Sqls451U3r-PByeq8DK4YVxa4Ss9tsJd",
+      "title": "46_stage3d6_multiple_testing_overlap.py",
+      "mime_type": "text/x-python",
+      "size": 3300,
+      "modified_time": "2026-09-26T16:32:02.007Z",
+      "url": "https://drive.google.com/file/d/1Sqls451U3r-PByeq8DK4YVxa4Ss9tsJd/view?usp=drivesdk"
+    },
+    {
+      "id": "1TmoOHRDDt9fttF7dOqHpjmxckmE9Hbfj",
+      "title": "47_stage3d7_steiger_sensitivity.py",
+      "mime_type": "text/x-python",
+      "size": 2548,
+      "modified_time": "2026-09-26T16:32:12.808Z",
+      "url": "https://drive.google.com/file/d/1TmoOHRDDt9fttF7dOqHpjmxckmE9Hbfj/view?usp=drivesdk"
+    },
+    {
       "id": "1LH-HZFlH_-5GaYKwa2LVG8CnyJP-7hJ2",
       "title": "50_stage3e0_coloc_preflight.sh",
       "mime_type": "application/x-sh",
@@ -183,6 +201,22 @@
       "url": "https://drive.google.com/file/d/1bO_W-JWYTAAaD7OT6Km09nuJ83izcDlT/view?usp=drivesdk"
     },
     {
+      "id": "1QM-74U9pm2JGGJwhb11i0IglQlZBtrV_",
+      "title": "54_stage3e4_multisignal_coloc_gate.py",
+      "mime_type": "text/x-python",
+      "size": 2232,
+      "modified_time": "2026-09-26T16:32:39.875Z",
+      "url": "https://drive.google.com/file/d/1QM-74U9pm2JGGJwhb11i0IglQlZBtrV_/view?usp=drivesdk"
+    },
+    {
+      "id": "17wnAJQaH5fsZHcCAyu4_BLPgnMdg46Ni",
+      "title": "55_stage3f0_variant_artifact_audit.py",
+      "mime_type": "text/x-python",
+      "size": 3096,
+      "modified_time": "2026-09-26T16:32:44.949Z",
+      "url": "https://drive.google.com/file/d/17wnAJQaH5fsZHcCAyu4_BLPgnMdg46Ni/view?usp=drivesdk"
+    },
+    {
       "id": "1aGubwJ7EOAqOc9cJoz_JNzAc67Md5c2S",
       "title": "60_stage4a_ckb_coverage_audit.py",
       "mime_type": "text/x-python",
@@ -199,6 +233,38 @@
       "url": "https://drive.google.com/file/d/11WyFmE0YX2Te1-bl1Aws2Srxup9rBHQz/view?usp=drivesdk"
     },
     {
+      "id": "1UQcGaJf1G3xLqLQzQfiGd2uwyz4FRi-h",
+      "title": "62_stage4c_select_eur_candidates.py",
+      "mime_type": "text/x-python",
+      "size": 4493,
+      "modified_time": "2026-09-26T16:40:23.818Z",
+      "url": "https://drive.google.com/file/d/1UQcGaJf1G3xLqLQzQfiGd2uwyz4FRi-h/view?usp=drivesdk"
+    },
+    {
+      "id": "1RBIwBSY79ht3X6PJqmXHujaKEsLTeSVM",
+      "title": "63_stage4d_eas_registry_validate.py",
+      "mime_type": "text/x-python",
+      "size": 3505,
+      "modified_time": "2026-09-26T16:40:28.411Z",
+      "url": "https://drive.google.com/file/d/1RBIwBSY79ht3X6PJqmXHujaKEsLTeSVM/view?usp=drivesdk"
+    },
+    {
+      "id": "1bRzvnR3WwHKT7Xd1-AfpTSFFOKm_7RpO",
+      "title": "64_stage4e_cross_ancestry_summarize.py",
+      "mime_type": "text/x-python",
+      "size": 2815,
+      "modified_time": "2026-09-26T16:40:38.041Z",
+      "url": "https://drive.google.com/file/d/1bRzvnR3WwHKT7Xd1-AfpTSFFOKm_7RpO/view?usp=drivesdk"
+    },
+    {
+      "id": "1VIThkbwnCzJhvaAWlcNK6g0XzRVUObsi",
+      "title": "65_stage4f_eas_ld_reference_plan.py",
+      "mime_type": "text/x-python",
+      "size": 1971,
+      "modified_time": "2026-09-26T16:32:55.586Z",
+      "url": "https://drive.google.com/file/d/1VIThkbwnCzJhvaAWlcNK6g0XzRVUObsi/view?usp=drivesdk"
+    },
+    {
       "id": "13bA8uZ2ZvzR3IRkubfqHTl0HDZ2D4uhv",
       "title": "70_stage5a_build_koges_grs_weights.py",
       "mime_type": "text/x-python",
@@ -207,12 +273,124 @@
       "url": "https://drive.google.com/file/d/13bA8uZ2ZvzR3IRkubfqHTl0HDZ2D4uhv/view?usp=drivesdk"
     },
     {
+      "id": "1tQTCZQJ3ElZy4HC6_fMJh6-9SmAeZw7U",
+      "title": "71_stage5b_koges_feasibility_gate.py",
+      "mime_type": "text/x-python",
+      "size": 3004,
+      "modified_time": "2026-09-26T16:40:42.499Z",
+      "url": "https://drive.google.com/file/d/1tQTCZQJ3ElZy4HC6_fMJh6-9SmAeZw7U/view?usp=drivesdk"
+    },
+    {
+      "id": "14IFRMhAzjh2EIUeYaC2stvzBoXJ3K6HG",
+      "title": "72_stage5c_validate_grs_variant_coverage.py",
+      "mime_type": "text/x-python",
+      "size": 4123,
+      "modified_time": "2026-09-26T16:40:47.444Z",
+      "url": "https://drive.google.com/file/d/14IFRMhAzjh2EIUeYaC2stvzBoXJ3K6HG/view?usp=drivesdk"
+    },
+    {
+      "id": "1wdtDfhMYwj7tgXZRL6vKK26ADjghgeTM",
+      "title": "73_stage5d_write_analysis_contract.py",
+      "mime_type": "text/x-python",
+      "size": 1821,
+      "modified_time": "2026-09-26T16:40:51.927Z",
+      "url": "https://drive.google.com/file/d/1wdtDfhMYwj7tgXZRL6vKK26ADjghgeTM/view?usp=drivesdk"
+    },
+    {
+      "id": "1g58vkhhAt4phduIxRPusJkxTQjsGsuJL",
+      "title": "74_stage5e_koges_longitudinal_models.R",
+      "mime_type": "application/octet-stream",
+      "size": 2138,
+      "modified_time": "2026-09-26T16:33:00.390Z",
+      "url": "https://drive.google.com/file/d/1g58vkhhAt4phduIxRPusJkxTQjsGsuJL/view?usp=drivesdk"
+    },
+    {
+      "id": "1k8-R0ssTfGRs-NW-cv7Rm4tvzg3ZuJb8",
+      "title": "75_stage5f_koges_pa_interaction.R",
+      "mime_type": "application/octet-stream",
+      "size": 1551,
+      "modified_time": "2026-09-26T16:33:05.644Z",
+      "url": "https://drive.google.com/file/d/1k8-R0ssTfGRs-NW-cv7Rm4tvzg3ZuJb8/view?usp=drivesdk"
+    },
+    {
+      "id": "1ZPxBhHycD4qjS_8xNzqa-hGuhCpgFlUT",
+      "title": "76_stage5g_missingness_qc.py",
+      "mime_type": "text/x-python",
+      "size": 1721,
+      "modified_time": "2026-09-26T16:36:49.401Z",
+      "url": "https://drive.google.com/file/d/1ZPxBhHycD4qjS_8xNzqa-hGuhCpgFlUT/view?usp=drivesdk"
+    },
+    {
+      "id": "1kFTj4IKQcOzVNtO_kdBjJRLna2pj8tag",
+      "title": "77_stage5h_model_diagnostics.R",
+      "mime_type": "application/octet-stream",
+      "size": 1288,
+      "modified_time": "2026-09-26T16:36:54.249Z",
+      "url": "https://drive.google.com/file/d/1kFTj4IKQcOzVNtO_kdBjJRLna2pj8tag/view?usp=drivesdk"
+    },
+    {
+      "id": "1buJWbZSI6YPeqmr0iRbwMWcNFtpRlBns",
+      "title": "80_stage6a_functional_annotation_scaffold.py",
+      "mime_type": "text/x-python",
+      "size": 1575,
+      "modified_time": "2026-09-26T16:33:10.638Z",
+      "url": "https://drive.google.com/file/d/1buJWbZSI6YPeqmr0iRbwMWcNFtpRlBns/view?usp=drivesdk"
+    },
+    {
+      "id": "19O5I5-Hp6M_sd7R8fz-uVN8ChcwYUXyO",
+      "title": "81_stage6b_candidate_evidence_matrix.py",
+      "mime_type": "text/x-python",
+      "size": 2976,
+      "modified_time": "2026-09-26T16:36:59.207Z",
+      "url": "https://drive.google.com/file/d/19O5I5-Hp6M_sd7R8fz-uVN8ChcwYUXyO/view?usp=drivesdk"
+    },
+    {
       "id": "1kE4sSAj9IjfUVaUYrUDo0MwXcz16Pm54",
       "title": "90_pipeline_status.py",
       "mime_type": "text/x-python",
       "size": 1873,
       "modified_time": "2026-09-26T15:34:05.183Z",
       "url": "https://drive.google.com/file/d/1kE4sSAj9IjfUVaUYrUDo0MwXcz16Pm54/view?usp=drivesdk"
+    },
+    {
+      "id": "10HGw0Kr244Dlkg2ToFDu7PVAMKLlygFV",
+      "title": "91_master_analysis_gate.py",
+      "mime_type": "text/x-python",
+      "size": 2431,
+      "modified_time": "2026-09-26T16:33:15.596Z",
+      "url": "https://drive.google.com/file/d/10HGw0Kr244Dlkg2ToFDu7PVAMKLlygFV/view?usp=drivesdk"
+    },
+    {
+      "id": "1TNo2_Qz0zevtgHV6br_uShlk7VD6eOCf",
+      "title": "92_environment_snapshot.sh",
+      "mime_type": "application/x-sh",
+      "size": 1098,
+      "modified_time": "2026-09-26T16:33:20.387Z",
+      "url": "https://drive.google.com/file/d/1TNo2_Qz0zevtgHV6br_uShlk7VD6eOCf/view?usp=drivesdk"
+    },
+    {
+      "id": "16ZzfcrG541JX5Ze6pmwJK_UdfpNWnEsL",
+      "title": "93_drive_git_drift_audit.py",
+      "mime_type": "text/x-python",
+      "size": 879,
+      "modified_time": "2026-09-26T16:37:06.040Z",
+      "url": "https://drive.google.com/file/d/16ZzfcrG541JX5Ze6pmwJK_UdfpNWnEsL/view?usp=drivesdk"
+    },
+    {
+      "id": "1i2vQXjUXowodfwHhweJu0webXnqLNtzV",
+      "title": "94_pipeline_run_plan.py",
+      "mime_type": "text/x-python",
+      "size": 2574,
+      "modified_time": "2026-09-26T16:37:10.969Z",
+      "url": "https://drive.google.com/file/d/1i2vQXjUXowodfwHhweJu0webXnqLNtzV/view?usp=drivesdk"
+    },
+    {
+      "id": "11nGGt1dTCYXKM6B8zd0bE659heGA1IsW",
+      "title": "95_result_checksums.sh",
+      "mime_type": "application/x-sh",
+      "size": 416,
+      "modified_time": "2026-09-26T16:37:25.596Z",
+      "url": "https://drive.google.com/file/d/11nGGt1dTCYXKM6B8zd0bE659heGA1IsW/view?usp=drivesdk"
     },
     {
       "id": "1Bgl10wJJdjy1Up2vg32L4gq_rvXmrDbB",
