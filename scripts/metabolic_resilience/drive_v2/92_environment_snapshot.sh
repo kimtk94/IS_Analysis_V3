@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd "${IS_ANALYSIS_ROOT:-/srv/is-analysis}"
+cd "${IS_ANALYSIS_ROOT:-/srv/is-analysis}" || exit 1
 set +e
 set +u
 set +o pipefail 2>/dev/null || true
