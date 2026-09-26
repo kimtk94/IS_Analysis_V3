@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-cd /srv/is-analysis
+ROOT="${IS_ANALYSIS_ROOT:-/srv/is-analysis}"
+cd "$ROOT" || exit 1
 
 set +e
 set +u
 set +o pipefail 2>/dev/null || true
 
-ROOT="/srv/is-analysis"
 CODE="${CODE_DIR:-$ROOT/code/metabolic_resilience}"
 OUT="$ROOT/results/metabolic_resilience/stage3_confirmatory_mr"
 HARM="$OUT/harmonized/STAGE3D2_HARMONIZED.tsv.gz"
