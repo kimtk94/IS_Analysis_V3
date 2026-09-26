@@ -9,7 +9,6 @@ PY="$ROOT/.venv-ukbppp/bin/python"
 DATA="$ROOT/data/metabolic_resilience/stage3_full_pgwas/ukbppp_eur"
 AUDIT="$ROOT/results/metabolic_resilience/stage3_full_pgwas/audit"
 MANIFEST="$AUDIT/STAGE3A_DOWNLOAD_MANIFEST.tsv"
-SID="syn51470923"
 OID="OID21468"
 DIR="$DATA/$OID"
 TARGET="$DIR/IDUA_P35475_OID21468_v1_Oncology.tar"
@@ -24,7 +23,6 @@ for ATTEMPT in 1 2 3; do
   "$PY" - <<'PY'
 from pathlib import Path
 import synapseclient
-SID='syn51470923'
 DEST=Path('/srv/is-analysis/data/metabolic_resilience/stage3_full_pgwas/ukbppp_eur/OID21468')
 s=synapseclient.Synapse(); s.login(silent=True)
 e=s.get(SID,downloadLocation=str(DEST),ifcollision='overwrite.local')
