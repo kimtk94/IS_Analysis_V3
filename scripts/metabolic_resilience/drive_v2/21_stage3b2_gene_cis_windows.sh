@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-cd /srv/is-analysis
+ROOT="${IS_ANALYSIS_ROOT:-/srv/is-analysis}"
+cd "$ROOT" || exit 1
 set +e
 set +u
 set +o pipefail 2>/dev/null || true
 
-ROOT="/srv/is-analysis"
 SHORT="$ROOT/results/metabolic_resilience/stage2_gwas/final_shortlist/STAGE2_FINAL_SCREENING_SHORTLIST.tsv"
 EXP="$ROOT/results/metabolic_resilience/stage2_gwas/exposure_marginal/UKBPPP_ST9_STRONGEST_CIS_PER_PROTEIN.tsv.gz"
 OUTDIR="$ROOT/results/metabolic_resilience/stage3_full_pgwas/audit"
