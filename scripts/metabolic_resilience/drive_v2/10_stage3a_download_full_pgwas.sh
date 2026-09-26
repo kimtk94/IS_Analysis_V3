@@ -11,7 +11,6 @@ VENV_PY="$ROOT/.venv-ukbppp/bin/python"
 DATA="$ROOT/data/metabolic_resilience/stage3_full_pgwas/ukbppp_eur"
 AUDIT="$ROOT/results/metabolic_resilience/stage3_full_pgwas/audit"
 MAP="$AUDIT/STAGE3A_CANDIDATE_SYN_MAP.tsv"
-DOWNLOAD_MANIFEST="$AUDIT/STAGE3A_DOWNLOAD_MANIFEST.tsv"
 mkdir -p "$DATA" "$AUDIT"
 
 echo "===================================================="
