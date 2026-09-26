@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-cd /srv/is-analysis
+ROOT="${IS_ANALYSIS_ROOT:-/srv/is-analysis}"
+cd "$ROOT" || exit 1
 set +e
 set +u
 set +o pipefail 2>/dev/null || true
 
-ROOT="/srv/is-analysis"
 TARGETS="$ROOT/results/metabolic_resilience/stage2_gwas/final_shortlist/STAGE3_FULL_PGWAS_TARGETS.txt"
 MATCH="$ROOT/results/metabolic_resilience/stage2_gwas/exposure_marginal/UKBPPP_TARGET_SYN_MATCH.tsv"
 VENV_PY="$ROOT/.venv-ukbppp/bin/python"
