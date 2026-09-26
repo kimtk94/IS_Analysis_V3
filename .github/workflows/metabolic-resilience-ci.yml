@@ -8,11 +8,15 @@ on:
     paths:
       - 'scripts/metabolic_resilience/**'
       - 'scripts/ci/check_metabolic_resilience_scripts.py'
+      - 'docs/metabolic_resilience/**'
+      - 'config/metabolic_resilience/**'
       - '.github/workflows/metabolic-resilience-ci.yml'
   pull_request:
     paths:
       - 'scripts/metabolic_resilience/**'
       - 'scripts/ci/check_metabolic_resilience_scripts.py'
+      - 'docs/metabolic_resilience/**'
+      - 'config/metabolic_resilience/**'
       - '.github/workflows/metabolic-resilience-ci.yml'
   workflow_dispatch:
 
@@ -26,21 +30,20 @@ jobs:
       - name: Repository smoke test
         run: bash scripts/codex_smoke_test.sh
 
-      - name: Install ShellCheck
+      - name: Install static-analysis runtimes
         run: |
           sudo apt-get update
-          sudo apt-get install -y shellcheck
+          sudo apt-get install -y shellcheck r-base-core
 
-      - name: Bash, embedded Python, and project-policy checks
+      - name: Syntax, policy, and scientific-contract checks
         run: python3 scripts/ci/check_metabolic_resilience_scripts.py
 
-      - name: ShellCheck metabolic-resilience scripts
+      - name: ShellCheck metabolic-resilience shell scripts
         shell: bash
         run: |
-          shopt -s nullglob
-          files=(scripts/metabolic_resilience/*.sh)
+          mapfile -t files < <(find scripts/metabolic_resilience -type f -name '*.sh' -print | sort)
           if ((${#files[@]} == 0)); then
-            echo "No metabolic-resilience scripts committed yet."
-            exit 0
+            echo "No metabolic-resilience shell scripts found."
+            exit 1
           fi
           shellcheck -x -S warning "${files[@]}"
