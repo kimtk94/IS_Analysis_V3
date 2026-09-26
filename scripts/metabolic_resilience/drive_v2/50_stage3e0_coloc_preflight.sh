@@ -17,9 +17,11 @@ echo "===================================================="
 echo "STAGE 3-E0 : COLOCALIZATION PREFLIGHT"
 echo "===================================================="
 
-for F in "$REG"; do
-  [ -s "$F" ] && echo "[PASS] $F" || echo "[FAIL] $F"
-done
+if [ -s "$REG" ]; then
+  echo "[PASS] $REG"
+else
+  echo "[FAIL] $REG"
+fi
 
 echo
 echo "cis files:"
