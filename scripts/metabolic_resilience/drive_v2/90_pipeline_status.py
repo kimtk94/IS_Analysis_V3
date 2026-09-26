@@ -16,26 +16,36 @@ checks = [
     ("Stage3D0 outcome registry", ROOT/"results/metabolic_resilience/stage3_confirmatory_mr/STAGE3D0_OUTCOME_REGISTRY.tsv"),
     ("Stage3D3 MR", ROOT/"results/metabolic_resilience/stage3_confirmatory_mr/STAGE3D3_MR_RESULTS.tsv"),
     ("Stage3D5 MR summary", ROOT/"results/metabolic_resilience/stage3_confirmatory_mr/STAGE3D5_PRIMARY_MR_SUMMARY.tsv"),
+    ("Stage3D6 multiplicity/overlap", ROOT/"results/metabolic_resilience/stage3_confirmatory_mr/STAGE3D6_MULTIPLE_TESTING_AND_OVERLAP.json"),
+    ("Stage3D7 Steiger sensitivity", ROOT/"results/metabolic_resilience/stage3_confirmatory_mr/STAGE3D7_STEIGER_SENSITIVITY.json"),
     ("Stage3E2 coloc", ROOT/"results/metabolic_resilience/stage3_coloc/STAGE3E2_COLOC_ABF.tsv"),
     ("Stage3E3 coloc summary", ROOT/"results/metabolic_resilience/stage3_coloc/STAGE3E3_COLOC_SUMMARY.tsv"),
+    ("Stage3E4 multisignal gate", ROOT/"results/metabolic_resilience/stage3_coloc/STAGE3E4_MULTISIGNAL_DECISION.json"),
+    ("Stage3F0 variant artifact", ROOT/"results/metabolic_resilience/stage3_variant_artifact/STAGE3F0_VARIANT_ARTIFACT_SUMMARY.json"),
     ("Stage4A CKB coverage", ROOT/"results/metabolic_resilience/stage4_eas/STAGE4A_CKB_COVERAGE.json"),
     ("Stage4C EUR candidate gate", ROOT/"results/metabolic_resilience/stage4_eas/STAGE4C_EUR_CANDIDATE_GATE.json"),
     ("Stage4D EAS registry", ROOT/"results/metabolic_resilience/stage4_eas/STAGE4D_EAS_RESOURCE_REGISTRY_SUMMARY.json"),
     ("Stage4E cross-ancestry", ROOT/"results/metabolic_resilience/stage4_eas/STAGE4E_CROSS_ANCESTRY_SUMMARY.json"),
+    ("Stage4F EAS LD plan", ROOT/"results/metabolic_resilience/stage4_eas/STAGE4F_EAS_LD_REFERENCE_PLAN.json"),
     ("Stage5A KoGES GRS weights", ROOT/"results/metabolic_resilience/stage5_koges/STAGE5A_GRS_WEIGHT_SUMMARY.json"),
     ("Stage5B KoGES feasibility", ROOT/"results/metabolic_resilience/stage5_koges/STAGE5B_KOGES_FEASIBILITY_SUMMARY.json"),
     ("Stage5C GRS coverage", ROOT/"results/metabolic_resilience/stage5_koges/STAGE5C_GRS_VARIANT_COVERAGE.json"),
     ("Stage5D analysis contract", ROOT/"results/metabolic_resilience/stage5_koges/STAGE5D_ANALYSIS_CONTRACT.json"),
-    ("Stage5E incident MetS Cox", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5E_INCIDENT_METS_COX_SUMMARY.json"),
-    ("Stage5F repeated MBI LMM", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5F_REPEATED_MBI_LMM_SUMMARY.json"),
-    ("Stage5G PA interaction", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5G_PA_INTERACTION_SUMMARY.json"),
-    ("Stage5H baseline PA fallback", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5H_BASELINE_PA_FALLBACK_SUMMARY.json"),
-    ("Stage5I participant ProteinGRS", ROOT/"results/metabolic_resilience/stage5_koges/STAGE5I_PROTEIN_GRS_SUMMARY.json"),
+    ("Stage5E longitudinal models", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5E_KOGES_LONGITUDINAL_MODELS.tsv"),
+    ("Stage5F PA interaction", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5F_KOGES_PA_INTERACTION.tsv"),
+    ("Stage5G missingness QC", ROOT/"results/metabolic_resilience/stage5_koges/STAGE5G_MISSINGNESS_QC.json"),
+    ("Stage5H Cox PH diagnostics", ROOT/"results/metabolic_resilience/stage5_koges/models/STAGE5H_COX_PH_DIAGNOSTICS.tsv"),
+    ("Stage6A functional registry", ROOT/"results/metabolic_resilience/stage6_functional/STAGE6A_FUNCTIONAL_ANNOTATION_REGISTRY.json"),
+    ("Stage6B evidence matrix", ROOT/"results/metabolic_resilience/stage6_functional/STAGE6B_CANDIDATE_EVIDENCE_MATRIX.json"),
+    ("Master analysis gate", ROOT/"results/metabolic_resilience/MASTER_ANALYSIS_GATE.json"),
+    ("Reproducibility directory", ROOT/"results/metabolic_resilience/reproducibility"),
 ]
 
-print("="*92)
+print("="*94)
 print("METABOLIC RESILIENCE PIPELINE STATUS")
-print("="*92)
+print("="*94)
 for name, p in checks:
-    state = "PASS/EXISTS" if p.exists() and p.stat().st_size > 0 else "PENDING"
-    print(f"{state:12s}  {name:36s}  {p}")
+    exists = p.exists()
+    nonempty = p.is_dir() if exists and p.is_dir() else (exists and p.stat().st_size > 0)
+    state = "PASS/EXISTS" if nonempty else "PENDING"
+    print(f"{state:12s}  {name:38s}  {p}")
