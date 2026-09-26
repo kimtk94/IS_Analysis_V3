@@ -69,3 +69,13 @@ Do not automatically advance past a gate when the prior stage returns `REVIEW`, 
     cis-pQTL GRS weights before participant-level scoring.
 - `73_stage5d_write_analysis_contract.py`
   - Locks incident MetS as primary and repeated MBI as secondary before fitting.
+
+
+### Stage 5 model runners
+
+- `74_stage5e_run_incident_mets_cox.R`
+  - Primary baseline-healthy -> incident MetS Cox model.
+- `75_stage5f_run_repeated_mbi_lmm.R`
+  - Secondary repeated MBI mixed model; primary term is `ProteinGRS x Time`.
+- `76_stage5g_run_pa_interaction.R`
+  - Repeated physical-activity interaction; automatically HOLDs when PA is usable in <3 waves.
