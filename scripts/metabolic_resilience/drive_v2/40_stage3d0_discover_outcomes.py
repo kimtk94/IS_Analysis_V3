@@ -51,7 +51,7 @@ TRAITS = [
 
 ALIASES = {
     "chr":["CHR","CHROM","chrom","chr","Chromosome","chromosome","#CHROM"],
-    "pos":["POS","BP","pos","position","Position","base_pair_location","GENPOS"],
+    "pos":["POS","POS_b37","BP","pos","position","Position","base_pair_location","GENPOS"],
     "rsid":["SNP","rsid","RSID","rsID","rs_id","MarkerName","variant_id","ID"],
     "ea":["EA","effect_allele","Effect_allele","Tested_Allele","A1","ALLELE1","ALT","effectAllele"],
     "oa":["NEA","other_allele","Other_allele","Other_Allele","A2","ALLELE0","REF","otherAllele"],
@@ -59,7 +59,7 @@ ALIASES = {
     "or":["OR","or","OddsRatio","odds_ratio"],
     "se":["SE","se","StdErr","stderr","standard_error"],
     "p":["P","p","Pvalue","P_VALUE","p_value","P-value"],
-    "eaf":["EAF","eaf","A1FREQ","AF","effect_allele_frequency","Freq_Tested_Allele","Freq1"],
+    "eaf":["EAF","eaf","A1FREQ","AF","effect_allele_frequency","Freq_Tested_Allele","POOLED_ALT_AF","Freq1"],
     "n":["N","n","N_total","TotalN","samplesize","sample_size"],
 }
 
