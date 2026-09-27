@@ -20,21 +20,21 @@ TRAITS = [
      "favorable":"POSITIVE","sample_overlap_class":"UKB_EXCLUDED",
      "sample_overlap_note":"GLGC without UKB."},
     {"trait":"TG","domain":"lipid","type":"quant","build":"GRCh37",
-     "patterns":["without_UKB_logTG_EUR_HRC_1KGP3_others_ALL.meta.singlevar.results.gz"],
+     "patterns":["without_UKB_logTG_EUR_HRC_1KGP3_others_ALL.meta.singlevar.results.gz","*logTG*.gz","*TG*without*UKB*.gz","*triglycer*.gz"],
      "favorable":"NEGATIVE","sample_overlap_class":"UKB_EXCLUDED",
      "sample_overlap_note":"GLGC without UKB."},
     {"trait":"SBP","domain":"bp","type":"quant","build":"RSID_PREFERRED",
-     "patterns":["*GCST90310294*"],"favorable":"NEGATIVE",
+     "patterns":["GCST90310294.tsv.gz","*GCST90310294*"],"favorable":"NEGATIVE",
      "sample_overlap_class":"REVIEW","sample_overlap_note":"Record contributing cohorts before manuscript lock."},
     {"trait":"DBP","domain":"bp","type":"quant","build":"RSID_PREFERRED",
-     "patterns":["*GCST90310295*"],"favorable":"NEGATIVE",
+     "patterns":["GCST90310295.tsv.gz","*GCST90310295*"],"favorable":"NEGATIVE",
      "sample_overlap_class":"REVIEW","sample_overlap_note":"Record contributing cohorts before manuscript lock."},
-    {"trait":"BMI","domain":"adiposity","type":"quant","build":"GRCh37",
+    {"trait":"BMI","domain":"adiposity","type":"quant","build":"RSID_PREFERRED",
      "patterns":["*BMI*2018*.gz","*BMI*.sumstats*.gz","*BMI*.gz"],"favorable":"NEGATIVE",
      "sample_overlap_class":"UKB_INCLUDED_SCREENING",
      "sample_overlap_note":"High-density GIANT+UKB adiposity GWAS; interpret as confirmatory sensitivity with overlap caveat."},
-    {"trait":"WHR","domain":"adiposity","type":"quant","build":"GRCh37",
-     "patterns":["*WHRadjBMI*2018*.gz","*WHRadjBMI*.gz","*WHR*.gz"],"favorable":"NEGATIVE",
+    {"trait":"WHR","domain":"adiposity","type":"quant","build":"RSID_PREFERRED",
+     "patterns":["*WHRadjBMI*2018*.gz","*WHRadjBMI*.gz","*WHR*2018*.gz","*WHR*.gz"],"favorable":"NEGATIVE",
      "sample_overlap_class":"UKB_INCLUDED_SCREENING",
      "sample_overlap_note":"High-density GIANT+UKB adiposity GWAS; interpret as confirmatory sensitivity with overlap caveat."},
     {"trait":"FG","domain":"glycemia","type":"quant","build":"GRCh37",
@@ -52,15 +52,15 @@ TRAITS = [
 ALIASES = {
     "chr":["CHR","CHROM","chrom","chr","Chromosome","chromosome","#CHROM"],
     "pos":["POS","BP","pos","position","Position","base_pair_location","GENPOS"],
-    "rsid":["SNP","rsid","RSID","rsID","MarkerName","variant_id","ID"],
+    "rsid":["SNP","rsid","RSID","rsID","rs_id","MarkerName","variant_id","ID"],
     "ea":["EA","effect_allele","Effect_allele","A1","ALLELE1","ALT","effectAllele"],
     "oa":["NEA","other_allele","Other_allele","A2","ALLELE0","REF","otherAllele"],
-    "beta":["BETA","beta","Beta","Effect","effect","estimate","Estimate"],
+    "beta":["BETA","beta","Beta","Effect","effect","EFFECT_SIZE","effect_size","b","estimate","Estimate"],
     "or":["OR","or","OddsRatio","odds_ratio"],
     "se":["SE","se","StdErr","stderr","standard_error"],
     "p":["P","p","Pvalue","P_VALUE","p_value","P-value"],
     "eaf":["EAF","eaf","A1FREQ","AF","effect_allele_frequency","Freq1"],
-    "n":["N","n","N_total","TotalN","samplesize"],
+    "n":["N","n","N_total","TotalN","samplesize","sample_size"],
 }
 
 def candidates_for(patterns):
@@ -140,6 +140,12 @@ for spec in TRAITS:
         reasons.append("MISSING_VARIANT_KEY")
 
     status="PASS" if not reasons else "REVIEW_SCHEMA"
+
+    # Do not silently accept the low-coverage 2015 GIANT adiposity files
+    # as the intended high-density 2018 GIANT+UKB confirmatory-sensitivity resource.
+    if spec["trait"] in {"BMI","WHR"} and selected is not None and "2015" in selected.name:
+        status="REVIEW_WRONG_ADIPOSITY_RESOURCE"
+        reasons.append("2015_LOW_COVERAGE_RESOURCE_NOT_CONFIRMATORY_TARGET")
     if len(cand)>1 and selected.name not in exact_names:
         status="REVIEW_MULTIPLE_CANDIDATES"
         reasons.append(f"MULTIPLE_CANDIDATES={len(cand)}")
