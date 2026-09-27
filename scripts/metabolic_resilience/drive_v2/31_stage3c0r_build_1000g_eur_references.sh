@@ -100,7 +100,19 @@ for CHR in $CHROMS; do
     mv "$TMP" "$OUTVCF"; mv "$TMP.tbi" "$OUTVCF.tbi"
     N_VCF="$("$BCFTOOLS" view -H "$OUTVCF" 2>/dev/null | wc -l)"
     rm -f "$PREFIX.pgen" "$PREFIX.pvar" "$PREFIX.psam" "$PREFIX.log"
-    "$PLINK2" --vcf "$OUTVCF" --double-id --maf 0.01 --min-alleles 2 --max-alleles 2 --set-all-var-ids '@:#:$r:$a' --make-pgen --threads 2 --memory 2500 --out "$PREFIX"
+
+    MAX_ALLELE_LEN="$(
+      "$BCFTOOLS" view -m2 -M2 -Ou "$OUTVCF" 2>/dev/null \
+      | "$BCFTOOLS" query -f '%REF\t%ALT\n' 2>/dev/null \
+      | awk 'BEGIN{m=23} {if(length($1)>m)m=length($1); if(length($2)>m)m=length($2)} END{print m+0}'
+    )"
+    [ -n "$MAX_ALLELE_LEN" ] || MAX_ALLELE_LEN=100
+    echo "$GENE max_allele_len=$MAX_ALLELE_LEN"
+
+    "$PLINK2" --vcf "$OUTVCF" --double-id --maf 0.01 --min-alleles 2 --max-alleles 2 \
+      --set-all-var-ids '@:#:$r:$a' \
+      --new-id-max-allele-len "$MAX_ALLELE_LEN" \
+      --make-pgen --threads 2 --memory 2500 --out "$PREFIX"
     PLINK_RC=$?
     if [ "$PLINK_RC" = "0" ] && [ -s "$PREFIX.pgen" ] && [ -s "$PREFIX.pvar" ] && [ -s "$PREFIX.psam" ]; then
       N_PVAR="$(grep -vc '^#' "$PREFIX.pvar")"; N_PSAM="$(grep -vc '^#' "$PREFIX.psam")"
