@@ -21,7 +21,7 @@ echo "CODE=$CODE"
 
 READY=1
 
-python3 "$CODE/34_stage3c4_apply_rsid_overlay.py"
+python3 "$CODE/35_stage3c4_apply_rsid_overlay.py"
 RC_OVERLAY=$?
 echo "C4 overlay rc=$RC_OVERLAY"
 [ "$RC_OVERLAY" = "0" ] || READY=0
