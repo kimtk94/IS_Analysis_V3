@@ -50,7 +50,7 @@ for rel,patterns in TARGETS:
         continue
     seen={}
     for pat in patterns:
-        for p in base.glob(pat):
+        for p in base.rglob(pat):
             if p.is_file():
                 seen[str(p.resolve())]=p
     files=sorted(seen.values(),key=lambda p:p.name.lower())
