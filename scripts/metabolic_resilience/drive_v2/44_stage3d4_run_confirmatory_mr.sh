@@ -85,3 +85,22 @@ if [ "$RC_OVERLAY" = "0" ] && [ "$RC0" = "0" ] && [ "$RC1" = "0" ] && [ "$RC2" =
 else
   echo "[STOP / REVIEW] STAGE 3-D incomplete"
 fi
+
+
+FINAL_RC=0
+
+for RC in "$RC_OVERLAY" "$RC0" "$RC1" "$RC2" "$RC3" "$RC5"
+do
+  if [ "$RC" != "0" ]; then
+    FINAL_RC=2
+  fi
+done
+
+echo "FINAL_RC=$FINAL_RC"
+
+# Fail closed so parent wrappers cannot mistake an incomplete pipeline for success.
+if [ "$FINAL_RC" = "0" ]; then
+  true
+else
+  false
+fi
