@@ -1,0 +1,57 @@
+name: Metabolic Resilience CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'research/metabolic-resilience-*'
+    paths:
+      - 'scripts/metabolic_resilience/**'
+      - 'scripts/ci/check_metabolic_resilience_scripts.py'
+      - 'docs/metabolic_resilience/**'
+      - 'config/metabolic_resilience/**'
+      - '.github/workflows/metabolic-resilience-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/metabolic_resilience/**'
+      - 'scripts/ci/check_metabolic_resilience_scripts.py'
+      - 'docs/metabolic_resilience/**'
+      - 'config/metabolic_resilience/**'
+      - '.github/workflows/metabolic-resilience-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  static-review:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install repository test dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements.txt openpyxl
+
+      - name: Repository smoke test
+        run: bash scripts/codex_smoke_test.sh
+
+      - name: Install static-analysis runtimes
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck r-base-core
+
+      - name: Syntax, policy, and scientific-contract checks
+        run: python3 scripts/ci/check_metabolic_resilience_scripts.py
+
+      - name: Drive-to-Git source-set drift audit
+        run: python3 scripts/metabolic_resilience/drive_v2/93_drive_git_drift_audit.py
+
+      - name: ShellCheck metabolic-resilience shell scripts
+        shell: bash
+        run: |
+          mapfile -t files < <(find scripts/metabolic_resilience -type f -name '*.sh' -print | sort)
+          if ((${#files[@]} == 0)); then
+            echo "No metabolic-resilience shell scripts found."
+            exit 1
+          fi
+          shellcheck -x -S warning "${files[@]}"
