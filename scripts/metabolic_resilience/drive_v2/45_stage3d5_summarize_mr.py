@@ -68,18 +68,31 @@ for key, arr in groups.items():
         )
         primary.append(rr)
 
-# FDR separately by mode across candidate x trait primary tests.
+# Preliminary D5 FDR: metabolic traits only within mode.
+# Formal prespecified domain-level and global metabolic FDR is produced in Stage3-D6.
+# T2D is a separate disease-validation family and must not enter the metabolic FDR pool.
 for mode in sorted(set(r["mode"] for r in primary)):
-    idx=[i for i,r in enumerate(primary) if r["mode"]==mode and r["p"] is not None]
+    idx=[
+        i for i,r in enumerate(primary)
+        if r["mode"]==mode
+        and r["domain"]!="disease_validation"
+        and r["p"] is not None
+    ]
     q=bh([(i,primary[i]["p"]) for i in idx])
     for i in idx:
         primary[i]["FDR_mode"] = q.get(i)
+
 for r in primary:
     r.setdefault("FDR_mode",None)
+    r["testing_family"] = (
+        "T2D_VALIDATION"
+        if r["domain"]=="disease_validation"
+        else "METABOLIC_PRELIMINARY"
+    )
 
 out_primary = OUT / "STAGE3D5_PRIMARY_MR_SUMMARY.tsv"
 fields = [
-    "gene","mode","trait","domain","k","method","beta","se","p","FDR_mode",
+    "gene","mode","trait","domain","testing_family","k","method","beta","se","p","FDR_mode",
     "direction_favorable","Q","Q_df","Q_p","egger_intercept_p","notes"
 ]
 with out_primary.open("w", encoding="utf-8", newline="") as f:
@@ -104,6 +117,7 @@ for gene in sorted(set(r["gene"] for r in primary)):
             "t2d_available":len(t2d),
             "t2d_beta":t2d[0]["beta"] if t2d else "",
             "t2d_p":t2d[0]["p"] if t2d else "",
+            "t2d_fdr_separate_family":"",
             "t2d_favorable":t2d[0]["direction_favorable"] if t2d else "",
         })
 
