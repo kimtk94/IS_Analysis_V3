@@ -237,3 +237,12 @@ IS schema migration, tissue annotation and KoGES/genotype cohort validation
 are not included. Full source-statistics execution still requires server
 verification; CI covers adapter unit tests, comparison logic/checkpoints,
 and the numerical modules, not production archives.
+
+## Shared CKD/IS blueprint (data review deferred)
+
+See `docs/MASTEROMICS_ARCHITECTURE.md` for the complete 18-stage catalog and
+reuse/binding boundaries. `python -m masteromics blueprint init --root ROOT`
+creates CKD and IS directory/config skeletons without reading production data.
+`blueprint inspect CONFIG` validates structure; `blueprint run CONFIG --plan`
+shows binding coverage. Execution is blocked by unbound adapters and unset
+scientific policies. No skeleton stage is reported as scientifically complete.
