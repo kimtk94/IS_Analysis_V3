@@ -103,6 +103,10 @@ def replay_coloc(gene,source,baseline,out,atol,policy_delta=True):
     new=science.table(out/'coloc.tsv');old=science.table(baseline)
     old=old[old.gene_symbol==gene]
     if old.empty:raise ValueError('No baseline coloc row: '+gene)
+    required={'nsnps',*[f'PP.H{i}' for i in range(5)]}
+    if not required.issubset(old):raise ValueError('Incomplete baseline coloc posterior schema')
+    for field in ['p1','p2']:
+        if field in old and not np.allclose(old[field],1e-4,rtol=0,atol=1e-12):raise ValueError('Baseline prior mismatch: '+field)
     rows=[]
     for _,o in old.iterrows():
         prior=o.p12 if 'p12' in o else 1e-5
