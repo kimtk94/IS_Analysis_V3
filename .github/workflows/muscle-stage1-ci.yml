@@ -1,0 +1,30 @@
+name: MUSCLE Stage 1 RT-GWAS Audit CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/muscle/run_muscle_stage1_rt_gwas_audit.py'
+      - 'tests/test_muscle_stage1_rt_gwas_audit.py'
+      - 'docs/muscle_stage1_rt_gwas_audit.md'
+      - 'research/muscle/MUSCLE_MASTER.md'
+      - '.github/workflows/muscle-stage1-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/muscle/run_muscle_stage1_rt_gwas_audit.py'
+      - 'tests/test_muscle_stage1_rt_gwas_audit.py'
+      - 'docs/muscle_stage1_rt_gwas_audit.md'
+      - 'research/muscle/MUSCLE_MASTER.md'
+      - '.github/workflows/muscle-stage1-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile Stage 1 Python
+        run: python3 -m py_compile scripts/muscle/run_muscle_stage1_rt_gwas_audit.py
+      - name: Run Stage 1 unit tests
+        run: python3 -m unittest tests.test_muscle_stage1_rt_gwas_audit -v
