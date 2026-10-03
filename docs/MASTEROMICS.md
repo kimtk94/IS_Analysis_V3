@@ -190,3 +190,50 @@ than interpreting their files as CKD inputs. IS needs an explicit schema and
 baseline adapter before server validation can be claimed. Real server CKD
 results have not yet been tested by the assistant; synthetic legacy/new
 parity is tested in CI.
+
+## CKD source-statistics rebuild (migration adapter)
+
+`python -m masteromics.rebuild --out ABSOLUTE_NEW_ROOT` re-extracts ST16 from
+Sun2023.xlsx, streams seven local raw EUR/EAS outcome files into matched tables,
+re-runs reviewed Stage1 harmonization/proteome-wide screening and Stage2 candidate
+selection, and extracts/lifts full marginal pQTL regions from local archives.
+Central MR/ABF/SuSiE modules then compare these rebuilt inputs/results against
+historical baselines. This migration reuses legacy preparation Python adapters;
+it does not yet replace all preparation logic with the generic canonical schema.
+The public source files must already be downloaded. No automatic environment
+installation, Drive sync or credentials are used.
+
+```bash
+python -m pip install -r requirements-masteromics-rebuild.lock
+bash server/masteromics_rebuild.sh --out /srv/is-analysis/results/masteromics/rebuild/ckd_raw_v1 --plan
+bash server/masteromics_rebuild.sh --out /srv/is-analysis/results/masteromics/rebuild/ckd_raw_v1
+```
+
+The default raw root is `/srv/is-analysis/data/ckd/rawdata`. Overrides:
+`--root`, `--raw-root`, `--pqtl-root`, `--coordinates`, `--chain`, `--baseline`,
+`--ld-root`. Plan only checks source paths; execution checks Python/R packages
+and candidate archives. Use `MASTEROMICS_PYTHON` and `CKD_R_LIB` as in regression.
+The default LD limit is 8,200 (tested HLA-E has 8,193 variants).
+
+Default mode explicitly reuses the existing reference LD metadata and binary
+matrix; freshly extracted full regions are matched to that reference order.
+`--rebuild-ld` runs the reviewed bcftools/plink2 adapter in an isolated root and
+may download reference chromosomes. It requires `curl`, `bcftools`, `plink2`.
+It does not reuse historical SuSiE inputs/fits. LD regeneration is sequential
+and may require substantial disk space and runtime.
+
+Output contains `REBUILD_SUMMARY.json`, `REBUILD_NUMERICAL_COMPARISON.tsv`,
+`POLICY_DELTA.tsv`, per-stage logs, original-source SHA256 and validated preparation
+checkpoints. Stage1 harmonized/MR tables (all seven outcomes), candidate rows,
+and full regional rows are compared by stable keys rather than gzip bytes.
+Floating cells use rtol 1e-6/atol 1e-12; numeric regression retains its own
+explicit tolerances. Preparation stages resume only when source/code/output
+hashes match. Modified inputs or outputs require a new output root; partial
+stages are never promoted. Numerical comparisons are rerun on resume.
+
+INCOMPLETE retains missing/nonconverged/unresolved analyses; DIFFERENCE retains
+preparation or numerical mismatches. No automatic acceptance. CKD only;
+IS schema migration, tissue annotation and KoGES/genotype cohort validation
+are not included. Full source-statistics execution still requires server
+verification; CI covers adapter unit tests, comparison logic/checkpoints,
+and the numerical modules, not production archives.
