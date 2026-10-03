@@ -13,11 +13,17 @@ def main():
     sub=parser.add_subparsers(dest='command',required=True)
     p=sub.add_parser('run');p.add_argument('projects',nargs='+');p.add_argument('--registry',required=True);p.add_argument('--jobs',type=int,default=1);p.add_argument('--plan',action='store_true')
     p=sub.add_parser('dag');p.add_argument('config');p.add_argument('--jobs',type=int,default=1);p.add_argument('--plan',action='store_true')
+    p=sub.add_parser('doctor');p.add_argument('project');p.add_argument('--registry',required=True);p.add_argument('--output')
     p=sub.add_parser('inventory');p.add_argument('root');p.add_argument('output')
     for command in ['acquire','normalize','instruments','harmonize','mr','ld','regional_gate','annotate','report','evidence','score','cohort_panel']:
         p=sub.add_parser(command);p.add_argument('args',nargs='+')
     a=parser.parse_args();root=Path(__file__).resolve().parents[1]
     try:
+        if a.command=='doctor':
+            from .doctor import doctor
+            result=doctor(a.project,a.registry)
+            if a.output:atomic_json(a.output,result)
+            print(json.dumps(result,indent=2));return 1 if result['issues'] else 0
         if a.command=='run':
             if a.jobs<1:raise ValueError('jobs must be positive')
             code=0
