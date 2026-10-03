@@ -137,3 +137,50 @@ readiness, not biological validation or a completed scientific run.
 
 Latest verified CI: 6 Python tests plus 3 actual R integration tests and syntax/compile
 checks. Commit 4d9b0c725377af33e244e6cbef8c57e25269af47.
+
+## Server regression against existing CKD results
+
+Run in an isolated checkout of `feat/masteromics-central-engine`. The adapter
+reads existing results; it writes only a new, separate output directory. No
+packages are installed and no legacy results are overwritten.
+
+```bash
+bash server/masteromics_regression.sh --genes SDCCAG8 GSTA3 --stages mr coloc
+# Once the first run passes, compare all nine CKD candidates including SuSiE:
+bash server/masteromics_regression.sh --stages mr coloc susie
+```
+
+Defaults: `/srv/is-analysis/results/ckd/stage1`, `stage2b_coloc`,
+`stage2c_susie`; LD: `/srv/is-analysis/data/ckd/stage2c_ld/ld`.
+Override with `--root`, `--stage1-root`, `--stage2b-root`, `--stage2c-root`,
+`--ld-root`. Set `MASTEROMICS_PYTHON` to the scientific Python interpreter;
+otherwise the wrapper uses `/srv/is-analysis/.venv-ckd/bin/python` if present,
+then `python3`. Rscript must resolve to the intended existing R environment.
+Set `MASTEROMICS_REGRESSION_OUT` to a fresh output directory when needed.
+
+`REGRESSION_COMPARISON.tsv` contains baseline and new values, absolute deltas,
+explicit tolerances, and PASS/DIFFERENCE for Wald/IVW beta, SE, P, IVW Q, SNP
+counts, coloc H0–H4, SuSiE maximum H4 and credible-set counts.
+Default acceptance is `abs(delta) <= atol + 1e-6 * abs(legacy)`: MR atol 1e-8,
+posterior atol 1e-4; counts must match exactly. `REGRESSION_SUMMARY.json` records
+input/baseline/LD/code hashes, coverage and errors. Exit 0 means all requested
+comparisons passed. Missing genes, missing inputs, failed fits or unresolved
+SuSiE produce nonzero exit and an INCOMPLETE report. DIFFERENCE needs review;
+it is never automatically accepted. SuSiE holds a dense matrix in memory;
+more than 8,000 variants requires explicit `--max-ld-variants` override.
+
+The numerical replay freezes the original harmonized instrument set and full
+regional inputs, and retains legacy median-rounded sample sizes and coloc
+outcome sdY estimation. This proves numerical parity for prepared inputs,
+not end-to-end equivalence from raw archives/genotypes. Central production
+recipes still require an explicit phenotype sdY. `POLICY_DELTA.tsv` separately
+records coloc changes after removing palindromic SNPs; these policy changes do
+not count as same-input numerical failures. New clumping/instrument policies
+must be reviewed separately from the legacy primary anchor Wald result.
+
+The adapter currently supports the legacy **CKD** schemas, EUR regional/LD
+analysis and EUR/EAS Stage1 MR. It rejects IS and EAS regional replay rather
+than interpreting their files as CKD inputs. IS needs an explicit schema and
+baseline adapter before server validation can be claimed. Real server CKD
+results have not yet been tested by the assistant; synthetic legacy/new
+parity is tested in CI.
