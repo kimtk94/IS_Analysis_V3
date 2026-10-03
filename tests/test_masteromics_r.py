@@ -60,6 +60,25 @@ class ScientificBackendTest(unittest.TestCase):
    malformed=pd.DataFrame(r,index=keys,columns=keys).iloc[::-1];malformed.to_csv(p/'badld.tsv',sep='\t')
    result=self.bridge('susie',p/'run/shared_harmonize/regional.tsv',p/'compiled_inputs/unit_shared.json',p/'badld.tsv',p/'run/shared_ld/yld.tsv',p/'should_not_exist.tsv')
    self.assertNotEqual(result.returncode,0);self.assertIn('LD order mismatch',result.stderr)
+ def test_independent_legacy_coloc_susie_parity(self):
+  from masteromics.regression import replay_coloc,replay_susie
+  with tempfile.TemporaryDirectory() as tmp:
+   p=Path(tmp);inp=p/'inputs';inp.mkdir();ld=p/'ld';ld.mkdir()
+   n=120;idx=np.arange(n);r=.8**np.abs(idx[:,None]-idx[None,:]);keys=[f's{i}' for i in idx]
+   d=pd.DataFrame({'snp':keys,'pos37':1000+idx,'beta_pqtl':.3*r[:,60],'se_pqtl':.01,'maf_pqtl':.25,'n_pqtl':10000,'beta_outcome_aligned':.2*r[:,60],'se_outcome':.01,'maf_outcome':.25,'n_outcome':10000,'allele0_pqtl':'G','allele1_pqtl':'A'})
+   science.write(d,inp/'TEST.tsv.gz')
+   abf=p/'legacy_abf'
+   result=subprocess.run(['Rscript',str(ROOT/'scripts/run_ckd_stage2b_coloc.R'),str(inp),str(abf)],capture_output=True,text=True,timeout=180)
+   self.assertEqual(result.returncode,0,result.stderr)
+   rows,policy,_=replay_coloc('TEST',inp/'TEST.tsv.gz',abf/'STAGE2B_COLOC_DEFAULT.tsv',p/'central_abf',1e-6)
+   self.assertTrue(all(x['status']=='PASS' for x in rows),rows);self.assertEqual(policy[0]['palindromic_removed'],0)
+   science.write(pd.DataFrame({'ref_id':keys,'snp':keys,'effect_vs_ld_major_sign':1}),ld/'TEST.ld.meta.tsv')
+   (ld/'TEST.ld.vars').write_text('\n'.join(keys)+'\n');r.astype('<f4').tofile(ld/'TEST.ld.bin')
+   susie=p/'legacy_susie'
+   result=subprocess.run(['Rscript',str(ROOT/'scripts/run_ckd_stage2c_susie.R'),str(inp),str(ld),str(abf/'STAGE2B_COLOC_DEFAULT.tsv'),str(susie)],capture_output=True,text=True,timeout=240)
+   self.assertEqual(result.returncode,0,result.stderr)
+   rows,_=replay_susie('TEST',inp/'TEST.tsv.gz',susie/'STAGE2C_SUSIE_DEFAULT.tsv',ld,p/'central_susie',1e-6)
+   self.assertTrue(all(x['status']=='PASS' for x in rows),rows)
  def test_longitudinal_and_incident_models(self):
   with tempfile.TemporaryDirectory() as tmp:
    p=Path(tmp);rng=np.random.default_rng(20261003);n=400
