@@ -3,12 +3,15 @@ import json
 from pathlib import Path
 import subprocess
 import sys
-from . import science
-from .engine import execute,atomic_json,sha
-from .compile import compile_project
 
 
 def main():
+    if len(sys.argv)>1 and sys.argv[1]=='blueprint':
+        from .architecture import main as blueprint_main
+        return blueprint_main(sys.argv[2:])
+    from . import science
+    from .engine import execute,atomic_json,sha
+    from .compile import compile_project
     parser=argparse.ArgumentParser(description='MasterOmics central workflow')
     sub=parser.add_subparsers(dest='command',required=True)
     p=sub.add_parser('run');p.add_argument('projects',nargs='+');p.add_argument('--registry',required=True);p.add_argument('--jobs',type=int,default=1);p.add_argument('--plan',action='store_true')
