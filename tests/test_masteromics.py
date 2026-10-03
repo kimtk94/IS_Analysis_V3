@@ -108,4 +108,32 @@ class RebuildTest(unittest.TestCase):
    stage=Stages(p)
    with self.assertRaisesRegex(ValueError,'Header-only'):stage.run('empty',[],lambda t:(t/'empty.tsv').write_text('key\n'))
    self.assertFalse((p/'empty').exists())
+class ArchitectureTest(unittest.TestCase):
+ def test_structure_only_and_no_overwrite(self):
+  from masteromics.architecture import initialize,inspect,compile_bindings
+  with tempfile.TemporaryDirectory() as tmp:
+   paths=initialize(Path(tmp)/'hub');self.assertEqual(len(paths),2)
+   for path in paths:
+    cfg=json.loads(Path(path).read_text());assessment=inspect(cfg)
+    self.assertEqual(assessment['structure_status'],'VALID');self.assertEqual(assessment['scientific_status'],'NOT_EXECUTED')
+    self.assertEqual(len(assessment['unbound_stages']),15)
+    with self.assertRaisesRegex(ValueError,'unbound'):compile_bindings(cfg)
+   with self.assertRaisesRegex(ValueError,'never overwrites'):initialize(Path(tmp)/'hub')
+ def test_scientific_dependency_and_optional_cohort_gate(self):
+  from masteromics.architecture import template,validate
+  cfg=template('ckd','/tmp/fixture');cfg['stages'][0]['depends']=['report']
+  with self.assertRaises(ValueError):validate(cfg)
+  cfg=template('ischemic_stroke','/tmp/fixture')
+  next(s for s in cfg['stages'] if s['id']=='longitudinal')['enabled']=True
+  with self.assertRaisesRegex(ValueError,'upstream'):validate(cfg)
+ def test_binding_compiler_strict_contracts(self):
+  from masteromics.architecture import template,compile_bindings
+  with tempfile.TemporaryDirectory() as tmp:
+   cfg=template('ckd',tmp)
+   cfg['analysis_policy'].update(genome_build='GRCh38',cis_window_bp=500000,replication_definition='fixture only',palindromic_policy='drop_all',testing_family='fixture')
+   for stage in cfg['stages']:
+    if stage['enabled']:stage['binding']={'argv':['python3','fixture.py','@out0'],'inputs':['fixture.input'],'outputs':[{'path':str(Path(tmp)/stage['id']/'output.tsv'),'kind':'tsv','columns':['value']}]}
+   dag=compile_bindings(cfg);self.assertEqual(len(dag['stages']),15)
+   cfg['stages'][0]['binding']['outputs'][0]['min_rows']=0
+   with self.assertRaisesRegex(ValueError,'Nonempty'):compile_bindings(cfg)
 if __name__=='__main__':unittest.main()
