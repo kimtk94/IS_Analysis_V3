@@ -110,7 +110,7 @@ def replay_coloc(gene,source,baseline,out,atol,policy_delta=True):
         if len(match)!=1:raise ValueError('Prior baseline mismatch')
         n=match.iloc[0]
         for posterior in ['H0','H1','H2','H3','H4']:
-            field='PP.'+poster
+            field='PP.'+posterior
             if field in o:rows.append(metric('COLOC',gene,field,o[field],n[field+'.abf'],atol))
         if 'nsnps' in o:rows.append(metric('COLOC',gene,'nsnps',o.nsnps,n.nsnps,0,0))
     policy=[]
