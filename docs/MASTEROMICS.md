@@ -154,8 +154,10 @@ Defaults: `/srv/is-analysis/results/ckd/stage1`, `stage2b_coloc`,
 `stage2c_susie`; LD: `/srv/is-analysis/data/ckd/stage2c_ld/ld`.
 Override with `--root`, `--stage1-root`, `--stage2b-root`, `--stage2c-root`,
 `--ld-root`. Set `MASTEROMICS_PYTHON` to the scientific Python interpreter;
-otherwise the wrapper uses `/srv/is-analysis/.venv-ckd/bin/python` if present,
-then `python3`. Rscript must resolve to the intended existing R environment.
+otherwise it checks the checkout, the existing `/srv/is-analysis/IS_Analysis_V3`
+checkout and `/srv/is-analysis` for `.venv-ckd/bin/python`, then uses `python3`.
+Rscript must resolve to the intended existing R environment. The wrapper respects
+`CKD_R_LIB`/`R_LIBS_USER`, otherwise reuses `/srv/is-analysis/.Rlib` if present.
 Set `MASTEROMICS_REGRESSION_OUT` to a fresh output directory when needed.
 
 `REGRESSION_COMPARISON.tsv` contains baseline and new values, absolute deltas,
