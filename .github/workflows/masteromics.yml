@@ -1,0 +1,62 @@
+name: MasterOmics contracts and synthetic truth
+on:
+  pull_request:
+    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
+  push:
+    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
+  workflow_dispatch:
+jobs:
+  python-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-masteromics.lock
+      - run: python -m unittest discover -s tests -p test_masteromics.py -v
+      - run: python -m py_compile masteromics/*.py
+  r-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+      - run: Rscript -e 'parse(file="masteromics/analysis.R")'
+  r-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MASTEROMICS_REQUIRE_R: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - name: Identify R version
+        id: r-version
+        run: Rscript -e 'cat(paste0("version=",getRversion(),"\n"), file=Sys.getenv("GITHUB_OUTPUT"), append=TRUE)'
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: masteromics-r-${{ runner.os }}-${{ steps.r-version.outputs.version }}-v1
+      - name: Install Python reference environment
+        run: python -m pip install -r requirements-masteromics.lock
+      - name: Prepare scientific R environment
+        run: Rscript -e 'install.packages(c("TwoSampleMR","coloc","susieR","jsonlite","lme4","survival"), repos=c(getOption("repos"), "https://mrcieu.r-universe.dev"), Ncpus=2); for(p in c("TwoSampleMR","coloc","susieR","jsonlite","lme4","survival")) stopifnot(requireNamespace(p,quietly=TRUE))'
+      - name: Execute actual MR coloc SuSiE and cohort integration tests
+        run: python -m unittest discover -s tests -p test_masteromics_r.py -v
+      - name: Record R environment
+        if: always()
+        run: Rscript -e 'writeLines(capture.output(sessionInfo()), "R-session-info.txt"); write.table(as.data.frame(installed.packages()[,c("Package","Version")]),"R-package-versions.tsv",sep="\t",row.names=FALSE,quote=FALSE)'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: masteromics-r-environment
+          path: |
+            R-session-info.txt
+            R-package-versions.tsv

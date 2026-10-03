@@ -1,0 +1,403 @@
+{
+  "datasets": {
+    "UKBPPP_ACP1_EUR": {
+      "id": "UKBPPP_ACP1_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/ACP1.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "EGFR_EUR": {
+      "id": "EGFR_EUR",
+      "path": "/srv/is-analysis/datasets/gwas/EGFR_EUR.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": null
+    },
+    "EGFR_EAS": {
+      "id": "EGFR_EAS",
+      "path": "/srv/is-analysis/datasets/gwas/EGFR_EAS.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EAS",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": null
+    },
+    "UKBPPP_CPVL_EUR": {
+      "id": "UKBPPP_CPVL_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/CPVL.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_F12_EUR": {
+      "id": "UKBPPP_F12_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/F12.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_GSTA1_EUR": {
+      "id": "UKBPPP_GSTA1_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/GSTA1.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_GSTA3_EUR": {
+      "id": "UKBPPP_GSTA3_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/GSTA3.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_HLA_E_EUR": {
+      "id": "UKBPPP_HLA_E_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/HLA_E.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_INHBC_EUR": {
+      "id": "UKBPPP_INHBC_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/INHBC.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_SDCCAG8_EUR": {
+      "id": "UKBPPP_SDCCAG8_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/SDCCAG8.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_UMOD_EUR": {
+      "id": "UKBPPP_UMOD_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/UMOD.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_MMP12_EUR": {
+      "id": "UKBPPP_MMP12_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/MMP12.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "IS_EUR": {
+      "id": "IS_EUR",
+      "path": "/srv/is-analysis/datasets/gwas/IS_EUR.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "cc",
+      "case_fraction": null
+    },
+    "IS_EAS": {
+      "id": "IS_EAS",
+      "path": "/srv/is-analysis/datasets/gwas/IS_EAS.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EAS",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "cc",
+      "case_fraction": null
+    },
+    "UKBPPP_F11_EUR": {
+      "id": "UKBPPP_F11_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/F11.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_TMPRSS5_EUR": {
+      "id": "UKBPPP_TMPRSS5_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/TMPRSS5.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_SCARA5_EUR": {
+      "id": "UKBPPP_SCARA5_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/SCARA5.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_PROCR_EUR": {
+      "id": "UKBPPP_PROCR_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/PROCR.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    },
+    "UKBPPP_SWAP70_EUR": {
+      "id": "UKBPPP_SWAP70_EUR",
+      "path": "/srv/is-analysis/datasets/pqtl/SWAP70.full.tsv.gz",
+      "sha256": "REPLACE_WITH_ACTUAL_SHA256",
+      "columns": {
+        "chr": "chr",
+        "pos": "pos",
+        "effect_allele": "effect_allele",
+        "other_allele": "other_allele",
+        "beta": "beta",
+        "se": "se",
+        "pval": "pval",
+        "eaf": "eaf",
+        "n": "n"
+      },
+      "ancestry": "EUR",
+      "build": "GRCh38",
+      "effect_scale": "beta",
+      "type": "quant",
+      "sdY": 1
+    }
+  }
+}
