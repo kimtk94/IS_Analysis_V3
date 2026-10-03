@@ -10,9 +10,9 @@ reanalysis presets, not a completed proteome-wide screen.
 
 Use Python >=3.11. Create an environment and install `requirements-masteromics.lock`
 before a run. R packages required: TwoSampleMR, coloc, susieR, jsonlite; for cohort:
-lme4, survival. R packages are never installed by the runner. R runtime/fit execution
-was unavailable in the development environment, so production R validation remains
-required. This is not an environment-complete or scientifically validated release.
+lme4, survival. R packages are never installed by the runner. Actual R MR, coloc, SuSiE and cohort models passed synthetic integration CI
+run 37104819367. Production CKD/IS/KoGES validation remains required.
+CI records full installed R versions; production environment locking is still required.
 
 Copy `.example.json` files to `ckd.json`, `ischemic_stroke.json`, `datasets.json`.
 Fill every placeholder from observed data, including SHA256, trait SD/case fraction,
@@ -99,7 +99,9 @@ all configured stages passed, not that unconfigured methods ran.
 
 Python tests cover real synthetic effect 0.5, LD/build mismatches, allele swaps,
 palindromic drops, output corruption, changed inputs/external code, header-only
-rejection, dependency ordering and resume. R/production CKD/IS fits have not been run.
+rejection, dependency ordering and resume. R integration tests passed in GitHub CI: median/Egger effect 0.5, shared-locus
+ABF and SuSiE posterior checks, full DAG/resume, LD order rejection, mixed slope
+and Cox effect recovery. Production CKD/IS fits have not been run.
 
 Development source: kimtk94/IS_Analysis_V3 commit 7b7311bf123c79128cfc936634dec72c705bd2a4.
 Reviewed legacy MR, coloc/SuSiE entrypoints and workflow stubs; not all historical
@@ -119,4 +121,19 @@ optional `incident_panel`; score and phenotype join then run automatically. Inci
 panel columns: `id,followup,event,baseline_ckd,score,age,sex,PC...`. Endpoint definitions
 and timing are externally prespecified; prevalent CKD is excluded. Cox output includes
 HR and proportional-hazards diagnostics. Event derivation from raw KoGES and genotype
-QC are still upstream adapters. These R cohort models remain unexecuted locally.
+QC are still upstream adapters. These R cohort models passed synthetic CI; real KoGES fits remain unexecuted.
+
+## Read-only server preflight
+
+```bash
+python3 -m masteromics doctor projects/ckd.example.json --registry projects/datasets.example.json --output /srv/is-analysis/masteromics_preflight.json
+```
+
+The example recipe intentionally reports BLOCKED_INPUTS until actual bindings are
+provided. Doctor checks registry identity metadata, headers, cis coordinates, LD
+paths and ancestry/build, pinned checksum syntax and R availability. It never
+downloads or reads whole raw datasets. READY_FOR_SCIENTIFIC_GATES is configuration
+readiness, not biological validation or a completed scientific run.
+
+Latest verified CI: 6 Python tests plus 3 actual R integration tests and syntax/compile
+checks. Commit 4d9b0c725377af33e244e6cbef8c57e25269af47.
