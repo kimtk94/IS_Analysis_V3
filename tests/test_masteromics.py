@@ -67,4 +67,21 @@ class DoctorTest(unittest.TestCase):
   result=doctor(ROOT/'projects/ckd.example.json',ROOT/'projects/datasets.example.json')
   self.assertEqual(result['status'],'BLOCKED_INPUTS');self.assertEqual(result['scientific_validation'],'NOT_EXECUTED')
   self.assertTrue(any('cis interval' in issue['reason'] for issue in result['issues']))
+class RegressionTest(unittest.TestCase):
+ def test_frozen_legacy_mr_and_missing_coverage(self):
+  import importlib.util
+  from masteromics.regression import replay_mr
+  spec=importlib.util.spec_from_file_location('legacy_mr',ROOT/'scripts/run_ckd_stage1_mr.py')
+  legacy=importlib.util.module_from_spec(spec);spec.loader.exec_module(legacy)
+  with tempfile.TemporaryDirectory() as tmp:
+   p=Path(tmp);(p/'harmonized/EUR').mkdir(parents=True);(p/'mr/EUR').mkdir(parents=True)
+   d=pd.DataFrame({'protein_id':'p1','gene_symbol':'TEST','rsid':['s1','s2','s3'],'beta_exposure':[.1,.2,.3],'se_exposure':.01,'beta_outcome':[.045,.11,.14],'se_outcome':.02})
+   science.write(d,p/'harmonized/EUR/eGFRcrea.tsv.gz')
+   b,se,pval,q=legacy.ivw(d.to_dict('records'));wb,ws,wp=legacy.wald(d.iloc[1].to_dict())
+   row={'protein_id':'p1','gene_symbol':'TEST','anchor_rsid':'s2','top_rsid':'s2','n_harmonized_instruments':3,'ivw_beta_sensitivity':b,'ivw_se_sensitivity':se,'ivw_p_sensitivity':pval,'ivw_q_sensitivity':q,'wald_beta':wb,'wald_se':ws,'wald_p':wp}
+   science.write(pd.DataFrame([row]),p/'mr/EUR/eGFRcrea.tsv')
+   rows,_=replay_mr(p,p/'replay',['TEST'],1e-8);self.assertTrue(all(x['status']=='PASS' for x in rows))
+   row['wald_beta']+=.1;science.write(pd.DataFrame([row]),p/'mr/EUR/eGFRcrea.tsv')
+   rows,_=replay_mr(p,p/'changed',['TEST'],1e-8);self.assertTrue(any(x['status']=='DIFFERENCE' for x in rows))
+   with self.assertRaisesRegex(ValueError,'absent'):replay_mr(p,p/'missing',['TEST','MISSING'],1e-8)
 if __name__=='__main__':unittest.main()
