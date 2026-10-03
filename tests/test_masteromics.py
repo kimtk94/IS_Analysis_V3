@@ -84,4 +84,28 @@ class RegressionTest(unittest.TestCase):
    row['wald_beta']+=.1;science.write(pd.DataFrame([row]),p/'mr/EUR/eGFRcrea.tsv')
    rows,_=replay_mr(p,p/'changed',['TEST'],1e-8);self.assertTrue(any(x['status']=='DIFFERENCE' for x in rows))
    with self.assertRaisesRegex(ValueError,'absent'):replay_mr(p,p/'missing',['TEST','MISSING'],1e-8)
+class RebuildTest(unittest.TestCase):
+ def test_preparation_comparison_keys_numbers_missing(self):
+  from masteromics.rebuild import compare,Stages
+  with tempfile.TemporaryDirectory() as tmp:
+   p=Path(tmp);a=p/'a.tsv';b=p/'b.tsv'
+   a.write_text('key\tbeta\n001\t0.1\n002\tNA\n')
+   b.write_text('key\tbeta\n002\tNA\n001\t0.10000000001\n')
+   self.assertEqual(compare(a,b,['key'])['status'],'PASS')
+   b.write_text('key\tbeta\n001\t0.2\n');self.assertEqual(compare(a,b,['key'])['status'],'DIFFERENCE')
+   for name in ['work','logs','checkpoints']:(p/name).mkdir()
+   stage=Stages(p);src=p/'input';src.write_text('source')
+   calls=[]
+   def action(t):calls.append(1);(t/'result.tsv').write_text('key\n001\n')
+   stage.run('fixture',[src],action);stage.run('fixture',[src],action);self.assertEqual(len(calls),1)
+   src.write_text('changed')
+   with self.assertRaisesRegex(ValueError,'Changed'):stage.run('fixture',[src],action)
+ def test_header_only_stage_not_promoted(self):
+  from masteromics.rebuild import Stages
+  with tempfile.TemporaryDirectory() as tmp:
+   p=Path(tmp)
+   for name in ['work','logs','checkpoints']:(p/name).mkdir()
+   stage=Stages(p)
+   with self.assertRaisesRegex(ValueError,'Header-only'):stage.run('empty',[],lambda t:(t/'empty.tsv').write_text('key\n'))
+   self.assertFalse((p/'empty').exists())
 if __name__=='__main__':unittest.main()
