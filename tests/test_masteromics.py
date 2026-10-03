@@ -61,4 +61,10 @@ class ScoreTest(unittest.TestCase):
    out=science.table(p/'score.tsv');self.assertEqual(out.iloc[0].id,'001');self.assertAlmostEqual(out.iloc[0].score,.2)
    science.write(d.iloc[:1],p/'d.tsv')
    with self.assertRaises(ValueError):science.score(p/'d.tsv',p/'w.tsv',p/'score.tsv')
+class DoctorTest(unittest.TestCase):
+ def test_unconfigured_recipe_blocked(self):
+  from masteromics.doctor import doctor
+  result=doctor(ROOT/'projects/ckd.example.json',ROOT/'projects/datasets.example.json')
+  self.assertEqual(result['status'],'BLOCKED_INPUTS');self.assertEqual(result['scientific_validation'],'NOT_EXECUTED')
+  self.assertTrue(any('cis interval' in issue['reason'] for issue in result['issues']))
 if __name__=='__main__':unittest.main()
