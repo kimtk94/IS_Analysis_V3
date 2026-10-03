@@ -38,8 +38,13 @@ if (mode == 'mr') {
     ans <- list(beta=d[[paste0('beta_',suffix)]],varbeta=d[[paste0('se_',suffix)]]^2,
                 snp=d$key,position=d$pos_x,N=n,type=spec$type,MAF=pmin(d[[paste0('eaf_',suffix)]],1-d[[paste0('eaf_',suffix)]]))
     if(spec$type=='quant') {
-      if(is.null(spec$sdY) || !is.finite(spec$sdY) || spec$sdY<=0) stop('Explicit phenotype sdY required')
-      ans$sdY <- spec$sdY
+      if(identical(spec$sdY_estimation,'coloc')) {
+        # Explicit legacy-compatible estimate from varbeta, MAF and N.
+        # Never enable this by default or replace a known phenotype SD.
+      } else {
+        if(is.null(spec$sdY) || !is.finite(spec$sdY) || spec$sdY<=0) stop('Explicit phenotype sdY required')
+        ans$sdY <- spec$sdY
+      }
     } else if(spec$type=='cc') {
       if(is.null(spec$case_fraction) || spec$case_fraction<=0 || spec$case_fraction>=1) stop('Case fraction required')
       ans$s <- spec$case_fraction
@@ -66,7 +71,9 @@ if (mode == 'mr') {
     } else {
       fit <- coloc::coloc.susie(sx,sy,p1=meta$p1,p2=meta$p2,p12=meta$p12)
       if(!nrow(fit$summary)) stop('No SuSiE comparisons')
-      result<-fit$summary;result$status<-'SUCCESS';write_tsv(result,args[[6]])
+      result<-fit$summary;result$status<-'SUCCESS'
+      result$exposure_credible_sets<-length(sx$sets$cs);result$outcome_credible_sets<-length(sy$sets$cs)
+      write_tsv(result,args[[6]])
     }
   }
 } else if (mode == 'cohort') {
