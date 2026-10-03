@@ -135,8 +135,12 @@ paths and ancestry/build, pinned checksum syntax and R availability. It never
 downloads or reads whole raw datasets. READY_FOR_SCIENTIFIC_GATES is configuration
 readiness, not biological validation or a completed scientific run.
 
-Latest verified CI: 6 Python tests plus 3 actual R integration tests and syntax/compile
-checks. Commit 4d9b0c725377af33e244e6cbef8c57e25269af47.
+Latest verified CI: 7 Python tests plus 4 actual R integration tests and syntax/compile
+checks. Code commit 4beb307b7db4397466dd6248133f02fd5c6756b1;
+https://github.com/kimtk94/IS_Analysis_V3/actions/runs/37106138379.
+The independent legacy-script versus central-module coloc/SuSiE comparison passed
+on synthetic inputs with posterior absolute tolerance 1e-6. This is not a
+production-data validation.
 
 ## Server regression against existing CKD results
 
