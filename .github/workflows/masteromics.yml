@@ -1,11 +1,22 @@
 name: MasterOmics contracts and synthetic truth
 on:
   pull_request:
-    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
+    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'data/metadata/masteromics_resource_registry.json', 'docs/MASTEROMICS_DATABASES.md', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
   push:
-    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
+    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'data/metadata/masteromics_resource_registry.json', 'docs/MASTEROMICS_DATABASES.md', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
   workflow_dispatch:
 jobs:
+  database-catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate resource metadata without scientific dependencies
+        run: python -S -m masteromics resources validate
+      - name: Test access gates and explicit artifact pinning offline
+        run: python -S -m unittest discover -s tests -p test_masteromics_resources.py -v
   python-contracts:
     runs-on: ubuntu-latest
     steps:
