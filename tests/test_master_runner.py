@@ -49,3 +49,24 @@ def test_stage4_becomes_ready_with_explicit_io(tmp_path):
     assert "[04]" in p.stdout
     assert "READY" in p.stdout
     assert "run_master_mr_robustness.py" in p.stdout
+
+
+def test_stage6_becomes_ready_with_explicit_io(tmp_path):
+    inp=tmp_path/"susie_input"; ld=tmp_path/"ld"; out=tmp_path/"susie_out"
+    inp.mkdir(); ld.mkdir()
+    abf=tmp_path/"abf.tsv"
+    abf.write_text("locus\tPP.H3\tPP.H4\nGENE1\t0.1\t0.9\n",encoding="utf-8")
+    p=run(
+      "--disease","is","--stages","6","--dry-run",
+      "--susie-input-dir",str(inp),
+      "--ld-dir",str(ld),
+      "--abf-file",str(abf),
+      "--susie-output-dir",str(out),
+      "--ancestry","EAS",
+      "--outcome-type","cc",
+    )
+    assert p.returncode==0,p.stderr
+    assert "[06]" in p.stdout
+    assert "READY" in p.stdout
+    assert "run_master_susie.R" in p.stdout
+    assert " EAS cc" in p.stdout
