@@ -228,6 +228,18 @@ def main() -> int:
     ap.add_argument("--evidence-candidates", type=Path)
     ap.add_argument("--evidence-manifest", type=Path)
     ap.add_argument("--evidence-output", type=Path)
+    ap.add_argument("--dataset-manifest", type=Path)
+    ap.add_argument("--dataset-registry-output", type=Path)
+    ap.add_argument("--dataset-registry-summary", type=Path)
+    ap.add_argument("--exposure-input", type=Path)
+    ap.add_argument("--exposure-column-map", type=Path)
+    ap.add_argument("--exposure-output", type=Path)
+    ap.add_argument("--exposure-ancestry")
+    ap.add_argument("--exposure-genome-build")
+    ap.add_argument("--exposure-platform")
+    ap.add_argument("--instrument-input", type=Path)
+    ap.add_argument("--instrument-output", type=Path)
+    ap.add_argument("--instrument-p-threshold", type=float)
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
@@ -388,6 +400,47 @@ def main() -> int:
         plans = [StagePlan(p.stage, p.name, "READY", cmd,
                            "Final transparent evidence score, conflicts, and Tier 1/2/3 assignment.")
                  if p.stage == 19 else p for p in plans]
+    stage0_args = [args.dataset_manifest, args.dataset_registry_output, args.dataset_registry_summary]
+    if 0 in stages and all(x is not None for x in stage0_args):
+        cmd = [sys.executable, "scripts/run_master_dataset_registry.py",
+               "--manifest", str(args.dataset_manifest),
+               "--output", str(args.dataset_registry_output),
+               "--summary", str(args.dataset_registry_summary)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Generic dataset registry, schema audit, file provenance, and hashes.")
+                 if p.stage == 0 else p for p in plans]
+
+    stage1_args = [args.exposure_input, args.exposure_column_map, args.exposure_output]
+    if 1 in stages and all(x is not None for x in stage1_args):
+        cmd = [sys.executable, "scripts/run_master_exposure_normalize.py",
+               "--input", str(args.exposure_input),
+               "--column-map", str(args.exposure_column_map),
+               "--output", str(args.exposure_output)]
+        if args.exposure_ancestry:
+            cmd += ["--ancestry", str(args.exposure_ancestry)]
+        if args.exposure_genome_build:
+            cmd += ["--genome-build", str(args.exposure_genome_build)]
+        if args.exposure_platform:
+            cmd += ["--platform", str(args.exposure_platform)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Source-agnostic exposure summary-statistic normalization.")
+                 if p.stage == 1 else p for p in plans]
+
+    stage2_args = [args.instrument_input, args.instrument_output]
+    if 2 in stages and all(x is not None for x in stage2_args):
+        cfg = load_config(args.disease)
+        min_f = cfg.get("defaults",{}).get("f_stat_min",10)
+        cmd = [sys.executable, "scripts/run_master_instrument_qc.py",
+               "--input", str(args.instrument_input),
+               "--output", str(args.instrument_output),
+               "--min-fstat", str(min_f)]
+        if cfg.get("defaults",{}).get("exclude_mhc",False):
+            cmd += ["--exclude-mhc"]
+        if args.instrument_p_threshold is not None:
+            cmd += ["--p-threshold", str(args.instrument_p_threshold)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Generic instrument-strength, MHC, palindromic and duplicate QC; LD pruning remains upstream.")
+                 if p.stage == 2 else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
