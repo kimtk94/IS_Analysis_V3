@@ -1,0 +1,31 @@
+name: master-pipeline-ci
+
+on:
+  push:
+    paths:
+      - "config/master_*.json"
+      - "docs/MASTER_PIPELINE.md"
+      - "scripts/validate_master_pipeline.py"
+      - "tests/test_master_pipeline.py"
+      - ".github/workflows/master-pipeline-ci.yml"
+  pull_request:
+    paths:
+      - "config/master_*.json"
+      - "docs/MASTER_PIPELINE.md"
+      - "scripts/validate_master_pipeline.py"
+      - "tests/test_master_pipeline.py"
+      - ".github/workflows/master-pipeline-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  validate-master-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate disease configs
+        run: python scripts/validate_master_pipeline.py config/master_ckd.json config/master_is.json
+      - name: Run MASTER tests
+        run: python -m pytest -q tests/test_master_pipeline.py
