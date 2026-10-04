@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/muscle_stage1_gwas_audit.py'
       - 'config/muscle/stage1_seed_loci.tsv'
+      - 'config/muscle/stage1_hiit_comparator.tsv'
       - 'tests/test_muscle_stage1_gwas_audit.py'
       - 'docs/MUSCLE_MASTER.md'
       - '.github/workflows/muscle-stage1-ci.yml'
@@ -13,6 +14,7 @@ on:
     paths:
       - 'scripts/muscle_stage1_gwas_audit.py'
       - 'config/muscle/stage1_seed_loci.tsv'
+      - 'config/muscle/stage1_hiit_comparator.tsv'
       - 'tests/test_muscle_stage1_gwas_audit.py'
       - 'docs/MUSCLE_MASTER.md'
       - '.github/workflows/muscle-stage1-ci.yml'
@@ -27,11 +29,25 @@ jobs:
       - name: Compile Python
         run: python3 -m py_compile scripts/muscle_stage1_gwas_audit.py
       - name: Run MUSCLE Stage 1 unit tests
-        run: python3 -m unittest tests.test_muscle_stage1_gwas_audit -v
-      - name: Run seed audit smoke test
+        run: python3 tests/test_muscle_stage1_gwas_audit.py
+      - name: Run Stage 1 v1.1 smoke test
         run: |
           python3 scripts/muscle_stage1_gwas_audit.py \
             --input config/muscle/stage1_seed_loci.tsv \
             --outdir /tmp/muscle_stage1
           test -s /tmp/muscle_stage1/MUSCLE_STAGE1_GWAS_AUDIT.tsv
           test -s /tmp/muscle_stage1/MUSCLE_STAGE1_SUMMARY.json
+          test -s /tmp/muscle_stage1/MUSCLE_STAGE1_REPORT.md
+          test -s /tmp/muscle_stage1/MUSCLE_STAGE1_HIIT_COMPARATOR_AUDIT.tsv
+          test -s /tmp/muscle_stage1/MUSCLE_STAGE1_HIIT_COMPARATOR_SUMMARY.json
+          python3 - <<'PY'
+          import json
+          p = '/tmp/muscle_stage1/MUSCLE_STAGE1_SUMMARY.json'
+          d = json.load(open(p))
+          assert d['version'] == '1.1'
+          assert d['n_loci'] == 20
+          assert d['tier_counts']['B_suggestive'] == 20
+          assert d['comparator']['n_loci'] == 8
+          assert d['comparator']['tier_counts']['B_suggestive'] == 8
+          print('MUSCLE_STAGE1_V1_1_SMOKE=PASS')
+          PY
