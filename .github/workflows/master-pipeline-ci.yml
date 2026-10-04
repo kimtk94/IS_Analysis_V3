@@ -5,51 +5,21 @@ on:
     paths:
       - "config/master_*.json"
       - "docs/MASTER_PIPELINE.md"
+      - "scripts/run_master_*"
+      - "scripts/summarize_master_*"
       - "scripts/validate_master_pipeline.py"
-      - "scripts/run_master_mr_robustness.py"
-      - "scripts/run_master_mr.py"
-      - "scripts/run_master_susie.R"
-      - "scripts/run_master_cross_ancestry.py"
-      - "scripts/run_master_cross_platform.py"
-      - "scripts/run_master_transcriptomics.py"
-      - "scripts/run_master_phenotype_matrix.py"
-      - "scripts/run_master_risk_factor.py"
-      - "scripts/run_master_individual_validation.R"
-      - "scripts/summarize_master_individual_validation.py"
-      - "scripts/run_master_localization.py"
-      - "scripts/run_master_phewas.py"
-      - "scripts/run_master_druggability.py"
-      - "scripts/run_master_evidence_integration.py"
-      - "scripts/run_master_dataset_registry.py"
-      - "scripts/run_master_exposure_normalize.py"
-      - "scripts/run_master_instrument_qc.py"
-      - "tests/test_master_pipeline.py"
-      - "tests/test_master_runner.py"
-      - "tests/test_master_mr_robustness.py"
-      - "tests/test_master_mr.py"
-      - "tests/test_master_susie_contract.py"
-      - "tests/test_master_cross_ancestry.py"
-      - "tests/test_master_cross_platform.py"
-      - "tests/test_master_transcriptomics.py"
-      - "tests/test_master_phenotype_matrix.py"
-      - "tests/test_master_risk_factor.py"
-      - "tests/test_master_individual_validation_contract.py"
-      - "tests/test_master_individual_summary.py"
-      - "tests/test_master_localization.py"
-      - "tests/test_master_phewas.py"
-      - "tests/test_master_druggability.py"
-      - "tests/test_master_evidence_integration.py"
-      - "tests/test_master_dataset_registry.py"
-      - "tests/test_master_exposure_normalize.py"
-      - "tests/test_master_instrument_qc.py"
+      - "tests/test_master_*"
       - "workflow/run_master.py"
       - ".github/workflows/master-pipeline-ci.yml"
   pull_request:
     paths:
       - "config/master_*.json"
       - "docs/MASTER_PIPELINE.md"
+      - "scripts/run_master_*"
+      - "scripts/summarize_master_*"
       - "scripts/validate_master_pipeline.py"
-      - "tests/test_master_pipeline.py"
+      - "tests/test_master_*"
+      - "workflow/run_master.py"
       - ".github/workflows/master-pipeline-ci.yml"
   workflow_dispatch:
 
@@ -66,7 +36,27 @@ jobs:
       - name: Validate disease configs
         run: python scripts/validate_master_pipeline.py config/master_ckd.json config/master_is.json
       - name: Run MASTER tests
-        run: python -m pytest -q tests/test_master_pipeline.py tests/test_master_runner.py tests/test_master_mr_robustness.py tests/test_master_mr.py tests/test_master_susie_contract.py tests/test_master_cross_ancestry.py tests/test_master_cross_platform.py tests/test_master_transcriptomics.py tests/test_master_phenotype_matrix.py tests/test_master_risk_factor.py tests/test_master_individual_validation_contract.py tests/test_master_individual_summary.py tests/test_master_localization.py tests/test_master_phewas.py tests/test_master_druggability.py tests/test_master_evidence_integration.py tests/test_master_dataset_registry.py tests/test_master_exposure_normalize.py tests/test_master_instrument_qc.py
+        run: >
+          python -m pytest -q
+          tests/test_master_pipeline.py
+          tests/test_master_runner.py
+          tests/test_master_mr_robustness.py
+          tests/test_master_mr.py
+          tests/test_master_susie_contract.py
+          tests/test_master_cross_ancestry.py
+          tests/test_master_cross_platform.py
+          tests/test_master_transcriptomics.py
+          tests/test_master_phenotype_matrix.py
+          tests/test_master_risk_factor.py
+          tests/test_master_individual_validation_contract.py
+          tests/test_master_individual_summary.py
+          tests/test_master_localization.py
+          tests/test_master_phewas.py
+          tests/test_master_druggability.py
+          tests/test_master_evidence_integration.py
+          tests/test_master_dataset_registry.py
+          tests/test_master_exposure_normalize.py
+          tests/test_master_instrument_qc.py
       - name: Dry-run CKD and IS stages 0-6
         run: |
           python workflow/run_master.py --disease ckd --stages 0-6 --dry-run
