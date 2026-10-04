@@ -1,24 +1,14 @@
 #!/usr/bin/env python3
-"""MUSCLE Stage 2A: normalize RT GWAS variants and query GTEx skeletal-muscle QTLs.
+"""MUSCLE Stage 2A v2: normalize RT GWAS variants and query GTEx skeletal-muscle QTLs.
 
-Inputs
-------
-Stage 1 primary RT audit TSV (20 loci in v1.1).
+Key rule:
+GTEx /dataset/variant accepts rsIDs (snpId), but the static association endpoints
+are queried with GTEx variant IDs (variantId). Therefore each rsID is first
+resolved to one or more GTEx variant IDs, and those IDs are used for eQTL/sQTL
+queries.
 
-Outputs
--------
-- MUSCLE_STAGE2A_VARIANT_NORMALIZATION.tsv
-- MUSCLE_STAGE2A_EQTL.tsv
-- MUSCLE_STAGE2A_SQTL.tsv
-- MUSCLE_STAGE2A_CANDIDATE_GENES.tsv
-- MUSCLE_STAGE2A_SUMMARY.json
-- raw/{ensembl,gtex_variant,gtex_eqtl,gtex_sqtl}/*.json
-
-Important interpretation
-------------------------
-GTEx singleTissueEqtl / singleTissueSqtl endpoints return significant precomputed
-associations. A zero count means "no significant association returned by this
-query", not proof that the variant has no regulatory effect.
+A variant not present in GTEx is not an API error. It is recorded as
+SKIPPED_NO_GTEX_VARIANT for the QTL steps.
 """
 from __future__ import annotations
 
@@ -26,6 +16,7 @@ import argparse
 import csv
 import json
 import math
+import re
 import time
 from collections import defaultdict
 from pathlib import Path
@@ -34,7 +25,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-VERSION = "2A.1"
+VERSION = "2A.2"
 ENSEMBL_BASE = "https://rest.ensembl.org"
 GTEX_BASE = "https://gtexportal.org/api/v2"
 DEFAULT_DATASET = "gtex_v10"
@@ -49,7 +40,9 @@ VARIANT_FIELDS = [
     "study_id", "rsid", "source_gene", "source_chr", "source_pos",
     "source_p", "stage1_tier", "stage1_points", "stage1_priority",
     "ensembl_grch38_chr", "ensembl_grch38_pos", "ensembl_allele_string",
-    "source_position_matches_grch38", "gtex_variant_ids",
+    "source_position_matches_grch38",
+    "gtex_variant_ids", "gtex_b37_variant_ids",
+    "source_position_matches_gtex_b37",
     "gtex_variant_records", "gtex_eqtl_count", "gtex_sqtl_count",
     "gtex_eqtl_genes", "gtex_sqtl_genes",
     "ensembl_status", "gtex_variant_status", "gtex_eqtl_status",
@@ -113,6 +106,7 @@ def read_tsv(path: Path) -> List[Dict[str, str]]:
 
 
 def write_tsv(path: Path, rows: Iterable[Dict[str, Any]], fields: Sequence[str]) -> None:
+    rows = list(rows)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(fields), delimiter="\t",
@@ -142,19 +136,33 @@ def http_get_json(
 
     headers = {
         "Accept": "application/json",
-        "User-Agent": "IS_Analysis_V3-MUSCLE-Stage2A/1.0",
+        "User-Agent": "IS_Analysis_V3-MUSCLE-Stage2A/2.0",
     }
 
     last: Optional[Exception] = None
+    last_body = ""
     for attempt in range(1, retries + 1):
         try:
             with urlopen(Request(url, headers=headers), timeout=timeout) as resp:
                 return json.loads(resp.read().decode("utf-8"))
-        except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+        except HTTPError as exc:
+            last = exc
+            try:
+                last_body = exc.read().decode("utf-8", errors="replace")
+            except Exception:
+                last_body = ""
+            if attempt < retries and exc.code >= 500:
+                time.sleep(pause * attempt)
+                continue
+            break
+        except (URLError, TimeoutError, json.JSONDecodeError) as exc:
             last = exc
             if attempt < retries:
                 time.sleep(pause * attempt)
-    raise RuntimeError(f"GET failed after {retries} attempts: {url}: {last}")
+
+    raise RuntimeError(
+        f"GET failed: {url}: {last}; body={last_body[:1000]}"
+    )
 
 
 def extract_records(payload: Any, preferred_keys: Sequence[str] = ()) -> List[Dict[str, Any]]:
@@ -181,8 +189,8 @@ def extract_records(payload: Any, preferred_keys: Sequence[str] = ()) -> List[Di
 
 def select_grch38_mapping(payload: Dict[str, Any]) -> Dict[str, Any]:
     mappings = payload.get("mappings", []) if isinstance(payload, dict) else []
-    candidates = []
     valid_chroms = {str(i) for i in range(1, 23)} | {"X", "Y"}
+    candidates = []
     for m in mappings:
         if not isinstance(m, dict):
             continue
@@ -217,23 +225,32 @@ def query_gtex_variant(rsid: str, dataset: str) -> Tuple[Any, str]:
     try:
         payload = http_get_json(
             f"{GTEX_BASE}/dataset/variant",
-            params={"snpId": rsid, "datasetId": dataset, "pageSize": 2000},
+            params={
+                "snpId": rsid,
+                "datasetId": dataset,
+                "itemsPerPage": 2000,
+            },
         )
         return payload, "OK"
     except Exception as exc:
         return {"error": str(exc)}, "ERROR"
 
 
-def query_gtex_qtl(rsid: str, dataset: str, tissue: str, qtl: str) -> Tuple[Any, str]:
+def query_gtex_qtl(
+    variant_id: str,
+    dataset: str,
+    tissue: str,
+    qtl: str,
+) -> Tuple[Any, str]:
     endpoint = "singleTissueEqtl" if qtl == "eqtl" else "singleTissueSqtl"
     try:
         payload = http_get_json(
             f"{GTEX_BASE}/association/{endpoint}",
             params={
-                "snpId": rsid,
+                "variantId": variant_id,
                 "tissueSiteDetailId": tissue,
                 "datasetId": dataset,
-                "pageSize": 2000,
+                "itemsPerPage": 10000,
             },
         )
         return payload, "OK"
@@ -276,6 +293,26 @@ def split_source_genes(value: str) -> List[str]:
         if token and token.upper() not in {"NA", "N/A", "."}:
             genes.append(token)
     return genes
+
+
+def parse_gtex_b37_variant_id(value: str) -> Optional[Tuple[str, int]]:
+    if not value:
+        return None
+    m = re.match(r"^(?:chr)?([^_]+)_(\d+)_.*_b37$", str(value))
+    if not m:
+        return None
+    return m.group(1).replace("chr", ""), int(m.group(2))
+
+
+def source_matches_any_b37(source_chr: str, source_pos: int, b37_ids: Sequence[str]) -> str:
+    for vid in b37_ids:
+        parsed = parse_gtex_b37_variant_id(vid)
+        if not parsed:
+            continue
+        chrom, pos = parsed
+        if chrom.upper() == source_chr.upper() and pos == source_pos:
+            return "1"
+    return "0" if b37_ids else ""
 
 
 def build_candidate_genes(
@@ -356,6 +393,10 @@ def build_candidate_genes(
     return out
 
 
+def safe_filename(value: str) -> str:
+    return re.sub(r"[^A-Za-z0-9_.-]+", "_", value)
+
+
 def run(
     input_path: Path,
     outdir: Path,
@@ -383,23 +424,84 @@ def run(
         write_json(raw_root / "gtex_variant" / f"{rsid}.json", gv_payload)
         gv_records = extract_records(gv_payload, ("variant", "variants"))
 
-        eq_payload, eq_status = query_gtex_qtl(rsid, dataset, tissue, "eqtl")
-        write_json(raw_root / "gtex_eqtl" / f"{rsid}.json", eq_payload)
-        eq_records = extract_records(eq_payload, ("singleTissueEqtl",))
-        normalized_eq = [normalize_qtl_record(row, x, "eqtl") for x in eq_records]
-        eqtl_rows.extend(normalized_eq)
+        variant_ids = sorted({
+            str(_first(x, "variantId", "variant_id")).strip()
+            for x in gv_records
+            if str(_first(x, "variantId", "variant_id")).strip()
+        })
+        b37_ids = sorted({
+            str(_first(x, "b37VariantId", "b37_variant_id")).strip()
+            for x in gv_records
+            if str(_first(x, "b37VariantId", "b37_variant_id")).strip()
+        })
 
-        sq_payload, sq_status = query_gtex_qtl(rsid, dataset, tissue, "sqtl")
-        write_json(raw_root / "gtex_sqtl" / f"{rsid}.json", sq_payload)
-        sq_records = extract_records(sq_payload, ("singleTissueSqtl",))
-        normalized_sq = [normalize_qtl_record(row, x, "sqtl") for x in sq_records]
+        normalized_eq: List[Dict[str, Any]] = []
+        normalized_sq: List[Dict[str, Any]] = []
+        eq_statuses: List[str] = []
+        sq_statuses: List[str] = []
+
+        if not variant_ids:
+            eq_status = "SKIPPED_NO_GTEX_VARIANT"
+            sq_status = "SKIPPED_NO_GTEX_VARIANT"
+            write_json(
+                raw_root / "gtex_eqtl" / f"{rsid}.json",
+                {"status": eq_status, "rsid": rsid, "variantIds": []},
+            )
+            write_json(
+                raw_root / "gtex_sqtl" / f"{rsid}.json",
+                {"status": sq_status, "rsid": rsid, "variantIds": []},
+            )
+        else:
+            eq_payloads = []
+            sq_payloads = []
+            for variant_id in variant_ids:
+                eq_payload, one_eq_status = query_gtex_qtl(
+                    variant_id, dataset, tissue, "eqtl"
+                )
+                sq_payload, one_sq_status = query_gtex_qtl(
+                    variant_id, dataset, tissue, "sqtl"
+                )
+                eq_statuses.append(one_eq_status)
+                sq_statuses.append(one_sq_status)
+                eq_payloads.append({
+                    "variantId": variant_id,
+                    "status": one_eq_status,
+                    "payload": eq_payload,
+                })
+                sq_payloads.append({
+                    "variantId": variant_id,
+                    "status": one_sq_status,
+                    "payload": sq_payload,
+                })
+
+                eq_records = extract_records(eq_payload, ("singleTissueEqtl",))
+                sq_records = extract_records(sq_payload, ("singleTissueSqtl",))
+                normalized_eq.extend(
+                    normalize_qtl_record(row, x, "eqtl") for x in eq_records
+                )
+                normalized_sq.extend(
+                    normalize_qtl_record(row, x, "sqtl") for x in sq_records
+                )
+
+            eq_status = "ERROR" if "ERROR" in eq_statuses else "OK"
+            sq_status = "ERROR" if "ERROR" in sq_statuses else "OK"
+            write_json(
+                raw_root / "gtex_eqtl" / f"{rsid}.json",
+                {"rsid": rsid, "queries": eq_payloads},
+            )
+            write_json(
+                raw_root / "gtex_sqtl" / f"{rsid}.json",
+                {"rsid": rsid, "queries": sq_payloads},
+            )
+
+        eqtl_rows.extend(normalized_eq)
         sqtl_rows.extend(normalized_sq)
 
         source_chr = str(row["chr"]).replace("chr", "")
         source_pos = int(float(row["pos"]))
         grch38_chr = str(mapping.get("seq_region_name", "")).replace("chr", "")
         grch38_pos = mapping.get("start", "")
-        pos_match = (
+        pos_match38 = (
             "1"
             if grch38_chr and grch38_pos
             and source_chr.upper() == grch38_chr.upper()
@@ -407,11 +509,6 @@ def run(
             else "0" if grch38_chr and grch38_pos else ""
         )
 
-        variant_ids = sorted({
-            str(_first(x, "variantId", "variant_id")).strip()
-            for x in gv_records
-            if str(_first(x, "variantId", "variant_id")).strip()
-        })
         eq_genes = sorted({
             str(x.get("gene_symbol") or x.get("gencode_id") or "").strip()
             for x in normalized_eq
@@ -436,8 +533,12 @@ def run(
             "ensembl_grch38_chr": grch38_chr,
             "ensembl_grch38_pos": grch38_pos,
             "ensembl_allele_string": mapping.get("allele_string", ""),
-            "source_position_matches_grch38": pos_match,
+            "source_position_matches_grch38": pos_match38,
             "gtex_variant_ids": ";".join(variant_ids),
+            "gtex_b37_variant_ids": ";".join(b37_ids),
+            "source_position_matches_gtex_b37": source_matches_any_b37(
+                source_chr, source_pos, b37_ids
+            ),
             "gtex_variant_records": len(gv_records),
             "gtex_eqtl_count": len(normalized_eq),
             "gtex_sqtl_count": len(normalized_sq),
@@ -467,6 +568,10 @@ def run(
             r["gtex_eqtl_status"], r["gtex_sqtl_status"],
         }
     })
+    unresolved_gtex = sorted({
+        r["rsid"] for r in variant_rows if int(r["gtex_variant_records"]) == 0
+    })
+
     summary = {
         "version": VERSION,
         "dataset": dataset,
@@ -476,7 +581,12 @@ def run(
         "n_source_position_matches_grch38": sum(
             r["source_position_matches_grch38"] == "1" for r in variant_rows
         ),
+        "n_source_position_matches_gtex_b37": sum(
+            r["source_position_matches_gtex_b37"] == "1" for r in variant_rows
+        ),
         "n_gtex_variant_resolved": sum(int(r["gtex_variant_records"]) > 0 for r in variant_rows),
+        "n_gtex_variant_unresolved": len(unresolved_gtex),
+        "gtex_variant_unresolved_rsids": unresolved_gtex,
         "n_variants_with_significant_eqtl": sum(int(r["gtex_eqtl_count"]) > 0 for r in variant_rows),
         "n_variants_with_significant_sqtl": sum(int(r["gtex_sqtl_count"]) > 0 for r in variant_rows),
         "n_eqtl_associations": len(eqtl_rows),
@@ -495,8 +605,9 @@ def run(
         "n_api_error_variants": len(api_error_variants),
         "api_error_variants": api_error_variants,
         "interpretation": (
-            "GTEx counts reflect significant precomputed skeletal-muscle QTLs returned "
-            "by the API. Zero results are not evidence of no regulatory effect."
+            "GTEx associations are queried by GTEx variantId after rsID resolution. "
+            "Unresolved GTEx variants are not API errors. Zero QTL results mean no "
+            "significant precomputed association returned for the resolved variant IDs."
         ),
     }
     write_json(outdir / "MUSCLE_STAGE2A_SUMMARY.json", summary)
@@ -511,8 +622,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--outdir", required=True, type=Path)
     p.add_argument("--dataset", default=DEFAULT_DATASET)
     p.add_argument("--tissue", default=DEFAULT_TISSUE)
-    p.add_argument("--pause", type=float, default=0.15,
-                   help="Delay between variants to reduce API pressure")
+    p.add_argument("--pause", type=float, default=0.15)
     return p
 
 
