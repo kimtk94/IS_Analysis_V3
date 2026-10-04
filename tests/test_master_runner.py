@@ -180,3 +180,19 @@ def test_stage13_becomes_ready_with_explicit_io(tmp_path):
     assert "[13]" in p.stdout
     assert "READY" in p.stdout
     assert "run_master_individual_validation.R" in p.stdout
+
+
+def test_stage14_16_become_ready_with_localization_io(tmp_path):
+    cand=tmp_path/"cand.tsv"; out=tmp_path/"loc.tsv"; tm=tmp_path/"tm.tsv"
+    cand.write_text("gene_symbol\nUMOD\n",encoding="utf-8")
+    tm.write_text("source_file\tsource_name\ttissue_or_region\n",encoding="utf-8")
+    p=run(
+      "--disease","ckd","--stages","14,15,16","--dry-run",
+      "--localization-candidates",str(cand),
+      "--tissue-manifest",str(tm),
+      "--localization-output",str(out),
+    )
+    assert p.returncode==0,p.stderr
+    assert "[14]" in p.stdout and "[15]" in p.stdout and "[16]" in p.stdout
+    assert p.stdout.count("READY")>=3
+    assert "run_master_localization.py" in p.stdout
