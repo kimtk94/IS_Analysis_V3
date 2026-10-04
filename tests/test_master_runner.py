@@ -282,3 +282,35 @@ def test_stage2_becomes_ready_with_instrument_io(tmp_path):
     assert p.returncode==0,p.stderr
     assert "[02]" in p.stdout and "READY" in p.stdout
     assert "run_master_instrument_qc.py" in p.stdout
+
+
+def test_stage3_becomes_ready_with_generic_mr_io(tmp_path):
+    exp=tmp_path/"exp.tsv"; outc=tmp_path/"out.tsv"; harm=tmp_path/"harm.tsv"; mr=tmp_path/"mr.tsv"
+    exp.write_text("protein_id\tgene_symbol\trsid\teffect_allele\tother_allele\tbeta\tse\n",encoding="utf-8")
+    outc.write_text("rsid\teffect_allele\tother_allele\tbeta\tse\n",encoding="utf-8")
+    p=run(
+      "--disease","is","--stages","3","--dry-run",
+      "--mr-exposure",str(exp),
+      "--mr-outcome",str(outc),
+      "--mr-harmonized-output",str(harm),
+      "--mr-output",str(mr),
+      "--mr-ancestry","EUR",
+      "--mr-phenotype","IS",
+    )
+    assert p.returncode==0,p.stderr
+    assert "[03]" in p.stdout and "READY" in p.stdout
+    assert "run_master_mr.py" in p.stdout
+
+def test_stage5_becomes_ready_with_generic_coloc_io(tmp_path):
+    inp=tmp_path/"coloc_in"; out=tmp_path/"coloc_out"
+    inp.mkdir()
+    p=run(
+      "--disease","is","--stages","5","--dry-run",
+      "--coloc-input-dir",str(inp),
+      "--coloc-output-dir",str(out),
+      "--coloc-outcome-type","cc",
+    )
+    assert p.returncode==0,p.stderr
+    assert "[05]" in p.stdout and "READY" in p.stdout
+    assert "run_master_coloc.R" in p.stdout
+    assert " cc " in p.stdout
