@@ -93,7 +93,26 @@ if [[ -f "$OUT/stage14_15_localization.tsv" ]]; then
   printf "localization\t%s\tgene_symbol\n" "$OUT/stage14_15_localization.tsv" >> "$EVM"
 fi
 
+CAND="$OUT/stage19_candidates.tsv"
+awk -F "\t" 'NR==1 {for(i=1;i<=NF;i++) if($i=="gene_symbol") g=i; print "gene_symbol"; next} g && $g!="" && !seen[$g]++ {print $g}' \
+  "$STAGE2/stage2_candidates.tsv" > "$CAND"
+
+if [[ "$RUN_PROVISIONAL_STAGE19" == "1" ]]; then
+  echo "[Stage19] PROVISIONAL integration from currently materialized evidence only"
+  "$PYTHON" "$ROOT/scripts/run_master_evidence_integration.py" \
+    --candidates "$CAND" \
+    --manifest "$EVM" \
+    --output "$OUT/stage19_PROVISIONAL_evidence_matrix.tsv"
+  cat > "$OUT/stage19_PROVISIONAL_CAVEAT.txt" <<EOF
+This evidence matrix is provisional. Missing Stage8/9/11/12/13/16/17/18 evidence
+must not be scored as negative evidence. Do not use the provisional tier as the
+manuscript final candidate classification.
+EOF
+else
+  echo "[Stage19] provisional integration skipped. Set RUN_PROVISIONAL_STAGE19=1 only for pipeline QA."
+fi
+
 echo
 echo "Materialized:"
-ls -lh "$OUT"/stage0* "$OUT"/stage1* "$OUT"/stage07* "$OUT"/stage10* "$OUT"/stage14* "$OUT"/stage19* 2>/dev/null || true
+find "$OUT" -maxdepth 1 -type f -name "stage*" -printf "%f\n" 2>/dev/null | sort || true
 echo "CKD_MASTER_EXISTING_BRIDGE_PASS"
