@@ -149,6 +149,18 @@ def main() -> int:
                     help="harmonized TSV/TSV.GZ for Stage 4 MR robustness")
     ap.add_argument("--robust-output", type=Path,
                     help="output TSV for Stage 4 MR robustness")
+    ap.add_argument("--susie-input-dir", type=Path,
+                    help="locus-wide summary-statistic directory for Stage 6")
+    ap.add_argument("--ld-dir", type=Path,
+                    help="ancestry-matched LD directory for Stage 6")
+    ap.add_argument("--abf-file", type=Path,
+                    help="default ABF coloc summary for Stage 6 comparison")
+    ap.add_argument("--susie-output-dir", type=Path,
+                    help="Stage 6 SuSiE output directory")
+    ap.add_argument("--outcome-type", choices=["quant","cc","auto"], default="auto",
+                    help="Stage 6 outcome type")
+    ap.add_argument("--ancestry", choices=["EUR","EAS","AFR","SAS","AMR"],
+                    help="ancestry used by the Stage 6 LD reference")
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
@@ -158,6 +170,15 @@ def main() -> int:
         plans = [StagePlan(p.stage, p.name, "READY", cmd,
                            "Shared MR robustness: IVW/Q/weighted median/Egger/LOO/optional Steiger.")
                  if p.stage == 4 else p for p in plans]
+
+    susie_args = [args.susie_input_dir, args.ld_dir, args.abf_file, args.susie_output_dir, args.ancestry]
+    if 6 in stages and all(x is not None for x in susie_args):
+        cmd = ["Rscript", "scripts/run_master_susie.R",
+               str(args.susie_input_dir), str(args.ld_dir), str(args.abf_file),
+               str(args.susie_output_dir), str(args.ancestry), args.outcome_type]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Generic ancestry-aware SuSiE/coloc.susie runner.")
+                 if p.stage == 6 else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
