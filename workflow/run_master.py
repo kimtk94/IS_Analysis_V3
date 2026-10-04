@@ -201,6 +201,19 @@ def main() -> int:
     ap.add_argument("--risk-disease-phenotype")
     ap.add_argument("--risk-output", type=Path)
     ap.add_argument("--risk-sign-map", type=Path)
+    ap.add_argument("--individual-subject-file", type=Path)
+    ap.add_argument("--individual-predictor")
+    ap.add_argument("--individual-output", type=Path)
+    ap.add_argument("--baseline-endpoint")
+    ap.add_argument("--slope-endpoint")
+    ap.add_argument("--incident-endpoint")
+    ap.add_argument("--individual-covariates", default="")
+    ap.add_argument("--time-to-event")
+    ap.add_argument("--event-col")
+    ap.add_argument("--longitudinal-file", type=Path)
+    ap.add_argument("--id-col", default="participant_id")
+    ap.add_argument("--time-col", default="time_years")
+    ap.add_argument("--egfr-col", default="egfr")
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
@@ -294,6 +307,29 @@ def main() -> int:
         plans = [StagePlan(p.stage, p.name, "READY", cmd,
                            "Protein-to-risk-factor mechanism support summary.")
                  if p.stage == 11 else p for p in plans]
+    indiv_args = [args.individual_subject_file, args.individual_predictor, args.individual_output]
+    if 13 in stages and all(x is not None for x in indiv_args):
+        cmd = ["Rscript", "scripts/run_master_individual_validation.R",
+               "--subject-file", str(args.individual_subject_file),
+               "--predictor", str(args.individual_predictor),
+               "--output", str(args.individual_output)]
+        if args.baseline_endpoint:
+            cmd += ["--baseline-endpoint", str(args.baseline_endpoint)]
+        if args.slope_endpoint:
+            cmd += ["--slope-endpoint", str(args.slope_endpoint)]
+        if args.incident_endpoint:
+            cmd += ["--incident-endpoint", str(args.incident_endpoint)]
+        if args.individual_covariates:
+            cmd += ["--covariates", str(args.individual_covariates)]
+        if args.time_to_event and args.event_col:
+            cmd += ["--time-to-event", str(args.time_to_event), "--event", str(args.event_col)]
+        if args.longitudinal_file:
+            cmd += ["--longitudinal-file", str(args.longitudinal_file),
+                    "--id-col", str(args.id_col), "--time-col", str(args.time_col),
+                    "--egfr-col", str(args.egfr_col)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Individual-level baseline/slope/incident CKD validation; optional Cox/LME.")
+                 if p.stage == 13 else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
