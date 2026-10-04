@@ -8,10 +8,12 @@ on:
       - "scripts/validate_master_pipeline.py"
       - "scripts/run_master_mr_robustness.py"
       - "scripts/run_master_mr.py"
+      - "scripts/run_master_susie.R"
       - "tests/test_master_pipeline.py"
       - "tests/test_master_runner.py"
       - "tests/test_master_mr_robustness.py"
       - "tests/test_master_mr.py"
+      - "tests/test_master_susie_contract.py"
       - "workflow/run_master.py"
       - ".github/workflows/master-pipeline-ci.yml"
   pull_request:
@@ -36,7 +38,7 @@ jobs:
       - name: Validate disease configs
         run: python scripts/validate_master_pipeline.py config/master_ckd.json config/master_is.json
       - name: Run MASTER tests
-        run: python -m pytest -q tests/test_master_pipeline.py tests/test_master_runner.py tests/test_master_mr_robustness.py tests/test_master_mr.py
+        run: python -m pytest -q tests/test_master_pipeline.py tests/test_master_runner.py tests/test_master_mr_robustness.py tests/test_master_mr.py tests/test_master_susie_contract.py
       - name: Dry-run CKD and IS stages 0-6
         run: |
           python workflow/run_master.py --disease ckd --stages 0-6 --dry-run
