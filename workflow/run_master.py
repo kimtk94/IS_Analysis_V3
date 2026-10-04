@@ -145,9 +145,19 @@ def main() -> int:
     mode.add_argument("--execute", action="store_true", help="execute READY stages")
     ap.add_argument("--allow-blocked", action="store_true",
                     help="with --execute, run READY stages even when requested stages include BLOCKED/PLANNED stages")
+    ap.add_argument("--harmonized-input", type=Path,
+                    help="harmonized TSV/TSV.GZ for Stage 4 MR robustness")
+    ap.add_argument("--robust-output", type=Path,
+                    help="output TSV for Stage 4 MR robustness")
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
+    if 4 in stages and args.harmonized_input and args.robust_output:
+        cmd = [sys.executable, "scripts/run_master_mr_robustness.py",
+               "--input", str(args.harmonized_input), "--output", str(args.robust_output)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Shared MR robustness: IVW/Q/weighted median/Egger/LOO/optional Steiger.")
+                 if p.stage == 4 else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
