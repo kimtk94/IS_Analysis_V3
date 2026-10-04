@@ -1,0 +1,32 @@
+name: MUSCLE Stage 2A CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/muscle_stage2a_gtex.py'
+      - 'tests/test_muscle_stage2a_gtex.py'
+      - 'server/run_muscle_stage2a_gtex.sh'
+      - 'docs/MUSCLE_STAGE2A.md'
+      - '.github/workflows/muscle-stage2a-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/muscle_stage2a_gtex.py'
+      - 'tests/test_muscle_stage2a_gtex.py'
+      - 'server/run_muscle_stage2a_gtex.sh'
+      - 'docs/MUSCLE_STAGE2A.md'
+      - '.github/workflows/muscle-stage2a-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile Python
+        run: python3 -m py_compile scripts/muscle_stage2a_gtex.py
+      - name: Shell syntax
+        run: bash -n server/run_muscle_stage2a_gtex.sh
+      - name: Unit tests
+        run: python3 tests/test_muscle_stage2a_gtex.py
