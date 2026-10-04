@@ -13,7 +13,7 @@ RUNLOG="$LOG/MUSCLE_STAGE2A_$STAMP.log"
 mkdir -p "$WORKTREE_ROOT" "$OUT" "$LOG"
 
 echo "============================================================"
-echo " MUSCLE STAGE 2A — GTEx MUSCLE eQTL/sQTL"
+echo " MUSCLE STAGE 2A v2 — GTEx MUSCLE eQTL/sQTL"
 echo "============================================================"
 
 echo
@@ -36,10 +36,7 @@ echo "MUSCLE_REPO=$MUSCLE_REPO"
 
 echo
 echo "===== 4. INPUT / CODE CHECK ====="
-for f in \
-  "$STAGE1" \
-  "$MUSCLE_REPO/scripts/muscle_stage2a_gtex.py" \
-  "$MUSCLE_REPO/tests/test_muscle_stage2a_gtex.py"
+for f in   "$STAGE1"   "$MUSCLE_REPO/scripts/muscle_stage2a_gtex.py"   "$MUSCLE_REPO/tests/test_muscle_stage2a_gtex.py"
 do
   if [ -s "$f" ]; then
     echo "FOUND   $f"
@@ -52,28 +49,52 @@ echo
 echo "===== 5. API CONNECTIVITY ====="
 python3 - <<'PY'
 import json
+import urllib.parse
 import urllib.request
 
-urls = {
-    "ENSEMBL": "https://rest.ensembl.org/variation/human/rs74038095?content-type=application/json",
-    "GTEX": "https://gtexportal.org/api/v2/dataset/variant?snpId=rs74038095&datasetId=gtex_v10&pageSize=5",
-}
+base = "https://gtexportal.org/api/v2"
 
-for name, url in urls.items():
-    try:
-        req = urllib.request.Request(
-            url,
-            headers={
-                "Accept": "application/json",
-                "User-Agent": "IS_Analysis_V3-MUSCLE-Stage2A/1.0",
-            },
-        )
-        with urllib.request.urlopen(req, timeout=30) as r:
-            raw = r.read()
-        json.loads(raw.decode("utf-8"))
-        print(name, "OK", len(raw), "bytes")
-    except Exception as e:
-        print(name, "ERROR", repr(e))
+url = base + "/dataset/variant?" + urllib.parse.urlencode({
+    "snpId": "rs74038095",
+    "datasetId": "gtex_v10",
+    "itemsPerPage": 5,
+})
+
+try:
+    req = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "IS_Analysis_V3-MUSCLE-Stage2A/2.0",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=30) as r:
+        payload = json.loads(r.read().decode("utf-8"))
+    print("GTEX_VARIANT OK")
+    records = payload.get("data", [])
+    vids = [x.get("variantId") for x in records if x.get("variantId")]
+    print("GTEX_VARIANT_IDS =", vids)
+
+    if vids:
+        for endpoint in ["singleTissueEqtl", "singleTissueSqtl"]:
+            qurl = base + "/association/" + endpoint + "?" + urllib.parse.urlencode({
+                "variantId": vids[0],
+                "tissueSiteDetailId": "Muscle_Skeletal",
+                "datasetId": "gtex_v10",
+                "itemsPerPage": 5,
+            })
+            qreq = urllib.request.Request(
+                qurl,
+                headers={
+                    "Accept": "application/json",
+                    "User-Agent": "IS_Analysis_V3-MUSCLE-Stage2A/2.0",
+                },
+            )
+            with urllib.request.urlopen(qreq, timeout=30) as qr:
+                qpayload = json.loads(qr.read().decode("utf-8"))
+            print(endpoint, "OK", "records=", len(qpayload.get("data", [])))
+except Exception as e:
+    print("GTEX_CONNECTIVITY ERROR", repr(e))
 PY
 
 echo
@@ -90,26 +111,14 @@ echo "TEST_RC=$TEST_RC"
 
 echo
 echo "===== 8. RUN STAGE 2A ====="
-python3 \
-  "$MUSCLE_REPO/scripts/muscle_stage2a_gtex.py" \
-  --input "$STAGE1" \
-  --outdir "$OUT" \
-  --dataset gtex_v10 \
-  --tissue Muscle_Skeletal \
-  --pause 0.20 \
-  2>&1 | tee "$RUNLOG"
+python3   "$MUSCLE_REPO/scripts/muscle_stage2a_gtex.py"   --input "$STAGE1"   --outdir "$OUT"   --dataset gtex_v10   --tissue Muscle_Skeletal   --pause 0.20   2>&1 | tee "$RUNLOG"
 
 RUN_RC=${PIPESTATUS[0]}
 echo "RUN_RC=$RUN_RC"
 
 echo
 echo "===== 9. OUTPUT CHECK ====="
-for f in \
-  MUSCLE_STAGE2A_VARIANT_NORMALIZATION.tsv \
-  MUSCLE_STAGE2A_EQTL.tsv \
-  MUSCLE_STAGE2A_SQTL.tsv \
-  MUSCLE_STAGE2A_CANDIDATE_GENES.tsv \
-  MUSCLE_STAGE2A_SUMMARY.json
+for f in   MUSCLE_STAGE2A_VARIANT_NORMALIZATION.tsv   MUSCLE_STAGE2A_EQTL.tsv   MUSCLE_STAGE2A_SQTL.tsv   MUSCLE_STAGE2A_CANDIDATE_GENES.tsv   MUSCLE_STAGE2A_SUMMARY.json
 do
   if [ -s "$OUT/$f" ]; then
     echo "OK      $f ($(du -h "$OUT/$f" | cut -f1))"
@@ -137,13 +146,17 @@ for k in [
     "n_input_variants",
     "n_ensembl_grch38_resolved",
     "n_source_position_matches_grch38",
+    "n_source_position_matches_gtex_b37",
     "n_gtex_variant_resolved",
+    "n_gtex_variant_unresolved",
+    "gtex_variant_unresolved_rsids",
     "n_variants_with_significant_eqtl",
     "n_variants_with_significant_sqtl",
     "n_eqtl_associations",
     "n_sqtl_associations",
     "n_candidate_genes",
     "n_api_error_variants",
+    "api_error_variants",
 ]:
     print(k, "=", d.get(k))
 
@@ -160,14 +173,29 @@ for x in d.get("top_candidate_genes", [])[:20]:
     )
 
 print()
-if d.get("n_input_variants") == 20 and d.get("n_api_error_variants") == 0:
-    print("STAGE2A_BASIC_QC=PASS")
-else:
-    print("STAGE2A_BASIC_QC=CHECK_REQUIRED")
+checks = {
+    "INPUT_20": d.get("n_input_variants") == 20,
+    "ENSEMBL_20": d.get("n_ensembl_grch38_resolved") == 20,
+    "NO_API_ERRORS": d.get("n_api_error_variants") == 0,
+}
+for k, v in checks.items():
+    print(k, "PASS" if v else "FAIL", sep="\t")
+
+print(
+    "STAGE2A_BASIC_QC=",
+    "PASS" if all(checks.values()) else "CHECK_REQUIRED",
+    sep="",
+)
 PY
 
 echo
-echo "===== 11. TOP CANDIDATE GENE TABLE ====="
+echo "===== 11. VARIANT NORMALIZATION ====="
+if [ -s "$OUT/MUSCLE_STAGE2A_VARIANT_NORMALIZATION.tsv" ]; then
+  column -t -s $'\t' "$OUT/MUSCLE_STAGE2A_VARIANT_NORMALIZATION.tsv" | head -25
+fi
+
+echo
+echo "===== 12. TOP CANDIDATE GENE TABLE ====="
 if [ -s "$OUT/MUSCLE_STAGE2A_CANDIDATE_GENES.tsv" ]; then
   head -21 "$OUT/MUSCLE_STAGE2A_CANDIDATE_GENES.tsv" | column -t -s $'\t'
 fi
