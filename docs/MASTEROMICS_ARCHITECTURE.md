@@ -96,3 +96,7 @@ assembly remain explicit next tasks. Production-data review is deferred by user.
 Tests use small generated fixtures for initialization/no-overwrite, dependency
 gates, unbound execution refusal and binding contracts. Existing scientific
 backend tests remain separate; CI success is not production data validation.
+
+## 데이터 소스 연결
+
+[DB 목록과 접근 계획](MASTEROMICS_DATABASES.md)을 기준으로 acquisition 입력을 선택한다. `python3 -S -m masteromics resources validate`와 `resources plan --ids ...`는 데이터 다운로드 없이 목록과 접근 조건을 검사한다.
