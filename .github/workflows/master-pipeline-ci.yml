@@ -4,12 +4,16 @@ on:
   push:
     paths:
       - "config/master_*.json"
+      - "config/ckd/master_stage_map.tsv"
       - "docs/MASTER_PIPELINE.md"
+      - "docs/CKD_MASTER_END_TO_END.md"
       - "scripts/run_master_*"
       - "scripts/summarize_master_*"
       - "scripts/validate_master_pipeline.py"
+      - "scripts/audit_ckd_master_existing_outputs.py"
       - "tests/test_master_*"
       - "workflow/run_master.py"
+      - "server/ckd_master_end_to_end_audit.sh"
       - ".github/workflows/master-pipeline-ci.yml"
   pull_request:
     paths:
@@ -57,6 +61,7 @@ jobs:
           tests/test_master_dataset_registry.py
           tests/test_master_exposure_normalize.py
           tests/test_master_instrument_qc.py
+          tests/test_ckd_master_bridge.py
       - name: Dry-run CKD and IS stages 0-6
         run: |
           python workflow/run_master.py --disease ckd --stages 0-6 --dry-run
