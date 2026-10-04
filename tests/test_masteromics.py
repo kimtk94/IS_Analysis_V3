@@ -7,6 +7,19 @@ from masteromics import science
 from masteromics.compile import compile_project
 ROOT=Path(__file__).resolve().parents[1]
 class CoreTest(unittest.TestCase):
+ def test_acquisition_shared_transfer_and_read_only_local_input(self):
+  from unittest.mock import patch
+  from test_masteromics_acquisition import Response,PAYLOAD,SHA,URL,FIXTURE
+  with tempfile.TemporaryDirectory() as tmp:
+   p=Path(tmp);raw=p/'raw.tsv';marker=p/'marker.json'
+   with patch('urllib.request.urlopen',return_value=Response(PAYLOAD)):
+    science.acquire({'id':'fixture','path':str(raw),'sha256':SHA,'url':URL},marker)
+   self.assertEqual(raw.read_bytes(),PAYLOAD)
+   self.assertEqual(json.loads(marker.read_text())['sha256'],SHA)
+   self.assertEqual(json.loads((p/'raw.tsv.acquisition.json').read_text())['status'],'SUCCESS_VERIFIED')
+   before=set(FIXTURE.parent.iterdir())
+   science.acquire({'id':'fixture','path':str(FIXTURE),'sha256':SHA},marker)
+   self.assertEqual(before,set(FIXTURE.parent.iterdir()))
  def test_checkpoint(self):
   with tempfile.TemporaryDirectory() as tmp:
    p=Path(tmp);inp=p/'input';inp.write_text('first');out=p/'result.tsv';cfg=p/'cfg.json';script=p/'worker.py'
