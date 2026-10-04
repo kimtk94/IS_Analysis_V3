@@ -79,3 +79,45 @@ The audit is read-only and checks the actual server filesystem.
 - Cross-platform evidence is not assumed if only Olink data exist.
 - Spatial evidence is not inferred from cell-type localization.
 - A missing planned stage remains missing; the bridge must not award evidence points for absent analyses.
+
+
+## Materialize reusable existing evidence
+
+After the readiness audit confirms the expected files, materialize only the reusable existing evidence:
+
+```bash
+cd /srv/is-analysis/IS_Analysis_V3
+
+CKD_MASTER_ROOT=/srv/is-analysis/results/ckd/master \
+  bash server/ckd_master_materialize_existing.sh
+```
+
+This creates, where prerequisites are available:
+
+```text
+stage07_cross_ancestry.tsv
+stage10_phenotype_manifest.tsv
+stage10_phenotype_long.tsv
+stage10_phenotype_matrix.tsv
+stage14_15_localization.tsv
+stage19_candidates.tsv
+stage19_evidence_manifest.tsv
+```
+
+Stage 4 robustness is deliberately off by default because the multiple UKB-PPP ST16 conditional signals can retain residual LD. For sensitivity-only materialization:
+
+```bash
+RUN_STAGE4_SENSITIVITY=1 \
+CKD_MASTER_ROOT=/srv/is-analysis/results/ckd/master \
+  bash server/ckd_master_materialize_existing.sh
+```
+
+A provisional Stage19 matrix can be produced for pipeline QA only:
+
+```bash
+RUN_PROVISIONAL_STAGE19=1 \
+CKD_MASTER_ROOT=/srv/is-analysis/results/ckd/master \
+  bash server/ckd_master_materialize_existing.sh
+```
+
+The provisional matrix is explicitly not the manuscript final tiering because Stage8/9/11/12/13/16/17/18 may still be absent.
