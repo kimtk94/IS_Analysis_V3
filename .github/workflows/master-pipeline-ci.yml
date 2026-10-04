@@ -27,6 +27,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install test dependency
+        run: python -m pip install pytest
       - name: Validate disease configs
         run: python scripts/validate_master_pipeline.py config/master_ckd.json config/master_is.json
       - name: Run MASTER tests
