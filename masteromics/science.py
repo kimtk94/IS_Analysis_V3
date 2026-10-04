@@ -18,24 +18,16 @@ def write(df,path): df.to_csv(path,sep='\t',index=False,na_rep='NA')
 
 
 def acquire(spec,path):
+    from .acquisition import stage_file,verify
     source=Path(spec['path'])
-    expected=spec.get('sha256')
-    if not expected: raise ValueError('Dataset sha256 must be pinned before acquisition')
     if source.is_file():
-        if sha(source)!=expected: raise ValueError('Local dataset checksum mismatch')
-        Path(path).write_text(json.dumps({'path':str(source.resolve()),'sha256':expected})); return
-    if not spec.get('url'): raise ValueError(f'Dataset unavailable: {source}')
-    source.parent.mkdir(parents=True,exist_ok=True)
-    tmp=source.with_suffix(source.suffix+'.partial')
-    try:
-        with urllib.request.urlopen(spec['url'],timeout=60) as r,tmp.open('wb') as f:
-            import shutil
-            shutil.copyfileobj(r,f)
-        if sha(tmp)!=expected: raise ValueError('Downloaded checksum mismatch')
-        os.replace(tmp,source)
-    finally:
-        tmp.unlink(missing_ok=True)
-    Path(path).write_text(json.dumps({'path':str(source.resolve()),'sha256':expected}))
+        # Reviewed local analysis inputs may live in read-only legacy directories.
+        verify(source,spec.get('sha256'),spec.get('expected_bytes'),source.name.endswith(('.gz','.bgz')))
+    else:
+        stage_file(source,spec.get('sha256'),url=spec.get('url'),
+                   identity={'dataset_id':spec.get('id'),'build':spec.get('build'),'ancestry':spec.get('ancestry')},
+                   expected_bytes=spec.get('expected_bytes'))
+    Path(path).write_text(json.dumps({'path':str(source.resolve()),'sha256':spec['sha256']}))
 
 
 def normalize(spec,path):
