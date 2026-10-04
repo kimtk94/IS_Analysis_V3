@@ -157,3 +157,26 @@ def test_stage11_becomes_ready_with_explicit_io(tmp_path):
     assert "[11]" in p.stdout
     assert "READY" in p.stdout
     assert "run_master_risk_factor.py" in p.stdout
+
+
+def test_stage13_becomes_ready_with_explicit_io(tmp_path):
+    subj=tmp_path/"subjects.tsv"; out=tmp_path/"individual.tsv"
+    subj.write_text(
+      "participant_id\tdosage\tbaseline_f0_egfr\tegfr_slope\tincident_ckd\tage\tsex\n"
+      "1\t0\t90\t-1.0\t0\t50\t1\n",
+      encoding="utf-8"
+    )
+    p=run(
+      "--disease","ckd","--stages","13","--dry-run",
+      "--individual-subject-file",str(subj),
+      "--individual-predictor","dosage",
+      "--individual-output",str(out),
+      "--baseline-endpoint","baseline_f0_egfr",
+      "--slope-endpoint","egfr_slope",
+      "--incident-endpoint","incident_ckd",
+      "--individual-covariates","age,sex",
+    )
+    assert p.returncode==0,p.stderr
+    assert "[13]" in p.stdout
+    assert "READY" in p.stdout
+    assert "run_master_individual_validation.R" in p.stdout
