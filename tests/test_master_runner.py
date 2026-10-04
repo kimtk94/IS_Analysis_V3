@@ -89,3 +89,22 @@ def test_stage7_becomes_ready_with_explicit_io(tmp_path):
     assert "[07]" in p.stdout
     assert "READY" in p.stdout
     assert "run_master_cross_ancestry.py" in p.stdout
+
+
+def test_stage8_becomes_ready_with_explicit_io(tmp_path):
+    d=tmp_path/"olink.tsv"; r=tmp_path/"soma.tsv"; out=tmp_path/"platform.tsv"
+    header="gene_symbol\tphenotype\tbeta\tse\tp\n"
+    d.write_text(header+"F11\tIS\t0.2\t0.05\t0.001\n",encoding="utf-8")
+    r.write_text(header+"F11\tIS\t0.1\t0.06\t0.05\n",encoding="utf-8")
+    p=run(
+      "--disease","is","--stages","8","--dry-run",
+      "--platform-discovery-mr",str(d),
+      "--platform-replication-mr",str(r),
+      "--platform-output",str(out),
+      "--discovery-platform","Olink",
+      "--replication-platform","SomaScan",
+    )
+    assert p.returncode==0,p.stderr
+    assert "[08]" in p.stdout
+    assert "READY" in p.stdout
+    assert "run_master_cross_platform.py" in p.stdout
