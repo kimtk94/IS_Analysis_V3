@@ -240,6 +240,16 @@ def main() -> int:
     ap.add_argument("--instrument-input", type=Path)
     ap.add_argument("--instrument-output", type=Path)
     ap.add_argument("--instrument-p-threshold", type=float)
+    ap.add_argument("--mr-exposure", type=Path)
+    ap.add_argument("--mr-outcome", type=Path)
+    ap.add_argument("--mr-harmonized-output", type=Path)
+    ap.add_argument("--mr-output", type=Path)
+    ap.add_argument("--mr-ancestry")
+    ap.add_argument("--mr-phenotype")
+    ap.add_argument("--coloc-input-dir", type=Path)
+    ap.add_argument("--coloc-output-dir", type=Path)
+    ap.add_argument("--coloc-outcome-type", choices=["quant","cc","auto"], default="auto")
+    ap.add_argument("--coloc-default-p12", type=float, default=1e-5)
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
@@ -441,6 +451,28 @@ def main() -> int:
         plans = [StagePlan(p.stage, p.name, "READY", cmd,
                            "Generic instrument-strength, MHC, palindromic and duplicate QC; LD pruning remains upstream.")
                  if p.stage == 2 else p for p in plans]
+    stage3_args = [args.mr_exposure, args.mr_outcome, args.mr_harmonized_output,
+                   args.mr_output, args.mr_ancestry, args.mr_phenotype]
+    if 3 in stages and all(x is not None for x in stage3_args):
+        cmd = [sys.executable, "scripts/run_master_mr.py",
+               "--exposure", str(args.mr_exposure),
+               "--outcome", str(args.mr_outcome),
+               "--harmonized-output", str(args.mr_harmonized_output),
+               "--mr-output", str(args.mr_output),
+               "--ancestry", str(args.mr_ancestry),
+               "--phenotype", str(args.mr_phenotype)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Generic two-sample MR with harmonization, F-stat QC, Wald/IVW, and BH-FDR.")
+                 if p.stage == 3 else p for p in plans]
+
+    stage5_args = [args.coloc_input_dir, args.coloc_output_dir]
+    if 5 in stages and all(x is not None for x in stage5_args):
+        cmd = ["Rscript", "scripts/run_master_coloc.R",
+               str(args.coloc_input_dir), str(args.coloc_output_dir),
+               str(args.coloc_outcome_type), str(args.coloc_default_p12)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Generic coloc.abf for quantitative or case-control outcomes.")
+                 if p.stage == 5 else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
