@@ -70,3 +70,22 @@ def test_stage6_becomes_ready_with_explicit_io(tmp_path):
     assert "READY" in p.stdout
     assert "run_master_susie.R" in p.stdout
     assert " EAS cc" in p.stdout
+
+
+def test_stage7_becomes_ready_with_explicit_io(tmp_path):
+    disc=tmp_path/"disc.tsv"; repl=tmp_path/"repl.tsv"; out=tmp_path/"cross.tsv"
+    header="protein_id\tgene_symbol\tphenotype\tbeta\tse\tp\n"
+    disc.write_text(header+"P1\tG1\tIS\t0.2\t0.05\t0.001\n",encoding="utf-8")
+    repl.write_text(header+"P1\tG1\tIS\t0.1\t0.06\t0.05\n",encoding="utf-8")
+    p=run(
+      "--disease","is","--stages","7","--dry-run",
+      "--discovery-mr",str(disc),
+      "--replication-mr",str(repl),
+      "--cross-ancestry-output",str(out),
+      "--discovery-ancestry","EUR",
+      "--replication-ancestry","EAS",
+    )
+    assert p.returncode==0,p.stderr
+    assert "[07]" in p.stdout
+    assert "READY" in p.stdout
+    assert "run_master_cross_ancestry.py" in p.stdout
