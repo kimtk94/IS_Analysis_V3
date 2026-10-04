@@ -184,6 +184,14 @@ def main() -> int:
     ap.add_argument("--platform-replication-id-column")
     ap.add_argument("--platform-discovery-coloc", type=Path)
     ap.add_argument("--platform-replication-coloc", type=Path)
+    ap.add_argument("--transcript-protein-mr", type=Path,
+                    help="Stage 9 protein MR summary")
+    ap.add_argument("--smr-results", type=Path,
+                    help="Stage 9 SMR/HEIDI result table")
+    ap.add_argument("--transcript-phenotype")
+    ap.add_argument("--transcript-output", type=Path)
+    ap.add_argument("--eqtl-coloc", type=Path)
+    ap.add_argument("--probe-map", type=Path)
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
@@ -240,6 +248,21 @@ def main() -> int:
         plans = [StagePlan(p.stage, p.name, "READY", cmd,
                            "Cross-platform Olink/SomaScan-style replication summary.")
                  if p.stage == 8 else p for p in plans]
+    transcript_args = [args.transcript_protein_mr, args.smr_results,
+                       args.transcript_phenotype, args.transcript_output]
+    if 9 in stages and all(x is not None for x in transcript_args):
+        cmd = [sys.executable, "scripts/run_master_transcriptomics.py",
+               "--protein-mr", str(args.transcript_protein_mr),
+               "--smr", str(args.smr_results),
+               "--phenotype", str(args.transcript_phenotype),
+               "--output", str(args.transcript_output)]
+        if args.eqtl_coloc:
+            cmd += ["--eqtl-coloc", str(args.eqtl_coloc)]
+        if args.probe_map:
+            cmd += ["--probe-map", str(args.probe_map)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Integrate protein MR with SMR/HEIDI and eQTL colocalization.")
+                 if p.stage == 9 else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
