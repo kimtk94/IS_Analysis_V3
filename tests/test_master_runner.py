@@ -108,3 +108,20 @@ def test_stage8_becomes_ready_with_explicit_io(tmp_path):
     assert "[08]" in p.stdout
     assert "READY" in p.stdout
     assert "run_master_cross_platform.py" in p.stdout
+
+
+def test_stage9_becomes_ready_with_explicit_io(tmp_path):
+    pmr=tmp_path/"pmr.tsv"; smr=tmp_path/"smr.tsv"; out=tmp_path/"transcript.tsv"
+    pmr.write_text("gene_symbol\tphenotype\tbeta\tse\tp\nG1\tCKD\t0.2\t0.05\t0.001\n",encoding="utf-8")
+    smr.write_text("Gene\tProbeID\tb_SMR\tse_SMR\tp_SMR\tp_HEIDI\nG1\tP1\t0.3\t0.08\t0.002\t0.5\n",encoding="utf-8")
+    p=run(
+      "--disease","ckd","--stages","9","--dry-run",
+      "--transcript-protein-mr",str(pmr),
+      "--smr-results",str(smr),
+      "--transcript-phenotype","CKD",
+      "--transcript-output",str(out),
+    )
+    assert p.returncode==0,p.stderr
+    assert "[09]" in p.stdout
+    assert "READY" in p.stdout
+    assert "run_master_transcriptomics.py" in p.stdout
