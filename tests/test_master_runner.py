@@ -239,3 +239,46 @@ def test_stage19_becomes_ready_with_evidence_manifest(tmp_path):
     assert "[19]" in p.stdout
     assert "READY" in p.stdout
     assert "run_master_evidence_integration.py" in p.stdout
+
+
+def test_stage0_becomes_ready_with_registry_io(tmp_path):
+    manifest=tmp_path/"datasets.tsv"; reg=tmp_path/"registry.tsv"; summary=tmp_path/"summary.json"
+    manifest.write_text("dataset_id\trole\tpath\tancestry\tgenome_build\tphenotype\tplatform\tsource_name\n",encoding="utf-8")
+    p=run(
+      "--disease","ckd","--stages","0","--dry-run",
+      "--dataset-manifest",str(manifest),
+      "--dataset-registry-output",str(reg),
+      "--dataset-registry-summary",str(summary),
+    )
+    assert p.returncode==0,p.stderr
+    assert "[00]" in p.stdout and "READY" in p.stdout
+    assert "run_master_dataset_registry.py" in p.stdout
+
+def test_stage1_becomes_ready_with_exposure_io(tmp_path):
+    src=tmp_path/"src.tsv"; cmap=tmp_path/"map.tsv"; out=tmp_path/"norm.tsv"
+    src.write_text("x\n",encoding="utf-8")
+    cmap.write_text("canonical_column\tsource_column\n",encoding="utf-8")
+    p=run(
+      "--disease","is","--stages","1","--dry-run",
+      "--exposure-input",str(src),
+      "--exposure-column-map",str(cmap),
+      "--exposure-output",str(out),
+      "--exposure-ancestry","EUR",
+      "--exposure-genome-build","GRCh37",
+      "--exposure-platform","Olink",
+    )
+    assert p.returncode==0,p.stderr
+    assert "[01]" in p.stdout and "READY" in p.stdout
+    assert "run_master_exposure_normalize.py" in p.stdout
+
+def test_stage2_becomes_ready_with_instrument_io(tmp_path):
+    src=tmp_path/"norm.tsv"; out=tmp_path/"qc.tsv"
+    src.write_text("protein_id\tgene_symbol\trsid\teffect_allele\tother_allele\tbeta\tse\n",encoding="utf-8")
+    p=run(
+      "--disease","ckd","--stages","2","--dry-run",
+      "--instrument-input",str(src),
+      "--instrument-output",str(out),
+    )
+    assert p.returncode==0,p.stderr
+    assert "[02]" in p.stdout and "READY" in p.stdout
+    assert "run_master_instrument_qc.py" in p.stdout
