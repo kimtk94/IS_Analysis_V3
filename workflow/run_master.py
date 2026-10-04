@@ -171,6 +171,19 @@ def main() -> int:
     ap.add_argument("--replication-ancestry", choices=["EUR","EAS","AFR","SAS","AMR"])
     ap.add_argument("--discovery-coloc", type=Path)
     ap.add_argument("--replication-coloc", type=Path)
+    ap.add_argument("--platform-discovery-mr", type=Path,
+                    help="Stage 8 discovery-platform MR summary")
+    ap.add_argument("--platform-replication-mr", type=Path,
+                    help="Stage 8 replication-platform MR summary")
+    ap.add_argument("--platform-output", type=Path,
+                    help="Stage 8 cross-platform output TSV")
+    ap.add_argument("--discovery-platform")
+    ap.add_argument("--replication-platform")
+    ap.add_argument("--platform-mapping", type=Path)
+    ap.add_argument("--platform-discovery-id-column")
+    ap.add_argument("--platform-replication-id-column")
+    ap.add_argument("--platform-discovery-coloc", type=Path)
+    ap.add_argument("--platform-replication-coloc", type=Path)
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
@@ -205,6 +218,28 @@ def main() -> int:
         plans = [StagePlan(p.stage, p.name, "READY", cmd,
                            "Cross-ancestry direction/effect/coloc replication summary.")
                  if p.stage == 7 else p for p in plans]
+    platform_args = [args.platform_discovery_mr, args.platform_replication_mr,
+                     args.platform_output, args.discovery_platform, args.replication_platform]
+    if 8 in stages and all(x is not None for x in platform_args):
+        cmd = [sys.executable, "scripts/run_master_cross_platform.py",
+               "--discovery-mr", str(args.platform_discovery_mr),
+               "--replication-mr", str(args.platform_replication_mr),
+               "--output", str(args.platform_output),
+               "--discovery-platform", str(args.discovery_platform),
+               "--replication-platform", str(args.replication_platform)]
+        if args.platform_mapping:
+            cmd += ["--mapping", str(args.platform_mapping)]
+        if args.platform_discovery_id_column:
+            cmd += ["--discovery-id-column", str(args.platform_discovery_id_column)]
+        if args.platform_replication_id_column:
+            cmd += ["--replication-id-column", str(args.platform_replication_id_column)]
+        if args.platform_discovery_coloc:
+            cmd += ["--discovery-coloc", str(args.platform_discovery_coloc)]
+        if args.platform_replication_coloc:
+            cmd += ["--replication-coloc", str(args.platform_replication_coloc)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Cross-platform Olink/SomaScan-style replication summary.")
+                 if p.stage == 8 else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
