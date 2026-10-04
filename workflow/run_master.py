@@ -192,6 +192,15 @@ def main() -> int:
     ap.add_argument("--transcript-output", type=Path)
     ap.add_argument("--eqtl-coloc", type=Path)
     ap.add_argument("--probe-map", type=Path)
+    ap.add_argument("--phenotype-manifest", type=Path,
+                    help="Stage 10/12 manifest of MR and optional coloc files")
+    ap.add_argument("--phenotype-long-output", type=Path)
+    ap.add_argument("--phenotype-wide-output", type=Path)
+    ap.add_argument("--risk-disease-mr", type=Path)
+    ap.add_argument("--risk-mr", type=Path)
+    ap.add_argument("--risk-disease-phenotype")
+    ap.add_argument("--risk-output", type=Path)
+    ap.add_argument("--risk-sign-map", type=Path)
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
@@ -263,6 +272,28 @@ def main() -> int:
         plans = [StagePlan(p.stage, p.name, "READY", cmd,
                            "Integrate protein MR with SMR/HEIDI and eQTL colocalization.")
                  if p.stage == 9 else p for p in plans]
+    matrix_args = [args.phenotype_manifest, args.phenotype_long_output, args.phenotype_wide_output]
+    if any(s in stages for s in (10,12)) and all(x is not None for x in matrix_args):
+        cmd = [sys.executable, "scripts/run_master_phenotype_matrix.py",
+               "--manifest", str(args.phenotype_manifest),
+               "--long-output", str(args.phenotype_long_output),
+               "--wide-output", str(args.phenotype_wide_output)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Shared phenotype/subtype MR+coloc matrix engine.")
+                 if p.stage in {10,12} else p for p in plans]
+
+    risk_args = [args.risk_disease_mr, args.risk_mr, args.risk_disease_phenotype, args.risk_output]
+    if 11 in stages and all(x is not None for x in risk_args):
+        cmd = [sys.executable, "scripts/run_master_risk_factor.py",
+               "--disease-mr", str(args.risk_disease_mr),
+               "--risk-mr", str(args.risk_mr),
+               "--disease-phenotype", str(args.risk_disease_phenotype),
+               "--output", str(args.risk_output)]
+        if args.risk_sign_map:
+            cmd += ["--risk-sign-map", str(args.risk_sign_map)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Protein-to-risk-factor mechanism support summary.")
+                 if p.stage == 11 else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
