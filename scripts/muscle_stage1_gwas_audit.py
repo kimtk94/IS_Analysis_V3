@@ -280,6 +280,13 @@ def run(
     write_tsv(outdir / "MUSCLE_STAGE1_GWAS_AUDIT.tsv", primary)
     primary_summary = summarize(primary, "primary_RT")
 
+    # Colab convenience: if --comparator is omitted, automatically use the
+    # version-controlled comparator beside the primary seed when present.
+    if comparator_path is None:
+        auto_comparator = input_path.with_name("stage1_hiit_comparator.tsv")
+        if auto_comparator.exists():
+            comparator_path = auto_comparator
+
     comparator_summary = None
     if comparator_path is not None:
         comparator_raw = read_tsv(comparator_path)
