@@ -75,3 +75,15 @@ SBP, DBP, LDL-C, BMI, T2D, atrial fibrillation and smoking.
 
 ## Implementation rule
 New disease analyses should add or modify config only where possible. Shared statistical logic belongs in reusable scripts; disease-specific branching should be driven by config, not copied code.
+
+
+## Implementation status (v1 branch)
+
+Shared modules now available:
+- `scripts/run_master_mr.py`: standardized two-sample MR engine (Wald ratio / IVW, BH-FDR, allele harmonization, F-stat QC).
+- `scripts/run_master_mr_robustness.py`: IVW, Cochran Q, weighted median, MR-Egger, leave-one-out, optional Steiger direction.
+- `scripts/run_master_coloc.R`: generic coloc.abf runner supporting quantitative and case-control outcomes.
+- `workflow/run_master.py`: disease-aware planner/orchestrator; Stage 4 becomes executable when explicit harmonized input/output paths are supplied.
+
+Important boundary:
+the generic MR engine assumes exposure instruments are already LD-pruned. Colocalization input remains locus-wide and must not be replaced by only the MR instrument SNPs.
