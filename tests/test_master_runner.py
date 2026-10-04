@@ -1,0 +1,39 @@
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+RUNNER = ROOT / "workflow" / "run_master.py"
+
+def run(*args):
+    return subprocess.run(
+        [sys.executable, str(RUNNER), *args],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+def test_ckd_stage_0_6_dry_run():
+    p = run("--disease","ckd","--stages","0-6","--dry-run")
+    assert p.returncode == 0, p.stderr
+    for stage in range(7):
+        assert f"[{stage:02d}]" in p.stdout
+    assert "primary_mr" in p.stdout
+    assert "coloc" in p.stdout
+    assert "finemap" in p.stdout
+
+def test_is_stage_0_6_exposes_gaps():
+    p = run("--disease","is","--stages","0-6","--dry-run")
+    assert p.returncode == 0, p.stderr
+    assert "BLOCKED" in p.stdout
+    assert "exposure" in p.stdout
+    assert "READY" in p.stdout
+
+def test_execute_refuses_blocked_plan():
+    p = run("--disease","is","--stages","0-3","--execute")
+    assert p.returncode == 2
+    assert "non-executable" in p.stderr
+
+def test_invalid_stage_fails():
+    p = run("--disease","ckd","--stages","99","--dry-run")
+    assert p.returncode != 0
