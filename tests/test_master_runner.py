@@ -37,3 +37,15 @@ def test_execute_refuses_blocked_plan():
 def test_invalid_stage_fails():
     p = run("--disease","ckd","--stages","99","--dry-run")
     assert p.returncode != 0
+
+
+def test_stage4_becomes_ready_with_explicit_io(tmp_path):
+    inp=tmp_path/"harm.tsv"
+    out=tmp_path/"robust.tsv"
+    inp.write_text("protein_id\tgene_symbol\tancestry\tphenotype\tbeta_exposure\tbeta_outcome\tse_outcome\n",encoding="utf-8")
+    p=run("--disease","ckd","--stages","4","--dry-run",
+          "--harmonized-input",str(inp),"--robust-output",str(out))
+    assert p.returncode==0,p.stderr
+    assert "[04]" in p.stdout
+    assert "READY" in p.stdout
+    assert "run_master_mr_robustness.py" in p.stdout
