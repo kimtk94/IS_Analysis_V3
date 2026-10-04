@@ -196,3 +196,46 @@ def test_stage14_16_become_ready_with_localization_io(tmp_path):
     assert "[14]" in p.stdout and "[15]" in p.stdout and "[16]" in p.stdout
     assert p.stdout.count("READY")>=3
     assert "run_master_localization.py" in p.stdout
+
+
+def test_stage17_becomes_ready_with_manifest(tmp_path):
+    m=tmp_path/"phewas_manifest.tsv"; long=tmp_path/"phewas_long.tsv"; summary=tmp_path/"phewas_summary.tsv"
+    m.write_text("source_file\tsource_name\tphenotype_group\n",encoding="utf-8")
+    p=run(
+      "--disease","is","--stages","17","--dry-run",
+      "--phewas-manifest",str(m),
+      "--phewas-long-output",str(long),
+      "--phewas-summary-output",str(summary),
+    )
+    assert p.returncode==0,p.stderr
+    assert "[17]" in p.stdout
+    assert "READY" in p.stdout
+    assert "run_master_phewas.py" in p.stdout
+
+def test_stage18_becomes_ready_with_drug_table(tmp_path):
+    d=tmp_path/"drug.tsv"; out=tmp_path/"drug_out.tsv"
+    d.write_text("gene_symbol\tdrug_name\nF11\tDrugA\n",encoding="utf-8")
+    p=run(
+      "--disease","is","--stages","18","--dry-run",
+      "--drug-table",str(d),
+      "--drug-output",str(out),
+    )
+    assert p.returncode==0,p.stderr
+    assert "[18]" in p.stdout
+    assert "READY" in p.stdout
+    assert "run_master_druggability.py" in p.stdout
+
+def test_stage19_becomes_ready_with_evidence_manifest(tmp_path):
+    cand=tmp_path/"cand.tsv"; m=tmp_path/"ev.tsv"; out=tmp_path/"final.tsv"
+    cand.write_text("gene_symbol\nF11\n",encoding="utf-8")
+    m.write_text("stage\tfile\tkey_column\n",encoding="utf-8")
+    p=run(
+      "--disease","is","--stages","19","--dry-run",
+      "--evidence-candidates",str(cand),
+      "--evidence-manifest",str(m),
+      "--evidence-output",str(out),
+    )
+    assert p.returncode==0,p.stderr
+    assert "[19]" in p.stdout
+    assert "READY" in p.stdout
+    assert "run_master_evidence_integration.py" in p.stdout
