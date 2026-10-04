@@ -115,3 +115,27 @@ the generic MR engine assumes exposure instruments are already LD-pruned. Coloca
 Stages 3-19 now have shared disease-agnostic execution modules or shared integration modules.
 Stages 0-2 remain the main refactor target because dataset acquisition, schema normalization,
 and initial instrument preparation are still partly disease/source specific.
+
+
+## Stage 0-2 generic front end
+
+### Stage 0 — Dataset registry
+`scripts/run_master_dataset_registry.py`
+- Validates dataset manifest rows and local file existence.
+- Records role, ancestry, genome build, phenotype, platform and source metadata.
+- Captures file size, SHA256 and header/schema columns without loading full datasets.
+
+### Stage 1 — Exposure normalization
+`scripts/run_master_exposure_normalize.py`
+- Converts source-specific pQTL/eQTL tables to the canonical MASTER exposure schema through an explicit column map.
+- Keeps ancestry, genome build and assay platform as explicit metadata.
+- Source-specific extractors such as UKB-PPP ST16 remain adapters upstream of this generic layer.
+
+### Stage 2 — Instrument QC
+`scripts/run_master_instrument_qc.py`
+- Applies F-statistic, optional P-value, cis-only and MHC filters.
+- Flags palindromic variants and removes duplicate instruments.
+- Does not silently perform LD clumping. Raw non-independent QTL inputs require an ancestry-matched LD pruning step upstream.
+
+### Generic execution boundary
+Stages 0-19 now have shared MASTER modules or shared integration modules. Disease/source-specific adapters are still allowed before Stage 1 where source file formats require special parsing. With explicit I/O arguments, Stage 3 uses the generic MR engine and Stage 5 uses the generic coloc engine for both CKD and IS.
