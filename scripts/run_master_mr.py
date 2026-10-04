@@ -65,9 +65,9 @@ def harmonize(x,y,maf_threshold=0.42,freq_tolerance=0.10):
     return "allele_mismatch",None
 
 def ivw(insts):
-    den=sum(r["bx"]**2/r["sy"]**2 for r in insts)
+    den=sum(r["beta_exposure"]**2/r["se_outcome"]**2 for r in insts)
     if den<=0:return None
-    b=sum(r["bx"]*r["by"]/r["sy"]**2 for r in insts)/den
+    b=sum(r["beta_exposure"]*r["beta_outcome"]/r["se_outcome"]**2 for r in insts)/den
     se=math.sqrt(1/den)
     return b,se,pnorm(b/se)
 
