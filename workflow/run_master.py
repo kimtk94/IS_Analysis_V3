@@ -161,6 +161,16 @@ def main() -> int:
                     help="Stage 6 outcome type")
     ap.add_argument("--ancestry", choices=["EUR","EAS","AFR","SAS","AMR"],
                     help="ancestry used by the Stage 6 LD reference")
+    ap.add_argument("--discovery-mr", type=Path,
+                    help="Stage 7 discovery ancestry MR summary")
+    ap.add_argument("--replication-mr", type=Path,
+                    help="Stage 7 replication ancestry MR summary")
+    ap.add_argument("--cross-ancestry-output", type=Path,
+                    help="Stage 7 cross-ancestry output TSV")
+    ap.add_argument("--discovery-ancestry", choices=["EUR","EAS","AFR","SAS","AMR"])
+    ap.add_argument("--replication-ancestry", choices=["EUR","EAS","AFR","SAS","AMR"])
+    ap.add_argument("--discovery-coloc", type=Path)
+    ap.add_argument("--replication-coloc", type=Path)
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
@@ -179,6 +189,22 @@ def main() -> int:
         plans = [StagePlan(p.stage, p.name, "READY", cmd,
                            "Generic ancestry-aware SuSiE/coloc.susie runner.")
                  if p.stage == 6 else p for p in plans]
+    cross_args = [args.discovery_mr, args.replication_mr, args.cross_ancestry_output,
+                  args.discovery_ancestry, args.replication_ancestry]
+    if 7 in stages and all(x is not None for x in cross_args):
+        cmd = [sys.executable, "scripts/run_master_cross_ancestry.py",
+               "--discovery-mr", str(args.discovery_mr),
+               "--replication-mr", str(args.replication_mr),
+               "--output", str(args.cross_ancestry_output),
+               "--discovery-ancestry", str(args.discovery_ancestry),
+               "--replication-ancestry", str(args.replication_ancestry)]
+        if args.discovery_coloc:
+            cmd += ["--discovery-coloc", str(args.discovery_coloc)]
+        if args.replication_coloc:
+            cmd += ["--replication-coloc", str(args.replication_coloc)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Cross-ancestry direction/effect/coloc replication summary.")
+                 if p.stage == 7 else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
