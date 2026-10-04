@@ -125,3 +125,35 @@ def test_stage9_becomes_ready_with_explicit_io(tmp_path):
     assert "[09]" in p.stdout
     assert "READY" in p.stdout
     assert "run_master_transcriptomics.py" in p.stdout
+
+
+def test_stage10_and_12_become_ready_with_manifest(tmp_path):
+    m=tmp_path/"manifest.tsv"; long=tmp_path/"long.tsv"; wide=tmp_path/"wide.tsv"
+    m.write_text("mr_file\tlabel\tgroup\tcoloc_file\n",encoding="utf-8")
+    p=run(
+      "--disease","is","--stages","10,12","--dry-run",
+      "--phenotype-manifest",str(m),
+      "--phenotype-long-output",str(long),
+      "--phenotype-wide-output",str(wide),
+    )
+    assert p.returncode==0,p.stderr
+    assert "[10]" in p.stdout and "[12]" in p.stdout
+    assert p.stdout.count("READY")>=2
+    assert "run_master_phenotype_matrix.py" in p.stdout
+
+def test_stage11_becomes_ready_with_explicit_io(tmp_path):
+    d=tmp_path/"d.tsv"; r=tmp_path/"r.tsv"; out=tmp_path/"risk.tsv"
+    header="gene_symbol\tphenotype\tbeta\tse\tp\n"
+    d.write_text(header+"FURIN\tIS\t0.2\t0.05\t0.001\n",encoding="utf-8")
+    r.write_text(header+"FURIN\tSBP\t0.3\t0.08\t0.002\n",encoding="utf-8")
+    p=run(
+      "--disease","is","--stages","11","--dry-run",
+      "--risk-disease-mr",str(d),
+      "--risk-mr",str(r),
+      "--risk-disease-phenotype","IS",
+      "--risk-output",str(out),
+    )
+    assert p.returncode==0,p.stderr
+    assert "[11]" in p.stdout
+    assert "READY" in p.stdout
+    assert "run_master_risk_factor.py" in p.stdout
