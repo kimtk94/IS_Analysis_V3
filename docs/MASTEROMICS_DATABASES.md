@@ -24,7 +24,7 @@
 
 - `open`: 공개 자료 경로가 확인된 소스. 모든 파일의 재배포/상업 이용 허용을 뜻하지 않는다.
 - `registration`: 가입·폼·토큰 등 사용자 절차가 필요하다. FinnGen, OpenGWAS API, FinnGen multiome 후보를 포함한다.
-- `controlled`: 승인된 연구/DUA 등의 절차가 필요한 개인 수준 자료. 목록의 binding으로 이 접근 분류를 바꿀 수 없다.
+- `controlled`: 승인된 연구/DUA 등의 절차가 필요한 개인 수준 자료. 목록의 binding으로 이 접근 분류를 바꿀 수 없다. 이미 확보한 로컬 파일은 권한 확인 reference를 명시한 경우에 한해 별도 staging할 수 있다.
 - `publication_only`, `unknown`: 정확한 자료 또는 접근 경로가 검증되지 않은 후보에 사용할 상태다.
 
 `last_verified`는 위 접근 안내 또는 기존 manifest를 검토한 날짜다. `verification_scope=official_portal_review`는 공식 안내 검토이며, `existing_manifest_not_probed`는 기존 경로를 보존했으나 개별 파일을 확인하지 않았다는 뜻이다. 모든 항목은 `download_status=not_checked` 또는 `restricted`, `checksum_status=not_checked`로 시작한다. 미확인 N/build/ancestry는 임의로 채우지 않는다. 발표된 전체 N과 실제 SNP별 N은 구별한다.
@@ -67,7 +67,7 @@ python3 -S -m masteromics resources plan \
   --ids ukb_ppp_pqtl --bindings /absolute/path/resources.bindings.json
 ```
 
-이 명령은 acquisition 실행/다운로드 manifest를 자동 생성하지 않는다. 검토된 binding을 실제 dataset registry의 acquisition spec 및 파일별 column adapter로 옮기는 단계가 남아 있다. 기존 CKD downloader는 `scripts/download_ckd_public_data.py`, UKB-PPP 파일 목록은 `data/metadata/ukb_ppp_download_manifest.tsv`에 있다. 새로운 소스의 수집 adapter는 미구현이다.
+이 `plan` 명령은 acquisition을 실행하지 않는다. 검토된 binding으로 `resources collect`를 실행하면 공통 수집기로 파일과 이력을 저장할 수 있다. [수집기 사용법](MASTEROMICS_ACQUISITION.md)을 참고한다. 파일별 column adapter와 분석 dataset registry로 연결하는 단계는 남아 있다. 기존 CKD downloader는 `scripts/download_ckd_public_data.py`, UKB-PPP 파일 목록은 `data/metadata/ukb_ppp_download_manifest.tsv`에 있다. 공개 HTTPS 파일과 승인된 로컬 파일은 공통 수집기로 처리한다. 서비스 로그인/API 및 DB별 변환 adapter는 미구현이다.
 
 ## CI 검증
 
