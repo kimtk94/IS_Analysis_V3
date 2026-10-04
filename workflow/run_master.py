@@ -219,6 +219,15 @@ def main() -> int:
     ap.add_argument("--cell-manifest", type=Path)
     ap.add_argument("--spatial-manifest", type=Path)
     ap.add_argument("--localization-output", type=Path)
+    ap.add_argument("--phewas-manifest", type=Path)
+    ap.add_argument("--phewas-long-output", type=Path)
+    ap.add_argument("--phewas-summary-output", type=Path)
+    ap.add_argument("--drug-table", type=Path)
+    ap.add_argument("--drug-output", type=Path)
+    ap.add_argument("--drug-causal-direction", type=Path)
+    ap.add_argument("--evidence-candidates", type=Path)
+    ap.add_argument("--evidence-manifest", type=Path)
+    ap.add_argument("--evidence-output", type=Path)
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
@@ -349,6 +358,36 @@ def main() -> int:
         plans = [StagePlan(p.stage, p.name, "READY", cmd,
                            "Shared tissue/single-cell/spatial localization integrator.")
                  if p.stage in {14,15,16} else p for p in plans]
+    phewas_args = [args.phewas_manifest, args.phewas_long_output, args.phewas_summary_output]
+    if 17 in stages and all(x is not None for x in phewas_args):
+        cmd = [sys.executable, "scripts/run_master_phewas.py",
+               "--manifest", str(args.phewas_manifest),
+               "--long-output", str(args.phewas_long_output),
+               "--summary-output", str(args.phewas_summary_output)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Phenome-wide association and safety-attention summary.")
+                 if p.stage == 17 else p for p in plans]
+
+    drug_args = [args.drug_table, args.drug_output]
+    if 18 in stages and all(x is not None for x in drug_args):
+        cmd = [sys.executable, "scripts/run_master_druggability.py",
+               "--drug-table", str(args.drug_table),
+               "--output", str(args.drug_output)]
+        if args.drug_causal_direction:
+            cmd += ["--causal-direction", str(args.drug_causal_direction)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Druggability and MR-direction compatibility summary.")
+                 if p.stage == 18 else p for p in plans]
+
+    ev_args = [args.evidence_candidates, args.evidence_manifest, args.evidence_output]
+    if 19 in stages and all(x is not None for x in ev_args):
+        cmd = [sys.executable, "scripts/run_master_evidence_integration.py",
+               "--candidates", str(args.evidence_candidates),
+               "--manifest", str(args.evidence_manifest),
+               "--output", str(args.evidence_output)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Final transparent evidence score, conflicts, and Tier 1/2/3 assignment.")
+                 if p.stage == 19 else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
