@@ -1,7 +1,7 @@
 """Offline resource catalog validation and explicit acquisition planning.
 
-Catalog entries describe access, not validated analytical inputs. This module never
-fetches files, signs in, or interprets catalog availability as scientific validity.
+Catalog entries describe access, not validated analytical inputs. Planning is
+offline; only the explicit collect command stages selected pinned artifacts.
 """
 import argparse
 from datetime import date
@@ -82,7 +82,9 @@ def plan(catalog, ids, bindings=None):
     validate(catalog)
     if not ids or len(ids) != len(set(ids)):
         raise ValueError('Select explicit unique resource IDs')
-    bindings = bindings or {}
+    bindings = {} if bindings is None else bindings
+    if not isinstance(bindings, dict):
+        raise ValueError('Bindings must be an object keyed by selected resource IDs')
     indexed = {r['dataset_id']: r for r in catalog['resources']}
     if set(ids) - indexed.keys():
         raise ValueError(f'Unknown resource IDs: {sorted(set(ids)-indexed.keys())}')
@@ -96,13 +98,23 @@ def plan(catalog, ids, bindings=None):
             raise ValueError(f'{key}: binding must be an object')
         artifact = {field: b.get(field, r.get(field)) for field in ['artifact_url', 'file_name', 'release', 'genome_build', 'ancestry']}
         blocks = []
-        # A binding must never override resource access class.
-        if r['access_type'] != 'open':
+        local = b.get('local_path')
+        local_mode = local is not None
+        if local_mode:
+            if not isinstance(local, str) or not local.strip() or not Path(local).is_absolute():
+                raise ValueError(f'{key}: local_path must be absolute')
+            artifact['artifact_url'] = None
+            artifact['file_name'] = b.get('file_name') or Path(local).name
+        # Local copies may represent already authorized access, never a remote bypass.
+        authorized_local = (local_mode and b.get('access_authorized') is True
+                            and isinstance(b.get('authorization_ref'), str)
+                            and bool(b['authorization_ref'].strip()))
+        if r['access_type'] != 'open' and not (authorized_local and r['access_type'] in {'registration', 'controlled'}):
             blocks.append({'registration': 'AUTHENTICATION_REQUIRED', 'controlled': 'DATA_ACCESS_APPROVAL_REQUIRED',
                            'publication_only': 'ARTIFACT_UNVERIFIED', 'unknown': 'ACCESS_UNVERIFIED'}[r['access_type']])
-        if not artifact['artifact_url'] or not artifact['file_name']:
+        if not artifact['file_name'] or (not local_mode and not artifact['artifact_url']):
             blocks.append('SELECT_EXACT_ARTIFACT')
-        elif not web_url(artifact['artifact_url']) or Path(artifact['file_name']).name != artifact['file_name'] or artifact['file_name'] in {'.', '..'}:
+        elif (not local_mode and not web_url(artifact['artifact_url'])) or Path(artifact['file_name']).name != artifact['file_name'] or artifact['file_name'] in {'.', '..'} or '\\' in artifact['file_name']:
             raise ValueError(f'{key}: invalid artifact URL/file name')
         if not isinstance(artifact['release'], str) or not artifact['release'].strip():
             blocks.append('PIN_RELEASE')
@@ -118,17 +130,20 @@ def plan(catalog, ids, bindings=None):
                 blocks.append('PIN_ANCESTRY')
         items.append({'dataset_id': key, 'access_type': r['access_type'], 'status': 'BLOCKED' if blocks else 'READY_FOR_ACQUISITION',
                       'blocks': blocks, 'artifact': artifact, 'sha256': checksum,
-                      'scientific_status': 'NOT_REVIEWED', 'independence_status': 'NOT_REVIEWED'})
+                      'scientific_status': 'NOT_REVIEWED', 'independence_status': 'NOT_REVIEWED',
+                      'source_mode': 'local' if local_mode else 'remote', 'local_path': local,
+                      'authorization_ref': b.get('authorization_ref') if authorized_local else None})
     return {'mode': 'OFFLINE_PLAN_ONLY', 'downloads_executed': 0, 'items': items}
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description='MasterOmics resource catalog; metadata only, never downloads')
+    parser = argparse.ArgumentParser(description='MasterOmics resource catalog, offline plans and explicit pinned collection')
     parser.add_argument('--registry', default=str(DEFAULT))
     sub = parser.add_subparsers(dest='command', required=True)
     sub.add_parser('validate')
     p = sub.add_parser('list'); p.add_argument('--project', choices=['ckd', 'ischemic_stroke'])
     p = sub.add_parser('plan'); p.add_argument('--ids', nargs='+', required=True); p.add_argument('--bindings')
+    p = sub.add_parser('collect'); p.add_argument('--ids', nargs='+', required=True); p.add_argument('--bindings', required=True); p.add_argument('--root', required=True); p.add_argument('--retries', type=int, default=2); p.add_argument('--timeout', type=float, default=60)
     a = parser.parse_args(argv)
     try:
         catalog = validate(json.loads(Path(a.registry).read_text()))
@@ -136,10 +151,15 @@ def main(argv=None):
             result = {'status': 'VALID', 'resources': len(catalog['resources']), 'network_requests': 0, 'scientific_status': 'NOT_REVIEWED'}
         elif a.command == 'list':
             result = [r for r in catalog['resources'] if not a.project or a.project in r['projects']]
+        elif a.command == 'collect':
+            from .acquisition import collect
+            result = collect(catalog, a.ids, json.loads(Path(a.bindings).read_text()), a.root, retries=a.retries, timeout=a.timeout)
         else:
             result = plan(catalog, a.ids, json.loads(Path(a.bindings).read_text()) if a.bindings else None)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         # Blocked acquisition plans are actionable failures, not successful downloads.
+        if a.command == 'collect':
+            return {'BLOCKED': 2, 'FAILED': 1, 'SUCCESS_VERIFIED': 0}[result['status']]
         return 2 if a.command == 'plan' and any(i['blocks'] for i in result['items']) else 0
     except (ValueError, TypeError, KeyError, OSError) as error:
         print(f'Resource catalog error: {error}', file=sys.stderr)
