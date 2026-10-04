@@ -87,3 +87,31 @@ Shared modules now available:
 
 Important boundary:
 the generic MR engine assumes exposure instruments are already LD-pruned. Colocalization input remains locus-wide and must not be replaced by only the MR instrument SNPs.
+
+
+## Stage 17-19 translational block
+
+### Stage 17 — PheWAS
+`scripts/run_master_phewas.py`
+- Standardizes phenome-wide association results across sources.
+- Applies BH-FDR within the supplied analysis universe.
+- Separates statistical significance from user-curated adverse-direction annotations.
+- Produces long-form associations plus candidate-level safety-attention summaries.
+
+### Stage 18 — Druggability
+`scripts/run_master_druggability.py`
+- Standardizes curated drug/target evidence from external database exports or manual review.
+- Supports inhibitor/antagonist vs agonist/activator direction checks against the MR causal direction.
+- Does not assume lifelong genetic exposure is pharmacologically equivalent to treatment.
+
+### Stage 19 — Final evidence integration
+`scripts/run_master_evidence_integration.py`
+- Integrates MR, robustness, coloc, SuSiE, ancestry/platform replication, transcriptomics,
+  phenotype/risk-factor evidence, individual validation, localization, PheWAS, and druggability.
+- Emits transparent per-stage scores, conflict flags, and final Tier 1/2/3/Exploratory assignments.
+- Direction conflicts in ancestry/platform replication or transcriptomic evidence explicitly downgrade candidates.
+
+## Current generic implementation status
+Stages 3-19 now have shared disease-agnostic execution modules or shared integration modules.
+Stages 0-2 remain the main refactor target because dataset acquisition, schema normalization,
+and initial instrument preparation are still partly disease/source specific.
