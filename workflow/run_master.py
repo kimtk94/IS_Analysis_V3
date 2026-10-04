@@ -214,6 +214,11 @@ def main() -> int:
     ap.add_argument("--id-col", default="participant_id")
     ap.add_argument("--time-col", default="time_years")
     ap.add_argument("--egfr-col", default="egfr")
+    ap.add_argument("--localization-candidates", type=Path)
+    ap.add_argument("--tissue-manifest", type=Path)
+    ap.add_argument("--cell-manifest", type=Path)
+    ap.add_argument("--spatial-manifest", type=Path)
+    ap.add_argument("--localization-output", type=Path)
     args = ap.parse_args()
     stages = parse_stage_spec(args.stages)
     plans = build_plan(args.disease, stages)
@@ -330,6 +335,20 @@ def main() -> int:
         plans = [StagePlan(p.stage, p.name, "READY", cmd,
                            "Individual-level baseline/slope/incident CKD validation; optional Cox/LME.")
                  if p.stage == 13 else p for p in plans]
+    loc_args = [args.localization_candidates, args.localization_output]
+    if any(s in stages for s in (14,15,16)) and all(x is not None for x in loc_args):
+        cmd = [sys.executable, "scripts/run_master_localization.py",
+               "--candidates", str(args.localization_candidates),
+               "--output", str(args.localization_output)]
+        if args.tissue_manifest:
+            cmd += ["--tissue-manifest", str(args.tissue_manifest)]
+        if args.cell_manifest:
+            cmd += ["--cell-manifest", str(args.cell_manifest)]
+        if args.spatial_manifest:
+            cmd += ["--spatial-manifest", str(args.spatial_manifest)]
+        plans = [StagePlan(p.stage, p.name, "READY", cmd,
+                           "Shared tissue/single-cell/spatial localization integrator.")
+                 if p.stage in {14,15,16} else p for p in plans]
     print_plan(args.disease, plans)
     if not args.execute:
         return 0
