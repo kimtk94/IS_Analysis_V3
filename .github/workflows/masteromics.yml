@@ -23,6 +23,7 @@ jobs:
         run: |
           bash -n server/masteromics_collect.sh
           bash -n server/masteromics_is_adapter.sh
+          bash -n server/masteromics_is_stage_migration.sh
   python-contracts:
     runs-on: ubuntu-latest
     steps:
@@ -33,6 +34,7 @@ jobs:
       - run: python -m pip install -r requirements-masteromics.lock
       - run: python -m unittest discover -s tests -p test_masteromics.py -v
       - run: python -m unittest discover -s tests -p test_masteromics_is_adapter.py -v
+      - run: python -m unittest discover -s tests -p test_masteromics_is_stage_migration.py -v
       - run: python -m py_compile masteromics/*.py
   r-syntax:
     runs-on: ubuntu-latest

@@ -77,6 +77,26 @@ is `PENDING_AUTHOR_ANNOTATION`, and `evidence`/`report` remain blocked upstream.
 is still not equivalent to an executable MasterOmics IS stage binding. The next gate
 is explicit per-stage binding with parity checks against the frozen artifacts.
 
+The migration registry is the next read-only layer. It requires a successful pinned
+baseline adapter run and then hashes/registers the frozen source artifacts against the
+12-stage IS catalog. It records 9 stages through `celltype` as `MIGRATED_FROZEN` while
+keeping `human_annotation`, `evidence`, and `report` scientifically blocked.
+
+```bash
+python3 -m masteromics is-stage-migration \
+  /srv/is-analysis \
+  /srv/is-analysis/results/masteromics/is_baseline \
+  /srv/is-analysis/results/masteromics/is_stage_migration
+
+bash server/masteromics_is_stage_migration.sh \
+  /srv/is-analysis/results/masteromics/is_stage_migration
+```
+
+A successful registry reports
+`MIGRATION_PROVENANCE_REGISTERED_NOT_EXECUTABLE`. It is provenance registration only;
+it does not convert frozen results into newly executed MasterOmics results and does not
+bypass the GSE256493 author-annotation gate.
+
 ## Dataset contract
 
 One dataset is one trait/assay. Explicit mappings for `chr,pos,effect_allele,
@@ -282,11 +302,12 @@ are not included. Full source-statistics execution still requires server
 verification; CI covers adapter unit tests, comparison logic/checkpoints,
 and the numerical modules, not production archives.
 
-## Shared CKD/IS blueprint (data review deferred)
+## Shared engine, project-specific CKD/IS blueprints
 
-See `docs/MASTEROMICS_ARCHITECTURE.md` for the complete 18-stage catalog and
-reuse/binding boundaries. `python -m masteromics blueprint init --root ROOT`
-creates CKD and IS directory/config skeletons without reading production data.
-`blueprint inspect CONFIG` validates structure; `blueprint run CONFIG --plan`
-shows binding coverage. Execution is blocked by unbound adapters and unset
-scientific policies. No skeleton stage is reported as scientifically complete.
+See `docs/MASTEROMICS_ARCHITECTURE.md` for the project-specific catalogs and shared
+engine/binding boundaries. CKD keeps the pQTL/MR/cohort DAG; ischemic stroke uses the
+12-stage BBJ locus-first DAG. `python -m masteromics blueprint init --root ROOT` creates
+both directory/config skeletons without reading production data. `blueprint inspect`
+validates the project-specific topology and `blueprint run --plan` shows binding
+coverage. Execution remains blocked by unbound adapters or unset scientific policies;
+no scaffold stage is reported as scientifically complete.
