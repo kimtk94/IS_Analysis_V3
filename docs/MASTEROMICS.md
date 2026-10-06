@@ -111,7 +111,16 @@ python3 -m masteromics is-bind bind \
 
 python3 -m masteromics blueprint inspect \
   /srv/is-analysis/masteromics_workspace/ischemic_stroke/config/project.frozen.json
+
+python3 -m masteromics is-bind materialize \
+  /srv/is-analysis/results/masteromics/is_stage_migration \
+  /srv/is-analysis/results/masteromics/is_frozen_prefix_verified
 ```
+
+`is-bind materialize` re-verifies source size/SHA256 for the nine frozen-ready stages
+and emits only `FROZEN_PASSTHROUGH` provenance artifacts plus a verification summary.
+It does not execute or relabel the legacy analysis, and the full blueprint remains
+`BLOCKED_UNBOUND_ADAPTERS` until `human_annotation`, `evidence`, and `report` are bound.
 
 ## IS human-annotation execution handoff
 

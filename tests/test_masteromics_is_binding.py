@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from masteromics.architecture import initialize, inspect
-from masteromics.is_binding import bind_frozen_prefix, emit_frozen_stage
+from masteromics.is_binding import bind_frozen_prefix, emit_frozen_stage, materialize_frozen_prefix
 
 
 class IsBindingTest(unittest.TestCase):
@@ -79,6 +79,30 @@ class IsBindingTest(unittest.TestCase):
             source.write_text('changed\n')
             with self.assertRaisesRegex(ValueError, 'size changed|SHA256 changed'):
                 emit_frozen_stage(stage, root / 'out2.json')
+
+    def test_materialize_verifies_nine_and_keeps_three_blocked(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            migration = self.make_migration(root)
+            out = root / 'materialized'
+            result = materialize_frozen_prefix(migration, out)
+            self.assertEqual(result['verified_stage_count'], 9)
+            self.assertEqual(result['blocked_stages'], ['human_annotation','evidence','report'])
+            self.assertEqual(result['full_blueprint_status'], 'BLOCKED_UNBOUND_ADAPTERS')
+            self.assertEqual(result['scientific_status'], 'FROZEN_RESULTS_NOT_RECOMPUTED')
+            self.assertEqual(
+                result['verified_stages'],
+                ['acquisition','source_qc','normalize','gwas_loci','finemap',
+                 'cross_ancestry','molecular_coloc','mechanism','celltype'],
+            )
+            for stage_id in result['verified_stages']:
+                payload = json.loads((out / f'{stage_id}.json').read_text())
+                self.assertEqual(payload['parity_status'], 'SOURCE_IDENTITY_VERIFIED')
+                self.assertEqual(payload['execution_mode'], 'FROZEN_PASSTHROUGH')
+            summary = json.loads((out / 'FROZEN_PREFIX_VERIFICATION.json').read_text())
+            self.assertEqual(summary['verified_stage_count'], 9)
+            with self.assertRaisesRegex(ValueError, 'refusing overwrite'):
+                materialize_frozen_prefix(migration, out)
 
     def test_bind_refuses_overwrite(self):
         with tempfile.TemporaryDirectory() as tmp:
