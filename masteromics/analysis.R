@@ -63,8 +63,35 @@ if (mode == 'mr') {
     ry <- as.matrix(read.delim(args[[5]],row.names=1,check.names=FALSE))
     if(!identical(rownames(rx),d$key)||!identical(rownames(ry),d$key)) stop('LD order mismatch')
     x$LD <- rx; y$LD <- ry
-    sx <- coloc::runsusie(x,maxit=meta$maxit,repeat_until_convergence=FALSE)
-    sy <- coloc::runsusie(y,maxit=meta$maxit,repeat_until_convergence=FALSE)
+    bounded_runsusie <- function(dat,label) {
+      base_maxit <- as.integer(meta$maxit)
+      if(!is.finite(base_maxit) || base_maxit < 1L) stop('Invalid SuSiE maxit')
+      rescue_maxit <- if(!is.null(meta$maxit_rescue)) {
+        as.integer(meta$maxit_rescue)
+      } else {
+        min(2000L,max(1500L,base_maxit*2L))
+      }
+      run_once <- function(iter) {
+        tryCatch(
+          coloc::runsusie(dat,maxit=iter,repeat_until_convergence=FALSE),
+          error=function(e)e
+        )
+      }
+      fit <- run_once(base_maxit)
+      if(!inherits(fit,'error')) return(fit)
+      msg <- conditionMessage(fit)
+      if(!grepl('did not converge',msg,fixed=TRUE) || rescue_maxit <= base_maxit) {
+        stop(paste('SuSiE',label,'failed:',msg))
+      }
+      message('SuSiE bounded rescue ',label,': ',base_maxit,' -> ',rescue_maxit)
+      fit <- run_once(rescue_maxit)
+      if(inherits(fit,'error')) {
+        stop(paste('SuSiE',label,'bounded rescue failed at',rescue_maxit,'iterations:',conditionMessage(fit)))
+      }
+      fit
+    }
+    sx <- bounded_runsusie(x,'exposure')
+    sy <- bounded_runsusie(y,'outcome')
     if(!isTRUE(sx$converged)||!isTRUE(sy$converged)) stop('SuSiE not converged; unresolved, never shared')
     if(!length(sx$sets$cs)||!length(sy$sets$cs)) {
       write_tsv(data.frame(status='UNRESOLVED_NO_CREDIBLE_SET',PP.H4.abf=NA),args[[6]])
