@@ -81,10 +81,11 @@ A PR #28 module is promoted into MasterOmics only when all of the following are 
 
 ### P0 — IS production adapter
 
-The current MasterOmics regression/rebuild path intentionally rejects ischemic-stroke
-legacy schemas. The next centralization milestone is an explicit IS baseline adapter
-that maps the existing BBJ/GIGASTROKE and functional-validation outputs into canonical
-MasterOmics artifacts without changing the frozen IS results.
+The read-only IS baseline adapter is now implemented. It validates and provenance-pins
+existing BBJ/GIGASTROKE canonical inputs, four primary BBJ loci, four core mechanism
+genes, the frozen mouse layer, and the human vascular handoff without recomputing the
+legacy results. The remaining P0 gate is explicit MasterOmics per-stage binding and
+numerical parity against those frozen artifacts.
 
 ### P1 — IS disease-specific modules
 

@@ -38,6 +38,29 @@ server setup to prevent each job from consuming all CPUs. Never start two jobs f
 the same output root. Locks prevent this. A failed project returns nonzero while
 independent ready work may finish. Downstream stages are blocked.
 
+## IS frozen-baseline adapter
+
+The first IS production-migration adapter is read-only. It does not rerun BBJ,
+GIGASTROKE, colocalization, fine-mapping, or cell-type analyses. It validates the
+frozen source schemas, primary BBJ loci, four core mechanism genes, mouse-layer
+freeze, and human vascular handoff, then writes baseline provenance/evidence artifacts.
+
+```bash
+python3 -m masteromics is-adapter \
+  /srv/is-analysis \
+  /srv/is-analysis/results/masteromics/is_baseline
+
+MASTEROMICS_IS_HASH_LARGE=1 \
+  bash server/masteromics_is_adapter.sh \
+  /srv/is-analysis/results/masteromics/is_baseline_hashed
+```
+
+`--hash-large` or `MASTEROMICS_IS_HASH_LARGE=1` pins SHA256 for the large BBJ and
+GIGASTROKE canonical files as well. A successful adapter audit reports
+`FROZEN_RESULTS_NOT_RECOMPUTED` and `ADAPTER_AUDIT_ONLY`; it is not equivalent to
+an executable MasterOmics IS stage binding. The next gate is explicit per-stage
+binding with parity checks against these frozen artifacts.
+
 ## Dataset contract
 
 One dataset is one trait/assay. Explicit mappings for `chr,pos,effect_allele,

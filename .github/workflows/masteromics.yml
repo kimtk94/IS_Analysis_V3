@@ -1,9 +1,9 @@
 name: MasterOmics contracts and synthetic truth
 on:
   pull_request:
-    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'data/metadata/masteromics_resource_registry.json', 'docs/MASTEROMICS_DATABASES.md', 'docs/MASTEROMICS_ACQUISITION.md', 'server/masteromics_collect.sh', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
+    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'data/metadata/masteromics_resource_registry.json', 'docs/MASTEROMICS*.md', 'server/masteromics_*.sh', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
   push:
-    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'data/metadata/masteromics_resource_registry.json', 'docs/MASTEROMICS_DATABASES.md', 'docs/MASTEROMICS_ACQUISITION.md', 'server/masteromics_collect.sh', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
+    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'data/metadata/masteromics_resource_registry.json', 'docs/MASTEROMICS*.md', 'server/masteromics_*.sh', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
   workflow_dispatch:
 jobs:
   database-catalog:
@@ -19,8 +19,10 @@ jobs:
         run: python -S -m unittest discover -s tests -p test_masteromics_resources.py -v
       - name: Test pinned transfers, loopback HTTP resume and local access audit
         run: python -S -m unittest discover -s tests -p test_masteromics_acquisition.py -v
-      - name: Validate server collection entrypoint
-        run: bash -n server/masteromics_collect.sh
+      - name: Validate server entrypoints
+        run: |
+          bash -n server/masteromics_collect.sh
+          bash -n server/masteromics_is_adapter.sh
   python-contracts:
     runs-on: ubuntu-latest
     steps:
@@ -30,6 +32,7 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -r requirements-masteromics.lock
       - run: python -m unittest discover -s tests -p test_masteromics.py -v
+      - run: python -m unittest discover -s tests -p test_masteromics_is_adapter.py -v
       - run: python -m py_compile masteromics/*.py
   r-syntax:
     runs-on: ubuntu-latest

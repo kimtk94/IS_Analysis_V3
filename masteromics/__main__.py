@@ -12,6 +12,9 @@ def main():
     if len(sys.argv)>1 and sys.argv[1]=='resources':
         from .resources import main as resources_main
         return resources_main(sys.argv[2:])
+    if len(sys.argv)>1 and sys.argv[1]=='is-adapter':
+        from .is_adapter import main as is_adapter_main
+        return is_adapter_main(sys.argv[2:])
     from . import science
     from .engine import execute,atomic_json,sha
     from .compile import compile_project
