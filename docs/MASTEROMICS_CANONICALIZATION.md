@@ -1,7 +1,7 @@
 # MasterOmics canonicalization decision
 
-Status: **ACTIVE**  
-Canonical execution engine: **MasterOmics (feat/masteromics-central-engine, PR #24)**  
+Status: **ACTIVE**
+Canonical execution engine: **MasterOmics (feat/masteromics-central-engine, PR #24)**
 Reference implementation source: **MASTER pipeline v1 (feat/master-pipeline-v1, PR #28)**
 
 ## Decision
