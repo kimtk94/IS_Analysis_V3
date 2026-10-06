@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 ROOT="${IS_ANALYSIS_ROOT:-/srv/is-analysis}"
-CODE="${CODE_DIR:-$ROOT/IS_Analysis_V3/scripts/metabolic_resilience/drive_v2}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CODE="${CODE_DIR:-$SCRIPT_DIR}"
 OUT="$ROOT/results/metabolic_resilience/stage3_confirmatory_mr"
 HARM="$OUT/harmonized/STAGE3D2_HARMONIZED.tsv.gz"
 
