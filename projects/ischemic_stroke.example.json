@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "project": "ischemic_stroke",
+  "mode": "frozen_locus_first_migration",
+  "scientific_status": "FROZEN_RESULTS_NOT_RECOMPUTED",
+  "execution_status": "ADAPTER_AUDIT_ONLY",
+  "design": {
+    "discovery_model": "BBJ_EAS_LOCUS_FIRST",
+    "discovery_ancestry": "Japanese",
+    "discovery_build": "GRCh37",
+    "replication_model": "GIGASTROKE_EAS",
+    "replication_ancestry": "EAS",
+    "replication_build": "GRCh37",
+    "primary_loci": [
+      "BBJ_IS_L001",
+      "BBJ_IS_L002",
+      "BBJ_IS_L003",
+      "BBJ_IS_L004"
+    ],
+    "core_genes": [
+      "FGF5",
+      "ALDH2",
+      "SH3PXD2A",
+      "COL4A2"
+    ],
+    "core_mechanism_branches": {
+      "FGF5": "REGULATORY_EXPRESSION_PROTEIN",
+      "ALDH2": "CODING_PROTEIN_METABOLIC",
+      "SH3PXD2A": "CELL_SPECIFIC_REGULATORY",
+      "COL4A2": "VASCULAR_STRUCTURAL_REGULATORY"
+    }
+  },
+  "sources": [
+    {
+      "id": "bbj_is_canonical",
+      "path": "data/is/processed/japan/bbj/BBJ_IS_GRCh37.canonical.tsv.gz",
+      "role": "discovery_gwas",
+      "ancestry": "Japanese",
+      "build": "GRCh37",
+      "required_columns": [
+        "dataset",
+        "phenotype",
+        "build",
+        "chr",
+        "pos",
+        "effect_allele",
+        "other_allele",
+        "beta",
+        "se",
+        "p",
+        "eaf",
+        "n",
+        "variant_id"
+      ]
+    },
+    {
+      "id": "gigastroke_eas_ais",
+      "path": "data/is/processed/gigastroke/eas/GCST90104545_AIS_GRCh37.canonical.tsv.gz",
+      "role": "replication_gwas",
+      "ancestry": "EAS",
+      "build": "GRCh37",
+      "required_columns": [
+        "dataset",
+        "phenotype",
+        "ancestry",
+        "build",
+        "chr",
+        "pos",
+        "effect_allele",
+        "other_allele",
+        "beta",
+        "se",
+        "p",
+        "eaf",
+        "variant_id"
+      ]
+    },
+    {
+      "id": "bbj_finemap_regions",
+      "path": "results/is/stage3_finemap/japan/bbj/BBJ_IS_FINEMAP_REGIONS.tsv",
+      "role": "regional_contract",
+      "required_columns": [
+        "locus_id",
+        "chr",
+        "region_start",
+        "region_end",
+        "lead_variant",
+        "role"
+      ]
+    },
+    {
+      "id": "bbj_gigastroke_cs_comparison",
+      "path": "results/is/stage4_cross_eas/fine_mapping/BBJ_GIGASTROKE_CS_COMPARISON.tsv",
+      "role": "cross_ancestry_finemap",
+      "required_columns": [
+        "phenotype",
+        "locus",
+        "bbj_top_variant",
+        "bbj_top_pip",
+        "giga_top_variant",
+        "giga_top_pip",
+        "cs_jaccard"
+      ]
+    },
+    {
+      "id": "functional_convergence",
+      "path": "results/is/stage5_functional/phase9d_literature_benchmark/IS_FUNCTIONAL_CONVERGENCE_MASTER_R1.tsv",
+      "role": "functional_evidence",
+      "required_columns": [
+        "gene",
+        "locus",
+        "role",
+        "mechanism_branch",
+        "best_abf_h4",
+        "best_susie_h4",
+        "interpretation"
+      ]
+    },
+    {
+      "id": "mouse_functional_freeze",
+      "path": "results/is/stage5_functional/phase9f_e_mouse_freeze_human_handoff_r1/MOUSE_FUNCTIONAL_LAYER_FREEZE.tsv",
+      "role": "single_cell_freeze",
+      "required_columns": [
+        "component",
+        "status"
+      ]
+    },
+    {
+      "id": "human_vascular_handoff",
+      "path": "results/is/stage5_functional/phase9f_e_mouse_freeze_human_handoff_r1/GSE256493_DRIVE_HANDOFF.tsv",
+      "role": "human_single_cell_handoff",
+      "required_columns": [
+        "component",
+        "status"
+      ]
+    },
+    {
+      "id": "bbj_susie_neff_summary",
+      "path": "results/is/stage3_finemap/japan/bbj/SUSIE_NEFF_MASTER_SUMMARY.tsv",
+      "role": "bbj_finemap_summary",
+      "required_columns": [
+        "locus",
+        "status",
+        "converged",
+        "n_eff",
+        "nvar",
+        "n_cs",
+        "top_variant",
+        "top_pip",
+        "error"
+      ]
+    },
+    {
+      "id": "molecular_coloc_abf",
+      "path": "results/is/stage5_functional/phase9c_convergence/COLOC_ABF_MASTER_ANNOTATED_V2.tsv",
+      "role": "molecular_coloc_abf",
+      "required_columns": [
+        "locus",
+        "dataset_key",
+        "gene_base",
+        "nsnps",
+        "qtl_n",
+        "PP.H3",
+        "PP.H4",
+        "status",
+        "gene_symbol",
+        "h4_descriptor"
+      ]
+    },
+    {
+      "id": "molecular_coloc_susie",
+      "path": "results/is/stage5_functional/phase9c_convergence/COLOC_SUSIE_SIGNAL_PAIRS.tsv",
+      "role": "molecular_coloc_susie",
+      "required_columns": [
+        "nsnps",
+        "PP.H3.abf",
+        "PP.H4.abf",
+        "pair_id",
+        "locus",
+        "gene_symbol",
+        "dataset_key",
+        "n_model",
+        "n_shared",
+        "bbj_n",
+        "qtl_n"
+      ]
+    }
+  ],
+  "expected_status": {
+    "mouse_layer_conclusion": "CELLTYPE_LOCALIZATION_SUPPORTED_TARGET_SPECIFIC_STROKE_DGE_NOT_ESTABLISHED",
+    "human_vascular_colab_status": "READY"
+  },
+  "next_gate": "IMPLEMENT_EXPLICIT_MASTEROMICS_IS_STAGE_BINDINGS_WITH_PARITY"
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "project": "ischemic_stroke",
+  "baseline": "2026-10-06_frozen_locus_first",
+  "sources": {
+    "bbj_is_canonical": {
+      "size_bytes": 1043922108,
+      "sha256": "f107f8e37d28d354458bbd44f0ba0640438d27b64077bcc83cb8457336d09b90"
+    },
+    "gigastroke_eas_ais": {
+      "size_bytes": 194206682,
+      "sha256": "24edcfcde24acad1fa4786f272a54a53dd4c73caa489a88c7b2ca67160eb4d66"
+    },
+    "bbj_finemap_regions": {
+      "size_bytes": 512,
+      "sha256": "367587975d9ac718d7fdf4a4dc5cd6228ec65af4c9ecef3fcc55dac7225bb767"
+    },
+    "bbj_gigastroke_cs_comparison": {
+      "size_bytes": 3541,
+      "sha256": "9eb4e29b49c94db0b31ead8b1d162dfa19b6f4b106c872ed58daceaa088bc63a"
+    },
+    "functional_convergence": {
+      "size_bytes": 3126,
+      "sha256": "52c8cc7fc11e2fc566f24929f623ba090a53ba4863dc77251748df21f4c2f0cc"
+    },
+    "mouse_functional_freeze": {
+      "size_bytes": 926,
+      "sha256": "2183982508963fb92bea164f51dbbed4369fe1925b1a7090678c6f6578d9dd3d"
+    },
+    "human_vascular_handoff": {
+      "size_bytes": 311,
+      "sha256": "6a7166c653d88939b57176d4e979a23556708ddab970a824dc42f01d7bd688a4"
+    },
+    "bbj_susie_neff_summary": {
+      "size_bytes": 355,
+      "sha256": "a569d8461e18f099eb7409457d856bb6c528f878de0510f07df36c12ae9e601d"
+    },
+    "molecular_coloc_abf": {
+      "size_bytes": 160571,
+      "sha256": "edb03922d25e567a50c0e80834edb382c87e5f4fdd63eb09f463a8b8371a9ffc"
+    },
+    "molecular_coloc_susie": {
+      "size_bytes": 3120,
+      "sha256": "f06fb09108b19f2bdab8721c4acfa057959feead0133fb743df09cb290bff532"
+    }
+  }
+}
