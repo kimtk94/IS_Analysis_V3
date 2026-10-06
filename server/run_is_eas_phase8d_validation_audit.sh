@@ -1752,4 +1752,3 @@ echo "It does NOT mean scientific validation passed."
 echo
 echo "OUTPUT_ROOT=$OUT"
 echo "LOG_ROOT=$LOGDIR"
-

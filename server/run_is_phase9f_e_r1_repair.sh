@@ -1634,4 +1634,3 @@ cat \
 echo
 echo "OUTPUT_ROOT=$OUT"
 echo "LOG_ROOT=$LOGDIR"
-

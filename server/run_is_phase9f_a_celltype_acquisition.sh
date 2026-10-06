@@ -1037,4 +1037,3 @@ echo "OUTPUT_ROOT=$OUT"
 echo "DATA_ROOT=$DATA"
 echo "ENV=$ENV"
 echo "LOG_ROOT=$LOGDIR"
-
