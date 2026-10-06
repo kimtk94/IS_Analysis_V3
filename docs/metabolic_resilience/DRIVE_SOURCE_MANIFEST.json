@@ -1,12 +1,12 @@
 {
-  "schema_version": 6,
+  "schema_version": 7,
   "source": "Google Drive",
   "source_folder_id": "1J5NkxmjTmGRpFKOHf9JFLnvEu2u0MwMW",
   "source_folder_url": "https://drive.google.com/drive/folders/1J5NkxmjTmGRpFKOHf9JFLnvEu2u0MwMW",
   "project": "MASTER_DEGREE / METABOLIC_RESILIENCE_CODE",
   "sync_policy": "All active non-ARCHIVE .py/.sh/.R Drive files must match Git drive_v2 by filename, except explicitly allowlisted repo-native utilities. Runner v3 and docs are Drive orchestration/documentation.",
-  "file_count": 55,
-  "code_file_count": 52,
+  "file_count": 58,
+  "code_file_count": 55,
   "files": [
     {
       "id": "1XaQje2Mw0J9Fs7q19nZplfirX00p8ZLT",
@@ -103,6 +103,30 @@
       "size": 5693,
       "modified_time": "2026-09-26T15:30:38.491Z",
       "url": "https://drive.google.com/file/d/1AO-RTz4H3LtykL0xmXxFmDERrByC2rxe/view?usp=drivesdk"
+    },
+    {
+      "id": "1EWzuEESTAbNuSZpP1cTzHoo6teqf3bNW",
+      "title": "34_stage3c4_annotate_dbsnp.py",
+      "mime_type": "text/x-python",
+      "size": 5249,
+      "modified_time": "2026-09-27T12:58:41.663Z",
+      "url": "https://drive.google.com/file/d/1EWzuEESTAbNuSZpP1cTzHoo6teqf3bNW/view?usp=drivesdk"
+    },
+    {
+      "id": "1S3g66lT2W4nrfFQYAsYWEVwhYmqa6ncB",
+      "title": "35_stage3c4_apply_rsid_overlay.py",
+      "mime_type": "text/x-python",
+      "size": 3303,
+      "modified_time": "2026-09-27T12:58:41.663Z",
+      "url": "https://drive.google.com/file/d/1S3g66lT2W4nrfFQYAsYWEVwhYmqa6ncB/view?usp=drivesdk"
+    },
+    {
+      "id": "19nGk4ebpL_oGxhgmEW12LTKoBIjuwXrt",
+      "title": "39_stage3d0_inventory_outcomes.py",
+      "mime_type": "text/x-python",
+      "size": 2622,
+      "modified_time": "2026-09-27T13:07:06.130Z",
+      "url": "https://drive.google.com/file/d/19nGk4ebpL_oGxhgmEW12LTKoBIjuwXrt/view?usp=drivesdk"
     },
     {
       "id": "1GWArKd6VxhKTVKdbV9IzQ2TSLKf7LHeA",
