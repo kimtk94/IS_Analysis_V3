@@ -27,3 +27,5 @@ projects/compiled/
 projects/ckd.json
 projects/ischemic_stroke.json
 projects/datasets.json
+
+/.venv-masteromics/
