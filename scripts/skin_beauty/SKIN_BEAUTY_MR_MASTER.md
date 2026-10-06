@@ -1,7 +1,7 @@
 # SKIN_BEAUTY_MR_MASTER
 
-**Status:** Research-design + executable Stage 0 draft v0.2  
-**Date:** 2026-09-27  
+**Status:** Research-design + executable Stage 0 draft v0.2
+**Date:** 2026-09-27
 **Primary theme:** Proteogenomic causal inference for objective facial skin-aging phenotypes in East Asian populations
 
 ---
