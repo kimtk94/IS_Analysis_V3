@@ -133,6 +133,57 @@
         "component",
         "status"
       ]
+    },
+    {
+      "id": "bbj_susie_neff_summary",
+      "path": "results/is/stage3_finemap/japan/bbj/SUSIE_NEFF_MASTER_SUMMARY.tsv",
+      "role": "bbj_finemap_summary",
+      "required_columns": [
+        "locus",
+        "status",
+        "converged",
+        "n_eff",
+        "nvar",
+        "n_cs",
+        "top_variant",
+        "top_pip",
+        "error"
+      ]
+    },
+    {
+      "id": "molecular_coloc_abf",
+      "path": "results/is/stage5_functional/phase9c_convergence/COLOC_ABF_MASTER_ANNOTATED_V2.tsv",
+      "role": "molecular_coloc_abf",
+      "required_columns": [
+        "locus",
+        "dataset_key",
+        "gene_base",
+        "nsnps",
+        "qtl_n",
+        "PP.H3",
+        "PP.H4",
+        "status",
+        "gene_symbol",
+        "h4_descriptor"
+      ]
+    },
+    {
+      "id": "molecular_coloc_susie",
+      "path": "results/is/stage5_functional/phase9c_convergence/COLOC_SUSIE_SIGNAL_PAIRS.tsv",
+      "role": "molecular_coloc_susie",
+      "required_columns": [
+        "nsnps",
+        "PP.H3.abf",
+        "PP.H4.abf",
+        "pair_id",
+        "locus",
+        "gene_symbol",
+        "dataset_key",
+        "n_model",
+        "n_shared",
+        "bbj_n",
+        "qtl_n"
+      ]
     }
   ],
   "expected_status": {

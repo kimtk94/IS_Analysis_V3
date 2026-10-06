@@ -54,6 +54,41 @@ class IsAdapterTest(unittest.TestCase):
             ["phenotype","locus","bbj_top_variant","bbj_top_pip","giga_top_variant","giga_top_pip","cs_jaccard"],
             [{"phenotype":"AIS","locus":"BBJ_IS_L001","bbj_top_variant":"4:1:A:G","bbj_top_pip":"0.5","giga_top_variant":"4:1:A:G","giga_top_pip":"0.4","cs_jaccard":"1"}],
         )
+        finemap_summary = root / "results/is/stage3_finemap/japan/bbj/SUSIE_NEFF_MASTER_SUMMARY.tsv"
+        write_tsv(
+            finemap_summary,
+            ["locus","status","converged","n_eff","nvar","n_cs","top_variant","top_pip","error"],
+            [
+                {"locus":"BBJ_IS_L001","status":"PASS","converged":"TRUE","n_eff":"78894","nvar":"100","n_cs":"1","top_variant":"4:1:A:G","top_pip":"0.4","error":""},
+                {"locus":"BBJ_IS_L002","status":"PASS","converged":"TRUE","n_eff":"78894","nvar":"100","n_cs":"1","top_variant":"10:1:A:G","top_pip":"0.6","error":""},
+                {"locus":"BBJ_IS_L003","status":"PASS","converged":"TRUE","n_eff":"78894","nvar":"100","n_cs":"1","top_variant":"12:1:A:G","top_pip":"0.3","error":""},
+                {"locus":"BBJ_IS_L004","status":"PASS","converged":"TRUE","n_eff":"78894","nvar":"100","n_cs":"1","top_variant":"13:1:A:G","top_pip":"0.8","error":""},
+            ],
+        )
+        coloc_abf = root / "results/is/stage5_functional/phase9c_convergence/COLOC_ABF_MASTER_ANNOTATED_V2.tsv"
+        abf_header = ["locus","dataset_key","gene_base","nsnps","qtl_n","PP.H3","PP.H4","status","gene_symbol","h4_descriptor"]
+        write_tsv(
+            coloc_abf,
+            abf_header,
+            [
+                {"locus":"BBJ_IS_L001","dataset_key":"GTEx_A","gene_base":"ENSG1","nsnps":"100","qtl_n":"200","PP.H3":"0.1","PP.H4":"0.7","status":"PASS","gene_symbol":"FGF5","h4_descriptor":"H4_GE_0.50"},
+                {"locus":"BBJ_IS_L003","dataset_key":"GTEx_B","gene_base":"ENSG2","nsnps":"100","qtl_n":"200","PP.H3":"0.7","PP.H4":"0.1","status":"PASS","gene_symbol":"ALDH2","h4_descriptor":"H4_LT_0.50"},
+                {"locus":"BBJ_IS_L002","dataset_key":"GTEx_C","gene_base":"ENSG3","nsnps":"100","qtl_n":"200","PP.H3":"0.5","PP.H4":"0.3","status":"PASS","gene_symbol":"SH3PXD2A","h4_descriptor":"H4_LT_0.50"},
+                {"locus":"BBJ_IS_L004","dataset_key":"GTEx_D","gene_base":"ENSG4","nsnps":"100","qtl_n":"200","PP.H3":"0.5","PP.H4":"0.3","status":"PASS","gene_symbol":"COL4A2","h4_descriptor":"H4_LT_0.50"},
+            ],
+        )
+        coloc_susie = root / "results/is/stage5_functional/phase9c_convergence/COLOC_SUSIE_SIGNAL_PAIRS.tsv"
+        susie_header = ["nsnps","PP.H3.abf","PP.H4.abf","pair_id","locus","gene_symbol","dataset_key","n_model","n_shared","bbj_n","qtl_n"]
+        write_tsv(
+            coloc_susie,
+            susie_header,
+            [
+                {"nsnps":"90","PP.H3.abf":"0.2","PP.H4.abf":"0.7","pair_id":"P01","locus":"BBJ_IS_L001","gene_symbol":"FGF5","dataset_key":"GTEx_A","n_model":"N_EFF","n_shared":"90","bbj_n":"78894","qtl_n":"200"},
+                {"nsnps":"90","PP.H3.abf":"0.7","PP.H4.abf":"0.1","pair_id":"P02","locus":"BBJ_IS_L003","gene_symbol":"ALDH2","dataset_key":"GTEx_B","n_model":"N_EFF","n_shared":"90","bbj_n":"78894","qtl_n":"200"},
+                {"nsnps":"90","PP.H3.abf":"0.5","PP.H4.abf":"0.3","pair_id":"P03","locus":"BBJ_IS_L002","gene_symbol":"SH3PXD2A","dataset_key":"GTEx_C","n_model":"N_EFF","n_shared":"90","bbj_n":"78894","qtl_n":"200"},
+                {"nsnps":"90","PP.H3.abf":"0.5","PP.H4.abf":"0.3","pair_id":"P04","locus":"BBJ_IS_L004","gene_symbol":"COL4A2","dataset_key":"GTEx_D","n_model":"N_EFF","n_shared":"90","bbj_n":"78894","qtl_n":"200"},
+            ],
+        )
         convergence = root / "results/is/stage5_functional/phase9d_literature_benchmark/IS_FUNCTIONAL_CONVERGENCE_MASTER_R1.tsv"
         header = ["gene","locus","role","mechanism_branch","best_abf_h4","best_susie_h4","best_abf_dataset","best_abf_tissue","interpretation"]
         write_tsv(
@@ -103,8 +138,15 @@ class IsAdapterTest(unittest.TestCase):
             self.assertEqual([x["gene_symbol"] for x in rows], ["FGF5","ALDH2","SH3PXD2A","COL4A2"])
             with (out / "IS_BASELINE_SOURCE_AUDIT.tsv").open() as handle:
                 source_rows = list(csv.DictReader(handle, delimiter="\t"))
-            self.assertEqual(len(source_rows), 7)
+            self.assertEqual(len(source_rows), 10)
             self.assertTrue(all(x["checksum_status"] == "PINNED" for x in source_rows))
+            self.assertEqual(status["stage_coverage"]["total"], 12)
+            self.assertEqual(status["stage_coverage"]["frozen_artifact_ready"], 9)
+            self.assertEqual(status["stage_coverage"]["not_ready_stages"], ["human_annotation","evidence","report"])
+            with (out / "IS_STAGE_COVERAGE.tsv").open() as handle:
+                coverage = list(csv.DictReader(handle, delimiter="\t"))
+            self.assertEqual([x["stage"] for x in coverage][-3:], ["human_annotation","evidence","report"])
+            self.assertEqual(coverage[-3]["status"], "PENDING_AUTHOR_ANNOTATION")
 
     def test_wrong_frozen_pin_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:

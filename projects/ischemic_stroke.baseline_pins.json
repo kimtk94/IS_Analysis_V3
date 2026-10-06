@@ -30,6 +30,18 @@
     "human_vascular_handoff": {
       "size_bytes": 311,
       "sha256": "6a7166c653d88939b57176d4e979a23556708ddab970a824dc42f01d7bd688a4"
+    },
+    "bbj_susie_neff_summary": {
+      "size_bytes": 355,
+      "sha256": "a569d8461e18f099eb7409457d856bb6c528f878de0510f07df36c12ae9e601d"
+    },
+    "molecular_coloc_abf": {
+      "size_bytes": 160571,
+      "sha256": "edb03922d25e567a50c0e80834edb382c87e5f4fdd63eb09f463a8b8371a9ffc"
+    },
+    "molecular_coloc_susie": {
+      "size_bytes": 3120,
+      "sha256": "f06fb09108b19f2bdab8721c4acfa057959feead0133fb743df09cb290bff532"
     }
   }
 }

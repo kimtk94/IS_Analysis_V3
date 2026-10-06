@@ -56,8 +56,9 @@ The canonical thesis migration contract is `projects/ischemic_stroke.example.jso
 The prior pQTL-oriented recipe is preserved as
 `projects/ischemic_stroke_pqtl_legacy.example.json` with reference-only status.
 Production source identity is frozen in `projects/ischemic_stroke.baseline_pins.json`;
-the default CLI/server path verifies file size and SHA256 for all seven baseline
-sources, including the large BBJ and GIGASTROKE files.
+the default CLI/server path verifies file size and SHA256 for all ten baseline
+sources, including the large BBJ/GIGASTROKE files, BBJ SuSiE summary, and molecular
+ABF/SuSiE colocalization evidence.
 
 ```bash
 python3 -m masteromics is-adapter \
@@ -70,9 +71,11 @@ bash server/masteromics_is_adapter.sh \
 
 A successful production adapter audit reports `checksum_status=COMPLETE` with each
 source marked `VERIFIED_PIN`, plus `FROZEN_RESULTS_NOT_RECOMPUTED` and
-`ADAPTER_AUDIT_ONLY`. This is not equivalent to an executable MasterOmics IS stage
-binding. The next gate is explicit per-stage binding with parity checks against these
-frozen artifacts.
+`ADAPTER_AUDIT_ONLY`. It also writes `IS_STAGE_COVERAGE.tsv`: the current frozen
+baseline covers 9 of the 12 IS catalog stages through `celltype`; `human_annotation`
+is `PENDING_AUTHOR_ANNOTATION`, and `evidence`/`report` remain blocked upstream. This
+is still not equivalent to an executable MasterOmics IS stage binding. The next gate
+is explicit per-stage binding with parity checks against the frozen artifacts.
 
 ## Dataset contract
 

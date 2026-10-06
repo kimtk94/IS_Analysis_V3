@@ -51,7 +51,10 @@ def load_config(path: Path):
         "bbj_is_canonical",
         "gigastroke_eas_ais",
         "bbj_finemap_regions",
+        "bbj_susie_neff_summary",
         "bbj_gigastroke_cs_comparison",
+        "molecular_coloc_abf",
+        "molecular_coloc_susie",
         "functional_convergence",
         "mouse_functional_freeze",
         "human_vascular_handoff",
@@ -198,6 +201,33 @@ def build_baseline(
     if missing_loci:
         raise ValueError("Missing primary BBJ loci: " + ",".join(missing_loci))
 
+    finemap_summary = _rows(root / sources["bbj_susie_neff_summary"]["path"])
+    finemap_by_locus = {r["locus"]: r for r in finemap_summary}
+    missing_finemap = [x for x in design["primary_loci"] if x not in finemap_by_locus]
+    if missing_finemap:
+        raise ValueError("Missing BBJ SuSiE summaries: " + ",".join(missing_finemap))
+    bad_finemap = [
+        x for x in design["primary_loci"]
+        if finemap_by_locus[x].get("status") != "PASS"
+        or finemap_by_locus[x].get("converged", "").upper() != "TRUE"
+    ]
+    if bad_finemap:
+        raise ValueError("Nonconverged BBJ SuSiE loci: " + ",".join(bad_finemap))
+
+    coloc_abf = _rows(root / sources["molecular_coloc_abf"]["path"])
+    coloc_susie = _rows(root / sources["molecular_coloc_susie"]["path"])
+    abf_core = {
+        r.get("gene_symbol") for r in coloc_abf
+        if r.get("status") == "PASS" and r.get("gene_symbol")
+    }
+    susie_core = {r.get("gene_symbol") for r in coloc_susie if r.get("gene_symbol")}
+    missing_abf_core = [x for x in design["core_genes"] if x not in abf_core]
+    missing_susie_core = [x for x in design["core_genes"] if x not in susie_core]
+    if missing_abf_core:
+        raise ValueError("Core genes missing from ABF coloc: " + ",".join(missing_abf_core))
+    if missing_susie_core:
+        raise ValueError("Core genes missing from SuSiE coloc: " + ",".join(missing_susie_core))
+
     convergence = _rows(root / sources["functional_convergence"]["path"])
     core = {r["gene"]: r for r in convergence if r.get("role") == "CORE"}
     missing_genes = [x for x in design["core_genes"] if x not in core]
@@ -230,16 +260,35 @@ def build_baseline(
     if handoff.get("COLAB_STATUS") != expected["human_vascular_colab_status"]:
         raise ValueError("Human vascular handoff is not Colab-ready")
 
+    coverage_rows = [
+        {"stage":"acquisition","status":"FROZEN_ARTIFACT_READY","source_ids":";".join(x["id"] for x in cfg["sources"]),"note":"10 pinned baseline sources are present"},
+        {"stage":"source_qc","status":"FROZEN_ARTIFACT_READY","source_ids":"baseline_pins","note":"size/SHA256 verification is enforced by the production adapter"},
+        {"stage":"normalize","status":"FROZEN_ARTIFACT_READY","source_ids":"bbj_is_canonical;gigastroke_eas_ais","note":"canonical GRCh37 GWAS inputs are frozen"},
+        {"stage":"gwas_loci","status":"FROZEN_ARTIFACT_READY","source_ids":"bbj_finemap_regions","note":"BBJ primary loci L001-L004 are present"},
+        {"stage":"finemap","status":"FROZEN_ARTIFACT_READY","source_ids":"bbj_susie_neff_summary","note":"all four primary BBJ SuSiE fits are PASS and converged"},
+        {"stage":"cross_ancestry","status":"FROZEN_ARTIFACT_READY","source_ids":"bbj_gigastroke_cs_comparison","note":"BBJ-GIGASTROKE credible-set comparison is frozen"},
+        {"stage":"molecular_coloc","status":"FROZEN_ARTIFACT_READY","source_ids":"molecular_coloc_abf;molecular_coloc_susie","note":"all four core genes are represented in ABF and SuSiE molecular evidence"},
+        {"stage":"mechanism","status":"FROZEN_ARTIFACT_READY","source_ids":"functional_convergence","note":"four core mechanism branches are frozen"},
+        {"stage":"celltype","status":"FROZEN_ARTIFACT_READY","source_ids":"mouse_functional_freeze","note":"mouse cell-type layer is frozen with stroke-DGE limitation explicit"},
+        {"stage":"human_annotation","status":"PENDING_AUTHOR_ANNOTATION","source_ids":"human_vascular_handoff","note":"GSE256493 RDS handoff is READY, but author annotation is not yet frozen"},
+        {"stage":"evidence","status":"BLOCKED_UPSTREAM","source_ids":"","note":"requires completed human_annotation"},
+        {"stage":"report","status":"BLOCKED_UPSTREAM","source_ids":"","note":"requires completed integrated evidence"},
+    ]
+
     outdir.mkdir(parents=True, exist_ok=True)
     source_out = outdir / "IS_BASELINE_SOURCE_AUDIT.tsv"
     evidence_out = outdir / "IS_BASELINE_CORE_EVIDENCE.tsv"
+    coverage_out = outdir / "IS_STAGE_COVERAGE.tsv"
     status_out = outdir / "IS_BASELINE_STATUS.json"
     _write_tsv(source_out, source_rows)
     _write_tsv(evidence_out, evidence_rows)
+    _write_tsv(coverage_out, coverage_rows)
 
     checksum_complete = all(r["checksum_status"] in {"PINNED", "VERIFIED_PIN"} for r in source_rows)
+    frozen_ready = sum(r["status"] == "FROZEN_ARTIFACT_READY" for r in coverage_rows)
+    pending = [r["stage"] for r in coverage_rows if r["status"] != "FROZEN_ARTIFACT_READY"]
     status = {
-        "schema_version": 2,
+        "schema_version": 3,
         "project": cfg["project"],
         "mode": cfg["mode"],
         "adapter_status": "PASS",
@@ -251,6 +300,11 @@ def build_baseline(
         "pin_manifest_path": str(pins_path.resolve()) if pins_path else None,
         "pin_manifest_sha256": _sha256(pins_path.resolve()) if pins_path else None,
         "source_count": len(source_rows),
+        "stage_coverage": {
+            "total": len(coverage_rows),
+            "frozen_artifact_ready": frozen_ready,
+            "not_ready_stages": pending,
+        },
         "discovery_model": design["discovery_model"],
         "discovery_ancestry": design["discovery_ancestry"],
         "discovery_build": design["discovery_build"],
@@ -265,6 +319,7 @@ def build_baseline(
         "artifacts": {
             "source_audit": str(source_out),
             "core_evidence": str(evidence_out),
+            "stage_coverage": str(coverage_out),
         },
         "next_gate": cfg["next_gate"],
     }
