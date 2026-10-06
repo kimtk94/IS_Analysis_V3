@@ -9,6 +9,7 @@ import importlib.util
 import json
 import math
 import shutil
+import time
 from pathlib import Path
 
 
@@ -117,6 +118,228 @@ def population_samples(panel_path: Path, related_path: Path):
     return pops, unrelated
 
 
+
+def phase3_vcf_urls(chrom):
+    """
+    Return equivalent indexed UCSC 1000G Phase3 mirrors.
+
+    Both hosts expose the same GRCh37/hg19 Phase3 resource.
+    """
+    primary = base.phase3_vcf_url(chrom)
+    filename = primary.rsplit("/", 1)[-1]
+
+    mirrors = [
+        primary,
+        (
+            "https://hgdownload.cse.ucsc.edu/"
+            "gbdb/hg19/1000Genomes/phase3/"
+            + filename
+        ),
+    ]
+
+    # preserve order, remove duplicates
+    return list(dict.fromkeys(mirrors))
+
+
+def remote_vcf_samples_resilient(
+    chrom,
+    tries_per_url=3,
+):
+    errors = []
+
+    for url in phase3_vcf_urls(chrom):
+
+        for attempt in range(
+            1,
+            tries_per_url + 1,
+        ):
+            print(
+                f"REMOTE_HEADER_ATTEMPT "
+                f"chr{chrom} "
+                f"{attempt}/{tries_per_url} "
+                f"{url}",
+                flush=True,
+            )
+
+            try:
+                samples = base.remote_vcf_samples(
+                    url
+                )
+
+                print(
+                    f"REMOTE_HEADER_PASS "
+                    f"chr{chrom} "
+                    f"samples={len(samples)} "
+                    f"url={url}",
+                    flush=True,
+                )
+
+                return url, samples
+
+            except Exception as exc:
+                errors.append(
+                    (
+                        url,
+                        attempt,
+                        repr(exc),
+                    )
+                )
+
+                print(
+                    f"REMOTE_HEADER_RETRY "
+                    f"chr{chrom} "
+                    f"attempt={attempt} "
+                    f"error={exc}",
+                    flush=True,
+                )
+
+                time.sleep(
+                    min(
+                        20,
+                        3 * attempt,
+                    )
+                )
+
+    raise RuntimeError(
+        f"chr{chrom}: all remote VCF "
+        f"header attempts failed: {errors}"
+    )
+
+
+def extract_region_resilient(
+    *,
+    chrom,
+    lo,
+    hi,
+    keep_file,
+    region_vcf,
+    preferred_url,
+    tries_per_url=4,
+):
+    urls = [
+        preferred_url,
+        *phase3_vcf_urls(chrom),
+    ]
+
+    urls = list(
+        dict.fromkeys(urls)
+    )
+
+    errors = []
+
+    for url in urls:
+
+        for attempt in range(
+            1,
+            tries_per_url + 1,
+        ):
+            region_vcf.unlink(
+                missing_ok=True
+            )
+
+            Path(
+                str(region_vcf) + ".tbi"
+            ).unlink(
+                missing_ok=True
+            )
+
+            print(
+                f"REGION_DOWNLOAD_ATTEMPT "
+                f"chr{chrom}:{lo}-{hi} "
+                f"{attempt}/{tries_per_url} "
+                f"url={url}",
+                flush=True,
+            )
+
+            try:
+                base.run([
+                    "bcftools",
+                    "view",
+
+                    "--regions",
+                    f"{chrom}:{lo}-{hi}",
+
+                    "--samples-file",
+                    keep_file,
+
+                    "--min-alleles",
+                    "2",
+
+                    "--max-alleles",
+                    "2",
+
+                    "--types",
+                    "snps",
+
+                    "--output-type",
+                    "z",
+
+                    "--output-file",
+                    region_vcf,
+
+                    url,
+                ])
+
+                if (
+                    region_vcf.is_file()
+                    and region_vcf.stat().st_size > 0
+                ):
+                    print(
+                        f"REGION_DOWNLOAD_PASS "
+                        f"chr{chrom}:{lo}-{hi} "
+                        f"bytes={region_vcf.stat().st_size} "
+                        f"url={url}",
+                        flush=True,
+                    )
+
+                    return url
+
+                raise RuntimeError(
+                    "bcftools returned success "
+                    "but output is empty"
+                )
+
+            except Exception as exc:
+                errors.append(
+                    (
+                        url,
+                        attempt,
+                        repr(exc),
+                    )
+                )
+
+                print(
+                    f"REGION_DOWNLOAD_RETRY "
+                    f"chr{chrom}:{lo}-{hi} "
+                    f"attempt={attempt} "
+                    f"error={exc}",
+                    flush=True,
+                )
+
+                region_vcf.unlink(
+                    missing_ok=True
+                )
+
+                Path(
+                    str(region_vcf) + ".tbi"
+                ).unlink(
+                    missing_ok=True
+                )
+
+                time.sleep(
+                    min(
+                        30,
+                        5 * attempt,
+                    )
+                )
+
+    raise RuntimeError(
+        f"chr{chrom}:{lo}-{hi}: "
+        f"all regional extraction attempts "
+        f"failed: {errors}"
+    )
+
+
 def prepare_population_reference(
     *,
     pop,
@@ -147,10 +370,14 @@ def prepare_population_reference(
     ):
         p.mkdir(parents=True, exist_ok=True)
 
-    vcf_url = base.phase3_vcf_url(chrom)
+    vcf_url, vcf_sample_list = (
+        remote_vcf_samples_resilient(
+            chrom
+        )
+    )
 
     vcf_samples = set(
-        base.remote_vcf_samples(vcf_url)
+        vcf_sample_list
     )
 
     keep_samples = [
@@ -182,25 +409,14 @@ def prepare_population_reference(
         region_vcf.unlink(missing_ok=True)
         Path(str(region_vcf) + ".tbi").unlink(missing_ok=True)
 
-        base.run([
-            "bcftools",
-            "view",
-            "--regions",
-            f"{chrom}:{lo}-{hi}",
-            "--samples-file",
-            keep_file,
-            "--min-alleles",
-            "2",
-            "--max-alleles",
-            "2",
-            "--types",
-            "snps",
-            "--output-type",
-            "z",
-            "--output-file",
-            region_vcf,
-            vcf_url,
-        ])
+        vcf_url = extract_region_resilient(
+            chrom=chrom,
+            lo=lo,
+            hi=hi,
+            keep_file=keep_file,
+            region_vcf=region_vcf,
+            preferred_url=vcf_url,
+        )
 
     if not base.cached_region_vcf_ok(
         region_vcf,

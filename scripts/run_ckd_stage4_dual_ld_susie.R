@@ -178,7 +178,7 @@ safe_susie <- function(d, suffix) {
         d,
         suffix=suffix,
         maxit=1000L,
-        repeat_until_convergence=FALSE,
+        repeat_until_convergence=TRUE,
         L=min(
           10L,
           max(
