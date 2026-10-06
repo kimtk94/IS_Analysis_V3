@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "project": "ischemic_stroke",
+  "phase": "PHASE9F_E_HUMAN",
+  "status": "READY_TO_RUN_NOT_EXECUTED",
+  "notebook_version": "R3_STRICT_AUTHOR_ANNOTATION",
+  "drive_file_id": "1PljK4AexdM_e5H2Eew6xDbcWPIcgrCxs",
+  "drive_file_name": "IS_Phase9F_E_Human_Vascular_12GB_R3.ipynb",
+  "colab_url": "https://colab.research.google.com/drive/1PljK4AexdM_e5H2Eew6xDbcWPIcgrCxs",
+  "notebook_sha256": "3bdae1894987ada6ccca46b989793286b991df5ccd73b2258217f16b30dd2851",
+  "input_drive_path": "MASTER_DEGREE/IS_COLAB/phase9f_e_human_vascular/input/GSE256493_Adult_control_brain_temporal_lobe_unsorted_endothelial_and_perivascular_cells_seurat_object.rds.gz",
+  "input_size_bytes": 3493366138,
+  "input_sha256": "337c3d82c070c7ea71ad21114af847e5f4c76ab199e70c2ebcdce6b03db104dd",
+  "output_drive_path": "MASTER_DEGREE/IS_COLAB/phase9f_e_human_vascular/results/R3_STRICT_AUTHOR",
+  "required_freeze_outputs": [
+    "HUMAN_AUTHOR_ANNOTATION_FREEZE.tsv",
+    "HUMAN_RUN_MANIFEST.json"
+  ],
+  "scientific_guardrail": "REFERENCE_LOCALIZATION_NOT_DISEASE_DGE",
+  "current_blocker": "EXECUTE_R3_AND_FREEZE_AUTHOR_ANNOTATION"
+}

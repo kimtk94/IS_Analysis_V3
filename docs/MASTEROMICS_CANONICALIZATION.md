@@ -96,6 +96,11 @@ passthrough artifacts. `human_annotation` remains unbound on GSE256493 author an
 and `evidence`/`report` remain downstream-unbound. This is migration/provenance binding,
 not a claim that MasterOmics recomputed the stroke results.
 
+The strict R3 Colab handoff is now pinned by notebook SHA256 and Drive file ID in
+`projects/ischemic_stroke.human_annotation.json`. P0 is therefore no longer a code-design
+blocker: the remaining gate is to execute R3, freeze the author annotation outputs, audit
+the inference guardrail, and only then bind `human_annotation`.
+
 ### P1 — IS disease-specific modules
 
 Port in this order:

@@ -104,10 +104,36 @@ emits a small `FROZEN_PASSTHROUGH` JSON artifact. The binder deliberately leaves
 `BLOCKED_UNBOUND_ADAPTERS` rather than being reported as a completed rerun.
 
 ```bash
-python3 -m masteromics is-bind bind   /srv/is-analysis/masteromics_workspace/ischemic_stroke/project.json   /srv/is-analysis/results/masteromics/is_stage_migration   /srv/is-analysis/masteromics_workspace/ischemic_stroke/config/project.frozen.json
+python3 -m masteromics is-bind bind \
+  /srv/is-analysis/masteromics_workspace/ischemic_stroke/project.json \
+  /srv/is-analysis/results/masteromics/is_stage_migration \
+  /srv/is-analysis/masteromics_workspace/ischemic_stroke/config/project.frozen.json
 
-python3 -m masteromics blueprint inspect   /srv/is-analysis/masteromics_workspace/ischemic_stroke/config/project.frozen.json
+python3 -m masteromics blueprint inspect \
+  /srv/is-analysis/masteromics_workspace/ischemic_stroke/config/project.frozen.json
 ```
+
+## IS human-annotation execution handoff
+
+The only current scientific gate before integrated IS evidence is the adult-control human
+vascular reference annotation. The canonical execution notebook is mirrored at
+`notebooks/is/IS_Phase9F_E_Human_Vascular_12GB_R3.ipynb`; its Drive/Colab identity,
+input RDS SHA256, output folder and scientific guardrail are pinned in
+`projects/ischemic_stroke.human_annotation.json`.
+
+R3 is fail-closed: it accepts only an explicit metadata-column override or one
+unambiguous exact author-style annotation field name. It never promotes a heuristic
+score-selected metadata column to author annotation. Results are isolated under
+`results/R3_STRICT_AUTHOR/` in Drive.
+
+The `human_annotation` stage remains unbound until R3 produces both:
+
+- `HUMAN_AUTHOR_ANNOTATION_FREEZE.tsv`
+- `HUMAN_RUN_MANIFEST.json`
+
+and those outputs pass source/provenance and inference-level review. The reference is
+for localization only (`REFERENCE_LOCALIZATION_NOT_DISEASE_DGE`); it is not stroke
+differential-expression evidence.
 
 ## Dataset contract
 
