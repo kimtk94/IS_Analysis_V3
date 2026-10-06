@@ -10,8 +10,9 @@ from pathlib import Path
 import sys
 from .engine import atomic_json,check_graph,execute
 
-# Instruments and full regional statistics are separate branches.
-CATALOG=[
+# CKD remains pQTL/MR-first. IS is the current BBJ locus-first thesis design.
+# Both catalogs compile to the same engine and output-contract machinery.
+CKD_CATALOG=[
  ('acquisition',[], 'raw_sources','Local/archive/download adapters; explicit source identity'),
  ('source_qc',['acquisition'],'source_integrity','Checksums, consent/access, ancestry and build'),
  ('normalize',['source_qc'],'canonical_statistics','Map source columns once; numeric/allele contracts'),
@@ -24,44 +25,77 @@ CATALOG=[
  ('regional_coloc',['harmonize','cis_regions'],'coloc_results','Full overlap, prior sensitivity, trait SD/case fraction'),
  ('finemap',['regional_coloc','ld_qc'],'finemap_results','SuSiE convergence/credible sets; unresolved is not shared'),
  ('replication',['discovery_mr','sensitivity','finemap'],'replication_evidence','Define independence, EUR/EAS and dual-LD boundaries'),
- ('annotation',['replication'],'functional_evidence','Kidney/brain tissue, single-cell/eQTL and source provenance'),
+ ('annotation',['replication'],'functional_evidence','Kidney tissue/single-cell/eQTL and source provenance'),
  ('score',['replication'],'individual_scores','Approved genotype QC, allele-aligned weights and ancestry PCs'),
  ('longitudinal',['score'],'longitudinal_results','Repeated phenotype mixed models with declared missingness policy'),
  ('incident',['score'],'incident_results','Exclude prevalent disease; endpoint definition and Cox diagnostics'),
  ('evidence',['annotation','longitudinal','incident'],'final_evidence','All requested stage coverage, provenance and unresolved findings'),
  ('report',['evidence'],'research_report','Evidence-backed tables/report; completion is not biological validity')]
-OPTIONAL={'score','longitudinal','incident'}
+
+IS_CATALOG=[
+ ('acquisition',[], 'raw_sources','Pinned BBJ/GIGASTROKE and functional evidence source identity'),
+ ('source_qc',['acquisition'],'source_integrity','Checksums, ancestry/build, sample and schema audit'),
+ ('normalize',['source_qc'],'canonical_gwas','Canonical BBJ/GIGASTROKE GWAS statistics without forced pQTL semantics'),
+ ('gwas_loci',['normalize'],'discovery_loci','Primary BBJ locus definition and exclusion rules'),
+ ('finemap',['gwas_loci'],'finemap_results','BBJ locus fine-mapping and credible-set evidence'),
+ ('cross_ancestry',['finemap'],'replication_evidence','GIGASTROKE/EAS direction and credible-set replication'),
+ ('molecular_coloc',['finemap'],'molecular_evidence','eQTL/pQTL molecular colocalization for locus mechanism branches'),
+ ('mechanism',['cross_ancestry','molecular_coloc'],'mechanism_evidence','FGF5/ALDH2/SH3PXD2A/COL4A2 branch integration'),
+ ('celltype',['mechanism'],'celltype_evidence','Mouse/human cell-type localization with explicit inference limits'),
+ ('human_annotation',['celltype'],'human_celltype_evidence','Author-validated GSE256493 vascular annotation'),
+ ('evidence',['cross_ancestry','molecular_coloc','celltype','human_annotation'],'final_evidence','Frozen locus-first evidence matrix with unresolved findings'),
+ ('report',['evidence'],'research_report','Evidence-backed IS thesis report and manuscript figures')]
+
+CATALOGS={'ckd':CKD_CATALOG,'ischemic_stroke':IS_CATALOG}
+OPTIONAL_BY_PROJECT={'ckd':{'score','longitudinal','incident'},'ischemic_stroke':set()}
 CANONICAL=['dataset_id','trait_id','gene_symbol','protein_id','assay_id','ancestry','build','chr','pos','variant_id','rsid','effect_allele','other_allele','eaf','beta','se','pval','n','source_file','source_sha256']
 
 
+def catalog_for(project):
+    try:return CATALOGS[project]
+    except KeyError:raise ValueError('Project must be CKD or ischemic_stroke')
+
+
+def optional_for(project):
+    catalog_for(project)
+    return OPTIONAL_BY_PROJECT[project]
+
+
 def template(project,workspace):
+    catalog=catalog_for(project);optional=optional_for(project)
+    policy={'replication_definition':None,'genome_build':None,'palindromic_policy':None,'testing_family':None}
+    if project=='ckd':
+        policy.update(discovery_ancestry='EUR',outcome_validation_ancestry='EAS',cis_window_bp=None)
+    else:
+        policy.update(discovery_ancestry='Japanese',outcome_validation_ancestry='EAS',locus_definition=None)
     return {'schema_version':1,'project':project,'workspace':str(Path(workspace).resolve()),
         'data_review_status':'DEFERRED','scope':'structure_only_until_adapters_and_data_are_bound',
-        'dataset_registry':{},'analysis_policy':{'discovery_ancestry':'EUR','outcome_validation_ancestry':'EAS','replication_definition':None,'genome_build':None,'cis_window_bp':None,'palindromic_policy':None,'testing_family':None},
-        'stages':[{'id':sid,'depends':deps,'enabled':sid not in OPTIONAL,'required':sid not in OPTIONAL,
+        'dataset_registry':{},'analysis_policy':policy,
+        'stages':[{'id':sid,'depends':deps,'enabled':sid not in optional,'required':sid not in optional,
                    'artifact_type':artifact,'description':description,'binding':None}
-                  for sid,deps,artifact,description in CATALOG]}
+                  for sid,deps,artifact,description in catalog]}
 
 
 def validate(cfg):
     if cfg.get('schema_version')!=1:raise ValueError('Unsupported blueprint version')
-    if cfg.get('project') not in ['ckd','ischemic_stroke']:raise ValueError('Project must be CKD or ischemic_stroke')
+    project=cfg.get('project');catalog=catalog_for(project);optional=optional_for(project)
     workspace=Path(cfg['workspace'])
     if not workspace.is_absolute():raise ValueError('Workspace must be absolute')
-    stages=cfg['stages'];expected={s[0] for s in CATALOG}
-    ids=[s['id'] for s in stages]
+    stages=cfg['stages'];expected={x[0] for x in catalog}
+    ids=[x['id'] for x in stages]
     if len(ids)!=len(set(ids)) or set(ids)!=expected:raise ValueError('Exactly one of each catalog stage is required')
     seen=set()
     for stage in stages:
         sid=stage['id']
         if not set(stage['depends']).issubset(seen):raise ValueError('Invalid stage dependency order: '+sid)
-        prescribed=next(x[1] for x in CATALOG if x[0]==sid)
+        prescribed=next(x[1] for x in catalog if x[0]==sid)
         if set(stage['depends'])!=set(prescribed):raise ValueError('Scientific dependency contract changed: '+sid)
-        if sid not in OPTIONAL and not stage.get('enabled'):raise ValueError('Required stage disabled: '+sid)
+        if sid not in optional and not stage.get('enabled'):raise ValueError('Required stage disabled: '+sid)
         seen.add(sid)
-    enabled={s['id'] for s in stages if s['enabled']}
-    for s in stages:
-        if s['enabled'] and s['id'] in OPTIONAL and not set(s['depends']).issubset(enabled):raise ValueError('Optional cohort stage requires enabled upstream: '+s['id'])
+    enabled={x['id'] for x in stages if x['enabled']}
+    for stage in stages:
+        if stage['enabled'] and stage['id'] in optional and not set(stage['depends']).issubset(enabled):
+            raise ValueError('Optional cohort stage requires enabled upstream: '+stage['id'])
     return stages
 
 
@@ -78,8 +112,15 @@ def compile_bindings(cfg):
     stages=validate(cfg);assessment=inspect(cfg)
     if assessment['unbound_stages']:raise ValueError('Execution blocked by unbound stages: '+', '.join(assessment['unbound_stages']))
     policy=cfg.get('analysis_policy',{})
-    if policy.get('genome_build') not in ['GRCh37','GRCh38'] or not isinstance(policy.get('cis_window_bp'),int) or policy['cis_window_bp']<=0:raise ValueError('Explicit build and positive cis window required')
-    if not all(policy.get(k) for k in ['replication_definition','palindromic_policy','testing_family']):raise ValueError('Explicit replication, allele and testing-family policies required')
+    if policy.get('genome_build') not in ['GRCh37','GRCh38']:
+        raise ValueError('Explicit supported genome build required')
+    if not all(policy.get(k) for k in ['replication_definition','palindromic_policy','testing_family']):
+        raise ValueError('Explicit replication, allele and testing-family policies required')
+    if cfg['project']=='ckd':
+        if not isinstance(policy.get('cis_window_bp'),int) or policy['cis_window_bp']<=0:
+            raise ValueError('CKD requires a positive cis window')
+    elif not policy.get('locus_definition'):
+        raise ValueError('Ischemic stroke requires an explicit locus definition')
     active={s['id'] for s in stages if s['enabled']};dag=[];used_outputs=set();workspace=Path(cfg['workspace']).resolve()
     for stage in stages:
         if not stage['enabled']:continue

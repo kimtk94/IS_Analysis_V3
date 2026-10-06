@@ -1,9 +1,11 @@
 # MasterOmics shared research structure
 
 Current task: architecture/scaffold implementation. Data review is explicitly
-DEFERRED. No production sources were read and no analyses are run by initialization.
-CKD and ischemic stroke use the same stage catalog; only policy/dataset/adapter
-bindings differ. Legacy source scripts and results remain unchanged.
+DEFERRED. Initialization never claims scientific execution. CKD and ischemic stroke
+use the same MasterOmics engine, checkpointing and artifact-contract machinery, but
+now have project-specific scientifically valid stage catalogs. CKD remains pQTL/MR-first;
+IS follows the frozen BBJ locus-first thesis design. Legacy source scripts and results
+remain unchanged.
 
 ## Workspace
 
@@ -13,7 +15,7 @@ Config includes a source registry, analysis-policy placeholders, the stage DAG
 and explicit adapter bindings. All paths are configurable; no credentials,
 restricted cohorts or downloaded data belong in Git.
 
-## Stage contracts and reuse map
+## CKD stage contracts and reuse map
 
 | Stage | Artifact contract | Existing module / remaining boundary |
 |---|---|---|
@@ -36,17 +38,40 @@ restricted cohorts or downloaded data belong in Git.
 | evidence | all requested outputs + unresolved coverage | science.evidence / architecture coverage aggregation |
 | report | evidence-backed research report | project report adapter needed |
 
-These are reusable components, NOT pre-bound implementations of all 18 stages.
-Initialization leaves every adapter unbound. Score/longitudinal/incident are
-NOT_REQUESTED by default and can be explicitly enabled together. Required
-non-cohort stages cannot be disabled to obtain a false complete run. Final
-evidence tracks requested scope; optional omission is not completion.
+## Ischemic-stroke locus-first catalog
 
-Full region output is separate from instrument output. Coloc cannot consume an
-instrument-only file. Stage dependencies preserve the two branches. EAS outcome
-validation is not automatically independent exposure replication; definitions,
-case fractions/SDs, genome build, cis window, allele policy and testing family
-must be reviewed explicitly before binding an executable pipeline.
+| Stage | Purpose |
+|---|---|
+| acquisition | frozen BBJ/GIGASTROKE and functional-source identity |
+| source_qc | checksum, ancestry/build and schema audit |
+| normalize | canonical stroke GWAS representation |
+| gwas_loci | BBJ L001-L004 discovery-locus contract |
+| finemap | BBJ fine-mapping / credible sets |
+| cross_ancestry | GIGASTROKE/EAS replication |
+| molecular_coloc | eQTL/pQTL molecular convergence |
+| mechanism | FGF5 / ALDH2 / SH3PXD2A / COL4A2 branches |
+| celltype | frozen mouse/human cell-type evidence |
+| human_annotation | GSE256493 author-validated vascular annotation |
+| evidence | integrated locus-first evidence matrix |
+| report | thesis/manuscript report contract |
+
+The IS catalog intentionally does **not** require `discovery_mr`, `sensitivity`,
+`score`, `longitudinal` or `incident`. Those belong to the CKD/pQTL-cohort
+design and are not forced into the current stroke thesis merely for code reuse.
+The shared engine is the reusable layer; the scientific DAG remains project-specific.
+
+These are reusable contracts, not pre-bound claims of scientific completion.
+Initialization leaves every enabled adapter unbound. In CKD, score/longitudinal/incident
+are NOT_REQUESTED by default and may be enabled together. In the current IS thesis
+catalog all 12 stages are required, including human annotation, so an unfinished
+GSE256493 author-annotation layer keeps execution blocked rather than producing a
+false complete state.
+
+For CKD, full cis-region output remains separate from instrument output and coloc cannot
+consume an instrument-only file. For IS, the equivalent guardrail is the frozen BBJ
+locus definition: no cis-window/pQTL assumption is introduced merely to reuse code.
+Across both projects ancestry/build, allele policy, replication definition and testing
+family must be explicit before executable bindings are accepted.
 
 ## Commands
 

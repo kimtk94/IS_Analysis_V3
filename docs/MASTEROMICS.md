@@ -1,10 +1,11 @@
 # MasterOmics 0.1 — central engine and CKD/IS migration
 
-One code path now compiles any phenotype recipe into the same dependency graph.
-Code stays in this Git repository; datasets and results live outside it. Legacy
-scripts are unchanged. Initial presets specify CKD nine candidates and IS six
-candidates, each with EUR discovery and EAS outcome analysis. These are candidate
-reanalysis presets, not a completed proteome-wide screen.
+One execution engine now supports project-specific scientific DAGs under the same
+checkpoint, provenance and artifact-contract machinery. CKD remains the pQTL/MR-first
+program; ischemic stroke follows the frozen Japanese BBJ locus-first thesis design with
+GIGASTROKE/EAS replication and functional convergence. Code stays in Git; datasets and
+results live outside it, and legacy scripts remain frozen references until parity or
+explicit replacement is demonstrated.
 
 Canonicalization policy and the migration boundary from the parallel MASTER pipeline v1
 are defined in `MASTEROMICS_CANONICALIZATION.md`. MasterOmics owns orchestration; useful
@@ -19,17 +20,23 @@ lme4, survival. R packages are never installed by the runner. Actual R MR, coloc
 run 37104819367. Production CKD/IS/KoGES validation remains required.
 CI records full installed R versions; production environment locking is still required.
 
-Copy `.example.json` files to `ckd.json`, `ischemic_stroke.json`, `datasets.json`.
-Fill every placeholder from observed data, including SHA256, trait SD/case fraction,
-same-build gene cis intervals and ancestry-matched signed LD. Do not relabel a
-GRCh37 outcome as GRCh38: validated liftover/reference allele normalization is an
-upstream requirement. Dense per-locus LD is supported; genome-wide matrices are not.
+For CKD generic execution, copy the reviewed recipe/registry examples and fill every
+placeholder from observed data, including SHA256, trait SD/case fraction, same-build
+cis intervals and ancestry-matched signed LD. The canonical ischemic-stroke example is
+a read-only locus-first migration contract and the generic pQTL compiler rejects it by
+design; use the IS adapter/blueprint path described below. Do not relabel a GRCh37
+outcome as GRCh38: validated liftover/reference-allele normalization is an upstream
+requirement. Dense per-locus LD is supported; genome-wide matrices are not.
 
 ```bash
-cd /srv/is-analysis/IS_Analysis_V3
+cd /srv/is-analysis/MasterOmics
 python3 -m masteromics inventory /srv/is-analysis/data /srv/is-analysis/input_inventory.json
-python3 -m masteromics run projects/ckd.json projects/ischemic_stroke.json --registry projects/datasets.json --jobs 4 --plan
-bash server/masteromics_run.sh projects/ckd.json projects/ischemic_stroke.json --registry projects/datasets.json --jobs 4
+python3 -m masteromics run projects/ckd.json --registry projects/datasets.json --jobs 4 --plan
+bash server/masteromics_run.sh projects/ckd.json --registry projects/datasets.json --jobs 4
+
+python3 -m masteromics is-adapter /srv/is-analysis /srv/is-analysis/results/masteromics/is_baseline
+python3 -m masteromics blueprint init --root /srv/is-analysis/masteromics_workspace
+python3 -m masteromics blueprint inspect /srv/is-analysis/masteromics_workspace/ischemic_stroke/project.json
 ```
 
 `--jobs 4` runs up to four independent stages concurrently within each project.

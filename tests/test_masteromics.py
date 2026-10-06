@@ -129,16 +129,30 @@ class ArchitectureTest(unittest.TestCase):
    for path in paths:
     cfg=json.loads(Path(path).read_text());assessment=inspect(cfg)
     self.assertEqual(assessment['structure_status'],'VALID');self.assertEqual(assessment['scientific_status'],'NOT_EXECUTED')
-    self.assertEqual(len(assessment['unbound_stages']),15)
+    expected_unbound=15 if cfg['project']=='ckd' else 12
+    self.assertEqual(len(assessment['unbound_stages']),expected_unbound)
     with self.assertRaisesRegex(ValueError,'unbound'):compile_bindings(cfg)
    with self.assertRaisesRegex(ValueError,'never overwrites'):initialize(Path(tmp)/'hub')
- def test_scientific_dependency_and_optional_cohort_gate(self):
+ def test_scientific_dependency_and_project_specific_catalog(self):
   from masteromics.architecture import template,validate
   cfg=template('ckd','/tmp/fixture');cfg['stages'][0]['depends']=['report']
   with self.assertRaises(ValueError):validate(cfg)
   cfg=template('ischemic_stroke','/tmp/fixture')
-  next(s for s in cfg['stages'] if s['id']=='longitudinal')['enabled']=True
-  with self.assertRaisesRegex(ValueError,'upstream'):validate(cfg)
+  ids=[s['id'] for s in cfg['stages']]
+  self.assertIn('gwas_loci',ids);self.assertIn('human_annotation',ids)
+  self.assertNotIn('discovery_mr',ids);self.assertNotIn('longitudinal',ids)
+  next(s for s in cfg['stages'] if s['id']=='human_annotation')['enabled']=False
+  with self.assertRaisesRegex(ValueError,'Required stage disabled'):validate(cfg)
+ def test_is_binding_policy_uses_locus_definition_not_cis_window(self):
+  from masteromics.architecture import template,compile_bindings
+  with tempfile.TemporaryDirectory() as tmp:
+   cfg=template('ischemic_stroke',tmp)
+   cfg['analysis_policy'].update(genome_build='GRCh37',replication_definition='GIGASTROKE EAS',palindromic_policy='frozen legacy policy',testing_family='frozen BBJ loci')
+   for stage in cfg['stages']:
+    stage['binding']={'argv':['python3','fixture.py','@out0'],'inputs':['fixture.input'],'outputs':[{'path':str(Path(tmp)/stage['id']/'output.tsv'),'kind':'tsv','columns':['value']}]}
+   with self.assertRaisesRegex(ValueError,'locus definition'):compile_bindings(cfg)
+   cfg['analysis_policy']['locus_definition']='frozen BBJ L001-L004 regions'
+   dag=compile_bindings(cfg);self.assertEqual(len(dag['stages']),12)
  def test_binding_compiler_strict_contracts(self):
   from masteromics.architecture import template,compile_bindings
   with tempfile.TemporaryDirectory() as tmp:
