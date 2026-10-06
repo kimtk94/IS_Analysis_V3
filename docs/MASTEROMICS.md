@@ -6,6 +6,11 @@ scripts are unchanged. Initial presets specify CKD nine candidates and IS six
 candidates, each with EUR discovery and EAS outcome analysis. These are candidate
 reanalysis presets, not a completed proteome-wide screen.
 
+Canonicalization policy and the migration boundary from the parallel MASTER pipeline v1
+are defined in `MASTEROMICS_CANONICALIZATION.md`. MasterOmics owns orchestration; useful
+modules from the parallel branch are ported behind MasterOmics contracts rather than run
+as a second engine.
+
 ## Server setup and execution
 
 Use Python >=3.11. Create an environment and install `requirements-masteromics.lock`
