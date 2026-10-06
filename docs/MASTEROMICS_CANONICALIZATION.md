@@ -90,9 +90,11 @@ reference-only, and all ten baseline sources are size/SHA256-pinned in
 `projects/ischemic_stroke.baseline_pins.json`.
 
 The frozen baseline currently maps 9/12 IS stages through `celltype`. The stage-migration
-registry records those nine as `MIGRATED_FROZEN`; `human_annotation` remains blocked on
-GSE256493 author annotation, and `evidence`/`report` remain downstream-blocked. This is
-provenance registration, not a claim that MasterOmics recomputed the stroke results.
+registry records those nine as `MIGRATED_FROZEN`; the frozen-prefix binder connects only
+those nine stages to the shared MasterOmics blueprint using source-identity-verified
+passthrough artifacts. `human_annotation` remains unbound on GSE256493 author annotation,
+and `evidence`/`report` remain downstream-unbound. This is migration/provenance binding,
+not a claim that MasterOmics recomputed the stroke results.
 
 ### P1 — IS disease-specific modules
 

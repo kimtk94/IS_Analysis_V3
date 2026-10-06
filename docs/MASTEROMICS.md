@@ -97,6 +97,18 @@ A successful registry reports
 it does not convert frozen results into newly executed MasterOmics results and does not
 bypass the GSE256493 author-annotation gate.
 
+The frozen-prefix binder can then connect only those nine registered stages to an IS
+blueprint. Each bound stage re-verifies the migration record plus source size/SHA256 and
+emits a small `FROZEN_PASSTHROUGH` JSON artifact. The binder deliberately leaves
+`human_annotation`, `evidence`, and `report` unbound, so the full blueprint remains
+`BLOCKED_UNBOUND_ADAPTERS` rather than being reported as a completed rerun.
+
+```bash
+python3 -m masteromics is-bind bind   /srv/is-analysis/masteromics_workspace/ischemic_stroke/project.json   /srv/is-analysis/results/masteromics/is_stage_migration   /srv/is-analysis/masteromics_workspace/ischemic_stroke/config/project.frozen.json
+
+python3 -m masteromics blueprint inspect   /srv/is-analysis/masteromics_workspace/ischemic_stroke/config/project.frozen.json
+```
+
 ## Dataset contract
 
 One dataset is one trait/assay. Explicit mappings for `chr,pos,effect_allele,
