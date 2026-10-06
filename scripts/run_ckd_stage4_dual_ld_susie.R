@@ -174,19 +174,51 @@ safe_susie <- function(d, suffix) {
         req="LD"
       )
 
-      fit <- runsusie(
-        d,
-        suffix=suffix,
-        maxit=1000L,
-        repeat_until_convergence=TRUE,
-        L=min(
-          10L,
-          max(
-            1L,
-            length(d$snp)-1L
+      run_once <- function(maxit) {
+        tryCatch(
+          runsusie(
+            d,
+            suffix=suffix,
+            maxit=maxit,
+            repeat_until_convergence=FALSE,
+            L=min(
+              10L,
+              max(
+                1L,
+                length(d$snp)-1L
+              )
+            )
+          ),
+          error=function(e) e
+        )
+      }
+
+      fit <- run_once(1000L)
+
+      if (
+        inherits(fit, "error")
+        && grepl(
+          "did not converge",
+          conditionMessage(fit),
+          fixed=TRUE
+        )
+      ) {
+        message(
+          "SuSiE bounded rescue ",
+          suffix,
+          ": 1000 -> 2000"
+        )
+        fit <- run_once(2000L)
+      }
+
+      if (inherits(fit, "error")) {
+        stop(
+          paste0(
+            "SuSiE bounded rescue failed: ",
+            conditionMessage(fit)
           )
         )
-      )
+      }
 
       list(
         ok=isTRUE(fit$converged),
