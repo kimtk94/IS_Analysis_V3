@@ -17,5 +17,9 @@
     "HUMAN_RUN_MANIFEST.json"
   ],
   "scientific_guardrail": "REFERENCE_LOCALIZATION_NOT_DISEASE_DGE",
-  "current_blocker": "EXECUTE_R3_AND_FREEZE_AUTHOR_ANNOTATION"
+  "current_blocker": "EXECUTE_R3_AND_FREEZE_AUTHOR_ANNOTATION",
+  "drive_file_size_bytes": 40288,
+  "drive_file_mime_type": "application/x-ipynb+json",
+  "input_drive_file_id": "1n2aUjkr3zKP00fJzOIwQk-XZhHfMx3RX",
+  "input_drive_size_verified": true
 }
