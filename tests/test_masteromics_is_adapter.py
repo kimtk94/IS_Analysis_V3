@@ -6,6 +6,8 @@ import unittest
 from pathlib import Path
 
 from masteromics.is_adapter import build_baseline
+from masteromics.compile import compile_project
+from masteromics.doctor import doctor
 
 
 def write_tsv(path: Path, header, rows, gz=False):
@@ -103,6 +105,46 @@ class IsAdapterTest(unittest.TestCase):
                 source_rows = list(csv.DictReader(handle, delimiter="\t"))
             self.assertEqual(len(source_rows), 7)
             self.assertTrue(all(x["checksum_status"] == "PINNED" for x in source_rows))
+
+    def test_wrong_frozen_pin_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.populate(root)
+            first = root / "first"
+            build_baseline(root, first)
+            with (first / "IS_BASELINE_SOURCE_AUDIT.tsv").open() as handle:
+                rows = list(csv.DictReader(handle, delimiter="\t"))
+            pins = {
+                "schema_version": 1,
+                "project": "ischemic_stroke",
+                "baseline": "fixture",
+                "sources": {
+                    r["dataset_id"]: {
+                        "size_bytes": int(r["size_bytes"]),
+                        "sha256": r["sha256"],
+                    }
+                    for r in rows
+                },
+            }
+            pins["sources"]["bbj_is_canonical"]["sha256"] = "0" * 64
+            pin_path = root / "pins.json"
+            pin_path.write_text(json.dumps(pins))
+            with self.assertRaisesRegex(ValueError, "SHA256 changed"):
+                build_baseline(root, root / "second", pins_path=pin_path)
+
+    def test_canonical_and_legacy_generic_runner_gates(self):
+        repo = Path(__file__).resolve().parents[1]
+        registry = repo / "projects/datasets.example.json"
+        canonical = repo / "projects/ischemic_stroke.example.json"
+        legacy = repo / "projects/ischemic_stroke_pqtl_legacy.example.json"
+
+        self.assertEqual(doctor(canonical, registry)["status"], "USE_IS_ADAPTER")
+        self.assertEqual(doctor(legacy, registry)["status"], "REFERENCE_ONLY")
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError, "read-only locus-first migration"):
+                compile_project(canonical, registry, Path(tmp) / "canonical.json")
+            with self.assertRaisesRegex(ValueError, "reference-only"):
+                compile_project(legacy, registry, Path(tmp) / "legacy.json")
 
     def test_missing_required_source_column_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:

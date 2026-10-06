@@ -6,6 +6,11 @@ from .engine import atomic_json,check_graph
 
 def compile_project(recipe_path, registry_path, output):
     recipe=json.loads(Path(recipe_path).read_text()); registry=json.loads(Path(registry_path).read_text())
+    mode=recipe.get('mode')
+    if mode=='frozen_locus_first_migration':
+        raise ValueError('Canonical ischemic-stroke config is a read-only locus-first migration contract; use `python -m masteromics is-adapter`, not generic pQTL run')
+    if mode=='legacy_pqtl_reference':
+        raise ValueError('Legacy ischemic-stroke pQTL recipe is reference-only and cannot be compiled as the canonical thesis pipeline')
     project=recipe['project']; variables=recipe.get('variables',{})
     stages=[]; used=set(); mr_outputs=[]; evidence_outputs=[]
     def stage(id,deps,argv,inputs,outputs):

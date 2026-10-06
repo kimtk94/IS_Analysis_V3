@@ -1,8 +1,8 @@
-"""Read-only adapter for the frozen ischemic-stroke analysis baseline.
+"""Read-only migration adapter for the frozen ischemic-stroke baseline.
 
-This module does not rerun stroke analyses. It audits the existing BBJ/GIGASTROKE
-and functional-validation artifacts, pins their provenance, and emits canonical
-baseline audit/evidence artifacts for later MasterOmics stage bindings.
+The adapter is configuration-driven and does not rerun stroke analyses. It audits
+the existing BBJ/GIGASTROKE and functional-validation artifacts, pins provenance,
+and emits baseline artifacts for later explicit MasterOmics stage bindings.
 """
 from __future__ import annotations
 
@@ -14,57 +14,73 @@ import json
 from pathlib import Path
 import sys
 
-SOURCE_CONTRACTS = [
-    {
-        "id": "bbj_is_canonical",
-        "rel": "data/is/processed/japan/bbj/BBJ_IS_GRCh37.canonical.tsv.gz",
-        "role": "discovery_gwas",
-        "ancestry": "Japanese",
-        "build": "GRCh37",
-        "required": ["dataset","phenotype","build","chr","pos","effect_allele","other_allele","beta","se","p","eaf","n","variant_id"],
-    },
-    {
-        "id": "gigastroke_eas_ais",
-        "rel": "data/is/processed/gigastroke/eas/GCST90104545_AIS_GRCh37.canonical.tsv.gz",
-        "role": "replication_gwas",
-        "ancestry": "EAS",
-        "build": "GRCh37",
-        "required": ["dataset","phenotype","ancestry","build","chr","pos","effect_allele","other_allele","beta","se","p","eaf","variant_id"],
-    },
-    {
-        "id": "bbj_finemap_regions",
-        "rel": "results/is/stage3_finemap/japan/bbj/BBJ_IS_FINEMAP_REGIONS.tsv",
-        "role": "regional_contract",
-        "required": ["locus_id","chr","region_start","region_end","lead_variant","role"],
-    },
-    {
-        "id": "bbj_gigastroke_cs_comparison",
-        "rel": "results/is/stage4_cross_eas/fine_mapping/BBJ_GIGASTROKE_CS_COMPARISON.tsv",
-        "role": "cross_ancestry_finemap",
-        "required": ["phenotype","locus","bbj_top_variant","bbj_top_pip","giga_top_variant","giga_top_pip","cs_jaccard"],
-    },
-    {
-        "id": "functional_convergence",
-        "rel": "results/is/stage5_functional/phase9d_literature_benchmark/IS_FUNCTIONAL_CONVERGENCE_MASTER_R1.tsv",
-        "role": "functional_evidence",
-        "required": ["gene","locus","role","mechanism_branch","best_abf_h4","best_susie_h4","interpretation"],
-    },
-    {
-        "id": "mouse_functional_freeze",
-        "rel": "results/is/stage5_functional/phase9f_e_mouse_freeze_human_handoff_r1/MOUSE_FUNCTIONAL_LAYER_FREEZE.tsv",
-        "role": "single_cell_freeze",
-        "required": ["component","status"],
-    },
-    {
-        "id": "human_vascular_handoff",
-        "rel": "results/is/stage5_functional/phase9f_e_mouse_freeze_human_handoff_r1/GSE256493_DRIVE_HANDOFF.tsv",
-        "role": "human_single_cell_handoff",
-        "required": ["component","status"],
-    },
-]
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_CONFIG = REPO_ROOT / "projects" / "ischemic_stroke.example.json"
+DEFAULT_PINS = REPO_ROOT / "projects" / "ischemic_stroke.baseline_pins.json"
 
-CORE_GENES = ["FGF5","ALDH2","SH3PXD2A","COL4A2"]
-PRIMARY_LOCI = ["BBJ_IS_L001","BBJ_IS_L002","BBJ_IS_L003","BBJ_IS_L004"]
+
+def load_config(path: Path):
+    cfg = json.loads(path.read_text(encoding="utf-8"))
+    if cfg.get("schema_version") != 1:
+        raise ValueError("Unsupported IS migration config schema")
+    if cfg.get("project") != "ischemic_stroke":
+        raise ValueError("IS migration config project must be ischemic_stroke")
+    if cfg.get("mode") != "frozen_locus_first_migration":
+        raise ValueError("IS migration config must use frozen_locus_first_migration mode")
+    design = cfg.get("design", {})
+    if design.get("discovery_model") != "BBJ_EAS_LOCUS_FIRST":
+        raise ValueError("Current canonical IS design must be BBJ_EAS_LOCUS_FIRST")
+    if design.get("discovery_build") != "GRCh37" or design.get("replication_build") != "GRCh37":
+        raise ValueError("Frozen BBJ/GIGASTROKE baseline is GRCh37")
+    loci = design.get("primary_loci", [])
+    genes = design.get("core_genes", [])
+    if loci != ["BBJ_IS_L001", "BBJ_IS_L002", "BBJ_IS_L003", "BBJ_IS_L004"]:
+        raise ValueError("Canonical IS primary loci contract changed")
+    if genes != ["FGF5", "ALDH2", "SH3PXD2A", "COL4A2"]:
+        raise ValueError("Canonical IS core mechanism genes contract changed")
+    branches = design.get("core_mechanism_branches", {})
+    if set(branches) != set(genes):
+        raise ValueError("Core mechanism branch map must cover exactly the core genes")
+    sources = cfg.get("sources", [])
+    if not sources:
+        raise ValueError("IS migration config requires source contracts")
+    ids = [x.get("id") for x in sources]
+    if len(ids) != len(set(ids)):
+        raise ValueError("Duplicate IS source contract id")
+    required_source_ids = {
+        "bbj_is_canonical",
+        "gigastroke_eas_ais",
+        "bbj_finemap_regions",
+        "bbj_gigastroke_cs_comparison",
+        "functional_convergence",
+        "mouse_functional_freeze",
+        "human_vascular_handoff",
+    }
+    if set(ids) != required_source_ids:
+        raise ValueError("Canonical IS source contract set changed")
+    for source in sources:
+        if not source.get("path") or not source.get("role") or not source.get("required_columns"):
+            raise ValueError("Each IS source needs path, role, and required_columns")
+        if Path(source["path"]).is_absolute():
+            raise ValueError("IS migration source paths must be relative to legacy_root")
+    return cfg
+
+
+def load_pins(path: Path, cfg: dict):
+    pins = json.loads(path.read_text(encoding="utf-8"))
+    if pins.get("schema_version") != 1 or pins.get("project") != "ischemic_stroke":
+        raise ValueError("Unsupported IS baseline pin manifest")
+    source_ids = {x["id"] for x in cfg["sources"]}
+    pin_ids = set(pins.get("sources", {}))
+    if pin_ids != source_ids:
+        raise ValueError("IS baseline pin manifest source set changed")
+    for source_id, spec in pins["sources"].items():
+        if not isinstance(spec.get("size_bytes"), int) or spec["size_bytes"] <= 0:
+            raise ValueError("Invalid pinned size for " + source_id)
+        digest = spec.get("sha256", "")
+        if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest.lower()):
+            raise ValueError("Invalid pinned SHA256 for " + source_id)
+    return pins
 
 
 def _open_text(path: Path):
@@ -96,29 +112,54 @@ def _kv(path: Path):
     return {r["component"]: r["status"] for r in _rows(path)}
 
 
-def audit_sources(root: Path, hash_large: bool = False, large_threshold: int = 50 * 1024 * 1024):
+def _source_map(cfg):
+    return {x["id"]: x for x in cfg["sources"]}
+
+
+def audit_sources(
+    root: Path,
+    cfg: dict,
+    hash_large: bool = False,
+    large_threshold: int = 50 * 1024 * 1024,
+    pins: dict | None = None,
+):
     records = []
-    for spec in SOURCE_CONTRACTS:
-        path = root / spec["rel"]
+    pin_sources = pins.get("sources", {}) if pins else {}
+    for spec in cfg["sources"]:
+        path = root / spec["path"]
         if not path.is_file():
             raise ValueError("Missing IS baseline source: " + str(path))
-        if path.stat().st_size <= 0:
+        size = path.stat().st_size
+        if size <= 0:
             raise ValueError("Empty IS baseline source: " + str(path))
         header = _header(path)
-        missing = sorted(set(spec["required"]) - set(header))
+        required = spec["required_columns"]
+        missing = sorted(set(required) - set(header))
         if missing:
             raise ValueError(spec["id"] + " missing required columns: " + ",".join(missing))
-        do_hash = hash_large or path.stat().st_size <= large_threshold
+
+        pin = pin_sources.get(spec["id"])
+        if pin and size != pin["size_bytes"]:
+            raise ValueError(
+                f"{spec['id']} size changed: observed={size} pinned={pin['size_bytes']}"
+            )
+        do_hash = bool(pin) or hash_large or size <= large_threshold
+        digest = _sha256(path) if do_hash else ""
+        if pin and digest != pin["sha256"]:
+            raise ValueError(spec["id"] + " SHA256 changed from frozen baseline")
+        checksum_status = (
+            "VERIFIED_PIN" if pin else "PINNED" if do_hash else "DEFERRED_LARGE_FILE"
+        )
         records.append({
             "dataset_id": spec["id"],
             "role": spec["role"],
             "ancestry": spec.get("ancestry", ""),
             "build": spec.get("build", ""),
             "path": str(path.resolve()),
-            "size_bytes": path.stat().st_size,
-            "sha256": _sha256(path) if do_hash else "",
-            "checksum_status": "PINNED" if do_hash else "DEFERRED_LARGE_FILE",
-            "required_columns": ";".join(spec["required"]),
+            "size_bytes": size,
+            "sha256": digest,
+            "checksum_status": checksum_status,
+            "required_columns": ";".join(required),
             "observed_columns": ";".join(header),
         })
     return records
@@ -135,28 +176,40 @@ def _write_tsv(path: Path, rows: list[dict]):
         writer.writerows(rows)
 
 
-def build_baseline(root: Path, outdir: Path, hash_large: bool = False):
+def build_baseline(
+    root: Path,
+    outdir: Path,
+    config_path: Path = DEFAULT_CONFIG,
+    hash_large: bool = False,
+    pins_path: Path | None = None,
+):
     root = root.resolve()
     outdir = outdir.resolve()
-    source_rows = audit_sources(root, hash_large=hash_large)
+    config_path = config_path.resolve()
+    cfg = load_config(config_path)
+    pins = load_pins(pins_path.resolve(), cfg) if pins_path else None
+    sources = _source_map(cfg)
+    source_rows = audit_sources(root, cfg, hash_large=hash_large, pins=pins)
+    design = cfg["design"]
 
-    finemap_path = root / next(s["rel"] for s in SOURCE_CONTRACTS if s["id"] == "bbj_finemap_regions")
-    finemap = _rows(finemap_path)
+    finemap = _rows(root / sources["bbj_finemap_regions"]["path"])
     primary = {r["locus_id"]: r for r in finemap if r.get("role", "").startswith("PRIMARY")}
-    missing_loci = [x for x in PRIMARY_LOCI if x not in primary]
+    missing_loci = [x for x in design["primary_loci"] if x not in primary]
     if missing_loci:
         raise ValueError("Missing primary BBJ loci: " + ",".join(missing_loci))
 
-    convergence_path = root / next(s["rel"] for s in SOURCE_CONTRACTS if s["id"] == "functional_convergence")
-    convergence = _rows(convergence_path)
+    convergence = _rows(root / sources["functional_convergence"]["path"])
     core = {r["gene"]: r for r in convergence if r.get("role") == "CORE"}
-    missing_genes = [x for x in CORE_GENES if x not in core]
+    missing_genes = [x for x in design["core_genes"] if x not in core]
     if missing_genes:
         raise ValueError("Missing core IS mechanism genes: " + ",".join(missing_genes))
 
     evidence_rows = []
-    for gene in CORE_GENES:
+    for gene in design["core_genes"]:
         r = core[gene]
+        expected_branch = design["core_mechanism_branches"][gene]
+        if r.get("mechanism_branch") != expected_branch:
+            raise ValueError(f"{gene} mechanism branch changed: {r.get('mechanism_branch')}")
         evidence_rows.append({
             "gene_symbol": gene,
             "locus_id": r["locus"],
@@ -169,13 +222,12 @@ def build_baseline(root: Path, outdir: Path, hash_large: bool = False):
             "evidence_status": "FROZEN_BASELINE",
         })
 
-    mouse_path = root / next(s["rel"] for s in SOURCE_CONTRACTS if s["id"] == "mouse_functional_freeze")
-    handoff_path = root / next(s["rel"] for s in SOURCE_CONTRACTS if s["id"] == "human_vascular_handoff")
-    mouse = _kv(mouse_path)
-    handoff = _kv(handoff_path)
-    if mouse.get("MOUSE_LAYER_CONCLUSION") != "CELLTYPE_LOCALIZATION_SUPPORTED_TARGET_SPECIFIC_STROKE_DGE_NOT_ESTABLISHED":
+    mouse = _kv(root / sources["mouse_functional_freeze"]["path"])
+    handoff = _kv(root / sources["human_vascular_handoff"]["path"])
+    expected = cfg["expected_status"]
+    if mouse.get("MOUSE_LAYER_CONCLUSION") != expected["mouse_layer_conclusion"]:
         raise ValueError("Unexpected mouse functional-layer conclusion")
-    if handoff.get("COLAB_STATUS") != "READY":
+    if handoff.get("COLAB_STATUS") != expected["human_vascular_colab_status"]:
         raise ValueError("Human vascular handoff is not Colab-ready")
 
     outdir.mkdir(parents=True, exist_ok=True)
@@ -185,17 +237,28 @@ def build_baseline(root: Path, outdir: Path, hash_large: bool = False):
     _write_tsv(source_out, source_rows)
     _write_tsv(evidence_out, evidence_rows)
 
-    checksum_complete = all(r["checksum_status"] == "PINNED" for r in source_rows)
+    checksum_complete = all(r["checksum_status"] in {"PINNED", "VERIFIED_PIN"} for r in source_rows)
     status = {
-        "schema_version": 1,
-        "project": "ischemic_stroke",
+        "schema_version": 2,
+        "project": cfg["project"],
+        "mode": cfg["mode"],
         "adapter_status": "PASS",
-        "scientific_status": "FROZEN_RESULTS_NOT_RECOMPUTED",
-        "masteromics_binding_status": "ADAPTER_AUDIT_ONLY",
+        "scientific_status": cfg["scientific_status"],
+        "masteromics_binding_status": cfg["execution_status"],
         "checksum_status": "COMPLETE" if checksum_complete else "PARTIAL_LARGE_FILES_DEFERRED",
+        "config_path": str(config_path),
+        "config_sha256": _sha256(config_path),
+        "pin_manifest_path": str(pins_path.resolve()) if pins_path else None,
+        "pin_manifest_sha256": _sha256(pins_path.resolve()) if pins_path else None,
         "source_count": len(source_rows),
-        "primary_loci": PRIMARY_LOCI,
-        "core_genes": CORE_GENES,
+        "discovery_model": design["discovery_model"],
+        "discovery_ancestry": design["discovery_ancestry"],
+        "discovery_build": design["discovery_build"],
+        "replication_model": design["replication_model"],
+        "replication_ancestry": design["replication_ancestry"],
+        "replication_build": design["replication_build"],
+        "primary_loci": design["primary_loci"],
+        "core_genes": design["core_genes"],
         "mouse_layer_conclusion": mouse.get("MOUSE_LAYER_CONCLUSION"),
         "human_vascular_colab_status": handoff.get("COLAB_STATUS"),
         "human_vascular_remote_path": handoff.get("REMOTE_PATH"),
@@ -203,7 +266,7 @@ def build_baseline(root: Path, outdir: Path, hash_large: bool = False):
             "source_audit": str(source_out),
             "core_evidence": str(evidence_out),
         },
-        "next_gate": "IMPLEMENT_EXPLICIT_MASTEROMICS_IS_STAGE_BINDINGS",
+        "next_gate": cfg["next_gate"],
     }
     status_out.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
     return status
@@ -213,13 +276,21 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("legacy_root", type=Path)
     parser.add_argument("outdir", type=Path)
+    parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
+    parser.add_argument("--pins", type=Path, default=DEFAULT_PINS)
     parser.add_argument("--hash-large", action="store_true")
     args = parser.parse_args(argv)
     try:
-        result = build_baseline(args.legacy_root, args.outdir, hash_large=args.hash_large)
+        result = build_baseline(
+            args.legacy_root,
+            args.outdir,
+            config_path=args.config,
+            hash_large=args.hash_large,
+            pins_path=args.pins,
+        )
         print(json.dumps(result, indent=2))
         return 0
-    except (OSError, ValueError, KeyError, csv.Error) as exc:
+    except (OSError, ValueError, KeyError, csv.Error, json.JSONDecodeError) as exc:
         print("IS adapter error: " + str(exc), file=sys.stderr)
         return 1
 

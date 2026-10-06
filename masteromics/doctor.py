@@ -9,6 +9,11 @@ import pandas as pd
 
 def doctor(recipe_path,registry_path):
     recipe=json.loads(Path(recipe_path).read_text());registry=json.loads(Path(registry_path).read_text())
+    mode=recipe.get('mode')
+    if mode=='frozen_locus_first_migration':
+        return {'project':recipe.get('project'),'status':'USE_IS_ADAPTER','scientific_validation':'FROZEN_RESULTS_NOT_RECOMPUTED','datasets_checked':0,'runtime':{},'issues':[{'unit':'project','reason':'Canonical IS locus-first migration config must be audited with masteromics is-adapter'}]}
+    if mode=='legacy_pqtl_reference':
+        return {'project':recipe.get('project'),'status':'REFERENCE_ONLY','scientific_validation':'NOT_CANONICAL','datasets_checked':0,'runtime':{},'issues':[{'unit':'project','reason':'Legacy IS pQTL recipe is not the current thesis design'}]}
     issues=[];checked=set()
     if not recipe.get('units'):issues.append({'unit':'project','reason':'At least one analysis unit required'})
     def issue(unit,reason):issues.append({'unit':unit,'reason':reason})

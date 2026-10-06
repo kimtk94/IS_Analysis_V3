@@ -84,8 +84,11 @@ A PR #28 module is promoted into MasterOmics only when all of the following are 
 The read-only IS baseline adapter is now implemented. It validates and provenance-pins
 existing BBJ/GIGASTROKE canonical inputs, four primary BBJ loci, four core mechanism
 genes, the frozen mouse layer, and the human vascular handoff without recomputing the
-legacy results. The remaining P0 gate is explicit MasterOmics per-stage binding and
-numerical parity against those frozen artifacts.
+legacy results. The canonical locus-first contract is `projects/ischemic_stroke.example.json`;
+the old pQTL recipe is preserved as reference-only, and all seven production inputs are
+size/SHA256-pinned in `projects/ischemic_stroke.baseline_pins.json`. The remaining P0
+gate is explicit MasterOmics per-stage binding and numerical parity against those frozen
+artifacts.
 
 ### P1 — IS disease-specific modules
 

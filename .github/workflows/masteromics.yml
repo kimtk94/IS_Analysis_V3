@@ -1,9 +1,9 @@
 name: MasterOmics contracts and synthetic truth
 on:
   pull_request:
-    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'data/metadata/masteromics_resource_registry.json', 'docs/MASTEROMICS*.md', 'server/masteromics_*.sh', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
+    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.json', 'data/metadata/masteromics_resource_registry.json', 'docs/MASTEROMICS*.md', 'server/masteromics_*.sh', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
   push:
-    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.example.json', 'data/metadata/masteromics_resource_registry.json', 'docs/MASTEROMICS*.md', 'server/masteromics_*.sh', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
+    paths: ['masteromics/**', 'tests/test_masteromics*.py', 'projects/*.json', 'data/metadata/masteromics_resource_registry.json', 'docs/MASTEROMICS*.md', 'server/masteromics_*.sh', 'requirements-masteromics.lock', '.github/workflows/masteromics.yml']
   workflow_dispatch:
 jobs:
   database-catalog:

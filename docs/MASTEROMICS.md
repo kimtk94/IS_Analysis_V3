@@ -45,21 +45,27 @@ GIGASTROKE, colocalization, fine-mapping, or cell-type analyses. It validates th
 frozen source schemas, primary BBJ loci, four core mechanism genes, mouse-layer
 freeze, and human vascular handoff, then writes baseline provenance/evidence artifacts.
 
+The canonical thesis migration contract is `projects/ischemic_stroke.example.json`.
+The prior pQTL-oriented recipe is preserved as
+`projects/ischemic_stroke_pqtl_legacy.example.json` with reference-only status.
+Production source identity is frozen in `projects/ischemic_stroke.baseline_pins.json`;
+the default CLI/server path verifies file size and SHA256 for all seven baseline
+sources, including the large BBJ and GIGASTROKE files.
+
 ```bash
 python3 -m masteromics is-adapter \
   /srv/is-analysis \
   /srv/is-analysis/results/masteromics/is_baseline
 
-MASTEROMICS_IS_HASH_LARGE=1 \
-  bash server/masteromics_is_adapter.sh \
-  /srv/is-analysis/results/masteromics/is_baseline_hashed
+bash server/masteromics_is_adapter.sh \
+  /srv/is-analysis/results/masteromics/is_baseline
 ```
 
-`--hash-large` or `MASTEROMICS_IS_HASH_LARGE=1` pins SHA256 for the large BBJ and
-GIGASTROKE canonical files as well. A successful adapter audit reports
-`FROZEN_RESULTS_NOT_RECOMPUTED` and `ADAPTER_AUDIT_ONLY`; it is not equivalent to
-an executable MasterOmics IS stage binding. The next gate is explicit per-stage
-binding with parity checks against these frozen artifacts.
+A successful production adapter audit reports `checksum_status=COMPLETE` with each
+source marked `VERIFIED_PIN`, plus `FROZEN_RESULTS_NOT_RECOMPUTED` and
+`ADAPTER_AUDIT_ONLY`. This is not equivalent to an executable MasterOmics IS stage
+binding. The next gate is explicit per-stage binding with parity checks against these
+frozen artifacts.
 
 ## Dataset contract
 
@@ -212,12 +218,12 @@ records coloc changes after removing palindromic SNPs; these policy changes do
 not count as same-input numerical failures. New clumping/instrument policies
 must be reviewed separately from the legacy primary anchor Wald result.
 
-The adapter currently supports the legacy **CKD** schemas, EUR regional/LD
-analysis and EUR/EAS Stage1 MR. It rejects IS and EAS regional replay rather
-than interpreting their files as CKD inputs. IS needs an explicit schema and
-baseline adapter before server validation can be claimed. Real server CKD
-results have not yet been tested by the assistant; synthetic legacy/new
-parity is tested in CI.
+The numerical regression/replay adapter currently supports the legacy **CKD**
+schemas, EUR regional/LD analysis and EUR/EAS Stage1 MR. It still rejects IS
+regional replay rather than interpreting stroke files as CKD inputs. IS now has
+a pinned read-only baseline/schema adapter, but explicit executable stage bindings
+and numerical parity for the IS pipeline remain pending. Synthetic legacy/new
+CKD parity remains tested in CI.
 
 ## CKD source-statistics rebuild (migration adapter)
 
