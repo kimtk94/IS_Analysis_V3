@@ -1,0 +1,27 @@
+name: IS broad discovery guardrails
+on:
+  push:
+    branches:
+      - research/is-broad-discovery-20261009
+    paths:
+      - 'scripts/is/**'
+      - 'tests/test_is_*'
+      - '.github/workflows/is-broad-discovery-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/is/**'
+      - 'tests/test_is_*'
+      - '.github/workflows/is-broad-discovery-ci.yml'
+  workflow_dispatch:
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile IS broad discovery scripts
+        run: python -m compileall -q scripts/is
+      - name: Synthetic IS regression
+        run: python -m unittest discover -s tests -p 'test_is_*' -v
