@@ -8,6 +8,8 @@ on:
       - 'tests/test_is_existing_outputs_audit.py'
       - 'scripts/audit_is_phase10_readiness.py'
       - 'tests/test_is_phase10_readiness.py'
+      - 'scripts/build_is_phase10_evidence_matrix.py'
+      - 'tests/test_is_phase10_evidence_matrix.py'
       - '.github/workflows/is-evidence-guardrails-ci.yml'
   pull_request:
     paths:
@@ -17,6 +19,8 @@ on:
       - 'tests/test_is_existing_outputs_audit.py'
       - 'scripts/audit_is_phase10_readiness.py'
       - 'tests/test_is_phase10_readiness.py'
+      - 'scripts/build_is_phase10_evidence_matrix.py'
+      - 'tests/test_is_phase10_evidence_matrix.py'
       - '.github/workflows/is-evidence-guardrails-ci.yml'
   workflow_dispatch:
 jobs:
@@ -28,4 +32,4 @@ jobs:
         with:
           python-version: '3.12'
       - name: Run dependency-free IS QC tests
-        run: python -m unittest tests.test_is_evidence_guardrails tests.test_is_existing_outputs_audit tests.test_is_phase10_readiness -v
+        run: python -m unittest tests.test_is_evidence_guardrails tests.test_is_existing_outputs_audit tests.test_is_phase10_readiness tests.test_is_phase10_evidence_matrix -v
