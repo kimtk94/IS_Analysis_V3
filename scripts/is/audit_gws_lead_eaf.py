@@ -12,7 +12,10 @@ OLD=Path("/srv/is-analysis/data/is/ld_reference/1kg_eas_grch37/pgen_gt")
 LOCUS={"IS_XDATA_G0007":"L001","IS_XDATA_G0015":"L002",
        "IS_XDATA_G0022":"L003","IS_XDATA_G0023":"L004"}
 def source_prefix(group,new,old):
-    return old/f"BBJ_IS_{LOCUS[group]}.1KG_EAS.GRCh37" if group in LOCUS else new/(group+".stable")
+    expanded=new/(group+".stable")
+    if Path(str(expanded)+".pgen").is_file() and Path(str(expanded)+".pvar").is_file():
+        return expanded
+    return old/f"BBJ_IS_{LOCUS[group]}.1KG_EAS.GRCh37" if group in LOCUS else expanded
 def floats(s):
     try:
         v=float(s)

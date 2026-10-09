@@ -30,10 +30,17 @@ def fnum(value):
         return None
 
 def pvar_path(group,ref_new,ref_old):
-    if group in ANCHORS:
-        p=ref_old/f'BBJ_IS_{ANCHORS[group]}.1KG_EAS.GRCh37.pvar'
+    expanded = ref_new/f"{group}.stable.pvar"
+    expanded_prefix = ref_new/f"{group}.stable"
+    triplet = [Path(str(expanded_prefix)+ext) for ext in (".pgen",".pvar",".psam")]
+    if all(p.is_file() for p in triplet):
+        p = expanded
+    elif any(p.is_file() for p in triplet):
+        raise RuntimeError("Incomplete expanded PGEN triplet: "+group)
+    elif group in ANCHORS:
+        p = ref_old/f"BBJ_IS_{ANCHORS[group]}.1KG_EAS.GRCh37.pvar"
     else:
-        p=ref_new/f'{group}.stable.pvar'
+        p = expanded
     if not p.is_file():raise FileNotFoundError("Missing genotype PVAR: "+str(p))
     return p
 
