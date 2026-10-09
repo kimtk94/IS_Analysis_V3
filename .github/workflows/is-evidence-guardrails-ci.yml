@@ -1,0 +1,23 @@
+name: IS evidence guardrails
+on:
+  push:
+    paths:
+      - 'workflow/is_evidence_guardrails.py'
+      - 'tests/test_is_evidence_guardrails.py'
+      - '.github/workflows/is-evidence-guardrails-ci.yml'
+  pull_request:
+    paths:
+      - 'workflow/is_evidence_guardrails.py'
+      - 'tests/test_is_evidence_guardrails.py'
+      - '.github/workflows/is-evidence-guardrails-ci.yml'
+  workflow_dispatch:
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run dependency-free IS QC tests
+        run: python -m unittest discover -s tests -p 'test_is_evidence_guardrails.py' -v
