@@ -1,6 +1,6 @@
 # IS G0022 AS/AIS LD 불일치 원인 감사 — V2
-**일자:** 2026-10-09 (KST)  
-**브랜치:** `research/is-broad-discovery-20261009`  
+**일자:** 2026-10-09 (KST)
+**브랜치:** `research/is-broad-discovery-20261009`
 **상태:** READONLY molecular-causality gate. Canonical GWAS 및 2,225개 후보 유전자 universe 불변.
 
 ## Executive summary
