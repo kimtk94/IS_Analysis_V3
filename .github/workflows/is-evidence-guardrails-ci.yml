@@ -4,11 +4,15 @@ on:
     paths:
       - 'workflow/is_evidence_guardrails.py'
       - 'tests/test_is_evidence_guardrails.py'
+      - 'scripts/audit_is_existing_outputs.py'
+      - 'tests/test_is_existing_outputs_audit.py'
       - '.github/workflows/is-evidence-guardrails-ci.yml'
   pull_request:
     paths:
       - 'workflow/is_evidence_guardrails.py'
       - 'tests/test_is_evidence_guardrails.py'
+      - 'scripts/audit_is_existing_outputs.py'
+      - 'tests/test_is_existing_outputs_audit.py'
       - '.github/workflows/is-evidence-guardrails-ci.yml'
   workflow_dispatch:
 jobs:
@@ -20,4 +24,4 @@ jobs:
         with:
           python-version: '3.12'
       - name: Run dependency-free IS QC tests
-        run: python -m unittest discover -s tests -p 'test_is_evidence_guardrails.py' -v
+        run: python -m unittest tests.test_is_evidence_guardrails tests.test_is_existing_outputs_audit -v
