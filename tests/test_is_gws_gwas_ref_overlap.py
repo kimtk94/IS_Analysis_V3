@@ -28,6 +28,8 @@ class GWASReferenceAuditTest(unittest.TestCase):
             new=base/"new"
             new.mkdir()
             p=new/"G1.stable.pvar"
+            (new/"G1.stable.pgen").write_bytes(b"test")
+            (new/"G1.stable.psam").write_text("#IID\nS1\n")
             p.write_text("#CHROM\tPOS\tID\tREF\tALT\n2\t100\t.\tA\tG\n")
             with self.assertRaisesRegex(ValueError,"not stable"):
                 ref_index(["G1"],new,old)
