@@ -28,7 +28,8 @@ def main():
     steps=[
         ["build_locus_gene_evidence_v2.py","--root",str(a.root),"--base",str(a.base)],
         ["build_molecular_work_queue.py","--root",str(a.root)],
-        ["audit_gigastroke_full_registry.py","--root",str(a.root),"--registry",str(a.registry),"--data",str(a.data)]
+        ["audit_gigastroke_full_registry.py","--root",str(a.root),"--registry",str(a.registry),"--data",str(a.data)],
+        ["verify_gigastroke_ancestry_v3.py","--out",str(a.root),"--meta",str(a.registry.parent),"--data",str(a.data)]
     ]
     for args in steps:
         p=subprocess.run([sys.executable,str(HERE/args[0])]+args[1:],capture_output=True,text=True)
@@ -44,7 +45,8 @@ def main():
     if evidence["mapped_gene_locus_rows"]!=gene["region_gene_associations"]:
         raise SystemExit("FAILED invariant: evidence must account for every mapped pair")
     files=["IS_LOCUS_GENE_EVIDENCE_V2.tsv","IS_ALL_CANDIDATE_MOLECULAR_WORK_QUEUE.tsv",
-           "IS_MOLECULAR_TASKS_BY_REGION.tsv","GIGASTROKE_FULL_STUDY_INVENTORY.tsv"]
+           "IS_MOLECULAR_TASKS_BY_REGION.tsv","GIGASTROKE_FULL_STUDY_INVENTORY.tsv",
+           "GIGASTROKE_SOURCE_VERIFIED_V3.tsv"]
     audit={"status":"PASS","inputs":"pre-existing gene universe/30-region manifest/legacy molecular screens",
        "region_count":gene["regions"],"gene_region_pairs":gene["region_gene_associations"],
        "locus_matched_coloc":evidence["locus_gene_matched_coloc"],
