@@ -3,7 +3,9 @@
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.audit_is_phase10_readiness import audit
 
 GENES = [("FGF5", "BBJ_IS_L001", "regulatory_protein"),
