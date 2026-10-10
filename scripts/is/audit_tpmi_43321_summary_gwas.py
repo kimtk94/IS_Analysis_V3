@@ -53,7 +53,7 @@ def extract(gwas_path,targets):
             if beta is None or se is None or se<=0 or p is None or p<0 or p>1 or af is None or af<0 or af>1:
                 raise ValueError("Nonvalid TPMI association row at "+vid)
             reported=set(str(m["rsids"]).replace(";",",").split(","))
-            row.update({"status":"EXACT_GRCH38_REF_ALT_MATCH",
+            row.update({"status":("EXACT_GRCH38_REF_ALT_MATCH" if target["rsid"] in reported else "EXACT_ALLELES_RSID_REVIEW"),
                         "source_reported_rsids":m["rsids"],
                         "target_rsid_in_reported":target["rsid"] in reported,
                         "tpmi_beta_ALT":beta,"tpmi_se":se,"tpmi_p":p,
@@ -74,7 +74,10 @@ def main():
     p.add_argument("--out-dir",type=Path,required=True)
     p.add_argument("--phenotype",choices=["433.21"],required=True)
     p.add_argument("--build",choices=["GRCh38"],required=True)
+    p.add_argument("--effect-alt-confirmed",action="store_true",help="Explicitly attest TPMI source beta is for ALT allele")
     a=p.parse_args()
+    if not a.effect_alt_confirmed:
+        p.error("TPMI source effect orientation must be confirmed (--effect-alt-confirmed) before ALT beta reporting")
     if not a.summary_gwas.is_file():raise FileNotFoundError(a.summary_gwas)
     with a.crossbuild_map.open(newline="") as f:
         targets=list(csv.DictReader(f,delimiter="\t"))
@@ -95,6 +98,7 @@ def main():
         "n_variants_scanned":n,"n_targets":len(results),
         "counts":dict(Counter(r["status"] for r in results)),
         "source_file":str(a.summary_gwas),
+        "beta_effect_orientation":"ALT_EXPLICITLY_USER_ATTESTED_SOURCE_CONVENTION",
         "sampling_overlap_with_BBJ":"COHORT_ORIGIN_REVIEW_PENDING",
         "independent_EAS_replication_verified":False,
         "causal_inference":"NOT_PERFORMED",
