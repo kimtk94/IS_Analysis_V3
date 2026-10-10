@@ -15,6 +15,9 @@ on:
       - "scripts/is/build_tpmi_grch38_mapping.py"
       - "scripts/is/audit_tpmi_grch38_chain_ucsc.py"
       - "scripts/is/audit_tpmi_43321_summary_gwas.py"
+      - "scripts/is/build_existing_is_gene_evidence_matrix.py"
+      - "scripts/is/audit_local_drive_coloc_abf_recovery.py"
+      - "scripts/is/replay_existing_646_coloc_abf.R"
       - "tests/test_alcohol_cs_ais_direct_overlap.py"
       - "tests/test_gigastroke_ais_refalt_provenance.py"
       - "tests/test_gigastroke_fasta_variant_contract.py"
@@ -24,6 +27,8 @@ on:
       - "tests/test_tpmi_grch38_mapping.py"
       - "tests/test_tpmi_grch38_chain_ucsc.py"
       - "tests/test_tpmi_43321_summary_gwas.py"
+      - "tests/test_existing_is_gene_evidence_matrix.py"
+      - "tests/test_local_drive_coloc_abf_recovery.py"
       - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
   pull_request:
     paths:
@@ -55,7 +60,9 @@ jobs:
             scripts/is/audit_aldh2_conditional_ld_gate.py \
             scripts/is/build_tpmi_grch38_mapping.py \
             scripts/is/audit_tpmi_grch38_chain_ucsc.py \
-            scripts/is/audit_tpmi_43321_summary_gwas.py
+            scripts/is/audit_tpmi_43321_summary_gwas.py \
+            scripts/is/build_existing_is_gene_evidence_matrix.py \
+            scripts/is/audit_local_drive_coloc_abf_recovery.py
 
       - name: Run isolated SNP harmonization and science-gate tests
         run: |
@@ -69,7 +76,9 @@ jobs:
             test_aldh2_conditional_ld_gate.py \
             test_tpmi_grch38_mapping.py \
             test_tpmi_grch38_chain_ucsc.py \
-            test_tpmi_43321_summary_gwas.py
+            test_tpmi_43321_summary_gwas.py \
+            test_existing_is_gene_evidence_matrix.py \
+            test_local_drive_coloc_abf_recovery.py
           do
             echo "RUNNING $test_file"
             python3 -m unittest discover \
