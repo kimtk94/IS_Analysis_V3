@@ -77,6 +77,8 @@ The existing Drive file [prepare_IS_COLAB_inputs.sh](https://drive.google.com/fi
 
 Machine-audited derivative: `/srv/is-analysis/results/is/audits/is_gtEx_one_altmajor_maf_lineage_20261011_v1/IS_GTEX_ALTMAJOR_ORIGINAL_BBJ_LD_MAF_GATE.json` (`IS_GTEX_BBJ_LD_MAF_GATE_CONFIRMED`); source code `scripts/is/audit_is_altmajor_maf_gate_lineage.py` and fail-closed regression tests `tests/test_is_altmajor_maf_gate_lineage.py`.
 
+The original input conversion [IS_Phase10_11_eQTL_Coloc_Master.ipynb](https://drive.google.com/file/d/1bHz26P9Y7BF2kCwO364OOH4t5kKVKrps/view) explicitly reads `INPUT/bbj_locus/{locus}.tsv` (the Drive export of `susie_inputs_v3`), performs GRCh37→38 conversion, then writes `WORK/{locus}.BBJ_GRCh38.tsv.gz`. The v3 repair notebook consumes these saved `WORK` intermediates and performs an exact-variant-key inner join with GTEx. This directly verifies the downstream path from the MAF-filtered precomputed SNP set to coloc, rather than assuming the repair notebook reads Stage3 files directly.
+
 Do not generalize that ALL rare or missing GWAS variants were excluded by exactly the same filter. The 9 remaining variant identities are simply absent from the native BBJ outcome file; this 1 site has a positive PLINK ancestry-MAF QC provenance demonstration.
 
 ## 4. The nine legacy genes: do not confound healthy reference localization with colocalization proof
@@ -130,7 +132,7 @@ New offline regression tests:
 - `tests/test_gtex_alt_major_native_bbj.py`
 - `tests/test_is_nine_gene_mechanism_readiness.py`
 
-**33/33 original combined offline Python regression tests PASS; four new lineage tests 4/4 PASS** (includes earlier 646-coloc and 2,225-stable-ID guards). Latest GitHub Actions workflow is updated to run these. Remote GitHub Actions hosted execution has **not** been independently checked, and R replay runs require the original archived source files (not included in GitHub CI fixtures).
+**37/37 combined offline Python regression tests PASS** at commit `17e9dd8f7ee3b135a97b08852b4a00f939eb6f79`, including the four new exact-input MAF gate tests (server test report: `/tmp/is_646_8956_2225_all37_ci_20261011/RESULT.txt`). (includes earlier 646-coloc and 2,225-stable-ID guards). Latest GitHub Actions workflow is updated to run these. Remote GitHub Actions hosted execution has **not** been independently checked, and R replay runs require the original archived source files (not included in GitHub CI fixtures).
 
 ## Next steps that require no new databases
 
