@@ -1,6 +1,6 @@
 # IS Phase9F-E R3_7 — Donor-aware pseudobulk protocol
 
-**Status: CODE_AND_SYNTHETIC_QC_PASS; REAL_DONOR_EXECUTION_PENDING (2026-10-10).**
+**Status: REAL_DONOR_RUN_COMPLETE; INDEPENDENT_RECALC_PASS (2026-10-10).** The prespecified comparison inventory and QC gates below were frozen before the biological dataset run.
 
 ## Purpose
 
@@ -90,3 +90,18 @@ passed in the audited server environment.
 **Release gate:** All five new donor artifacts must exist and be nonempty,
 analysis must reach `PHASE9F_E_HUMAN=COMPLETE`, and sample sizes / donor
 coverage must be examined before any biology claims or web promotion.
+
+## Post-run verified observations (after pre-registration)
+
+- Drive original R3_7 results: https://drive.google.com/drive/folders/1JJJm7xkze2ene_vdDcm6nx_Ni-sU84Yi
+- Server immutable source import: results/is/stage5_functional/phase9f_e_human_r3_7_donor_import_20261010
+- Server independent analysis: results/is/audits/phase9f_r3_7_donor_reaudit_20261010_v1
+- Verified Drive audit folder: https://drive.google.com/drive/folders/1rj44uRREGFwpX6_KI5NaR7MTf5ICPXCb
+- Independently checked 80,515 raw cells, six donor labels, 585 gene-donor-celltype rows, 99 gene-celltype coverage rows and ten predeclared paired comparisons.
+- **10/10** comparisons meet minimum 4 paired donors; **9/10** show a unanimous direction for CPM, versus **8/10** for detection fraction.
+- SH3PXD2A (Oligodendrocytes, Fibroblasts and Smooth muscle cells vs combined Microglia and Macrophages) is CPM-higher in all eligible 5-6 donors.
+- COL4A2 Pericytes vs Endothelial cells: CPM is higher 6/6, but detection fraction is higher 3/6; CPM magnitude and fraction of expressing cells answer different questions.
+- ALDH2 endothelial vs combined immune class shows 3/6 positive CPM and 3/6 negative CPM paired differences; the earlier pooled expression contrast was not consistently reproduced at donor level.
+- **15,903 of 15,942 Neurons (99.76%) belong to donor TL8**; donor-level claims for this class are not supported by robust representation. Neuron progenitor, Stem cell and Astrocyte categories are also donor-skewed.
+- Five-source input provenance is SHA256-frozen in the separate output JSON. The published data remains **normal brain descriptive localization**, not stroke-specific differential expression, cell eQTL or genetic causal evidence.
+- Independently generated paired-delta and donor-imbalance SVG figures are outside Git; source data and full results are not committed.
