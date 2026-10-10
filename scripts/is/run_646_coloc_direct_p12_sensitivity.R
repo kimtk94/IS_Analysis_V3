@@ -124,6 +124,6 @@ summary <- list(
 )
 if(requireNamespace("jsonlite",quietly=TRUE))
  jsonlite::write_json(summary,file.path(out_dir,"IS_646_DIRECT_P12_SENSITIVITY_MANIFEST.json"),
-                     pretty=TRUE,auto_unbox=TRUE)
+                     pretty=TRUE,auto_unbox=TRUE,digits=12)
 cat("IS_646_DIRECT_P12_GRID_COMPLETE",nrow(grid),"MODELS",
     "MAX_H4_BASELINE",max(base$PP_H4),"\n")
