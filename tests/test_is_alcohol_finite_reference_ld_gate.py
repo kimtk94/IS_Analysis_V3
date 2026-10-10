@@ -53,6 +53,11 @@ class FiniteRSSGate(unittest.TestCase):
             j=json.loads(p.read_text())
             j["diagnostics"]["R_reliability_flag"]=False
             p.write_text(json.dumps(j))
+            result=build(sandbox,study)
+            self.assertEqual(result["reliability_warning_count"],3)
+            self.assertFalse(result["ALDH2_prior_BLOCKED_gate_lifted"])
+            j["diagnostics"]["R_reliability_flag"]="unknown"
+            p.write_text(json.dumps(j))
             with self.assertRaisesRegex(ValueError,"reliability"):
                 build(sandbox,study)
             j["diagnostics"]["R_reliability_flag"]=True
