@@ -38,9 +38,9 @@ def raw_qtd_iter(path):
    if abs(maf-min(ac/an,1-ac/an))>1e-4:raise ValueError("Original QTD MAF/AC/AN incompatible")
    variant=row[5]
    if not variant.startswith("chr12_"):raise ValueError("QTD variant is not chr12")
-   if row[3] not in "ACGT" or row[4] not in "ACGT":
-    raise ValueError("Non-single nucleotide QTD row needs separate handling")
+   is_snv=(len(row[3])==1 and len(row[4])==1 and row[3] in "ACGT" and row[4] in "ACGT")
    yield {
+    "is_snv":is_snv,
     "gene_id":row[0].split(".")[0],
     "raw_variant":variant,
     "site_GRCh38":row[1]+":"+row[2]+":"+row[3]+":"+row[4],
@@ -80,6 +80,9 @@ def audit(root,cache):
   n_match_exact=0
   for row in raw_qtd_iter(root/fn):
    counts["raw_rows"]+=1
+   if not row["is_snv"]:
+    counts["original_QTD_non_SNV_rows_out_of_scope"]+=1
+    continue
    key=(row["gene_id"],row["raw_variant"])
    if row["ALT_major_GTEx_ac_over_an"]:
     counts["raw_ALT_major_rows"]+=1
