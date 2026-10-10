@@ -1,0 +1,49 @@
+{
+  "schema": "IS_NATIVE_BBJ_ORIGINAL_ZIP_LIFTOVER_FOUR_LOCI_PADDED_V1",
+  "original_native_GWAS_stream_rows": 13435541,
+  "reference_variants": 56189,
+  "locus_counts": {
+    "BBJ_IS_L001": 10734,
+    "BBJ_IS_L002": 16124,
+    "BBJ_IS_L003": 12961,
+    "BBJ_IS_L004": 16370
+  },
+  "native_excluded_records": {
+    "BBJ_IS_L001::NON_SNV": 1,
+    "BBJ_IS_L001::ID_PARTS": 4,
+    "BBJ_IS_L002::NON_SNV": 6,
+    "BBJ_IS_L002::ID_PARTS": 2,
+    "BBJ_IS_L003::NON_SNV": 3,
+    "BBJ_IS_L003::ID_PARTS": 3,
+    "BBJ_IS_L004::ID_PARTS": 2,
+    "BBJ_IS_L004::NON_SNV": 1
+  },
+  "GRCh37_windows": {
+    "BBJ_IS_L001": [
+      "4",
+      79681087,
+      82684150
+    ],
+    "BBJ_IS_L002": [
+      "10",
+      103839152,
+      106959690
+    ],
+    "BBJ_IS_L003": [
+      "12",
+      110849271,
+      114615871
+    ],
+    "BBJ_IS_L004": [
+      "13",
+      109454304,
+      112459229
+    ]
+  },
+  "original_native_zip_size": 1611973884,
+  "native_zip_SHA256": "a8032286cf2206a02c746b138a263930dc7d371c57b94352820005f8a32c8d2b",
+  "chain_SHA256": "5c0598e500ceb5a78c73086929e8ef993aec309bcafb595139b53d440b125a1d",
+  "gz_sha256": "acbec8c5b56177f4a51f0a5e6a21d46a190746abe8a1296a252b6bdfdb809a2a",
+  "required_effect_allele": "BBJ_NATIVE_ALLELE2_EQUALS_GRCH37_VARIANT_ID_ALT",
+  "interpretation": "Source original native GWAS effect allele + chain verified fingerprints only (no redistributed native GWAS beta/EAF). Not GRCh38 FASTA, not matched cohort LD"
+}

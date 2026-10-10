@@ -1,3 +1,5 @@
+**2026-10-11 CORRECTION: The full-646 V1 Colab erroneously expected the 30-source native-audited 8,309 SNP union. Actual full input contains 8,956. V1 failed before per-SNP-N common-sdY R execution. Use [V2 repair with 8,956 GWAS source audit](IS_PHASE10_11_NATIVE_BBJ_GWAS_8956_RECOVERY_20261011.md); previous V1 links below are retained for error reproducibility, not execution.**
+
 # IS Phase10/11 — observed variant N assisted common sdY calibration
 
 **2026-10-11 | Direct local 30/646 SNP-input pilot PASS; full original 646 one-cell Colab BUILT, NOT RUN. This remains statistical robustness analysis, not evidence of a causal gene.**
