@@ -126,9 +126,6 @@ def build(sources):
    literature_by_id[(r["locus"],ids[0])].append(r)
  aliases=defaultdict(set)
  for r in legacy:aliases[r["gene_base"]].add(r["gene_symbol"])
- for r in priority:
-  for q in priority_by_id.items():
-   pass
  # Human reference annotations can attach by an exact current stable-annotation
  # symbol or by unambiguous archived GTEx stable-ID mapping.
  symbols_by_id=defaultdict(set)
@@ -292,7 +289,7 @@ def build(sources):
   "legacy_coloc_not_applied_to_EUR":True,
   "cohort_matched_LD_verified":False,
   "no_new_DB":True,
-  "ALDH2_aldohol_finemap_status":"BLOCKED",
+  "ALDH2_alcohol_finemap_status":"BLOCKED",
   "ADH1B_alcohol_finemap_status":"EXPLORATORY",
   "causal_gene_established":0,
   "no_hard_candidate_filtering":True,
