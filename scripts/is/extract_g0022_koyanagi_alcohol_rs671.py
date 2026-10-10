@@ -59,7 +59,10 @@ def read_source(path,expected,minimum_rows=100000):
                 "source_SNP":row["SNP"],"source_effect_allele":ea,
                 "source_non_effect_allele":nea,"harmonized_effect_allele_ALT":pair[1],
                 "beta_ALT":sign*beta,"se":se,"p":p,"ALT_EAF":ef if sign==1 else 1-ef,
+                "beta_over_se_signed_z":sign*beta/se,
+                "p_reported_zero_numeric_underflow":int(p==0),
                 "metaGWAS_variant_n":sample,"heterogeneity_p":hp,
+                "heterogeneity_p_less_0_05":int(hp not in ("",".","NA","nan") and float(hp)<.05),
                 "study_genome_build":"GRCh37_hg19",
                 "allele_direction":"EXACT_EA_NEA"}
     if n<minimum_rows:raise ValueError("Unexpectedly truncated source row count")
@@ -90,6 +93,8 @@ def extract(root,out,source_type,minimum_rows=100000):
       "4CS_GWAS_variants_harmonized":len(records),
       "rs671_present":any(x["variant_grch37"]=="12:112241766:G:A" for x in records),
       "trait_units":"log2(g/day+1)" if source_type=="alcohol_intake" else "binary_status_log_odds_CASE_ENCODING_NEEDS_VALIDATION",
+      "p_zero_underflow_variant_records":sum(int(x["p_reported_zero_numeric_underflow"]) for x in records),
+      "heterogeneity_p_less_0_05_records":sum(int(x["heterogeneity_p_less_0_05"]) for x in records),
       "effect_allele":"ALT",
       "causal_stroke_alcohol_mediation_computed":False}
     (out/f"G0022_KOYANAGI2024_{source_type.upper()}_AUDIT.json").write_text(json.dumps(result,indent=2))
