@@ -48,7 +48,7 @@ for(i in seq_len(nrow(master))) {
   result <- list(locus=entry$locus,dataset_key=entry$dataset_key,
                  gene_base=entry$gene_base,source_file=basename(file),
                  expected_nsnps=entry$nsnps,status="NOT_RUN",
-                 delta_max="",new_PP_H0="",new_PP_H1="",new_PP_H2="",
+                 delta_max="",maf_diff_gt_0p1="",maf_diff_fraction="",n_qtl_sample_N_distinct="",new_PP_H0="",new_PP_H1="",new_PP_H2="",
                  new_PP_H3="",new_PP_H4="",detail="")
   if(!file.exists(file)) {
     result$status <- "MISSING_INPUT"
@@ -69,6 +69,9 @@ for(i in seq_len(nrow(master))) {
       if(any(d$gwas_se<=0 | d$eqtl_se<=0 | d$qtl_n_scalar<5)) stop("INVALID_SE_OR_N")
       if(any(d$gwas_maf<=0 | d$gwas_maf>0.5 |
              d$eqtl_maf<=0 | d$eqtl_maf>0.5)) stop("INVALID_MAF")
+      result$maf_diff_gt_0p1 <- sum(abs(d$gwas_maf-d$eqtl_maf)>0.1)
+      result$maf_diff_fraction <- result$maf_diff_gt_0p1/nrow(d)
+      result$n_qtl_sample_N_distinct <- length(unique(d$qtl_n_scalar))
       sample_n <- d$qtl_n_scalar[[1]]
       ds1 <- list(snp=d$match_key, beta=d$gwas_beta,
                   varbeta=d$gwas_se^2,MAF=d$gwas_maf,
@@ -76,8 +79,8 @@ for(i in seq_len(nrow(master))) {
       ds2 <- list(snp=d$match_key,beta=d$eqtl_beta,
                   varbeta=d$eqtl_se^2,MAF=d$eqtl_maf,
                   N=sample_n,type="quant")
-      fit <- suppressMessages(coloc.abf(dataset1=ds1,dataset2=ds2,
-                                        p1=1e-4,p2=1e-4,p12=1e-5))
+      fit <- suppressWarnings(suppressMessages(coloc.abf(dataset1=ds1,dataset2=ds2,
+                                        p1=1e-4,p2=1e-4,p12=1e-5)))
       values <- as.numeric(fit$summary[c("PP.H0.abf","PP.H1.abf","PP.H2.abf",
                                          "PP.H3.abf","PP.H4.abf")])
       expected <- as.numeric(entry[c("PP.H0","PP.H1","PP.H2","PP.H3","PP.H4")])
@@ -115,6 +118,8 @@ summary <- list(status="PER_SNP_ABF_RERUN_DIAGNOSTIC_NO_CAUSAL_CLAIM",
                 molecular_QTL="GTEx_V8_bulk_eqtl_original_first_scalar_N",
                 cohort_matched_molecular_QTL_LD_verified=FALSE,
                 no_causal_gene_claim=TRUE,
+                maf_discordance_is_not_snp_harmonization_proof=TRUE,
+                per_snp_QTL_sample_N_range_recorded=TRUE,
                 out_file="IS_646_GWAS_QTL_SNP_ABF_REPLAY.tsv")
 if(requireNamespace("jsonlite",quietly=TRUE))
  jsonlite::write_json(summary,file.path(outdir,"IS_646_SNP_ABF_REPLAY_MANIFEST.json"),pretty=TRUE,auto_unbox=TRUE)
