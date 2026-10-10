@@ -9,8 +9,8 @@ getopt<-function(k) {
 inp<-getopt("--assays");out<-getopt("--out-dir")
 if(dir.exists(out)&&length(list.files(out,all.files=TRUE,no..=TRUE))>0)stop("No overwrite")
 d<-read.delim(inp,check.names=FALSE)
-if(nrow(d)!=646||sum(d$original_H4_gt_H3)!=40||
-   sum(d$high_H4_gt_H3)!=565||sum(d$high_H4_ge_0p8)!=12)
+if(nrow(d)!=646||sum(tolower(as.character(d$original_H4_gt_H3))=='true')!=40||
+   sum(tolower(as.character(d$high_H4_gt_H3))=='true')!=565||sum(tolower(as.character(d$high_H4_ge_0p8))=='true')!=12)
  stop("Expected historical 646 input and posterior counts")
 dir.create(out,showWarnings=FALSE,recursive=TRUE)
 cols<-c("#31739A","#6964A0","#178E75","#C37C38")
@@ -33,7 +33,7 @@ for(which in c("original","high")){
  abline(0,1,col="#686868",lty=2)
  abline(h=.8,col="#A94B42",lty=3)
  if(which=="high"){
-  k<-which(d$high_H4_ge_0p8)
+  k<-which(tolower(as.character(d$high_H4_ge_0p8))=='true')
   points(x[k],y[k],pch=21,cex=1.12,bg="#FAEBC6",col="#A14F3C",lwd=1.2)
  }
  mtext(sprintf("H4 > H3: %d/646 | H4 >= 0.8: %d/646",count,hi),
