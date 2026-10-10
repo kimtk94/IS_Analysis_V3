@@ -63,13 +63,21 @@ A **fresh stream over all 13,435,541 native BBJ GWAS autosomal rows** then estab
 
 - **9/10**: no original BBJ GWAS record at the mapped GRCh37 position. Their absence from BBJ/GTEx overlap may therefore be explained by native outcome GWAS coverage; it is **not proof of a harmonization error or intentional exclusion**.
 - **1/10**: `GRCh38 12:111652218:C:A` ↔ `GRCh37 12:112090022:C:A` with directly verified native BBJ source REF/ALT, effect ALT. Original BBJ `AF_Allele2=0.997129291706149`, `p=0.161785997450046`. Its BBJ **minor allele frequency ~0.00287**, whereas GTEx ALT AF in the four saved original tissue files is **0.82687–0.86473**.
-- For the one variant found in native BBJ, absence from the 646 archived coloc inputs is **still unexplained**. Its low BBJ MAF is a plausible GWAS-QC/filter reason, **not verified without the original Colab pipeline's exact inclusion code and provenance**.
-- **Never auto-insert this one marker to alter H4 post hoc.** First recover historic SNP inclusion thresholds (imputation INFO, MAF, biallelic, harmonized variant coverage) and verify eligible science gate separately.
+- **The last one-site exclusion is now resolved at the archived pipeline-input level.** Local 1KG EAS original `.pvar` includes `12:112090022:C:A` with `EAS_AF=0.999`, giving MAF ≈0.001. Historical PLINK `BBJ_IS_L003.QC.log` explicitly records `--geno 0.05 --maf 0.01`, zero variants removed for missingness, and 64,428 reference variants removed at the frequency threshold. This SNP is absent from the post-QC `.pvar` and the downstream `stage3_finemap/japan/bbj/susie_inputs_v3/BBJ_IS_L003.tsv` input (3,039 SNPs, minimum MAF ≈0.0100043). The original Colab preparation script uses this preselected Stage3-derived BBJ region input. This is an input-universe/MAF QC exclusion, **not evidence of an ALT direction flip**.
+- **Never auto-insert this one marker to alter H4 post hoc.** An alternative lower-MAF analysis must be prespecified, independently quality-checked, and paired with suitable LD; it cannot be introduced selectively to increase H4.
 
 Artifact:
 `/srv/is-analysis/results/is/audits/is_gtex_10_altmajor_native_bbj_20261011_v1/`
 - `IS_10_GTEX_ALT_MAJOR_SNP_NATIVE_BBJ_AVAILABILITY.tsv`
 - `IS_10_GTEX_BBJ_COVERAGE_MANIFEST.json`
+
+### Input lineage verification for the remaining native-BBJ marker
+
+The existing Drive file [prepare_IS_COLAB_inputs.sh](https://drive.google.com/file/d/1QQP8oYzUD836WtPD3nbR7vOLtjpq_viw/view) points the Colab workflow to `/srv/is-analysis/results/is/stage3_finemap/japan/bbj/susie_inputs_v3/BBJ_IS_L003.tsv`; the existing [Phase10/11 repair Colab notebook v3](https://drive.google.com/file/d/1HM2j0kS_Twk5zBF0DWZPpafy-Xk4k0iu/view) consumes those preprocessed regional inputs. The **1KG EAS source** `BBJ_IS_L003.1KG_EAS.GRCh37.pvar` has the original site with ALT AF=0.999. In the saved Oct 2 PLINK QC log, `--maf 0.01` removes frequency-rare sites. The **post-QC reference pvar** and **3,039-row Stage3 summary-stat input** do not contain `12:112090022:C:A`, establishing a complete, existing-data-only **BBJ outcome → 1KG EAS LD MAF gate → Stage3 regional input → Colab coloc intersection** provenance trail.
+
+Machine-audited derivative: `/srv/is-analysis/results/is/audits/is_gtEx_one_altmajor_maf_lineage_20261011_v1/IS_GTEX_ALTMAJOR_ORIGINAL_BBJ_LD_MAF_GATE.json` (`IS_GTEX_BBJ_LD_MAF_GATE_CONFIRMED`); source code `scripts/is/audit_is_altmajor_maf_gate_lineage.py` and fail-closed regression tests `tests/test_is_altmajor_maf_gate_lineage.py`.
+
+Do not generalize that ALL rare or missing GWAS variants were excluded by exactly the same filter. The 9 remaining variant identities are simply absent from the native BBJ outcome file; this 1 site has a positive PLINK ancestry-MAF QC provenance demonstration.
 
 ## 4. The nine legacy genes: do not confound healthy reference localization with colocalization proof
 
@@ -122,11 +130,11 @@ New offline regression tests:
 - `tests/test_gtex_alt_major_native_bbj.py`
 - `tests/test_is_nine_gene_mechanism_readiness.py`
 
-**33/33 combined offline Python regression tests PASS** (includes earlier 646-coloc and 2,225-stable-ID guards). Latest GitHub Actions workflow is updated to run these. Remote GitHub Actions hosted execution has **not** been independently checked, and R replay runs require the original archived source files (not included in GitHub CI fixtures).
+**33/33 original combined offline Python regression tests PASS; four new lineage tests 4/4 PASS** (includes earlier 646-coloc and 2,225-stable-ID guards). Latest GitHub Actions workflow is updated to run these. Remote GitHub Actions hosted execution has **not** been independently checked, and R replay runs require the original archived source files (not included in GitHub CI fixtures).
 
 ## Next steps that require no new databases
 
-1. Locate the original Colab script's **BBJ variant MAF/INFO and eQTL QC thresholds** from already-connected Drive and notebooks. Determine why `12:112090022:C:A` was excluded. Do not add it before pre-specified provenance and sensitivity decisions.
+1. **Completed** the available source-lineage recovery: Drive original `prepare_IS_COLAB_inputs.sh` and Colab notebook identify the Stage3-derived input; original 1KG EAS PLINK QC log confirms `--maf 0.01`, the site MAF≈0.001, and its removal. Next evaluate possible implications of this prespecified MAF cutoff across loci without post hoc insertion or changing the original 646 replays.
 2. Stratify **8,956 unique SNPs** by palindromic status and cross-population allele frequency without assuming reference-aware REF/ALT proof implies effect-allele source certainty across all molecular QTL.
 3. Combine the nine-gene human donor evidence, coloc prior-grid and 2,225-gene broad discovery matrix into manuscript figures/results with clear `NOT_TESTED`, `EXPLORATORY`, `BLOCKED` states. Avoid ischemic-stroke disease DGE claims from adult control cells.
 4. Separately inspect any externally reused BBJ/GIGASTROKE cohort overlap and conditional LD multi-signal requirements. Keep CKB and TPMI download blockers paused.
@@ -135,4 +143,4 @@ New offline regression tests:
 
 **Verified:** all 8,956 archived BBJ GWAS beta/EAF/ALT chain source identities, numerically reproduced 646 archival ABF tests, original QTL MAF vs AC/AN mathematics, 10-site native GWAS presence classification, and nine-gene descriptive control brain reference mappings.
 
-**Not verified:** why one ALT-major SNP present in native BBJ was omitted from archived coloc, whether the GTEx eQTL source's ALT beta remains correctly referenced for all SNPs after prior processing, effect allele raw genotype counts, harmonized cohort-matched molecular QTL LD, independent East Asian GWAS replication, stroke lesion transcriptomic DGE, and final causal-gene assignments.
+**Not verified:** whether the GTEx eQTL source's ALT beta remains correctly referenced for all SNPs after prior processing, raw molecular-QTL genotype allele counts, harmonized cohort-matched molecular-QTL LD, independent East Asian GWAS replication, stroke lesion transcriptomic DGE, and final causal-gene assignments. The missing tenth ALT-major site has a **verified upstream MAF-QC exclusion lineage** (not a verified colocalization result).
