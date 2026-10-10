@@ -85,7 +85,7 @@ def integrate(genes,links,grid,af,nsens,replay):
   qtl_by_gene[gid].append(stat)
  # Every assay maps to one EAS/Japanese positional gene by stable ID + BBJ locus.
  linkset={(r["gene_id_stable"],r["legacy_original_bbj_locus"]) for r in links
-          if r["ancestry"]=="EAS_AND_JAPANESE" and r["archived_ABF_assays"]>0}
+          if r["ancestry"]=="EAS_AND_JAPANESE" and int(r["archived_ABF_assays"])>0}
  if any((r["gene_base"],r["locus"]) not in linkset for r in assay_out):
   raise ValueError("QTL source would be incorrectly attached to an unproven positional/EUR locus")
  merged=[]
