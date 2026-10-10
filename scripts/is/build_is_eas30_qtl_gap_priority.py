@@ -98,7 +98,7 @@ def main():
   "n_nonEAS_region_genes":1356,
   "n_EAS_regions_with_archived_QTL_gene_tests":sum(x["n_genes_archived_GTEx_ABF_tested"]>0 for x in region),
   "n_EAS_regions_with_no_archived_QTL_gene_tests":sum(x["n_genes_archived_GTEx_ABF_tested"]==0 for x in region),
-  "n_EUR_positional_genes_overlapping_or_independent":sum(int(x["n_EUR_regions"])>0 for x in allgenes),
+  "n_EUR_positional_genes_overlapping_or_independent":sum(int(x["number_EUR_positional_regions"])>0 for x in allgenes),
   "archive_coloc_assays":646,
   "candidate_gene_count_is_not_number_of_causal_loci":True,
   "no_missing_eQTL_test_interpreted_as_negative":True,
