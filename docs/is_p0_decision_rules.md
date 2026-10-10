@@ -60,10 +60,14 @@ declaration that genes or loci are causal.
    independently powered disease-relevant cell/QTL contrast with adequate
    markers, donor representation, region signal mapping and predefined effect
    precision threshold; descriptive healthy scRNA localization alone cannot.
-5. FGF5 R3_4 adult temporal-lobe counts UNRESOLVED:
-   first inspect original Seurat RNA features/symbol–Ensembl mapping and
-   preprocessing filters; if absent, test other reference datasets. Until then
-   MISSING_FEATURE, not zero expression or FGF5-negative.
+5. FGF5 R3_6 distributed GSE256493 adult temporal-lobe Seurat RNA assay:
+   symbol FGF5 and ENSG00000138675 rowname matches are both zero across
+   17,349 RNA features; gene-symbol/feature metadata columns were absent, so
+   metadata matching is not independently informative. Set cell localization
+   NOT_ASSESSABLE_IN_THIS_REFERENCE, not zero expression or FGF5-negative.
+   Independent cerebellum bulk expression is detected (HPA/GTEx), but neither
+   bulk expression nor shared GWAS–QTL signals establishes cell-level causality.
+   Preprocessing/dropout cannot be distinguished using this distributed object.
 6. For ALDH2 rs671, keep coding/mediated metabolic mechanisms separate.
    Do not interpret a single pleiotropic instrument as conclusive cis-MR.
 7. No automatic causal-gene promotion based on a score without independent

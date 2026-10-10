@@ -25,13 +25,13 @@ Can East Asian ischemic-stroke loci be connected to reproducible gene-, protein-
 - **Phase 9F-E human vascular reference:** COMPLETE (2026-10-09), normal temporal-lobe reference localization only, **not disease-state DGE**.
 - **Phase 11B coloc/SuSiE:** COMPUTATIONAL_COMPLETE_EXPLORATORY; paper-grade multi-signal colocalization remains **PENDING** validation.
 - **Broad discovery V2:** 80 provisional ancestry-aware distance components, 2,425 positional gene–region connections (2,225 unique gene IDs), plus one NEURL1 legacy-anchor-only row.
-- **P0 next stage:** Source-denominator, evidence-tier and FGF5 feature QC before costly molecular expansion.
+- **P0 stage:** The candidate/test denominators are source-audited; R3_6 completed FGF5 RNA feature-space investigation. Next: independent brain/arterial gene expression and donor-level reference robustness before costly molecular expansion.
 
 ## Evidence integrity update — 2026-10-10
 
 - The legacy 4-locus GTEx ABF stage includes **646 PASS gene–tissue tests**, **43 tested genes** and **16 tissue datasets**; H4 ≥ 0.5 in 6 tests, ≥ 0.75 in 2, ≥ 0.8 in 0. These results are not multiple-testing-adjusted or genome-wide across the expanded universe.
 - FGF5 best ABF H4≈0.7787 and SuSiE H4≈0.7522 share input evidence, so they are **not independent replications**. Both remain sensitive to molecular QTL power, priors, ancestry and LD provenance.
-- **FGF5 human Phase 9F-E reference:** the processed Seurat RNA counts feature is UNRESOLVED in 17,349 RNA features / 80,515 cells; this cannot establish zero expression. The original ~3.3 GB RDS feature-space and an independent tissue reference require QC.
+- **FGF5 human Phase 9F-E reference:** **R3_6 COMPLETE**. In original GSE256493 Seurat RNA assay (17,349 features; 80,515 cells), neither symbol FGF5 nor ENSG00000138675 matched the distributed feature rownames (0 each). No gene/symbol/feature metadata columns were available for alternate-identifier search. Cell-level FGF5 localization is **NOT_ASSESSABLE_IN_THIS_REFERENCE**, not biological zero expression. Independent cerebellar bulk RNA evidence exists. See [R3_6 FGF5 feature QC](IS_PHASE9F_R3_6_FGF5_FEATURE_QC_20261010.md).
 - **SH3PXD2A cell-type:** human R3_4 dataset has 33,630 Microglia and Macrophages. The gene's top detected cell class was Oligodendrocytes, not macrophages. Neither observation alone demonstrates cell-specific disease mechanism. Donor-level/disease-state tests are pending.
 - **COL4A2:** smooth muscle localization is descriptively concordant with the vessel hypothesis, but ubiquitous basement-membrane biology means localization alone does not prove causal regulation.
 - **Ancestry scope:** expanded EUR and EAS regions are not directly pooled independent loci; LD-clump/fine-map, effect-allele and source-cohort checks are required.
@@ -88,7 +88,8 @@ These remain exploratory until orthogonal validation supports promotion to a cor
 - Best bulk ABF H4 ≈ **0.7787**
 - Multi-signal SuSiE H4 ≈ **0.7522**
 - Working interpretation: **convergent regulatory / expression / protein mechanism**
-- Next layer: pQTL/MR and blood-pressure pathway integration
+- Phase 9F-E R3_6 source QC: distributed RNA assay feature absent/unresolved, so cell-level FGF5 expression cannot be computed. A separate human cerebellar bulk expression reference reports FGF5 expression; see dedicated R3_6 note.
+- Next layer: independent tissue validation, pQTL/MR and blood-pressure pathway integration
 
 ## Cell-type functional priorities
 
@@ -106,7 +107,7 @@ Use single-cell expression primarily for biological localization. The main mecha
 
 ### FGF5
 
-First resolve FGF5 row-name/feature coverage in original human RDS. No inference of biological nonexpression can be made from the missing Phase 9F-E counts feature. Test independent cerebellar and vessel references, then pQTL/MR/BP and alternative mechanisms.
+R3_6 has confirmed no FGF5 symbol or ENSG00000138675 matching RNA feature rownames in the released GSE256493 Seurat object; alternate gene metadata fields were unavailable. Record this cell-localization branch as NOT_ASSESSABLE_IN_THIS_REFERENCE. Human bulk cerebellum has independent FGF5 RNA evidence, whereas GTEx vessel RNA summary is near/at zero. Test compatible brain tissue and independent molecular mechanisms without interpreting missing features as gene negativity.
 
 ## Working thesis structure (hypothesis chapters, not causal claims)
 
@@ -127,7 +128,7 @@ First resolve FGF5 row-name/feature coverage in original human RDS. No inference
 
 - Reproduce audit across 80 provisional components and the 646 ABF tests, with source hashes, separate 2,425 positional pairs plus one anchor-only row, and missingness coverage.
 - Register evidentiary statuses and predeclared decision gates from docs/is_p0_decision_rules.md.
-- Audit FGF5 original RDS features in a memory-safe environment; validate alternate tissues rather than interpreting UNRESOLVED as zero expression.
+- Phase 9F-E R3_6 original RDS feature-space audit completed; update FGF5 localization as NOT_ASSESSABLE. Verify independent tissues and donor-aware cell-type comparisons for remaining genes (six donors; not 80,515 independent biological replicates).
 
 - Phase 10 human and disease-state sc/snRNA integration
 - Vascular ATAC / regulatory mapping for SH3PXD2A and COL4A2
