@@ -1,6 +1,6 @@
 # IS Phase10/11 — 646-assay direct SNP replay and 1000G EAS LD audit
 
-**2026-10-10 | BATCH_CODE_READY; 30/646 SNP_REPLAY_PASS; 616/646 SERVER_INPUT_MISSING; CAUSAL_CLAIMS_BLOCKED.**
+**2026-10-11 update | FULL_646_NUMERIC_REPLAY VERIFIED (646 PASS / 0 FAIL / 0 MISSING); remaining scientific causality/LD gates BLOCKED.** [Independent full source audit](IS_PHASE10_11_646_FULL_REPLAY_VERIFIED_20261011.md).
 
 ## Scope and source files
 
@@ -23,7 +23,7 @@ Original Drive paths below are relative to MyDrive/MASTER_DEGREE/IS_COLAB:
 - Input absent -> MISSING_INPUT; mismatched or unreadable -> FAIL with reason; genuine full-H0–H4 SNP replay -> PASS.
 - Each job refuses an existing output folder. No original inputs, canonical data, original ABF results or historical figures are overwritten.
 
-**Observed on the server:** 646 status rows, **30 PASS / 0 FAIL / 616 MISSING_INPUT**. This has also passed against the unannotated raw source master, not only its annotated copy. This is a successful **partial-coverage accounting run**, NOT a completed 646-input replay.
+**Historical 2026-10-10 server-cache run only (superseded by full Colab run):** 646 status rows, **30 PASS / 0 FAIL / 616 MISSING_INPUT**. This has also passed against the unannotated raw source master, not only its annotated copy. This is a successful **partial-coverage accounting run**, NOT a completed 646-input replay.
 
 ## Run full 646 inputs in Google Colab
 
@@ -33,7 +33,7 @@ It mounts Drive and reads every source SNP file directly, bypassing the server D
 
 MASTER_DEGREE/IS_COLAB/results/IS_PHASE10_11_LEGACY_646_SNP_REPLAY_V1
 
-The output includes full 646-row status, PASS-only table, per-source SHA256, original source index/master SHA256, runtime log and execution manifest. Only an all-646 PASS result can be called FULL_646_NUMERIC_REPLAY. The Colab execution is **not yet observed**; package installation and actual runtime success need verification from the generated log.
+The output includes full 646-row status, PASS-only table, per-source SHA256, original source index/master SHA256, runtime log and execution manifest. Only an all-646 PASS result can be called FULL_646_NUMERIC_REPLAY. **Verified 2026-10-11:** The one-cell Colab completed with all 646 original source SNP tests PASS; input/source SHA256, six Drive outputs, H0-H4 full matrix and logged exit status are independently checked. See [final full audit](IS_PHASE10_11_646_FULL_REPLAY_VERIFIED_20261011.md).
 
 ## 1000G EAS504 reference LD source audit
 
@@ -65,4 +65,4 @@ All 15,749 gene–SNP records across 8 selected original source inputs match the
 
 ## Latest partial-source snapshot: 30 inputs
 
-Direct SNP replays: 30/646 PASS, 0 FAIL, 616 server inputs not cached. Four 1000G EAS504 panels pass numerical correlation QC (53,979 repeated gene–SNP rows). See [cache30 source audit](IS_PHASE10_11_646_SOURCE_REPLAY_CACHED30_20261010.md). Cache21 remains a preserved historical snapshot; full original 646 Colab execution remains pending.
+Direct SNP replays: 30/646 PASS, 0 FAIL, 616 server inputs not cached. Four 1000G EAS504 panels pass numerical correlation QC (53,979 repeated gene–SNP rows). See [cache30 source audit](IS_PHASE10_11_646_SOURCE_REPLAY_CACHED30_20261010.md). Cache21 remains a preserved historical snapshot; a subsequent 2026-10-11 Colab execution independently verified all 646 source tests (see full report).
