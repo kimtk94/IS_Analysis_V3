@@ -14,17 +14,17 @@
 ## Prior sensitivity design
 
 - Software: installed coloc **5.2.3**. Run the package's own internal `prior.adjust` against each complete H0–H4 ABF summary (not manually multiplying H4 alone).
-- Conditional baseline assumes `p1=1e-4`, `p2=1e-4`, `p12=1e-5`. **The original legacy coloc run script and prior provenance have not been independently established**, so these are assumed settings, not audited historical metadata.
+- Baseline `p1=1e-4`, `p2=1e-4`, `p12=1e-5` is explicitly specified in the recovered [Phase10/11 v3 Colab](https://drive.google.com/file/d/1HM2j0kS_Twk5zBF0DWZPpafy-Xk4k0iu/view). All 646 index rows align to original results; three distinct gene–tissue pairs reproduce all H0–H4 by independent SNP-level reruns. Original 646-test runtime logs/package versions are still not independently verified. See [SNP replay audit](IS_PHASE10_11_ABF_SOURCE_SNP_REPLAY_20261010.md).
 - Grid: `1e-6, 3e-6, 1e-5, 3e-5, 1e-4`, holding p1/p2 constant.
 - Baseline `p12=1e-5` reproduced all 646 original five-hypothesis posterior vectors within 1e-9; 3,230 conditioned rows generated.
 - The focal comparison chooses the tissue with **highest baseline H4 per gene**; this is post hoc exploratory tissue selection, not multiple-testing-adjusted inference.
-- Inference is only conditional prior sensitivity of historical **single-signal ABF summaries**. It does not substitute for variant-level coloc, SuSiE, prior-source verification, allele harmonization, multi-signal LD, molecular QTL power or independent replication.
+- Inference is only conditional prior sensitivity of historical **single-signal ABF summaries**. For the 643 SNP-level pairs not independently replayed, it does not substitute for variant-level coloc, SuSiE, allele harmonization, multi-signal LD, molecular QTL power or independent replication.
 
 ## Selected baseline-best tissue PP.H4
 
 | Gene | p12=1e-6 | 1e-5 | 1e-4 | Interpretative status |
 |---|---:|---:|---:|---|
-| FGF5 | 0.260 | 0.779 | 0.972 | Sensitive; stronger evidence requires authentic prior and SNP/LD provenance |
+| FGF5 | 0.260 | 0.779 | 0.972 | Sensitive; stronger evidence requires fully attested runtime and SNP/LD provenance |
 | CALHM2 | 0.283 | 0.798 | 0.975 | Sensitive; different locus from FGF5, not directly ranked by H4 |
 | SH3PXD2A | 0.051 | 0.351 | 0.844 | Strong prior dependency |
 | COL4A2 | 0.047 | 0.331 | 0.832 | Strong prior dependency |
@@ -52,9 +52,9 @@ Source frozen prior-conditioned analysis and 9-gene evidence ledger outputs are 
 
 ## Release gates for an actual paper
 
-1. **G0:** Identify original 646-test execution environment and exact prior settings; ensure complete variant-level shared SNP files including variants that did not reach significance.
+1. **G0:** Original notebook prior settings recovered and 3 source SNP-pair replays PASS; original execution environment and 643 additional SNP-level run results require independent audit.
 2. **G1:** Reassess GWAS region independence and harmonize disease subtype, ancestry and effect-allele representation for each locus.
-3. **G2:** Rerun SNP-level ABF + sensitivity and LD-aware multiple-signal coloc on matched GWAS/QTL input; report H3/H4 and harmonization (NOT current summary-only conditional results).
+3. **G2:** Extend the 3 successful SNP-level independent replays to remaining 643 tests, audit SNP-specific QTL sample N and matched GWAS/eQTL harmonization, and perform cohort-matched LD-aware multi-signal coloc.
 4. **G3:** Independent molecular QTL study, or coding/perturbation evidence with orthogonal confounding assessment; test pQTL, blood pressure, pleiotropy as relevant.
 5. **G4:** Disease-state donor cell-type QTL/ATAC for SH3PXD2A and COL4A1/A2, contrasting healthy R3_7 expression patterns without claiming disease-specificity.
 6. **G5:** Separate association, tissue detection, colocalization, mediation, and causality conclusions in the manuscript. Preserve all tested gene–tissue combinations and excluded/missing loci.

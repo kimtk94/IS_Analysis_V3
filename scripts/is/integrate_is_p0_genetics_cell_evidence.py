@@ -75,7 +75,7 @@ def run(master,priors,donors,features,out):
             donor_comparisons_unanimous_higher_CPM=n_unanimous,
             reference_cell_evidence_status=status,
             joint_mechanism_verdict="NOT_ESTABLISHED",
-            model_source_status="ASSUMED_BASELINE_PRIORS_UNCONFIRMED",
+            model_source_status=("ARCHIVED_PRIORS_AND_SNP_REPLAY_3PAIRS_PASS" if gene in ("FGF5","SH3PXD2A","COL4A2") else "ARCHIVED_PRIORS_INDEX_ALIGNED_ONLY"),
             ancestry_LD_status="NOT_RECONFIRMED",
             independent_molecular_QTL_status="PENDING",
             disease_cell_QTL_status="PENDING"
@@ -99,8 +99,9 @@ def run(master,priors,donors,features,out):
        "Original four-locus GTEx ABF signals and R3_7 healthy donor expression",
        "are biologically compatible but not evidence for an allele-specific or",
        "disease-specific regulatory pathway. The p12 grid is summary-only,",
-       "assuming that old p1=p2=1e-4 and p12=1e-5, not confirmed from the",
-       "source SNP-level run log. The best H4 tissue is selected post hoc.",
+       "using source-code-confirmed p1=p2=1e-4 and p12=1e-5 (archived",
+       "Phase10/11 v3). Three of 646 inputs have direct SNP-level replay.",
+       "The best H4 tissue remains selected post hoc.",
        "",
        "| Gene | Best historical tissue | Baseline H4 | H4 (p12=1e-6) | H4 (p12=1e-4) | Donor comparisons with higher CPM | Cell evidence |",
        "|---|---|---:|---:|---:|---:|---|"]
@@ -108,9 +109,9 @@ def run(master,priors,donors,features,out):
         md.append(f'| {x["gene"]} | {x["selected_tissue"]} | {x["ABF_H4_baseline"]:.3f} | {x["H4_p12_1e_minus_6"]:.3f} | {x["H4_p12_1e_minus_4"]:.3f} | {x["donor_comparisons_unanimous_higher_CPM"]}/{x["donor_comparisons_qc_pass"]} | {x["reference_cell_evidence_status"]} |')
     md+=["","## Prepublication blockers",
           "",
-          "1. Verify the original ABF prior settings and region-level H0–H4 from archived scripts, run logs, and full variant-level inputs.",
+          "1. Original ABF prior settings verified in archived source notebook; three SNP-level replays PASS; original runtime logs and 643 SNP-level replays PENDING.",
           "2. Harmonize alleles, chromosome build, GWAS/EAS QTL SNP overlap, sample sizes, LD ancestry and cis-window definitions.",
-          "3. Run genuine SNP-level prior sensitivity and multi-signal SuSiE on matched QTL/GWAS signals; summary reweight is only a conditional diagnostic.",
+          "3. Independent SNP-level replay exists for three original pairs; extend to 643 and run multi-signal SuSiE with matched GWAS/QTL LD. The 646-row summary grid remains conditional recalculation.",
           "4. Obtain independent molecular QTL and disease cell-type QTL or validated functional perturbation if claiming a causal regulatory mechanism.",
           "5. Correct for tissue/gene selection and multiplicity before manuscript statements.",
           "6. Preserve 80 provisional regions / 2,225 positional genes; original 646 tests are a selected four-locus analysis, not an expanded genome-wide QTL assay.",
