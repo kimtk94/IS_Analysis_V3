@@ -48,3 +48,9 @@ Reference dosage exports, detailed 3,277-SNP row table, gene scorecard, locus QC
 `/srv/is-analysis/results/is/audits/is_priority4_eur_eas_signed_ld_20261011_v1/`.
 
 Next: verify signed LD vs independent PLINK pairwise r spot-check; compare frequency-based assay discordance; stage optional EAS/EUR LD sensitivity without claiming in-study GTEx LD, and assess candidate priorities across full 2,225 genes.
+
+## Figure and independently verified reference-r cross-check
+
+![EAS versus EUR GWAS-lead LD comparison](figures/IS_PRIORITY4_EAS_EUR_REFERENCE_LD_20261011.svg)
+
+The figure plots each of the 3,277 unique locus SNPs; 3,227 were informative for signed LD to the GWAS lead in both strata. Reference r² from the current source panel was separately verified against original EUR503 compressed VCF hardcall GT genotypes via `bcftools query`: chr4 rs12509595 vs rs3733336 **r=+0.6399320692**, chr10 rs11191772 vs rs57694670 **r=+0.9662524320**, agreeing with the PLINK ALT-dosage pipeline. Plot renderer has no external plotting dependency: `scripts/is/render_is_priority4_reference_ld_figure.py`.
