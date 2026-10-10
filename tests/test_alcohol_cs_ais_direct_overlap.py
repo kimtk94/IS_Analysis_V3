@@ -32,9 +32,9 @@ class TestAltHarmonization(unittest.TestCase):
     def test_scan_exact_vs_other_alleles(self):
         with tempfile.TemporaryDirectory() as td:
             path=Path(td)/"sample.tsv"
-            path.write_text("chr\tpos\tref\talt\tbuild\tvariant_id\teffect_allele\tother_allele\tbeta\tse\tp\n"
-                 "12\t10\tG\tA\tGRCh37\t12:10:G:A\tA\tG\t-0.3\t0.1\t0.01\n"
-                 "12\t20\tG\tT\tGRCh37\t12:20:G:T\tT\tG\t0.3\t0.1\t0.01\n")
+            path.write_text("dataset\tbuild\tchr\tpos\tref\talt\tvariant_id\teffect_allele\tother_allele\tbeta\tse\tp\n"
+                 "BBJ\tGRCh37\t12\t10\tG\tA\t12:10:G:A\tA\tG\t-0.3\t0.1\t0.01\n"
+                 "BBJ\tGRCh37\t12\t20\tG\tT\t12:20:G:T\tT\tG\t0.3\t0.1\t0.01\n")
             targets=[{"chrom":"12","pos":"10","ref":"G","alt":"A","variant_id":"12:10:G:A"},
                      {"chrom":"12","pos":"20","ref":"G","alt":"A","variant_id":"12:20:G:A"}]
             good,other,n=tool.scan(path,targets)
