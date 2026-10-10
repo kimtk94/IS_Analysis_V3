@@ -29,6 +29,14 @@ on:
       - "scripts/is/audit_gtex_alt_major_10_snp_native_bbj.py"
       - "scripts/is/build_is_nine_gene_mechanism_readiness.py"
       - "scripts/is/audit_is_altmajor_maf_gate_lineage.py"
+      - "scripts/is/audit_is_30_eas_regions_six_gwas_sources.py"
+      - "scripts/is/pilot_is_eas_two_region_public_nominal_qtl.py"
+      - "scripts/is/pilot_is_eas_t1_three_region_public_nominal_qtl.py"
+      - "scripts/is/build_is_eas30_gwas_qtl_expansion_queue.py"
+      - "scripts/is/audit_is_eas30_crossgwas_source_leads.py"
+      - "scripts/is/render_is_eas30_gwas_qtl_coverage.R"
+      - "scripts/is/render_is_eas30_2225_public_qtl_gene_readiness.R"
+      - "scripts/is/merge_is_eas30_public_nominal_qtl_15_sources.py"
       - "scripts/is/audit_is_8956_maf_palindrome_reference.py"
       - "scripts/is/summarize_is_646_prior_h3h4_2225_genes.py"
       - "scripts/is/build_is_eas30_qtl_gap_priority.py"
@@ -52,6 +60,11 @@ on:
       - "tests/test_gtex_alt_major_native_bbj.py"
       - "tests/test_is_nine_gene_mechanism_readiness.py"
       - "tests/test_is_altmajor_maf_gate_lineage.py"
+      - "tests/test_is_30_eas_regions_six_gwas_sources.py"
+      - "tests/test_is_eas_two_region_qtl_nominal_pilot.py"
+      - "tests/test_is_eas30_gwas_qtl_expansion_queue.py"
+      - "tests/test_is_eas30_crossgwas_source_leads.py"
+      - "tests/test_is_eas30_public_nominal_qtl_15_sources.py"
       - "tests/test_is_8956_maf_palindrome_reference.py"
       - "tests/test_is_646_prior_h3h4_2225_genes.py"
       - "tests/test_is_eas30_qtl_gap_priority.py"
@@ -99,6 +112,12 @@ jobs:
             scripts/is/audit_gtex_alt_major_10_snp_native_bbj.py \
             scripts/is/build_is_nine_gene_mechanism_readiness.py \
             scripts/is/audit_is_altmajor_maf_gate_lineage.py \
+            scripts/is/audit_is_30_eas_regions_six_gwas_sources.py \
+            scripts/is/pilot_is_eas_two_region_public_nominal_qtl.py \
+            scripts/is/pilot_is_eas_t1_three_region_public_nominal_qtl.py \
+            scripts/is/build_is_eas30_gwas_qtl_expansion_queue.py \
+            scripts/is/audit_is_eas30_crossgwas_source_leads.py \
+            scripts/is/merge_is_eas30_public_nominal_qtl_15_sources.py \
             scripts/is/audit_is_8956_maf_palindrome_reference.py \
             scripts/is/summarize_is_646_prior_h3h4_2225_genes.py \
             scripts/is/build_is_eas30_qtl_gap_priority.py
@@ -126,6 +145,11 @@ jobs:
             test_gtex_alt_major_native_bbj.py \
             test_is_nine_gene_mechanism_readiness.py \
             test_is_altmajor_maf_gate_lineage.py \
+            test_is_30_eas_regions_six_gwas_sources.py \
+            test_is_eas_two_region_qtl_nominal_pilot.py \
+            test_is_eas30_gwas_qtl_expansion_queue.py \
+            test_is_eas30_crossgwas_source_leads.py \
+            test_is_eas30_public_nominal_qtl_15_sources.py \
             test_is_8956_maf_palindrome_reference.py \
             test_is_646_prior_h3h4_2225_genes.py \
             test_is_eas30_qtl_gap_priority.py

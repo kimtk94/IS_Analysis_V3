@@ -1,0 +1,46 @@
+{
+  "status": "FIVE_PUBLIC_NOMINAL_QTL_REGIONS_15_SLICES_2225_GENE_READINESS",
+  "five_regions": [
+    "IS_XDATA_G0007",
+    "IS_XDATA_G0015",
+    "IS_XDATA_G0018",
+    "IS_XDATA_G0023",
+    "IS_XDATA_G0025"
+  ],
+  "n_region_QTL_slices": 15,
+  "n_public_QTL_tissue_sources": 3,
+  "n_region_QTL_raw_gene_variant_rows": 2677112,
+  "n_original_positional_genes": 2225,
+  "n_new_nominal_QTL_union_gene_ids": 149,
+  "n_nominal_QTL_union_gene_ids_without_historic_ABF": 124,
+  "n_T1_union_genes_with_nominal_QTL": 59,
+  "n_T1_nominal_QTL_genes_without_historic_ABF": 34,
+  "n_untested_archived_coloc_EAS_genes_still_826": 826,
+  "new_QTL_sources_not_genetic_colocalization": true,
+  "molecular_QTL_population_ancestry_unverified": true,
+  "raw_file_sha256": {
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_public_two_region_pilot_20261011_v1/IS_XDATA_G0025__QTD000131__GRCh38_17_6691879_7725409.tsv.gz": "a8354f65dd0a0449f7f72da96a7062063e1ac5aa04ba3dff1fab9b79cdcb4705",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_public_two_region_pilot_20261011_v1/IS_XDATA_G0025__QTD000171__GRCh38_17_6691879_7725409.tsv.gz": "7366eaac8316e8b721e2ffc406cd8357bb7d24816daeb57e4a05c6b893357d49",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_public_two_region_pilot_20261011_v1/IS_XDATA_G0025__QTD000434__GRCh38_17_6691879_7725409.tsv.gz": "63e851d65489fbd33528d21d755cf0308ed72df0c480f2b8c5abc735b551202d",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_public_two_region_pilot_20261011_v1/IS_XDATA_G0018__QTD000131__GRCh38_11_1377434_2377434.tsv.gz": "4c98434692f5c04345dba091a8761cf73e26d81c97628312e5fdff15d0df16bc",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_public_two_region_pilot_20261011_v1/IS_XDATA_G0018__QTD000171__GRCh38_11_1377434_2377434.tsv.gz": "b167c0b0ec627e09ccf73e79727182bf15899850fb2eaf288285b60c37c5c5b5",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_public_two_region_pilot_20261011_v1/IS_XDATA_G0018__QTD000434__GRCh38_11_1377434_2377434.tsv.gz": "c2d284e9001ef3c5f4f39b35bfb484386c523f4e6d6ac5ef8814da918819c0f0",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_T1_three_region_pilot_20261011_v1/IS_XDATA_G0015__QTD000131__GRCh38_10_102403919_104460593.tsv.gz": "d82e89871d37d8d33efaafa1fb5699a40d69e475a3497e433b5e184423dc5b01",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_T1_three_region_pilot_20261011_v1/IS_XDATA_G0015__QTD000171__GRCh38_10_102403919_104460593.tsv.gz": "c21fc83ac6bd4f79477fa7890187318cede15193dea58305a8cd0a8cdee38310",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_T1_three_region_pilot_20261011_v1/IS_XDATA_G0015__QTD000434__GRCh38_10_102403919_104460593.tsv.gz": "d54625ef966074ebd10c042f9e3f44646fd6b8bf29620a5c3c64e1e337927a54",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_T1_three_region_pilot_20261011_v1/IS_XDATA_G0023__QTD000131__GRCh38_13_109801501_110807358.tsv.gz": "d7801254de7d12d26706a4bc86e25f997b8382b3bc3360969e8a36e2671d3a99",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_T1_three_region_pilot_20261011_v1/IS_XDATA_G0023__QTD000171__GRCh38_13_109801501_110807358.tsv.gz": "a3ea7f874485669913159c3ed29785ddf5fc05bd2d87a787779891cc6e2f7260",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_T1_three_region_pilot_20261011_v1/IS_XDATA_G0023__QTD000434__GRCh38_13_109801501_110807358.tsv.gz": "abf523c735c788a6d2341c6591e6f93cd1b065b70e4fa1b5ab5b7fd40adc7600",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_T1_three_region_pilot_20261011_v1/IS_XDATA_G0007__QTD000131__GRCh38_4_79736549_80763187.tsv.gz": "ef42e0c577c17d7c9f739fe0401d801f75209931e615d0f91fd47184ee6443a0",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_T1_three_region_pilot_20261011_v1/IS_XDATA_G0007__QTD000171__GRCh38_4_79736549_80763187.tsv.gz": "17bc7b0978e727eccae794793d699c84c01e98870907fac7b36cd4aa0f1c5062",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas30_T1_three_region_pilot_20261011_v1/IS_XDATA_G0007__QTD000434__GRCh38_4_79736549_80763187.tsv.gz": "fda092f35523ed4e7e7dc664adc3dc86301af8595baa03b37f3e421f98ebf748"
+  },
+  "input_manifest_SHA256": {
+    "/srv/is-analysis/results/is/audits/is_eas30_two_region_nominal_qtl_20261011_v1/IS_EAS_TWO_REGION_THREE_PUBLIC_QTL_SOURCE_COVERAGE.tsv": "5190258789528c657b4cc37744e88503d01e99bff0d8ad213e4a3599403ae26c",
+    "/srv/is-analysis/results/is/audits/is_eas30_two_region_nominal_qtl_20261011_v1/IS_EAS_TWO_REGION_GENE_NOMINAL_QTL_COVERAGE.tsv": "cd3b5e24e3a5092ed86b20bbd0eec5085f94caeb07b494ab78d3eb7639a117c5",
+    "/srv/is-analysis/results/is/audits/is_eas30_T1_three_region_nominal_qtl_20261011_v1/IS_EAS_T1_THREE_REGION_THREE_PUBLIC_QTL_SOURCE_COVERAGE.tsv": "3d1a4ec001501b0c7a8c9659bd16ad61a4a9c6e0f29a2239431d59176a48059e",
+    "/srv/is-analysis/results/is/audits/is_eas30_T1_three_region_nominal_qtl_20261011_v1/IS_EAS_T1_THREE_REGION_GENE_NOMINAL_QTL_COVERAGE.tsv": "8b003ce926d799289bcd79760e03b66141f4cd9ccff00aa337eb653227c548a2",
+    "/srv/is-analysis/results/is/audits/is_2225_prior_af_integrated_20261011_v1/IS_2225_GENE_ABF_PRIOR_AF_INTEGRATED.tsv": "6e4019efad4073ae8ec3282ee71d188bac6b95665fea3c6f39d746bf6d1d817f",
+    "/srv/is-analysis/results/is/audits/is_eas30_gwas_qtl_priority_20261011_v2/IS_EAS30_OUTCOME_QTL_EXPANSION_PRIORITY.tsv": "c404829d31db0a32292f4056c492400eb65d7d0ec85f26568277e6cc375de679"
+  }
+}
