@@ -58,6 +58,7 @@ def build(sources):
  windows=sources["windows"]
  legacy=sources["coloc"]
  replay=sources["replay"]
+ verified_replay=sources.get("verified_replay")
  priority=sources["priority8"]
  lit=sources["literature"]
  cell=sources["cell_gene"]
@@ -98,6 +99,16 @@ def build(sources):
   replay_by_key[key]=r
  if set(qtl_by_key)!=set(replay_by_key):
   raise ValueError("Archived QTL assay and replay sources disagree")
+ verified_by_key={}
+ if verified_replay is not None:
+  if len(verified_replay)!=646:raise ValueError("Verified replays must have 646 records")
+  for item in verified_replay:
+   key=item["locus"],item["dataset_key"],item["gene_base"]
+   if key in verified_by_key:raise ValueError("Duplicate new replay assay")
+   if item["status"]=="PASS" and (fnum(item["delta_max"]) is None or fnum(item["delta_max"])>1e-8):
+    raise ValueError("Invalid PASS posterior delta")
+   verified_by_key[key]=item
+  if set(verified_by_key)!=set(qtl_by_key):raise ValueError("New replay assay keys changed")
 
  # Historic gene symbols are aliases; convert all relevant priority/literature/
  # healthy-cell tags through the exact archived gene_ID (locus+dataset+symbol).
@@ -166,6 +177,8 @@ def build(sources):
   statuses=Counter(replay_by_key[(q["locus"],q["dataset_key"],q["gene_base"])]["status"]
                    for q in archived)
   if archived and statuses.total()!=len(archived):raise ValueError("Replay sample count unexpected")
+  recomputed=Counter(verified_by_key[(q["locus"],q["dataset_key"],q["gene_base"])]["status"]
+                 for q in archived) if verified_by_key else Counter()
   if r["eqtl_status"]=="REASSESS_LEGACY" and not archived:
    raise ValueError(f"Legacy eQTL label lacks matching locus+Ensembl ID: {k}")
   max_h4=max((fnum(q["PP.H4"]) for q in archived if fnum(q["PP.H4"]) is not None),default=None)
@@ -180,6 +193,8 @@ def build(sources):
    "archived_ABF_assays":len(archived),"archived_max_PP_H4":max_h4 if max_h4 is not None else "",
    "archived_replay_PASS":statuses.get("PASS",0),
    "archived_replay_MISSING_INPUT":statuses.get("MISSING_INPUT",0),
+   "new_independent_SNP_ABF_replay_PASS":recomputed.get("PASS",0),
+   "new_independent_SNP_ABF_replay_REVIEW":len(archived)-recomputed.get("PASS",0) if verified_by_key else "",
    "priority8_SNP_replay":len(priority_rows),
    "literature_assays_linked":len(literature_rows),
    "legacy_symbols":";".join(sorted(aliases.get(r["gene_id_stable"],set()))),
@@ -200,6 +215,7 @@ def build(sources):
   qassays=sum(x["archived_ABF_assays"] for x in rs)
   qpass=sum(x["archived_replay_PASS"] for x in rs)
   qmissing=sum(x["archived_replay_MISSING_INPUT"] for x in rs)
+  verified_pass=sum(x["new_independent_SNP_ABF_replay_PASS"] for x in rs)
   pri=sum(x["priority8_SNP_replay"] for x in rs)
   lcount=sum(x["literature_assays_linked"] for x in rs)
   h4s=[x["archived_max_PP_H4"] for x in rs if x["archived_max_PP_H4"]!=""]
@@ -215,7 +231,7 @@ def build(sources):
    healthy_status="NOT_ASSESSED_IN_SELECTED_NINE_GENE_HUMAN_REFERENCE"
    top_cell="";donors_pass=0
   gws=sum(x["region_gws"]=="1" for x in rs)
-  level=("SNP_ABF_REPLAY_CONTEXT_READY" if qpass>0 else
+  level=("SNP_ABF_REPLAY_CONTEXT_READY" if (verified_pass if verified_by_key else qpass)>0 else
          "LEGACY_ABF_INPUT_PENDING" if qassays>0 else
          "GWAS_REGION_POSITIONAL_FOLLOWUP" if gws>0 else
          "POSITIONAL_OR_SUGGESTIVE_FOLLOWUP")
@@ -235,6 +251,7 @@ def build(sources):
    "archived_EAS_GTEx_max_PP_H4":max(h4s) if h4s else "",
    "archived_EAS_GTEx_SNP_replay_PASS":qpass,
    "archived_EAS_GTEx_SNP_replay_MISSING_INPUT":qmissing,
+   "new_SNP_ABF_replay_PASS":verified_pass if verified_by_key else "",
    "SNP_replayed_priority8_evidence":pri,
    "linked_literature_gene_locus_records":lcount,
    "human_reference_feature_status":healthy_status,
@@ -279,8 +296,10 @@ def build(sources):
   "priority8_attached_assays":sum(x["priority8_SNP_replay"] for x in contextual),
   "historic_ABF_records":len(legacy),
   "historic_replay_status":dict(Counter(r["status"] for r in replay)),
+  "new_SNP_ABF_replay_status":dict(Counter(r["status"] for r in verified_replay)) if verified_by_key else "NOT_PROVIDED",
   "linked_historical_ABF_assays_to_EAS_positional_gene_regions":sum(x["archived_ABF_assays"] for x in contextual),
   "linked_replay_pass_to_EAS_positional_gene_regions":sum(x["archived_replay_PASS"] for x in contextual),
+  "new_replay_pass_linked_to_EAS_genes":sum(x["new_independent_SNP_ABF_replay_PASS"] for x in contextual),
   "legacy_only_anchors":anchor,
   "unmapped_support_context":priority_unmapped,
   "gene_followup_tiers":dict(Counter(x["readiness_for_exploratory_followup"] for x in full)),
@@ -300,11 +319,15 @@ def main():
  p=argparse.ArgumentParser()
  p.add_argument("--results-root",type=Path,default=Path("/srv/is-analysis/results/is"))
  p.add_argument("--out-dir",required=True,type=Path)
+ p.add_argument("--verified-replay",type=Path,help="Full source-file-based SNP-level coloc rerun TSV; overrides readiness only, never canonical sources")
  a=p.parse_args()
  paths={name:a.results_root/rel for name,rel in REL.items()}
  for k,v in paths.items():
   if not v.exists():raise FileNotFoundError(str(v))
  sources={k:json.loads(v.read_text()) if v.suffix==".json" else read(v) for k,v in paths.items()}
+ if a.verified_replay:
+  sources["verified_replay"]=read(a.verified_replay)
+  paths["verified_replay"]=a.verified_replay
  contextual,genes,anchors,manifest=build(sources)
  if a.out_dir.exists() and any(a.out_dir.iterdir()):
   raise FileExistsError("Will not overwrite existing results")
@@ -317,6 +340,7 @@ def main():
  (a.out_dir/"IS_GENE_EVIDENCE_MATRIX_MANIFEST.json").write_text(json.dumps(manifest,indent=2)+"\n")
  print("IS_EVIDENCE_MATRIX_COMPLETE","GENES",len(genes),"REGION_PAIRS",len(contextual))
  print("REPLAY",manifest["historic_replay_status"])
+ print("NEW_REPLAY",manifest["new_SNP_ABF_replay_status"])
  print("LINKED_ABF",manifest["linked_historical_ABF_assays_to_EAS_positional_gene_regions"])
  print("PRIORITY8_LINKED",manifest["priority8_attached_assays"])
  print("HUMAN",manifest["human_gene_id_mappings"])
