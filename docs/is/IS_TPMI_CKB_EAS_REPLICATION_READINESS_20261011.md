@@ -11,6 +11,7 @@ Koyanagi 2024 Japanese alcohol GWAS and Japanese BBJ IS share a cohort-origin ri
 - **Phecode 433.21 — Cerebral artery occlusion, with cerebral infarction**, with reported **9,249 cases and 304,660 controls** (based on local HTML probe snapshot).
 - **GRCh38** (verified from locally saved TPMI PheWeb source JavaScript `window.model.hg_build_number=38`).
 - Source HTML advertises a direct `Summary Statistics` download at `/download/saige_gwas/433.21`. Earlier server probe returned HTTP 200, later 429; a **single non-retried HEAD on 2026-10-11 KST returned HTTP 403**. No rate-limit workaround attempted. **No TPMI GWAS statistics downloaded or analyzed yet**.
+- The pre-existing **2,000,000-byte compressed probe** (`data/is/east_asia/taiwan/tpmi/download_probe/download_433.21.probe`) is a gzip prefix, from which the following exact TSV columns were confirmed: `chrom,pos,ref,alt,rsids,nearest_genes,pval,beta,sebeta,af,case_af,control_af,ac,tstat`. This probe only establishes schema; it cannot be treated as a complete GWAS.
 - 433.21 is a fairly close cerebral infarction phenotype, but not necessarily identical in adjudication to BBJ/GIGASTROKE AIS. Evaluate endpoint semantics before quantitative meta-analysis.
 - A public independent Taiwan dataset does not establish nonoverlap with BBJ for every participant without checking cohort details, but there is no automatic BBJ reuse assumption.
 
@@ -41,15 +42,18 @@ Artifacts (under existing experimental `susie_rss_finite_ref_sandbox_v1`):
 - `tpmi_grch38_mapping_v1/TPMI_11_SNPS_GRCH38_MAPPING.tsv` and manifest: first-pass Ensembl, **3/11**.
 - **`tpmi_grch38_crossbuild_v1/TPMI_11_SNP_GRCH38_CHAIN_UCSC_ENS_AUDIT.tsv` and `TPMI_GRCH38_CROSSBUILD_AUDIT_MANIFEST.json`**: reference-validated **11/11**, Ensembl same-pass **9/11**, 2 transient API errors.
 
+**TPMI authorized GWAS preflight code:** `scripts/is/audit_tpmi_43321_summary_gwas.py` expects a legitimately acquired full `433.21` summary-statistics file. It joins verified GRCh38 REF:ALT exactly, checks the observed rsIDs and numeric statistics, and **requires `--effect-alt-confirmed`** because the file has beta without an explicit effect-allele column. Four local synthetic regression tests pass. Nothing in this script downloads data or bypasses HTTP 403/429.
+
 Source code and offline regression tests:
 - `scripts/is/build_tpmi_grch38_mapping.py`, `tests/test_tpmi_grch38_mapping.py` (5 tests).
 - `scripts/is/audit_tpmi_grch38_chain_ucsc.py`, `tests/test_tpmi_grch38_chain_ucsc.py` (3 tests).
-- All **8 TPMI reference mapping regression tests PASSED locally on server**.
+- All **8 TPMI reference mapping regression tests PASSED locally on server**. The TPMI summary-statistics parser additionally passed 4 tests. End-to-end **41/41 offline allele/association/science-gate unit tests passed** with an exit code of 0 at a pinned branch commit. GitHub Actions remote-run status is separate and has not been independently attested.
 
 ## China Kadoorie Biobank (CKB): access blocker is encryption, not absence of GWAS
 
 - Source: https://pheweb.ckbiobank.org/pheno/i63
 - CKB `i63`: locally downloaded encrypted ZIP `/srv/is-analysis/data/is/east_asia/china/ckb/CKB_i63_IS.zip` (169,496,188 bytes) contains flagged encrypted `i63.tsv` (uncompressed 544,277,491 bytes). No decryption password supplied.
+- A **fresh full-file SHA-256 recomputation** on the server matched the local `.sha256` manifest: `41fd8088c811b5415e016a2f98dfa63463e50152a626bd1c806d4a360c2f82b3`. The ZIP is intact relative to its recorded checksum; this **does not decrypt or validate the internal plaintext**.
 - CKB PheWeb i63 currently describes **14,302 cases / 67,954 controls**; variation effects for this PheWeb are for reference/alternative alleles in GRCh38 (PheWeb indicates shift to GRCh38 in March 2025), confirm file schema after authorized decryption.
 - Official download-key instructions: https://pheweb.ckbiobank.org/about — email `ckbaccess@ndph.ox.ac.uk` with subject `CKB summary statistics request` and researcher **name, institution, institutional address and institutional email**. Keys are not to be redistributed; decrypted results may only be shared with the immediate research group under their policy.
 - **Important administrative distinction:** Public PheWeb *summary-statistics download key* request is distinct from more comprehensive **individual-level CKB data access**, which can require formal agreement and fees. Do not conflate these processes.
