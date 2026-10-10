@@ -18,6 +18,8 @@ on:
       - "scripts/is/build_existing_is_gene_evidence_matrix.py"
       - "scripts/is/audit_local_drive_coloc_abf_recovery.py"
       - "scripts/is/replay_existing_646_coloc_abf.R"
+      - "scripts/is/run_existing_646_coloc_qtl_n_sensitivity.R"
+      - "scripts/is/summarize_646_coloc_replay_science_readiness.py"
       - "tests/test_alcohol_cs_ais_direct_overlap.py"
       - "tests/test_gigastroke_ais_refalt_provenance.py"
       - "tests/test_gigastroke_fasta_variant_contract.py"
@@ -29,6 +31,7 @@ on:
       - "tests/test_tpmi_43321_summary_gwas.py"
       - "tests/test_existing_is_gene_evidence_matrix.py"
       - "tests/test_local_drive_coloc_abf_recovery.py"
+      - "tests/test_646_coloc_replay_science_readiness.py"
       - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
   pull_request:
     paths:
@@ -62,7 +65,8 @@ jobs:
             scripts/is/audit_tpmi_grch38_chain_ucsc.py \
             scripts/is/audit_tpmi_43321_summary_gwas.py \
             scripts/is/build_existing_is_gene_evidence_matrix.py \
-            scripts/is/audit_local_drive_coloc_abf_recovery.py
+            scripts/is/audit_local_drive_coloc_abf_recovery.py \
+            scripts/is/summarize_646_coloc_replay_science_readiness.py
 
       - name: Run isolated SNP harmonization and science-gate tests
         run: |
@@ -78,7 +82,8 @@ jobs:
             test_tpmi_grch38_chain_ucsc.py \
             test_tpmi_43321_summary_gwas.py \
             test_existing_is_gene_evidence_matrix.py \
-            test_local_drive_coloc_abf_recovery.py
+            test_local_drive_coloc_abf_recovery.py \
+            test_646_coloc_replay_science_readiness.py
           do
             echo "RUNNING $test_file"
             python3 -m unittest discover \
