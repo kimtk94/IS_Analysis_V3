@@ -100,7 +100,7 @@ def make_matrix(overlap_rows, provenance_rows, exposure_rows):
             "ais_beta_ALT":beta,"ais_se":se,"ais_p":pvalue,"ais_eaf_ALT":eaf,
             "ais_source_original_id":p.get("original_canonical_id","") if ds=="GIGASTROKE_EAS_AIS" else r["source_variant_id"],
             "effect_direction_descriptive_only":direction,
-            "independent_replication":"NO_KNOWN_BBJ_COHORT_CONTRIBUTION_OR_OVERLAP",
+            "independent_replication":"NOT_INDEPENDENT_BBJ_CONTRIBUTION_OR_RISK",
             "interpretation":"OBSERVATIONAL_ASSOCIATION_ONLY_NOT_MR"
         })
     return result
