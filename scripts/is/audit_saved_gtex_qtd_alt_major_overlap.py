@@ -58,8 +58,7 @@ def audit(root,cache):
  cache_paths=list(cache.glob("BBJ_IS_L003__GTEx_V8__*__*.tsv"))
  if not cache_paths:raise ValueError("L003 recovered coloc files missing")
  for f in cache_paths:
-  dataset=f.name.split("__")
-  if len(dataset)!=3 or not dataset[1].startswith("GTEx_V8__"):
+  if not f.name.startswith("BBJ_IS_L003__GTEx_V8__") or not f.name.endswith(".tsv"):
    raise ValueError("Bad expected cached file syntax")
   with f.open(newline="") as handle:
    for r in csv.DictReader(handle,delimiter="\t"):
