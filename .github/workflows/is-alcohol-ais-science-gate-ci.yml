@@ -29,6 +29,10 @@ on:
       - "scripts/is/audit_gtex_alt_major_10_snp_native_bbj.py"
       - "scripts/is/build_is_nine_gene_mechanism_readiness.py"
       - "scripts/is/audit_is_altmajor_maf_gate_lineage.py"
+      - "scripts/is/audit_is_8956_maf_palindrome_reference.py"
+      - "scripts/is/summarize_is_646_prior_h3h4_2225_genes.py"
+      - "scripts/is/build_is_eas30_qtl_gap_priority.py"
+      - "scripts/is/render_is_646_h3h4_sensitivity.R"
       - "tests/test_alcohol_cs_ais_direct_overlap.py"
       - "tests/test_gigastroke_ais_refalt_provenance.py"
       - "tests/test_gigastroke_fasta_variant_contract.py"
@@ -48,6 +52,9 @@ on:
       - "tests/test_gtex_alt_major_native_bbj.py"
       - "tests/test_is_nine_gene_mechanism_readiness.py"
       - "tests/test_is_altmajor_maf_gate_lineage.py"
+      - "tests/test_is_8956_maf_palindrome_reference.py"
+      - "tests/test_is_646_prior_h3h4_2225_genes.py"
+      - "tests/test_is_eas30_qtl_gap_priority.py"
       - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
   pull_request:
     paths:
@@ -55,6 +62,7 @@ on:
       - "tests/test_alcohol*"
       - "tests/test_gigastroke*"
       - "tests/test_646_coloc*"
+      - "tests/test_is_*"
       - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
   workflow_dispatch:
 
@@ -90,7 +98,10 @@ jobs:
             scripts/is/audit_saved_gtex_qtd_alt_major_overlap.py \
             scripts/is/audit_gtex_alt_major_10_snp_native_bbj.py \
             scripts/is/build_is_nine_gene_mechanism_readiness.py \
-            scripts/is/audit_is_altmajor_maf_gate_lineage.py
+            scripts/is/audit_is_altmajor_maf_gate_lineage.py \
+            scripts/is/audit_is_8956_maf_palindrome_reference.py \
+            scripts/is/summarize_is_646_prior_h3h4_2225_genes.py \
+            scripts/is/build_is_eas30_qtl_gap_priority.py
 
       - name: Run isolated SNP harmonization and science-gate tests
         run: |
@@ -114,7 +125,10 @@ jobs:
             test_saved_gtex_qtd_alt_major_overlap.py \
             test_gtex_alt_major_native_bbj.py \
             test_is_nine_gene_mechanism_readiness.py \
-            test_is_altmajor_maf_gate_lineage.py
+            test_is_altmajor_maf_gate_lineage.py \
+            test_is_8956_maf_palindrome_reference.py \
+            test_is_646_prior_h3h4_2225_genes.py \
+            test_is_eas30_qtl_gap_priority.py
           do
             echo "RUNNING $test_file"
             python3 -m unittest discover \
