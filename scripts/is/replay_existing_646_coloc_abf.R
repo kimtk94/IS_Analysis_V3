@@ -39,7 +39,7 @@ if(limit>0) master <- head(master,limit)
 required_input <- c("locus","dataset_key","gene_base","match_key",
                     "gwas_beta","gwas_se","gwas_maf",
                     "eqtl_beta","eqtl_se","eqtl_maf",
-                    "qtl_n_scalar","harmonization")
+                    "qtl_n_scalar","eqtl_n","harmonization")
 results <- vector("list",nrow(master))
 for(i in seq_len(nrow(master))) {
   entry <- master[i,,drop=FALSE]
@@ -48,7 +48,7 @@ for(i in seq_len(nrow(master))) {
   result <- list(locus=entry$locus,dataset_key=entry$dataset_key,
                  gene_base=entry$gene_base,source_file=basename(file),
                  expected_nsnps=entry$nsnps,status="NOT_RUN",
-                 delta_max="",maf_diff_gt_0p1="",maf_diff_fraction="",n_qtl_sample_N_distinct="",new_PP_H0="",new_PP_H1="",new_PP_H2="",
+                 delta_max="",maf_diff_gt_0p1="",maf_diff_fraction="",n_qtl_sample_N_distinct="",qtl_N_per_SNP_min="",qtl_N_per_SNP_max="",new_PP_H0="",new_PP_H1="",new_PP_H2="",
                  new_PP_H3="",new_PP_H4="",detail="")
   if(!file.exists(file)) {
     result$status <- "MISSING_INPUT"
@@ -63,15 +63,18 @@ for(i in seq_len(nrow(master))) {
         stop("LOCUS_DATASET_GENE_DISCORDANCE")
       if(!all(d$harmonization=="EXACT_REF_ALT_GRCH38")) stop("ALLELE_ALIGNMENT_UNEXPECTED")
       numeric_cols <- c("gwas_beta","gwas_se","gwas_maf",
-                        "eqtl_beta","eqtl_se","eqtl_maf","qtl_n_scalar")
+                        "eqtl_beta","eqtl_se","eqtl_maf","qtl_n_scalar","eqtl_n")
       for(n in numeric_cols) d[[n]] <- as.numeric(d[[n]])
       if(any(!vapply(d[numeric_cols],function(x)all(is.finite(x)),logical(1)))) stop("NONFINITE_SUMMARY_STATS")
-      if(any(d$gwas_se<=0 | d$eqtl_se<=0 | d$qtl_n_scalar<5)) stop("INVALID_SE_OR_N")
+      if(any(d$gwas_se<=0 | d$eqtl_se<=0 | d$qtl_n_scalar<5 | d$eqtl_n<5)) stop("INVALID_SE_OR_N")
       if(any(d$gwas_maf<=0 | d$gwas_maf>0.5 |
              d$eqtl_maf<=0 | d$eqtl_maf>0.5)) stop("INVALID_MAF")
       result$maf_diff_gt_0p1 <- sum(abs(d$gwas_maf-d$eqtl_maf)>0.1)
       result$maf_diff_fraction <- result$maf_diff_gt_0p1/nrow(d)
-      result$n_qtl_sample_N_distinct <- length(unique(d$qtl_n_scalar))
+      result$n_qtl_sample_N_distinct <- length(unique(d$eqtl_n))
+      result$qtl_N_per_SNP_min <- min(d$eqtl_n)
+      result$qtl_N_per_SNP_max <- max(d$eqtl_n)
+      if(abs(d$qtl_n_scalar[[1]]-d$eqtl_n[[1]])>1e-8) stop("ORIGINAL_QTL_FIRST_N_DISAGREES_WITH_PER_SNP_SOURCE")
       sample_n <- d$qtl_n_scalar[[1]]
       ds1 <- list(snp=d$match_key, beta=d$gwas_beta,
                   varbeta=d$gwas_se^2,MAF=d$gwas_maf,
