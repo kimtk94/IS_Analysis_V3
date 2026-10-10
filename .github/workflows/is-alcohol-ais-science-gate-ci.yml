@@ -28,6 +28,7 @@ on:
       - "scripts/is/audit_saved_gtex_qtd_alt_major_overlap.py"
       - "scripts/is/audit_gtex_alt_major_10_snp_native_bbj.py"
       - "scripts/is/build_is_nine_gene_mechanism_readiness.py"
+      - "scripts/is/audit_is_altmajor_maf_gate_lineage.py"
       - "tests/test_alcohol_cs_ais_direct_overlap.py"
       - "tests/test_gigastroke_ais_refalt_provenance.py"
       - "tests/test_gigastroke_fasta_variant_contract.py"
@@ -46,6 +47,7 @@ on:
       - "tests/test_saved_gtex_qtd_alt_major_overlap.py"
       - "tests/test_gtex_alt_major_native_bbj.py"
       - "tests/test_is_nine_gene_mechanism_readiness.py"
+      - "tests/test_is_altmajor_maf_gate_lineage.py"
       - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
   pull_request:
     paths:
@@ -87,7 +89,8 @@ jobs:
             scripts/is/audit_all_8956_bbj_native_allele_chain.py \
             scripts/is/audit_saved_gtex_qtd_alt_major_overlap.py \
             scripts/is/audit_gtex_alt_major_10_snp_native_bbj.py \
-            scripts/is/build_is_nine_gene_mechanism_readiness.py
+            scripts/is/build_is_nine_gene_mechanism_readiness.py \
+            scripts/is/audit_is_altmajor_maf_gate_lineage.py
 
       - name: Run isolated SNP harmonization and science-gate tests
         run: |
@@ -110,7 +113,8 @@ jobs:
             test_all_8956_bbj_native_allele_chain.py \
             test_saved_gtex_qtd_alt_major_overlap.py \
             test_gtex_alt_major_native_bbj.py \
-            test_is_nine_gene_mechanism_readiness.py
+            test_is_nine_gene_mechanism_readiness.py \
+            test_is_altmajor_maf_gate_lineage.py
           do
             echo "RUNNING $test_file"
             python3 -m unittest discover \
