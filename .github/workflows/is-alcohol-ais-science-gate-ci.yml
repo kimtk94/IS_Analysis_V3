@@ -45,6 +45,7 @@ on:
       - "tests/test_all_8956_bbj_native_allele_chain.py"
       - "tests/test_saved_gtex_qtd_alt_major_overlap.py"
       - "tests/test_gtex_alt_major_native_bbj.py"
+      - "tests/test_is_nine_gene_mechanism_readiness.py"
       - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
   pull_request:
     paths:
@@ -108,7 +109,8 @@ jobs:
             test_is_2225_prior_af_integrated_context.py \
             test_all_8956_bbj_native_allele_chain.py \
             test_saved_gtex_qtd_alt_major_overlap.py \
-            test_gtex_alt_major_native_bbj.py
+            test_gtex_alt_major_native_bbj.py \
+            test_is_nine_gene_mechanism_readiness.py
           do
             echo "RUNNING $test_file"
             python3 -m unittest discover \
