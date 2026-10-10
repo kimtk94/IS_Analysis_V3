@@ -24,6 +24,7 @@ Can East Asian ischemic-stroke loci be connected to reproducible gene-, protein-
 - **Bulk eQTL stage:** sufficient for prioritization
 - **Phase 9F-E human vascular reference:** COMPLETE (2026-10-09), normal temporal-lobe reference localization only, **not disease-state DGE**.
 - **Phase 11B coloc/SuSiE:** COMPUTATIONAL_COMPLETE_EXPLORATORY; paper-grade multi-signal colocalization remains **PENDING** validation.
+- **Phase 9C legacy ABF p12 sensitivity (2026-10-10):** SUMMARY_ONLY_CONDITIONAL_REWEIGHT COMPLETE (646 PASS × 5 prior values = 3,230 rows); original p1/p2/p12 setting provenance UNCONFIRMED. FGF5 H4 0.260 at p12=1e-6 vs 0.779 at 1e-5 vs 0.972 at 1e-4. These are not new GWAS/QTL analyses or independent colocalization. See [prior sensitivity protocol](IS_PHASE9C_LEGACY_COLOC_P12_SENSITIVITY_20261010.md).
 - **Broad discovery V2:** 80 provisional ancestry-aware distance components, 2,425 positional gene–region connections (2,225 unique gene IDs), plus one NEURL1 legacy-anchor-only row.
 - **P0 stage:** The candidate/test denominators are source-audited; R3_6 completed FGF5 RNA feature-space investigation. Next: independent brain/arterial gene expression and donor-level reference robustness before costly molecular expansion.
 - **Phase 9F R3_7 donor pseudobulk:** real six-donor (80,515 cells) run COMPLETE and independently reaudited: 10/10 comparisons pass paired coverage; 9/10 show unanimous paired CPM directions; 8/10 show unanimous detection-fraction directions. This is **healthy-reference descriptive expression**, not disease DGE or causal regulation. The neuronal class is heavily donor-imbalanced (15,903/15,942 neurons from TL8). See [R3_7 protocol](IS_PHASE9F_R3_7_DONOR_PSEUDOBULK_PROTOCOL_20261010.md) and server results/is/audits/phase9f_r3_7_donor_reaudit_20261010_v1.
@@ -37,6 +38,7 @@ Can East Asian ischemic-stroke loci be connected to reproducible gene-, protein-
 - **COL4A2:** smooth muscle localization is descriptively concordant with the vessel hypothesis, but ubiquitous basement-membrane biology means localization alone does not prove causal regulation.
 - **Ancestry scope:** expanded EUR and EAS regions are not directly pooled independent loci; LD-clump/fine-map, effect-allele and source-cohort checks are required.
 - **Status and policy:** all historical core genes are *prioritized hypotheses*, not established causal targets. See [IS P0 decision rules](is_p0_decision_rules.md) and the immutable audit under results/is/audits/p0_evidence_20261010_v3 (source results are intentionally not committed).
+- **Integrated 9-gene P0 evidence overlay:** separated conditional original ABF posterior, six-donor healthy-reference expression and unresolved molecular/disease cell QTL. **9/9 gene mechanism causal verdicts remain NOT_ESTABLISHED**. Source-provenance JSON in results/is/audits/is_p0_integrated_genetics_cell_20261010_v1.
 
 ## Core framework
 
@@ -133,6 +135,7 @@ R3_6 has confirmed no FGF5 symbol or ENSG00000138675 matching RNA feature rownam
 
 - Phase 10 human and disease-state sc/snRNA integration
 - Vascular ATAC / regulatory mapping for SH3PXD2A and COL4A2
+- Verify original ABF p1/p2/p12 source provenance; perform genuine variant-level prior-sensitivity and tissue-selection audit before claiming shared causal variants.
 - FGF5 pQTL/MR and blood-pressure pathway integration
 - Maintain ALDH2 as a coding/protein/metabolic branch rather than forcing a bulk-eQTL model
 - Document ancestry-matched LD limitations explicitly
