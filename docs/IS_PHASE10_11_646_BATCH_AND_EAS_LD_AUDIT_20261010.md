@@ -1,6 +1,6 @@
 # IS Phase10/11 — 646-assay direct SNP replay and 1000G EAS LD audit
 
-**2026-10-10 | BATCH_CODE_READY; 8/646 SNP_REPLAY_PASS; 638/646 SERVER_INPUT_MISSING; CAUSAL_CLAIMS_BLOCKED.**
+**2026-10-10 | BATCH_CODE_READY; 30/646 SNP_REPLAY_PASS; 616/646 SERVER_INPUT_MISSING; CAUSAL_CLAIMS_BLOCKED.**
 
 ## Scope and source files
 
@@ -23,7 +23,7 @@ Original Drive paths below are relative to MyDrive/MASTER_DEGREE/IS_COLAB:
 - Input absent -> MISSING_INPUT; mismatched or unreadable -> FAIL with reason; genuine full-H0–H4 SNP replay -> PASS.
 - Each job refuses an existing output folder. No original inputs, canonical data, original ABF results or historical figures are overwritten.
 
-**Observed on the server:** 646 status rows, **8 PASS / 0 FAIL / 638 MISSING_INPUT**. This has also passed against the unannotated raw source master, not only its annotated copy. This is a successful **partial-coverage accounting run**, NOT a completed 646-input replay.
+**Observed on the server:** 646 status rows, **30 PASS / 0 FAIL / 616 MISSING_INPUT**. This has also passed against the unannotated raw source master, not only its annotated copy. This is a successful **partial-coverage accounting run**, NOT a completed 646-input replay.
 
 ## Run full 646 inputs in Google Colab
 
@@ -56,3 +56,13 @@ All 15,749 gene–SNP records across 8 selected original source inputs match the
 5. Preserve expanded 80 provisional GWAS regions and 2,225 positional genes as the broader candidate universe.
 
 **No new IS causal gene established.**
+
+## Subsequent partial-server replay snapshot
+
+- The new cache21 report independently reproduced 21/646 H0–H4 results (0 FAIL, 625 MISSING_INPUT) with maximum absolute H0–H4 difference < 1.7e-15. No inference promoted.
+- The 21 cached gene–tissue inputs consist of 37,771 source gene–SNP rows and 3 1000G EAS504 LD reference panels. Numerical LD tests verify finite, symmetric, diag=1, bounds [-1,+1], 128 sampled eigenvalues nonnegative within numerical tolerance, and GRCh37 REF/ALT ID agreement; this is NOT cohort-matched GTEx LD.
+- Details and source-hash provenance: [21-input replay and numeric LD audit](IS_PHASE10_11_646_SOURCE_REPLAY_CACHED21_20261010.md).
+
+## Latest partial-source snapshot: 30 inputs
+
+Direct SNP replays: 30/646 PASS, 0 FAIL, 616 server inputs not cached. Four 1000G EAS504 panels pass numerical correlation QC (53,979 repeated gene–SNP rows). See [cache30 source audit](IS_PHASE10_11_646_SOURCE_REPLAY_CACHED30_20261010.md). Cache21 remains a preserved historical snapshot; full original 646 Colab execution remains pending.
