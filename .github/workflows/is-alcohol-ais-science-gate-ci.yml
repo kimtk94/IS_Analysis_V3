@@ -20,6 +20,8 @@ on:
       - "scripts/is/replay_existing_646_coloc_abf.R"
       - "scripts/is/run_existing_646_coloc_qtl_n_sensitivity.R"
       - "scripts/is/summarize_646_coloc_replay_science_readiness.py"
+      - "scripts/is/audit_646_coloc_allele_frequency_provenance.py"
+      - "scripts/is/run_646_coloc_direct_p12_sensitivity.R"
       - "tests/test_alcohol_cs_ais_direct_overlap.py"
       - "tests/test_gigastroke_ais_refalt_provenance.py"
       - "tests/test_gigastroke_fasta_variant_contract.py"
@@ -32,12 +34,14 @@ on:
       - "tests/test_existing_is_gene_evidence_matrix.py"
       - "tests/test_local_drive_coloc_abf_recovery.py"
       - "tests/test_646_coloc_replay_science_readiness.py"
+      - "tests/test_646_coloc_allele_frequency_provenance.py"
       - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
   pull_request:
     paths:
       - "scripts/is/**"
       - "tests/test_alcohol*"
       - "tests/test_gigastroke*"
+      - "tests/test_646_coloc*"
       - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
   workflow_dispatch:
 
@@ -66,7 +70,8 @@ jobs:
             scripts/is/audit_tpmi_43321_summary_gwas.py \
             scripts/is/build_existing_is_gene_evidence_matrix.py \
             scripts/is/audit_local_drive_coloc_abf_recovery.py \
-            scripts/is/summarize_646_coloc_replay_science_readiness.py
+            scripts/is/summarize_646_coloc_replay_science_readiness.py \
+            scripts/is/audit_646_coloc_allele_frequency_provenance.py
 
       - name: Run isolated SNP harmonization and science-gate tests
         run: |
@@ -83,7 +88,8 @@ jobs:
             test_tpmi_43321_summary_gwas.py \
             test_existing_is_gene_evidence_matrix.py \
             test_local_drive_coloc_abf_recovery.py \
-            test_646_coloc_replay_science_readiness.py
+            test_646_coloc_replay_science_readiness.py \
+            test_646_coloc_allele_frequency_provenance.py
           do
             echo "RUNNING $test_file"
             python3 -m unittest discover \
