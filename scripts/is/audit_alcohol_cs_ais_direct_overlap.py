@@ -97,7 +97,7 @@ def scan(path, targets):
                     if line["ref"].upper()==target["ref"].upper() and line["alt"].upper()==target["alt"].upper():
                         matched[vid].append(line)
                     else:
-                        colocated[vid].append({"ref":line["ref"],"alt":line["alt"],"variant_id":line.get("variant_id","")})
+                        colocated[vid].append(line)
         except Exception:
             filt.kill()
             decomp.kill()
@@ -108,6 +108,8 @@ def scan(path, targets):
             filt.wait()
             source_err=decomp.stderr.read().decode(errors="replace")
             decomp.wait()
+            filt.stderr.close()
+            decomp.stderr.close()
         if filt.returncode not in (0,1) or decomp.returncode!=0:
             raise RuntimeError(f"scan subprocess failed: grep={filt.returncode}, decompress={decomp.returncode}, stderr={filter_stderr[:200]} {source_err[:200]}")
     return matched,colocated,count
@@ -141,18 +143,24 @@ def main():
             vid=t["variant_id"]
             hits=found.get(vid,[])
             alt_hits=other.get(vid,[])
+            reversed_pairs=[x for x in alt_hits
+                if x["ref"].upper()==t["alt"].upper() and x["alt"].upper()==t["ref"].upper()]
             status=("MATCH_EXACT" if len(hits)==1 else
-                    "MISSING_FROM_DATASET" if not hits and not alt_hits else
-                    "ALLELE_MISMATCH_SAME_POSITION" if not hits else "DUPLICATE_MATCH_REVIEW")
-            # One diagnostic row per (SNP, GWAS); fail closed on duplicates.
-            hit=hits[0] if len(hits)==1 else {}
+                    "DUPLICATE_MATCH_REVIEW" if len(hits)>1 else
+                    "REF_ALT_SWAP_REVIEW" if len(reversed_pairs)==1 else
+                    "DUPLICATE_SWAP_REVIEW" if len(reversed_pairs)>1 else
+                    "ALLELE_MISMATCH_SAME_POSITION" if alt_hits else
+                    "MISSING_FROM_DATASET")
+            # Swapped REF/ALT is NOT a canonical GRCh37 REF match; flag separately.
+            hit=(hits[0] if len(hits)==1 else
+                 reversed_pairs[0] if not hits and len(reversed_pairs)==1 else {})
             h=harmonize_alt(hit,t["alt"].upper(),t["ref"].upper()) if hit else {}
             if len(hits)==1 and h.get("orientation")=="INVALID_EFFECT_ALLELES":
                 status="EFFECT_ALLELE_INVALID"
             row={"locus":t["locus"],"variant_id":vid,"rsid_verified":t["allele_verified_rsids"],
               "consequence":t["vep_consequence"],"dataset":dataset,
               "build":"GRCh37","status":status,"n_exact_rows":len(hits),
-              "n_other_allele_rows":len(alt_hits),
+              "n_other_allele_rows":len(alt_hits),"n_ref_alt_swaps":len(reversed_pairs),
               "effect_allele":hit.get("effect_allele",""),
               "other_allele":hit.get("other_allele",""),
               "orientation":h.get("orientation",""),
@@ -163,7 +171,8 @@ def main():
               "gwas_rsid":hit.get("rsid",""),
               "source_variant_id":hit.get("variant_id","")}
             # RSID field may be stale/ambiguous in GWAS; record but do not require exact equality
-            if hit and hit.get("variant_id","")!=vid: row["status"]="INPUT_VARIANT_ID_MISMATCH"
+            if hit and hit.get("variant_id","")!=vid and status=="MATCH_EXACT":
+                row["status"]="INPUT_VARIANT_ID_MISMATCH"
             outrows.append(row)
         print(f"SCANNED {dataset} target_position_rows={count} exact={sum(r['status']=='MATCH_EXACT' for r in outrows if r['dataset']==dataset)}",flush=True)
     dest=a.out_dir/"ALCOHOL_CS_AIS_GWAS_DIRECT_OVERLAP.tsv"
@@ -174,7 +183,8 @@ def main():
       "source_alcohol_gwas_build":"UNRESOLVED_OFFICIAL_SOURCE_BUILD",
       "coordinates":"GRCh37_FASTA_11_OF_11_REF_MATCH_USER_REPORTED",
       "rsid":"VEP_GRCh37_ALLELE_SET_11_OF_11_MATCH",
-      "effect":"AIS GWAS effect harmonized to input ALT; not aligned to alcohol GWAS effect",
+      "effect":"AIS GWAS effect harmonized to FASTA-verified input ALT; not aligned to alcohol GWAS effect",
+      "ref_alt_swaps":"REF_ALT_SWAP_REVIEW rows do not have canonical GRCh37 REF consistency; beta and p shown provisionally",
       "sources":meta,"total_pairs":len(outrows),
       "by_dataset":{ds:{s:sum(r["dataset"]==ds and r["status"]==s for r in outrows)
                           for s in sorted({r["status"] for r in outrows if r["dataset"]==ds})}
