@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Read-only Japanese-alcohol CS to European GIGASTROKE AIS transferability audit.
 
-Input European "variant_pair_id" is other_allele:effect_allele, NOT genome REF:ALT.
+Input European "variant_pair_id" is an allele-pair identifier, NOT genome REF:ALT.
 The GRCh37 FASTA independently determines REF, then outcome beta and EAF are
 oriented to the alcohol GWAS' verified ALT. No MR, colocalization, or causal claim.
 European ancestry results are cross-ancestry context, not EAS replication.
@@ -62,8 +62,13 @@ def harmonize_record(row, target):
     pair = row["variant_pair_id"].split(":")
     if len(pair) != 4 or pair[:2] != [target["chrom"], target["pos"]]:
         raise ValueError("GWAS pair variant coordinate conflict")
-    if pair[2:] != [oa, ea]:
-        raise ValueError("GWAS variant_pair_id not other:effect as QC declares")
+    if sorted(x.upper() for x in pair[2:]) != sorted((ea, oa)):
+        raise ValueError("GWAS variant_pair_id allele set disagrees with EA/OA")
+    pair_order = ("LEXICOGRAPHIC_ALLELE_PAIR" if pair[2:] == sorted([ea, oa]) else
+                  "OTHER_EFFECT" if pair[2:] == [oa, ea] else
+                  "EFFECT_OTHER" if pair[2:] == [ea, oa] else "UNEXPECTED")
+    if pair_order == "UNEXPECTED":
+        raise ValueError("GWAS variant_pair_id ambiguous allele order")
     if row["build"] != "GRCh37" or row["ancestry"] != "EUR" or row["phenotype"] != "AIS":
         raise ValueError("Unexpected GWAS context")
     beta = finite_number(row["beta"])
@@ -88,6 +93,7 @@ def harmonize_record(row, target):
         "eur_reported_n": row.get("reported_n", ""),
         "eur_effect_allele_orientation": "EFFECT_ALT" if sign == 1 else "EFFECT_REF_FLIPPED",
         "eur_source_pair_id": row["variant_pair_id"],
+        "eur_source_pair_id_order": pair_order,
     }
 
 def scan_eur(path, targets):
