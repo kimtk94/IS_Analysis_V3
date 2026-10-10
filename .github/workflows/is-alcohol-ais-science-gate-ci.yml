@@ -22,6 +22,8 @@ on:
       - "scripts/is/summarize_646_coloc_replay_science_readiness.py"
       - "scripts/is/audit_646_coloc_allele_frequency_provenance.py"
       - "scripts/is/run_646_coloc_direct_p12_sensitivity.R"
+      - "scripts/is/build_is_2225_prior_af_integrated_context.py"
+      - "scripts/is/render_is_646_coloc_evidence_figures.R"
       - "tests/test_alcohol_cs_ais_direct_overlap.py"
       - "tests/test_gigastroke_ais_refalt_provenance.py"
       - "tests/test_gigastroke_fasta_variant_contract.py"
@@ -35,6 +37,7 @@ on:
       - "tests/test_local_drive_coloc_abf_recovery.py"
       - "tests/test_646_coloc_replay_science_readiness.py"
       - "tests/test_646_coloc_allele_frequency_provenance.py"
+      - "tests/test_is_2225_prior_af_integrated_context.py"
       - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
   pull_request:
     paths:
@@ -71,7 +74,8 @@ jobs:
             scripts/is/build_existing_is_gene_evidence_matrix.py \
             scripts/is/audit_local_drive_coloc_abf_recovery.py \
             scripts/is/summarize_646_coloc_replay_science_readiness.py \
-            scripts/is/audit_646_coloc_allele_frequency_provenance.py
+            scripts/is/audit_646_coloc_allele_frequency_provenance.py \
+            scripts/is/build_is_2225_prior_af_integrated_context.py
 
       - name: Run isolated SNP harmonization and science-gate tests
         run: |
@@ -89,7 +93,8 @@ jobs:
             test_existing_is_gene_evidence_matrix.py \
             test_local_drive_coloc_abf_recovery.py \
             test_646_coloc_replay_science_readiness.py \
-            test_646_coloc_allele_frequency_provenance.py
+            test_646_coloc_allele_frequency_provenance.py \
+            test_is_2225_prior_af_integrated_context.py
           do
             echo "RUNNING $test_file"
             python3 -m unittest discover \
