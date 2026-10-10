@@ -28,6 +28,9 @@ def process(root):
         meta=json.loads(manifest.read_text())
         if not meta.get("official_MD5_verified") or not meta.get("rs671_present"):
             raise ValueError("Alcohol source MD5 or rs671 allele QC missing")
+        if exposure=="drinking_status" and not meta.get(
+            "drinking_status_event_ever_drinker_verified_from_published_methods"):
+            raise ValueError("Binary drinking-status case orientation not verified")
         hits=[x for x in rows(source) if x["variant_grch37"]==SNP]
         if len(hits)!=1 or hits[0]["harmonized_effect_allele_ALT"]!="A":
             raise ValueError("Alcohol rs671 duplicate or allele mismatch")
@@ -39,7 +42,7 @@ def process(root):
              "effect_allele":"A","beta":b,"se":se,"p":p,
              "per_variant_n":int(v["metaGWAS_variant_n"]),
              "effect_units":"log2(g/day+1)" if exposure=="alcohol_intake" else
-                        "binary_drinker_status_ORIENTATION_NOT_VERIFIED",
+                        "log_odds_ever_drinker",
              "independent_of_BBJ_stroke":"NO_NOT_PROVEN",
              "causal_pathway":"NOT_IDENTIFIED"}
     bp=[x for x in rows(root/"G0022_RS671_BBJ_BLOOD_PRESSURE_EFFECTS.tsv") if x["phenotype"]=="SBP"]
@@ -69,7 +72,10 @@ def process(root):
        "alcohol_intake_A_decreases_log2_grams_per_day":r["alcohol_intake"]["beta"]<0,
        "SBP_A_decreases_reported_BP_scale":r["SBP"]["beta"]<0,
        "EAS_AIS_A_decreases_log_odds":r["AIS"]["beta"]<0,
-       "drinking_status_case_direction_verified":False,
+       "drinking_status_case_direction_verified":True,
+       "ever_drinker_odds_ratio_per_rs671_A":math.exp(r["drinking_status"]["beta"]),
+       "ever_drinker_odds_ratio_95ci": [math.exp(r["drinking_status"]["beta"]-1.96*r["drinking_status"]["se"]),
+         math.exp(r["drinking_status"]["beta"]+1.96*r["drinking_status"]["se"])],
        "rs671_A_as_alcohol_only_valid_IV":False,
        "single_SNP_pleiotropy_test_possible":False,
        "EAS_AIS_and_BBJ_exposure_cohort_independent":False,

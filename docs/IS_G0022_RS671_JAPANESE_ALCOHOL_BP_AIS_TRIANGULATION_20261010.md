@@ -11,7 +11,7 @@ Two full, official, public unstratified Japanese alcohol GWAS source files have 
 - Ever-vs-never drinking status GWAS: **7,679,425 original genome-wide variant rows**, N=175,672 at rs671.
 - Combined **15,356,278 source rows** actually streamed and audited.
 - All **four G0022 AIS GWAS 95% credible set variants** matched each source by **GRCh37 chromosome, position, REF/ALT**, with effect direction harmonized to the GWAS **ALT allele**.
-- rs671 allele A is strongly associated with **lower log2 daily alcohol intake**. The drinking status model also has negative A-coded beta, but binary case/event coding is **not yet confirmed** in the official source definition; never infer an ever-drinking odds decrease until case encoding is verified.
+- rs671 allele A is strongly associated with **lower log2 daily alcohol intake**. The drinking status model also has negative A-coded beta, and the published original methods explicitly define the response as the **probability of ever drinking** (logit(p_ever)), with never drinking as the comparison group. Thus rs671-A has **ever-drinker OR≈0.161 (95% CI 0.157–0.165)**. This is a genotype association, not a causal alcohol-to-stroke effect.
 - The Japanese BBJ rs671 A allele is associated with lower BP phenotypes and GIGASTROKE EAS rs671 A is associated with lower AIS odds. **This is descriptive association triangulation and not proof of causal mediation**. Potential BBJ cohort overlap and major ALDH2 coding pleiotropy remain.
 
 ## 1. Provenance: original Zenodo open study dataset
@@ -56,7 +56,7 @@ These effect sizes use log2(grams/day+1), not raw grams/day. One A-allele associ
 | `12:112468206:C:T` | T | T | −1.9636 | 0.0131 | 175,672 | 4.70e−5 |
 | `12:112736118:A:G` | A | **G** | −1.9874 | 0.0136 | 175,672 | 1.69e−5 |
 
-The status variable is documented as never versus ever, but the precise case coding of the binary logistic model is not explicitly resolved by the file header. `BETA_ALT<0` is **a model direction only** until event coding is confirmed. All four p-values are recorded as numerical zero (extreme p underflow), not interpretable as literal zero probability.
+Published Koyanagi et al. Methods explicitly define the modeled outcome using **logit(p_ever)** where p_ever is probability of ever drinking. Therefore rs671 ALT-A log-odds β=−1.8264 corresponds to **ever-drinker odds ratio 0.16099 (95% CI 0.15722–0.16486)** per A allele. It is not an absolute probability reduction, and remains a genetic association rather than an estimate of alcohol-mediated stroke causation. All four GWAS association p-values are recorded as numerical zero (underflow), not literal zero probability.
 
 ## 3. rs671-A exposure/BP/AIS association triangulation
 
@@ -65,7 +65,7 @@ All effects are aligned to **A at GRCh37 12:112241766 G>A**; source β units dif
 | Japanese / EAS summary | Trait scale | β_A | SE | Interpretation |
 |---|---|---:|---:|---|
 | Koyanagi et al. Japanese unstratified amount | log2(grams/day+1) | **−1.3215** | 0.0074 | A associated with lower daily intake |
-| Koyanagi et al. drinking status | Binary logistic, case code unresolved | **−1.8264** | 0.0121 | Negative model coefficient; event interpretation blocked |
+| Koyanagi et al. drinking status | Log-odds of **ever drinker** | **−1.8264** | 0.0121 | Ever-drinker OR≈**0.161** per A, not a causal effect |
 | Sakaue/Kanai BBJ systolic blood pressure | Original GWAS standardized/transformed BP trait | **−0.0620** | 0.0039 | A associated with lower reported BP phenotype |
 | GIGASTROKE EAS AIS | Case-control log odds | **−0.1514** | 0.0176 | A associated with **OR=0.8595** per allele |
 
@@ -124,7 +124,7 @@ Outputs under:
 - `G0022_RS671_ALCOHOL_BP_AIS_TRIANGULATION_SUMMARY.json`
 
 ### Next legitimate scientific milestones
-1. Confirm the case coding for the binary drinking-status source. Do not infer a reduced probability of ever drinking from the negative β until this is resolved.
+1. Original published logistic model **logit(p_ever)** already confirms ever-drinker case coding; next investigate study-specific self-report harmonization and differential misclassification across cohorts.
 2. Query a truly independent Japanese/East-Asian ischemic stroke GWAS, identify potential sample reuse with BBJ alcohol and BP cohorts, and examine ancestry-specific imputation quality for rs671.
 3. Investigate the **substantial between-cohort heterogeneity** of alcohol amount (rs671 HetP≈1.15e−62). Check study cohort drinking definitions, sex structure and covariates.
 4. Acquire sex-stratified EAS alcohol / BP / stroke outcome summaries and independent *non-ALDH2* instruments with falsification controls for separate drinking vs acetaldehyde pathways.
@@ -135,7 +135,22 @@ Outputs under:
 
 - Official open Zenodo (v1): https://zenodo.org/records/10038152
 - Dryad original and later versions: https://datadryad.org/dataset/doi%3A10.5061/dryad.tmpg4f546
+- Published ever-drinker logit(p_ever) source method: https://pmc.ncbi.nlm.nih.gov/articles/PMC10816704/
 - Science Advances original: https://www.science.org/doi/10.1126/sciadv.ade2780
 - BBJ rs671 blood pressure: https://pheweb.jp/variant/12-112241766-G-A
 - Japan Omics Browser rs671 molecular evidence: https://japan-omics.jp/variant?input_value=rs671
 - GIGASTROKE: https://www.nature.com/articles/s41586-022-05165-3
+
+## 7. Korean KCPS2 benchmark and genuine novelty boundary (published study)
+
+A **2025 Nature Communications** peer-reviewed Korean KCPS2 study (Jee et al., *Genome-wide association studies in a large Korean cohort identify quantitative trait loci for 36 traits and illuminate their genetic architectures*, n=153,950) already conducted ALDH2-region conditional analyses, SuSiE fine-mapping and cross-trait coloc for several cardiometabolic traits.
+
+The paper reports:
+- rs671-A alcohol intake beta ≈ **−0.59**, source P≈**1.9×10⁻²⁶⁵⁸**. This beta is study-specific and its units should NOT be compared directly to our Koyanagi Japanese log2(grams/day+1) beta of −1.3215.
+- rs671 fine-mapping PIP >90% for **alcohol intake, SBP, DBP, GOT, GPT, GGT, coffee and triglycerides**, with multiple local credible sets. The authors' L=1 sensitivity retained rs671.
+- KCPS2 reports `PP4=100%` for **alcohol intake versus blood pressure and other selected metabolic traits**, supporting a shared genetic locus across those outcomes *within their own study and modeling assumptions*. This does NOT estimate alcohol-to-BP mediation; pleiotropy and direct ALDH2 coding effects remain.
+- Public Korean original data release: **Zenodo 15132424**, one zipped file ≈13.2 GB; it has **not been downloaded or reanalyzed in our pipeline**. Reported KCPS2 results above are **published external context**, not newly validated raw reanalysis.
+
+**Implication for thesis:** Genetic colocalization of rs671 across alcohol intake and BP is **not a novel result** and must be cited as prior work. The remaining independent research question is whether ALDH2 coding, alcohol consumption or blood pressure (or direct vascular functions) actually mediates **EAS ischemic stroke** at the same locus. A second shared-variant coloc would not by itself answer that mechanistic mediation question. KCPS2 population sampling differs from Japanese Koyanagi/BBJ, which makes it a valuable Korean external anchor once SNP/trait harmonization is independently checked.
+
+References: https://www.nature.com/articles/s41467-025-59950-5 and https://zenodo.org/records/15132424

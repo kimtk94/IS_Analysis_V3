@@ -11,7 +11,8 @@ class Triangulation(unittest.TestCase):
     def fixture(self,base):
         for trait,coef in (("ALCOHOL_INTAKE","-.4"),("DRINKING_STATUS","-.6")):
             (base/f"G0022_KOYANAGI2024_{trait}_AUDIT.json").write_text(json.dumps({
-              "official_MD5_verified":True,"rs671_present":True}))
+              "official_MD5_verified":True,"rs671_present":True,
+              "drinking_status_event_ever_drinker_verified_from_published_methods":trait=="DRINKING_STATUS"}))
             write(base/f"G0022_4CS_KOYANAGI2024_{trait}_EXPOSURE.tsv",
                 [{"variant_grch37":"12:112241766:G:A","harmonized_effect_allele_ALT":"A",
                 "beta_ALT":coef,"se":".02","p":"2e-10","metaGWAS_variant_n":145500}])
@@ -31,7 +32,8 @@ class Triangulation(unittest.TestCase):
             self.assertTrue(x["EAS_AIS_A_decreases_log_odds"])
             self.assertFalse(x["causal_mediation_percent_calculated"])
             self.assertFalse(x["rs671_A_as_alcohol_only_valid_IV"])
-            self.assertFalse(x["drinking_status_case_direction_verified"])
+            self.assertTrue(x["drinking_status_case_direction_verified"])
+            self.assertAlmostEqual(x["ever_drinker_odds_ratio_per_rs671_A"],.5488116360940264)
     def test_missing_or_nonverified_input_fails_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
             base=Path(tmp);self.fixture(base)
