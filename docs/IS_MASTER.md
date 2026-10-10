@@ -55,7 +55,7 @@ Can East Asian ischemic-stroke loci be connected to reproducible gene-, protein-
 
 | Locus | Core gene | Working mechanism | Key evidence | Current branch |
 |---|---|---|---|---|
-| BBJ_IS_L001 | **FGF5** | Regulatory / expression / protein convergence | ABF H4 ≈ 0.779; SuSiE H4 ≈ 0.752 | pQTL / MR / BP pathway |
+| BBJ_IS_L001 | **FGF5** | Regulatory-expression / BP-pathway hypothesis; protein mediation unproven | Historical ABF H4 ≈ 0.779; SuSiE H4 ≈ 0.752; conditional p12-sensitive | pQTL / MR / BP pathway |
 | BBJ_IS_L003 | **ALDH2** | Ancestry-specific coding / protein / metabolic | rs671; BBJ P ≈ 1.99e-18; p.Glu504Lys | coding-protein-metabolic |
 | BBJ_IS_L002 | **SH3PXD2A** | Cell-specific immune / vascular regulation | bulk ABF H4 ≈ 0.351; macrophage/monocyte rationale | cell-QTL / ATAC |
 | BBJ_IS_L004 | **COL4A2** | Cerebrovascular structural / regulatory | bulk ABF H4 ≈ 0.331; mural/vascular-cell rationale | SMC / pericyte / endothelial ATAC-eQTL |
@@ -90,7 +90,7 @@ These remain exploratory until orthogonal validation supports promotion to a cor
 - BBJ_IS_L001 core gene
 - Best bulk ABF H4 ≈ **0.7787**
 - Multi-signal SuSiE H4 ≈ **0.7522**
-- Working interpretation: **convergent regulatory / expression / protein mechanism**
+- Working interpretation: **prior-sensitive regulatory-expression hypothesis; direct protein mediation NOT_ESTABLISHED**
 - Phase 9F-E R3_6 source QC: distributed RNA assay feature absent/unresolved, so cell-level FGF5 expression cannot be computed. A separate human cerebellar bulk expression reference reports FGF5 expression; see dedicated R3_6 note.
 - Next layer: independent tissue validation, pQTL/MR and blood-pressure pathway integration
 
@@ -114,7 +114,7 @@ R3_6 has confirmed no FGF5 symbol or ENSG00000138675 matching RNA feature rownam
 
 ## Working thesis structure (hypothesis chapters, not causal claims)
 
-1. **FGF5** — convergent GWAS-expression-protein pathway
+1. **FGF5** — GWAS–eQTL colocalization hypothesis and unproven protein/BP mediation
 2. **ALDH2 / rs671** — ancestry-specific coding/protein/metabolic mechanism
 3. **SH3PXD2A** — cell-specific immune/vascular regulatory mechanism
 4. **COL4A2** — cerebrovascular mural/stromal regulatory mechanism
