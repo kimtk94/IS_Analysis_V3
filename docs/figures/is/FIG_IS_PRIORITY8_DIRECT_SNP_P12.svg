@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 690" width="1120" height="690">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="34" y="43" font-family="Arial,sans-serif" font-size="24" font-weight="bold" fill="#1f3545">Ischemic stroke: direct SNP-level coloc prior sensitivity</text>
+<text x="34" y="74" font-family="Arial,sans-serif" font-size="14" fill="#516a79">Eight selected GTEx gene–tissue pairs • coloc 5.2.3 • direct beta/SE/MAF SNP rerun</text>
+<text x="34" y="98" font-family="Arial,sans-serif" font-size="14" fill="#a04734">Original 646-test screen, not expanded 80-locus discovery or causal gene proof</text>
+<line x1="118" x2="780" y1="570.0" y2="570.0" stroke="#e2e8ed"/>
+<text x="108" y="574.0" text-anchor="end" font-size="12" fill="#475968">0.0</text>
+<line x1="118" x2="780" y1="485.6" y2="485.6" stroke="#e2e8ed"/>
+<text x="108" y="489.6" text-anchor="end" font-size="12" fill="#475968">0.2</text>
+<line x1="118" x2="780" y1="401.2" y2="401.2" stroke="#e2e8ed"/>
+<text x="108" y="405.2" text-anchor="end" font-size="12" fill="#475968">0.4</text>
+<line x1="118" x2="780" y1="316.8" y2="316.8" stroke="#e2e8ed"/>
+<text x="108" y="320.8" text-anchor="end" font-size="12" fill="#475968">0.6</text>
+<line x1="118" x2="780" y1="232.4" y2="232.4" stroke="#e2e8ed"/>
+<text x="108" y="236.4" text-anchor="end" font-size="12" fill="#475968">0.8</text>
+<line x1="118" x2="780" y1="148.0" y2="148.0" stroke="#e2e8ed"/>
+<text x="108" y="152.0" text-anchor="end" font-size="12" fill="#475968">1.0</text>
+<line x1="118.0" x2="118.0" y1="148" y2="570" stroke="#eef0f3"/>
+<text x="118.0" y="596" text-anchor="middle" font-size="13" fill="#34495e">10^-6</text>
+<line x1="275.9" x2="275.9" y1="148" y2="570" stroke="#eef0f3"/>
+<text x="275.9" y="596" text-anchor="middle" font-size="13" fill="#34495e">3e-6</text>
+<line x1="449.0" x2="449.0" y1="148" y2="570" stroke="#9bbcc2"/>
+<text x="449.0" y="596" text-anchor="middle" font-size="13" fill="#34495e">10^-5</text>
+<line x1="606.9" x2="606.9" y1="148" y2="570" stroke="#eef0f3"/>
+<text x="606.9" y="596" text-anchor="middle" font-size="13" fill="#34495e">3e-5</text>
+<line x1="780.0" x2="780.0" y1="148" y2="570" stroke="#eef0f3"/>
+<text x="780.0" y="596" text-anchor="middle" font-size="13" fill="#34495e">10^-4</text>
+<polyline points="118.00,460.16 275.93,353.29 449.00,241.39 606.93,184.52 780.00,159.66" fill="none" stroke="#2b789c" stroke-width="3"/>
+<circle cx="118.00" cy="460.16" r="4.2" fill="#fff" stroke="#2b789c" stroke-width="2.5"/>
+<circle cx="275.93" cy="353.29" r="4.2" fill="#fff" stroke="#2b789c" stroke-width="2.5"/>
+<circle cx="449.00" cy="241.39" r="4.2" fill="#fff" stroke="#2b789c" stroke-width="2.5"/>
+<circle cx="606.93" cy="184.52" r="4.2" fill="#fff" stroke="#2b789c" stroke-width="2.5"/>
+<circle cx="780.00" cy="159.66" r="4.2" fill="#fff" stroke="#2b789c" stroke-width="2.5"/>
+<line x1="821" x2="847" y1="167" y2="167" stroke="#2b789c" stroke-width="3.5"/>
+<text x="859" y="172" font-family="Arial,sans-serif" font-size="16" fill="#2e4657">FGF5 (0.779)</text>
+<polyline points="118.00,450.67 275.93,341.33 449.00,233.38 606.93,180.90 780.00,158.44" fill="none" stroke="#349276" stroke-width="3"/>
+<circle cx="118.00" cy="450.67" r="4.2" fill="#fff" stroke="#349276" stroke-width="2.5"/>
+<circle cx="275.93" cy="341.33" r="4.2" fill="#fff" stroke="#349276" stroke-width="2.5"/>
+<circle cx="449.00" cy="233.38" r="4.2" fill="#fff" stroke="#349276" stroke-width="2.5"/>
+<circle cx="606.93" cy="180.90" r="4.2" fill="#fff" stroke="#349276" stroke-width="2.5"/>
+<circle cx="780.00" cy="158.44" r="4.2" fill="#fff" stroke="#349276" stroke-width="2.5"/>
+<line x1="821" x2="847" y1="215" y2="215" stroke="#349276" stroke-width="3.5"/>
+<text x="859" y="220" font-family="Arial,sans-serif" font-size="16" fill="#2e4657">CALHM2 (0.798)</text>
+<polyline points="118.00,496.71 275.93,406.82 449.00,284.06 606.93,205.77 780.00,167.17" fill="none" stroke="#ac752b" stroke-width="3"/>
+<circle cx="118.00" cy="496.71" r="4.2" fill="#fff" stroke="#ac752b" stroke-width="2.5"/>
+<circle cx="275.93" cy="406.82" r="4.2" fill="#fff" stroke="#ac752b" stroke-width="2.5"/>
+<circle cx="449.00" cy="284.06" r="4.2" fill="#fff" stroke="#ac752b" stroke-width="2.5"/>
+<circle cx="606.93" cy="205.77" r="4.2" fill="#fff" stroke="#ac752b" stroke-width="2.5"/>
+<circle cx="780.00" cy="167.17" r="4.2" fill="#fff" stroke="#ac752b" stroke-width="2.5"/>
+<line x1="821" x2="847" y1="263" y2="263" stroke="#ac752b" stroke-width="3.5"/>
+<text x="859" y="268" font-family="Arial,sans-serif" font-size="16" fill="#2e4657">NEURL1 (0.678)</text>
+<polyline points="118.00,501.42 275.93,414.72 449.00,291.51 606.93,209.86 780.00,168.68" fill="none" stroke="#805fa2" stroke-width="3"/>
+<circle cx="118.00" cy="501.42" r="4.2" fill="#fff" stroke="#805fa2" stroke-width="2.5"/>
+<circle cx="275.93" cy="414.72" r="4.2" fill="#fff" stroke="#805fa2" stroke-width="2.5"/>
+<circle cx="449.00" cy="291.51" r="4.2" fill="#fff" stroke="#805fa2" stroke-width="2.5"/>
+<circle cx="606.93" cy="209.86" r="4.2" fill="#fff" stroke="#805fa2" stroke-width="2.5"/>
+<circle cx="780.00" cy="168.68" r="4.2" fill="#fff" stroke="#805fa2" stroke-width="2.5"/>
+<line x1="821" x2="847" y1="311" y2="311" stroke="#805fa2" stroke-width="3.5"/>
+<text x="859" y="316" font-family="Arial,sans-serif" font-size="16" fill="#2e4657">C4orf22 (0.660)</text>
+<polyline points="118.00,526.24 275.93,461.27 449.00,343.65 606.93,242.39 780.00,181.58" fill="none" stroke="#ba5079" stroke-width="3"/>
+<circle cx="118.00" cy="526.24" r="4.2" fill="#fff" stroke="#ba5079" stroke-width="2.5"/>
+<circle cx="275.93" cy="461.27" r="4.2" fill="#fff" stroke="#ba5079" stroke-width="2.5"/>
+<circle cx="449.00" cy="343.65" r="4.2" fill="#fff" stroke="#ba5079" stroke-width="2.5"/>
+<circle cx="606.93" cy="242.39" r="4.2" fill="#fff" stroke="#ba5079" stroke-width="2.5"/>
+<circle cx="780.00" cy="181.58" r="4.2" fill="#fff" stroke="#ba5079" stroke-width="2.5"/>
+<line x1="821" x2="847" y1="359" y2="359" stroke="#ba5079" stroke-width="3.5"/>
+<text x="859" y="364" font-family="Arial,sans-serif" font-size="16" fill="#2e4657">INA (0.536)</text>
+<polyline points="118.00,548.36 275.93,511.13 449.00,421.96 606.93,309.00 780.00,213.90" fill="none" stroke="#7c8733" stroke-width="3"/>
+<circle cx="118.00" cy="548.36" r="4.2" fill="#fff" stroke="#7c8733" stroke-width="2.5"/>
+<circle cx="275.93" cy="511.13" r="4.2" fill="#fff" stroke="#7c8733" stroke-width="2.5"/>
+<circle cx="449.00" cy="421.96" r="4.2" fill="#fff" stroke="#7c8733" stroke-width="2.5"/>
+<circle cx="606.93" cy="309.00" r="4.2" fill="#fff" stroke="#7c8733" stroke-width="2.5"/>
+<circle cx="780.00" cy="213.90" r="4.2" fill="#fff" stroke="#7c8733" stroke-width="2.5"/>
+<line x1="821" x2="847" y1="407" y2="407" stroke="#7c8733" stroke-width="3.5"/>
+<text x="859" y="412" font-family="Arial,sans-serif" font-size="16" fill="#2e4657">SH3PXD2A (0.351)</text>
+<polyline points="118.00,550.12 275.93,515.51 449.00,430.41 606.93,317.97 780.00,219.01" fill="none" stroke="#be5845" stroke-width="3"/>
+<circle cx="118.00" cy="550.12" r="4.2" fill="#fff" stroke="#be5845" stroke-width="2.5"/>
+<circle cx="275.93" cy="515.51" r="4.2" fill="#fff" stroke="#be5845" stroke-width="2.5"/>
+<circle cx="449.00" cy="430.41" r="4.2" fill="#fff" stroke="#be5845" stroke-width="2.5"/>
+<circle cx="606.93" cy="317.97" r="4.2" fill="#fff" stroke="#be5845" stroke-width="2.5"/>
+<circle cx="780.00" cy="219.01" r="4.2" fill="#fff" stroke="#be5845" stroke-width="2.5"/>
+<line x1="821" x2="847" y1="455" y2="455" stroke="#be5845" stroke-width="3.5"/>
+<text x="859" y="460" font-family="Arial,sans-serif" font-size="16" fill="#2e4657">COL4A2 (0.331)</text>
+<polyline points="118.00,564.47 275.93,553.84 449.00,520.56 606.93,449.84 780.00,329.36" fill="none" stroke="#63768e" stroke-width="3"/>
+<circle cx="118.00" cy="564.47" r="4.2" fill="#fff" stroke="#63768e" stroke-width="2.5"/>
+<circle cx="275.93" cy="553.84" r="4.2" fill="#fff" stroke="#63768e" stroke-width="2.5"/>
+<circle cx="449.00" cy="520.56" r="4.2" fill="#fff" stroke="#63768e" stroke-width="2.5"/>
+<circle cx="606.93" cy="449.84" r="4.2" fill="#fff" stroke="#63768e" stroke-width="2.5"/>
+<circle cx="780.00" cy="329.36" r="4.2" fill="#fff" stroke="#63768e" stroke-width="2.5"/>
+<line x1="821" x2="847" y1="503" y2="503" stroke="#63768e" stroke-width="3.5"/>
+<text x="859" y="508" font-family="Arial,sans-serif" font-size="16" fill="#2e4657">COL4A1 (0.117)</text>
+<text x="445" y="652" text-anchor="middle" font-size="14" fill="#465e6b">p12 prior (logarithmic axis, original baseline p12=1e-5)</text>
+<text x="28" y="357" text-anchor="middle" transform="rotate(-90 28 357)" font-size="15" fill="#465e6b">PP.H4</text>
+</svg>
