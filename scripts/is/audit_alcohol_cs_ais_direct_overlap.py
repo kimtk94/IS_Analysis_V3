@@ -45,35 +45,72 @@ def harmonize_alt(row, alt, ref):
       "or_alt":math.exp(beta) if beta is not None and -700<beta<700 else ""}
 
 def scan(path, targets):
+    """Fast gzip+grep chromosome-position prefilter, then allele-level validation.
+
+    Returned count is number of target-position rows, not full GWAS row count.
+    """
+    import subprocess
+    import tempfile
+
     position_map=defaultdict(list)
     for x in targets: position_map[(x["chrom"],int(x["pos"]))].append(x)
     matched=defaultdict(list)
     colocated=defaultdict(list)
-    row_count=0
     opener=gzip.open if str(path).endswith(".gz") else open
     with opener(path,"rt",newline="") as f:
-        r=csv.DictReader(f,delimiter="\t")
-        columns=set(r.fieldnames or [])
-        needed={"chr","pos","ref","alt","effect_allele","other_allele","beta","se","p","build","variant_id"}
-        missing=needed-columns
-        if missing: raise ValueError(f"{path}: missing columns {sorted(missing)}")
-        for line in r:
-            row_count+=1
-            c=str(line["chr"]).replace("chr","").upper()
-            if c not in ("4","12"): continue
-            try: pos=int(line["pos"])
-            except (TypeError, ValueError): continue
-            opts=position_map.get((c,pos))
-            if not opts: continue
-            if line["build"]!="GRCh37":
-                raise ValueError(f"{path}: matched chromosome-position row has unexpected build {line['build']}")
-            for target in opts:
-                vid=target["variant_id"]
-                if line["ref"].upper()==target["ref"].upper() and line["alt"].upper()==target["alt"].upper():
-                    matched[vid].append(line)
-                else:
-                    colocated[vid].append({"ref":line["ref"],"alt":line["alt"],"variant_id":line.get("variant_id","")})
-    return matched,colocated,row_count
+        header=f.readline().rstrip("\n\r").split("\t")
+    required={"chr","pos","effect_allele","other_allele","beta","se","p","build","variant_id"}
+    missing=required-set(header)
+    if missing: raise ValueError(f"{path}: missing columns {sorted(missing)}")
+
+    with tempfile.NamedTemporaryFile("w",prefix="is_ais_target_positions_",delete=True) as pats:
+        for chrom,pos in position_map:
+            pats.write(f"\t{chrom}\t{pos}\t\n")
+        pats.flush()
+        source=(["gzip","-dc",str(path)] if str(path).endswith(".gz")
+                else ["cat",str(path)])
+        decomp=subprocess.Popen(source,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        filt=subprocess.Popen(["grep","-F","-f",pats.name],stdin=decomp.stdout,
+                              stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+        decomp.stdout.close()
+        count=0
+        try:
+            for raw in filt.stdout:
+                count+=1
+                values=raw.rstrip("\n\r").split("\t")
+                if len(values)!=len(header):
+                    raise ValueError(f"GWAS row has {len(values)} fields, expected {len(header)}")
+                line=dict(zip(header,values))
+                chrom=str(line["chr"]).removeprefix("chr").upper()
+                pos=int(line["pos"])
+                opts=position_map.get((chrom,pos),[])
+                if not opts: continue
+                if line["build"]!="GRCh37":
+                    raise ValueError(f"{path}: targeted SNP build is {line['build']}, not GRCh37")
+                if not ("ref" in line and "alt" in line):
+                    parts=line["variant_id"].split(":")
+                    if len(parts)!=4 or parts[0].removeprefix("chr")!=chrom or int(parts[1])!=pos:
+                        raise ValueError(f"{path}: cannot derive REF/ALT from variant_id")
+                    line["ref"],line["alt"]=parts[2],parts[3]
+                for target in opts:
+                    vid=target["variant_id"]
+                    if line["ref"].upper()==target["ref"].upper() and line["alt"].upper()==target["alt"].upper():
+                        matched[vid].append(line)
+                    else:
+                        colocated[vid].append({"ref":line["ref"],"alt":line["alt"],"variant_id":line.get("variant_id","")})
+        except Exception:
+            filt.kill()
+            decomp.kill()
+            raise
+        finally:
+            filt.stdout.close()
+            filter_stderr=filt.stderr.read()
+            filt.wait()
+            source_err=decomp.stderr.read().decode(errors="replace")
+            decomp.wait()
+        if filt.returncode not in (0,1) or decomp.returncode!=0:
+            raise RuntimeError(f"scan subprocess failed: grep={filt.returncode}, decompress={decomp.returncode}, stderr={filter_stderr[:200]} {source_err[:200]}")
+    return matched,colocated,count
 
 def main():
     p=argparse.ArgumentParser()
@@ -99,7 +136,7 @@ def main():
     outrows=[]; meta={}
     for dataset,path in sources.items():
         found,other,count=scan(path,targets)
-        meta[dataset]={"source":str(path),"total_rows_scanned":count}
+        meta[dataset]={"source":str(path),"target_position_rows":count}
         for t in targets:
             vid=t["variant_id"]
             hits=found.get(vid,[])
@@ -128,7 +165,7 @@ def main():
             # RSID field may be stale/ambiguous in GWAS; record but do not require exact equality
             if hit and hit.get("variant_id","")!=vid: row["status"]="INPUT_VARIANT_ID_MISMATCH"
             outrows.append(row)
-        print(f"SCANNED {dataset} rows={count} exact={sum(r['status']=='MATCH_EXACT' for r in outrows if r['dataset']==dataset)}",flush=True)
+        print(f"SCANNED {dataset} target_position_rows={count} exact={sum(r['status']=='MATCH_EXACT' for r in outrows if r['dataset']==dataset)}",flush=True)
     dest=a.out_dir/"ALCOHOL_CS_AIS_GWAS_DIRECT_OVERLAP.tsv"
     with dest.open("w",newline="") as f:
         w=csv.DictWriter(f,fieldnames=list(outrows[0]),delimiter="\t");w.writeheader();w.writerows(outrows)
