@@ -2,9 +2,9 @@
 type: research_master
 research: IS
 priority: thesis_main
-status: phase9d_complete
-next_stage: phase10_functional_celltype_atac
-updated: 2026-10-05
+status: phase9f_human_reference_complete_p0_evidence_audit
+next_stage: p0_evidence_gates_then_phase10_functional_celltype_atac
+updated: 2026-10-10
 generated: false
 ---
 
@@ -22,8 +22,26 @@ Can East Asian ischemic-stroke loci be connected to reproducible gene-, protein-
 - **Tissue-label repair / convergence master:** COMPLETE
 - **L003 statistical branch:** FROZEN
 - **Bulk eQTL stage:** sufficient for prioritization
-- **Next stage:** **Phase 10 functional cell-type / ATAC validation**
-- Phase 11 molecular colocalization remains exploratory until cohort-matched molecular-QTL LD is available.
+- **Phase 9F-E human vascular reference:** COMPLETE (2026-10-09), normal temporal-lobe reference localization only, **not disease-state DGE**.
+- **Phase 11B coloc/SuSiE:** COMPUTATIONAL_COMPLETE_EXPLORATORY; paper-grade multi-signal colocalization remains **PENDING** validation.
+- **G1 native BBJ GWAS Allele2 + GRCh37→38 chain (2026-10-11):** Original Sakaue/Kanai ischemic stroke GWAS ZIP streamed (13,435,541 native rows). **8,309/8,309 distinct GRCh37 SNPs from all four original loci** matched native BBJ Allele2/BETA/AF_Allele2, unique plus-strand hg19ToHg38.chain coordinates and GTEx GRCh38 REF/ALT; all BBJ Allele2=ALT, 0 mismatches. These are unique GWAS SNPs from 30 local eQTL tests (53,979 repeated gene–SNP rows). GTEx official FAQ defines ALT-relative eQTL effects. **G1 original GWAS allele + chain proved for inspected 8,309 SNPs only**; no independent GRCh38 FASTA base check, full 646 *native GWAS SNP orientation* proof, GTEx cohort LD or causal mechanism. See [G1 native source audit](IS_PHASE10_11_G1_NATIVE_BBJ_ALLELE_CHAIN_VERIFIED_20261011.md). Full 646 GTEx internal source structural consistency was later checked separately; it does not upgrade native GWAS 8,309-SNP coverage.
+- **Phase10/11 G1/G2 full original 646-input audit (2026-10-11):** **646/646 G1 source structural PASS** (1,224,224 repeated gene–SNP records; palindromic 164,317; cross-ancestry |GWAS-GTEx MAF|>0.1 observed in 508,318 repeated records; neither establishes flips). **646/646 QTL scalar FIRST/MEDIAN/MIN N stress PASS** with historical coloc v5.2.3: FIRST=MEDIAN=MAX N for all tests, only median 0.737% of SNPs per test below max N. PP.H4 >=0.5: **6 to 5** under extreme MIN-N; INA anterior cingulate cortex BA24 **0.5363685 to 0.4933763** is sole 0.5 threshold crossing; >=0.75 remains 2. 535 H4 values increase, 111 decrease, median absolute change 0.00141487. Full 646 source SHA256 and H3/H4 agree with G0 historical results. **A MIN-for-all-SNPs scalar stress is not a valid per-SNP effective-N method**; full native GWAS unique SNP mapping, GTEx QTL LD, multiple causal signals and stroke gene causality remain OPEN. See [full 646 independent G1/G2 audit](IS_PHASE10_11_G1_G2_FULL_646_STRESS_VERIFIED_20261011.md). Earlier [30-source pilot](IS_PHASE10_11_G1_G2_QTL_N_SENSITIVITY_20261011.md) retained.
+- **Phase10/11 ORIGINAL 646-SOURCE SNP coloc REPLAY (2026-10-11):** **FULL_646_NUMERIC_REPLAY VERIFIED** on Google Colab and independently source-audited against original archived index, master and exact R script SHA256. **646/646 H0–H4 PASS, 0 FAIL, 0 MISSING** (max run-reported absolute error 5.55e-16); all 646 original source SHA256 records present, 30 locally cached full SNP input file SHA256 values cross-validated. **Four original BBJ GWAS loci / 43 genes / 16 GTEx tissues only**, not the 80 provisional expanded regions. The 1000G EAS504 GWAS-side LD reference remains different from the GTEx molecular cohort LD. Causal gene mechanism NOT_ESTABLISHED, multi-signal G2 still BLOCKED. See [full 646 source-provenance audit](IS_PHASE10_11_646_FULL_REPLAY_VERIFIED_20261011.md). Historical [30-source server snapshot](IS_PHASE10_11_646_SOURCE_REPLAY_CACHED30_20261010.md) retained.
+- **Phase 9C legacy ABF p12 sensitivity (2026-10-10):** SUMMARY_ONLY_CONDITIONAL_REWEIGHT COMPLETE (646 PASS × 5 prior values = 3,230 rows); original p1/p2/p12 setting RECOVERED from archived Phase10/11 v3 notebook; 8 selected pairs numerically replayed from SNP files. FGF5 H4 0.260 at p12=1e-6 vs 0.779 at 1e-5 vs 0.972 at 1e-4. These are not new GWAS/QTL analyses or independent colocalization. See [prior sensitivity protocol](IS_PHASE9C_LEGACY_COLOC_P12_SENSITIVITY_20261010.md).
+- **Broad discovery V2:** 80 provisional ancestry-aware distance components, 2,425 positional gene–region connections (2,225 unique gene IDs), plus one NEURL1 legacy-anchor-only row.
+- **P0 stage:** The candidate/test denominators are source-audited; R3_6 completed FGF5 RNA feature-space investigation. Next: independent brain/arterial gene expression and donor-level reference robustness before costly molecular expansion.
+- **Phase 9F R3_7 donor pseudobulk:** real six-donor (80,515 cells) run COMPLETE and independently reaudited: 10/10 comparisons pass paired coverage; 9/10 show unanimous paired CPM directions; 8/10 show unanimous detection-fraction directions. This is **healthy-reference descriptive expression**, not disease DGE or causal regulation. The neuronal class is heavily donor-imbalanced (15,903/15,942 neurons from TL8). See [R3_7 protocol](IS_PHASE9F_R3_7_DONOR_PSEUDOBULK_PROTOCOL_20261010.md) and server results/is/audits/phase9f_r3_7_donor_reaudit_20261010_v1.
+
+## Evidence integrity update — 2026-10-10
+
+- The legacy 4-locus GTEx ABF stage includes **646 PASS gene–tissue tests**, **43 tested genes** and **16 tissue datasets**; H4 ≥ 0.5 in 6 tests, ≥ 0.75 in 2, ≥ 0.8 in 0. These results are not multiple-testing-adjusted or genome-wide across the expanded universe.
+- FGF5 best ABF H4≈0.7787 and SuSiE H4≈0.7522 share input evidence, so they are **not independent replications**. Both remain sensitive to molecular QTL power, priors, ancestry and LD provenance.
+- **FGF5 human Phase 9F-E reference:** **R3_6 COMPLETE**. In original GSE256493 Seurat RNA assay (17,349 features; 80,515 cells), neither symbol FGF5 nor ENSG00000138675 matched the distributed feature rownames (0 each). No gene/symbol/feature metadata columns were available for alternate-identifier search. Cell-level FGF5 localization is **NOT_ASSESSABLE_IN_THIS_REFERENCE**, not biological zero expression. Independent cerebellar bulk RNA evidence exists. See [R3_6 FGF5 feature QC](IS_PHASE9F_R3_6_FGF5_FEATURE_QC_20261010.md).
+- **SH3PXD2A cell-type:** human R3_4 dataset has 33,630 Microglia and Macrophages. The gene's top detected cell class was Oligodendrocytes, not macrophages. Neither observation alone demonstrates cell-specific disease mechanism. Donor-level/disease-state tests are pending.
+- **COL4A2:** smooth muscle localization is descriptively concordant with the vessel hypothesis, but ubiquitous basement-membrane biology means localization alone does not prove causal regulation.
+- **Ancestry scope:** expanded EUR and EAS regions are not directly pooled independent loci; LD-clump/fine-map, effect-allele and source-cohort checks are required.
+- **Status and policy:** all historical core genes are *prioritized hypotheses*, not established causal targets. See [IS P0 decision rules](is_p0_decision_rules.md) and the immutable audit under results/is/audits/p0_evidence_20261010_v3 (source results are intentionally not committed).
+- **Integrated 9-gene P0 evidence overlay:** separated original ABF (prior settings recovered from archived source code), eight numerically replayed original SNP-level tests, six-donor healthy-reference expression and unresolved disease-cell QTL. **9/9 gene mechanisms remain NOT_ESTABLISHED**. Updated source-provenance JSON in results/is/audits/is_p0_integrated_genetics_cell_20261010_v3 and 8-pair independent report results/is/audits/is_priority8_genetics_summary_20261010_v1.
 
 ## Core framework
 
@@ -40,7 +58,7 @@ Can East Asian ischemic-stroke loci be connected to reproducible gene-, protein-
 
 | Locus | Core gene | Working mechanism | Key evidence | Current branch |
 |---|---|---|---|---|
-| BBJ_IS_L001 | **FGF5** | Regulatory / expression / protein convergence | ABF H4 ≈ 0.779; SuSiE H4 ≈ 0.752 | pQTL / MR / BP pathway |
+| BBJ_IS_L001 | **FGF5** | Regulatory-expression / BP-pathway hypothesis; protein mediation unproven | Historical ABF H4 ≈ 0.779; SuSiE H4 ≈ 0.752; conditional p12-sensitive | pQTL / MR / BP pathway |
 | BBJ_IS_L003 | **ALDH2** | Ancestry-specific coding / protein / metabolic | rs671; BBJ P ≈ 1.99e-18; p.Glu504Lys | coding-protein-metabolic |
 | BBJ_IS_L002 | **SH3PXD2A** | Cell-specific immune / vascular regulation | bulk ABF H4 ≈ 0.351; macrophage/monocyte rationale | cell-QTL / ATAC |
 | BBJ_IS_L004 | **COL4A2** | Cerebrovascular structural / regulatory | bulk ABF H4 ≈ 0.331; mural/vascular-cell rationale | SMC / pericyte / endothelial ATAC-eQTL |
@@ -75,14 +93,15 @@ These remain exploratory until orthogonal validation supports promotion to a cor
 - BBJ_IS_L001 core gene
 - Best bulk ABF H4 ≈ **0.7787**
 - Multi-signal SuSiE H4 ≈ **0.7522**
-- Working interpretation: **convergent regulatory / expression / protein mechanism**
-- Next layer: pQTL/MR and blood-pressure pathway integration
+- Working interpretation: **prior-sensitive regulatory-expression hypothesis; direct protein mediation NOT_ESTABLISHED**
+- Phase 9F-E R3_6 source QC: distributed RNA assay feature absent/unresolved, so cell-level FGF5 expression cannot be computed. A separate human cerebellar bulk expression reference reports FGF5 expression; see dedicated R3_6 note.
+- Next layer: independent tissue validation, pQTL/MR and blood-pressure pathway integration
 
 ## Cell-type functional priorities
 
 ### SH3PXD2A
 
-Prioritize macrophage, monocyte, microglia, endothelial and vascular-immune contexts. Bulk-tissue non-confirmation should not be interpreted as rejection of a cell-specific mechanism.
+Compare immune/microglia, oligodendrocyte, fibroblast and vascular cell contexts without assuming macrophage enrichment. Healthy 9F-E contains 33,630 microglia/macrophages with lower SH3PXD2A expression than several other classes. Disease-state donor-level pseudobulk/cell-QTL remains untested. Bulk-tissue non-confirmation alone does not reject a disease-specific mechanism.
 
 ### COL4A2
 
@@ -94,11 +113,11 @@ Use single-cell expression primarily for biological localization. The main mecha
 
 ### FGF5
 
-Test vascular and brain regulatory context together with protein-pathway convergence.
+R3_6 has confirmed no FGF5 symbol or ENSG00000138675 matching RNA feature rownames in the released GSE256493 Seurat object; alternate gene metadata fields were unavailable. Record this cell-localization branch as NOT_ASSESSABLE_IN_THIS_REFERENCE. Human bulk cerebellum has independent FGF5 RNA evidence, whereas GTEx vessel RNA summary is near/at zero. Test compatible brain tissue and independent molecular mechanisms without interpreting missing features as gene negativity.
 
-## Working thesis structure
+## Working thesis structure (hypothesis chapters, not causal claims)
 
-1. **FGF5** — convergent GWAS-expression-protein pathway
+1. **FGF5** — GWAS–eQTL colocalization hypothesis and unproven protein/BP mediation
 2. **ALDH2 / rs671** — ancestry-specific coding/protein/metabolic mechanism
 3. **SH3PXD2A** — cell-specific immune/vascular regulatory mechanism
 4. **COL4A2** — cerebrovascular mural/stromal regulatory mechanism
@@ -113,8 +132,13 @@ Test vascular and brain regulatory context together with protein-pathway converg
 
 ## Next actions
 
+- Reproduce audit across 80 provisional components and the 646 ABF tests, with source hashes, separate 2,425 positional pairs plus one anchor-only row, and missingness coverage.
+- Register evidentiary statuses and predeclared decision gates from docs/is_p0_decision_rules.md.
+- Phase 9F-E R3_6 original RDS feature-space audit completed; update FGF5 localization as NOT_ASSESSABLE. Verify independent tissues and donor-aware cell-type comparisons for remaining genes (six donors; not 80,515 independent biological replicates).
+
 - Phase 10 human and disease-state sc/snRNA integration
 - Vascular ATAC / regulatory mapping for SH3PXD2A and COL4A2
+- The archived Phase10/11 notebook explicitly uses p1=p2=1e-4, p12=1e-5. The **2026-10-11 full Colab 646/646 direct SNP replay is COMPLETE** (independent SHA256/source comparison). QTL-cohort LD, effect allele orientation, prior robustness, multi-signal inference and expanded 80-window QTL testing remain pending. See [full reproducibility proof](IS_PHASE10_11_646_FULL_REPLAY_VERIFIED_20261011.md).
 - FGF5 pQTL/MR and blood-pressure pathway integration
 - Maintain ALDH2 as a coding/protein/metabolic branch rather than forcing a bulk-eQTL model
 - Document ancestry-matched LD limitations explicitly
