@@ -210,3 +210,11 @@ These marginal F proxies **do not imply six independent instruments**, condition
 Derived `IS_RS671_NON_ALDH2_ALCOHOL_IV_READINESS.tsv`, `IS_RS671_NON_ALDH2_ALCOHOL_IV_READINESS_SUMMARY.json`, `IS_RS671_NONALDH2_INSTRUMENT_STRENGTH_AND_VALIDITY.tsv`, and `IS_RS671_NONALDH2_INSTRUMENT_READINESS_SUMMARY.json` are **instruments readiness ledgers, not MR analyses**.
 
 **All 2,225 unique positional IS candidate genes remain in the broad discovery universe.** The rs671 ALDH2/BBJ case study does not downselect the discovery pipeline.
+
+## 7. Final Korean phenotype Figure (source derived, descriptive only)
+
+![KCPS2 original rs671-A genetic associations across alcohol amount, systolic and diastolic BP](figures/is/G0022_RS671_KCPS2_KOREAN_ALCOHOL_BP_FOREST.png)
+
+The accompanying `scripts/is/plot_is_rs671_kcps2_korean_exposure_bp.R` reads the three original-source audited TSV outputs and displays separate 95% normal-approximation confidence intervals, effect allele **rs671 A**. Regenerated with R/ggplot2; identical source-figure SHA256 `112a106b46e00f8cef18f81cb028f9ece33af2befb3cf38e85370c0093e5fc87`.
+
+This is a **descriptive single-variant phenotype comparison**, not a causal forest meta-analysis. Different within-phenotype inverse-normal transformations mean that horizontal point distances do not quantify mediation or relative clinically meaningful units (grams/day, mmHg). A strong Korean source genetic association was already published; novelty resides in appropriately separating pathways and testing against East Asian AIS, not detecting rs671 association.

@@ -23,9 +23,9 @@ def audit(source,out):
             raise ValueError("Source falsely declared LD independence")
         quality=r["ais_qc"]
         if quality=="ALLELE_HARMONIZED":
-            p=float(r["ais_p"]);af_eur=float(r["ais_ALT_eaf"])
+            p=float(r["ais_p"]);af_eas=float(r["ais_ALT_eaf"])
             af_jpn=float(r["alcohol_ALT_eaf"])
-            delta=abs(af_eur-af_jpn)
+            delta=abs(af_eas-af_jpn)
             if delta>.10:status="EAF_DIFF_GT_10PP_NEEDS_ANCESTRY_REVIEW"
             else:status="ALLELE_MATCH_EAF_WITHIN_10PP"
         elif quality=="NOT_IN_EAS_AIS_SOURCE":
