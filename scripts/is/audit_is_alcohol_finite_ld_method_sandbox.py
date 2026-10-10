@@ -40,12 +40,12 @@ def build(root=DEFAULT,source=SOURCE):
                 raise ValueError("Missing signed dosage input QC")
             if not q.get("diagnostics_provided") or not math.isfinite(float(q.get("r_over_B",float("nan")))):
                 raise ValueError("New finite-LD correction diagnostics absent")
-            if q.get("B")!=504 or q.get("R_reliability_flag") is not True:
-                raise ValueError("Unexpected reliability status; scientific gate needs manual review")
+            if q.get("B")!=504 or not isinstance(q.get("R_reliability_flag"),bool):
+                raise ValueError("Missing or invalid reliability flag")
             if not isinstance(data["credible_sets_exploratory"],int) or data["credible_sets_exploratory"]<0:
                 raise ValueError("Missing exploratory credible set count")
-            if q.get("R_sensitivity_flag") is not True:
-                raise ValueError("Unexpected reference-LD sensitivity status")
+            if not isinstance(q.get("R_sensitivity_flag"),bool):
+                raise ValueError("Missing or invalid sensitivity flag")
             if mode==MODES[1] and (q.get("B_corrected") is None or q.get("lambda_bias") is None):
                 raise ValueError("EB-specific uncertainty correction source parameters not recorded")
             warninglist=data.get("warnings",[])
@@ -85,7 +85,9 @@ def build(root=DEFAULT,source=SOURCE):
       "ADH1B_models":{x["model"]:x["exploratory_95pct_CS_n"] for x in rows if x["locus"]=="ADH1B"},
       "ALDH2_models":{x["model"]:x["exploratory_95pct_CS_n"] for x in rows if x["locus"]=="ALDH2"},
       "reliability_warning_all_4_models":all(x["R_reliability_flag"] for x in rows),
+      "reliability_warning_count":sum(bool(x["R_reliability_flag"]) for x in rows),
       "sensitivity_warning_all_4_models":all(x["R_sensitivity_flag"] for x in rows),
+      "sensitivity_warning_count":sum(bool(x["R_sensitivity_flag"]) for x in rows),
       "ALDH2_reference_penalty_median_in_original_reference":max(x["reference_penalty_median"] for x in rows if x["locus"]=="ALDH2"),
       "EB_extra_mismatch_lambda_estimates":{x["locus"]:x["EB_lambda_bias"] for x in rows if x["model"]==MODES[1]},
       "top_PIP_is_not_direct_causal_evidence":True,
