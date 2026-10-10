@@ -20,10 +20,25 @@ for(locus in c("ADH1B","ALDH2")){
     },numeric(1))),numeric(1))
     mean(best)
   }
+  cs_detail <- lapply(fits,function(f) {
+    z <- if(is.null(f$sets$cs)) list() else f$sets$cs
+    lapply(seq_along(z),function(j) {
+      ix <- as.integer(z[[j]])
+      ix <- ix[!is.na(ix) & ix>=1 & ix<=length(f$pip)]
+      purity <- if(!is.null(f$sets$purity) && nrow(as.matrix(f$sets$purity))>=j)
+        as.numeric(f$sets$purity[j,]) else numeric()
+      list(cs_name=names(z)[j],n_snps=length(ix),
+           lead_index=if(length(ix)) ix[which.max(f$pip[ix])] else NULL,
+           lead_pip=if(length(ix)) max(f$pip[ix]) else NULL,
+           purity=purity)
+    })
+  })
   d <- lapply(fits,function(f) f$R_finite_diagnostics)
   rows[[locus]] <- list(
     locus=locus,model_ids=ids,
     credible_set_counts=vapply(sets,length,integer(1)),
+    credible_set_details=cs_detail,
+    ser_alpha_dimensions=lapply(fits,function(f) dim(f$alpha)),
     cs_jaccard_A_to_B=jaccard(sets[[1]],sets[[2]]),
     cs_jaccard_B_to_A=jaccard(sets[[2]],sets[[1]]),
     max_abs_pip_delta=max(abs(fits[[1]]$pip-fits[[2]]$pip)),
