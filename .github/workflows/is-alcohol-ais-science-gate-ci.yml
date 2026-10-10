@@ -1,0 +1,76 @@
+name: IS Alcohol–AIS Allele & Science Gate CI
+
+on:
+  push:
+    branches:
+      - main
+      - research/is-broad-discovery-20261009
+    paths:
+      - "scripts/is/audit_alcohol_cs_ais_direct_overlap.py"
+      - "scripts/is/audit_gigastroke_ais_refalt_provenance.py"
+      - "scripts/is/gigastroke_fasta_variant_contract.py"
+      - "scripts/is/build_alcohol_ais_verified_variant_matrix.py"
+      - "scripts/is/audit_alcohol_ais_eur_transfer.py"
+      - "scripts/is/audit_aldh2_conditional_ld_gate.py"
+      - "tests/test_alcohol_cs_ais_direct_overlap.py"
+      - "tests/test_gigastroke_ais_refalt_provenance.py"
+      - "tests/test_gigastroke_fasta_variant_contract.py"
+      - "tests/test_alcohol_ais_verified_variant_matrix.py"
+      - "tests/test_alcohol_ais_eur_transfer.py"
+      - "tests/test_aldh2_conditional_ld_gate.py"
+      - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
+  pull_request:
+    paths:
+      - "scripts/is/**"
+      - "tests/test_alcohol*"
+      - "tests/test_gigastroke*"
+      - ".github/workflows/is-alcohol-ais-science-gate-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provenance-unit-tests:
+    name: Offline, fail-closed association audit regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python syntax check (stdlib only)
+        run: |
+          python3 -m py_compile \
+            scripts/is/audit_alcohol_cs_ais_direct_overlap.py \
+            scripts/is/audit_gigastroke_ais_refalt_provenance.py \
+            scripts/is/gigastroke_fasta_variant_contract.py \
+            scripts/is/build_alcohol_ais_verified_variant_matrix.py \
+            scripts/is/audit_alcohol_ais_eur_transfer.py \
+            scripts/is/audit_aldh2_conditional_ld_gate.py
+
+      - name: Run isolated SNP harmonization and science-gate tests
+        run: |
+          set -euo pipefail
+          for test_file in \
+            test_alcohol_cs_ais_direct_overlap.py \
+            test_gigastroke_ais_refalt_provenance.py \
+            test_gigastroke_fasta_variant_contract.py \
+            test_alcohol_ais_verified_variant_matrix.py \
+            test_alcohol_ais_eur_transfer.py \
+            test_aldh2_conditional_ld_gate.py
+          do
+            echo "RUNNING $test_file"
+            python3 -m unittest discover \
+              -s tests -p "$test_file" -v
+          done
+
+      - name: Confirm no scientific promotion in source audit documentation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path("scripts/is")
+          text=(root/"audit_aldh2_conditional_ld_gate.py").read_text()
+          assert 'ALDH2_BLOCKED_lifted' in text
+          assert 'ALDH2_BLOCKED_lifted":False' in text.replace(" ", "")
+          print("ALDH2_BLOCKED_SCIENCE_GATE_CONTRACT_OK")
+          PY
