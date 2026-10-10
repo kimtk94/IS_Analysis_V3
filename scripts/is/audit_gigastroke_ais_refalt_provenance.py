@@ -83,6 +83,7 @@ def awk_scan(path,chrom_col,pos_col,positions,sample_stride=0):
     result,err=aw.communicate()
     decompress_error=dc.stderr.read()
     dc_rc=dc.wait()
+    dc.stderr.close()
     if aw.returncode!=0 or dc_rc!=0:
         raise RuntimeError(f"gzip/awk failed: {dc_rc}/{aw.returncode} {decompress_error[:200]!r} {err[:200]!r}")
     lines=result.decode("utf-8").splitlines()
