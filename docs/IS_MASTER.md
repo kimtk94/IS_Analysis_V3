@@ -26,6 +26,7 @@ Can East Asian ischemic-stroke loci be connected to reproducible gene-, protein-
 - **Phase 11B coloc/SuSiE:** COMPUTATIONAL_COMPLETE_EXPLORATORY; paper-grade multi-signal colocalization remains **PENDING** validation.
 - **Broad discovery V2:** 80 provisional ancestry-aware distance components, 2,425 positional gene–region connections (2,225 unique gene IDs), plus one NEURL1 legacy-anchor-only row.
 - **P0 stage:** The candidate/test denominators are source-audited; R3_6 completed FGF5 RNA feature-space investigation. Next: independent brain/arterial gene expression and donor-level reference robustness before costly molecular expansion.
+- **Phase 9F R3_7 donor pseudobulk:** code and 280-cell synthetic QC COMPLETE; real six-donor dataset execution PENDING. R3_7 only reports matched-donor descriptive comparisons (min 20 cells per donor/celltype, min 4 paired donors). See [R3_7 protocol](IS_PHASE9F_R3_7_DONOR_PSEUDOBULK_PROTOCOL_20261010.md).
 
 ## Evidence integrity update — 2026-10-10
 
