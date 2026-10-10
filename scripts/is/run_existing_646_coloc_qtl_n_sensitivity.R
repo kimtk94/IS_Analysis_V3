@@ -90,8 +90,8 @@ for(i in seq_len(646)) {
   H3_median=output[["h3_median"]],
   H3_max=output[["h3_max"]],
   max_abs_H4_shift_vs_first=delta,
-  any_H4_crosses_0p5=any(variants>=0.5)!=(original_h4>=0.5),
-  any_H4_crosses_0p8=any(variants>=0.8)!=(original_h4>=0.8),
+  any_H4_crosses_0p5=any((variants>=0.5)!=(original_h4>=0.5)),
+  any_H4_crosses_0p8=any((variants>=0.8)!=(original_h4>=0.8)),
   interpretation="SCALAR_QTL_N_SENSITIVITY_NOT_CAUSAL_OR_PER_SNP_N_MODEL",
   stringsAsFactors=FALSE,check.names=FALSE)
  if(i%%50==0 || i==646)
