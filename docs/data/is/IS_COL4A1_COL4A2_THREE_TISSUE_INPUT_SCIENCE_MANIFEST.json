@@ -1,0 +1,107 @@
+{
+  "status": "PAIRED_GENES_FULL_CIS_NONPALIN_GWAS_SNP_MATCH_ANALYTIC_INPUT_NOT_CAUSAL",
+  "genes": {
+    "COL4A1": "ENSG00000187498",
+    "COL4A2": "ENSG00000134871"
+  },
+  "datasets_sample_size_from_QTL_AN2": {
+    "QTD000131": 387,
+    "QTD000171": 205,
+    "QTD000434": 560
+  },
+  "input_SNP_n": 26648,
+  "n_unique_matched_gene_tissue": 6,
+  "pairwise_equal_SNP_universe_by_QTL_study": true,
+  "no_new_coloc_or_shared_causal_variant_claim": true,
+  "GIGASTROKE_historical_ID_normalized_with_GRCh37_FASTA": true,
+  "COL4A2_DLPFC_prior_98_source_match_count": 3947,
+  "before_antisense_or_gene_structure_annotation": true,
+  "two_stroke_GWAS_cohorts_independence_not_established": true,
+  "QTL_STUDY_LD_GENETIC_ANCESTRY_NOT_MATCHED": true,
+  "source_QTL_median_AN_div_2_and_QC": {
+    "QTD000131": {
+      "median_AN_over_2": {
+        "COL4A1": 387.0,
+        "COL4A2": 387.0
+      },
+      "per_gene_QTL_counts": {
+        "COL4A1": {
+          "GRCH37_FASTA_REF_VERIFIED": 8381,
+          "NONSNP_excluded": 923
+        },
+        "COL4A2": {
+          "GRCH37_FASTA_REF_VERIFIED": 8381,
+          "NONSNP_excluded": 924
+        }
+      },
+      "original_nominal_cis_SNP_maps_count": {
+        "COL4A1": 8381,
+        "COL4A2": 8381
+      }
+    },
+    "QTD000171": {
+      "median_AN_over_2": {
+        "COL4A1": 205.0,
+        "COL4A2": 205.0
+      },
+      "per_gene_QTL_counts": {
+        "COL4A1": {
+          "GRCH37_FASTA_REF_VERIFIED": 7635,
+          "NONSNP_excluded": 848
+        },
+        "COL4A2": {
+          "GRCH37_FASTA_REF_VERIFIED": 7634,
+          "NONSNP_excluded": 849
+        }
+      },
+      "original_nominal_cis_SNP_maps_count": {
+        "COL4A1": 7635,
+        "COL4A2": 7634
+      }
+    },
+    "QTD000434": {
+      "median_AN_over_2": {
+        "COL4A1": 560.0,
+        "COL4A2": 560.0
+      },
+      "per_gene_QTL_counts": {
+        "COL4A1": {
+          "GRCH37_FASTA_REF_VERIFIED": 7336,
+          "QTL_AC_AN_AF_CONFLICT": 1191,
+          "NONSNP_excluded": 2118
+        },
+        "COL4A2": {
+          "NONSNP_excluded": 2120,
+          "GRCH37_FASTA_REF_VERIFIED": 7335,
+          "QTL_AC_AN_AF_CONFLICT": 1191
+        }
+      },
+      "original_nominal_cis_SNP_maps_count": {
+        "COL4A1": 6145,
+        "COL4A2": 6144
+      }
+    }
+  },
+  "gwas_scan_source": {
+    "BBJ_IS": {
+      "scanned_total_GWAS": 13435531,
+      "GWAS_positions_in_6_sources": 5913,
+      "VALID_GWAS_SOURCE_REF_ALT_EFFECT": 5913
+    },
+    "EAS_AIS": {
+      "scanned_total_GWAS": 6725216,
+      "GWAS_positions_in_6_sources": 5605,
+      "FASTA_ANCHORED_HISTORICAL_OTHER_EFFECT_ORDER": 2480,
+      "FASTA_ANCHORED_HISTORICAL_REF_ALT_ORDER": 3125
+    }
+  },
+  "input_sha256": {
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_T1_extended_cis_20261011_v1/IS_XDATA_G0023__QTD000131__GRCh38_13_108801501_111807358.tsv.gz": "cf1c2cd36eae739f66429ea6a7bdead065171da557dcf3e6e5548ee8724aca0d",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_T1_extended_cis_20261011_v1/IS_XDATA_G0023__QTD000171__GRCh38_13_108801501_111807358.tsv.gz": "c4923568e952721f30caeea5b3c184df69dadb985206734ded16a62cbab533c7",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_T1_extended_cis_20261011_v1/IS_XDATA_G0023__QTD000434__GRCh38_13_108801501_111807358.tsv.gz": "7fe9cd8392c51688a4353fa08876a6ba0c346f2b78db7d07a68a148977cebc70",
+    "/srv/is-analysis/data/is/processed/japan/bbj/BBJ_IS_GRCh37.canonical.tsv.gz": "f107f8e37d28d354458bbd44f0ba0640438d27b64077bcc83cb8457336d09b90",
+    "/srv/is-analysis/data/is/processed/gigastroke/eas/GCST90104545_AIS_GRCh37.canonical.tsv.gz": "24edcfcde24acad1fa4786f272a54a53dd4c73caa489a88c7b2ca67160eb4d66",
+    "/srv/is-analysis/data/reference/hg38ToHg19.over.chain": "e3a42338508eee1fa55ab8d0f70054079a3e84ed8c41984ffbf87b5b584d0838",
+    "/srv/is-analysis/results/is/audits/is_eas5_98_egene_fullcis_gwas_overlap_20261011_v3_fastaanchored/IS_EAS5_98_BH05_FDR_EGENE_FULLCIS_GWAS_ALLELE_READINESS.tsv": "b2cbd496254c63ab73171e17568f453c115a8a3b565d939a37f4838d4ca3bc0f"
+  }
+}

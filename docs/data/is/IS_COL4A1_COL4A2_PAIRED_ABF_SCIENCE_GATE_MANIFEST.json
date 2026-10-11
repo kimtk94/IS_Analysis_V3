@@ -1,0 +1,28 @@
+{
+  "status": "COL4A1_COL4A2_PAIRED_ABF_PRIOR_SENSITIVE_EXPLORATORY_NOT_NEW_STROKE_CAUSAL",
+  "source_270_ABF_run_count": 270,
+  "three_tissue_matched_6_assays": 6,
+  "new_shared_causal_genes": 0,
+  "QTL_SNP_COVERAGE_INCOMPLETE_FOR_COL4A2_ROSMAP": true,
+  "COL4A1_and_COL4A2_share_same_ROSMAP_top_conditioned_H4_SNP": true,
+  "COL4A1_ROSMAP_fdr_eGene": false,
+  "COL4A2_ROSMAP_fdr_eGene": true,
+  "COL4A1_ROSMAP_ppH4_p12_1e5": 0.948198081940169,
+  "COL4A2_ROSMAP_ppH4_p12_1e5": 0.95711866720915,
+  "old_646_BBJ_GTEx_16_tissue_max_H4_p12_1e5_NOT_COMPARABLE_DIRECTLY_WITH_ROSMAP": {
+    "COL4A1": 0.117146046479683,
+    "COL4A2": 0.330777994052529
+  },
+  "high_H4_in_two_genes_same_GWAS_SNP_set_is_not_locus_gene_resolution": true,
+  "confirmed_sample_ancestry_matched_QTL_LD": false,
+  "confirmed_multi_signal_coloc_susie": false,
+  "study_N_derived_from_allele_number_AN2_not_original_donor_metadata": true,
+  "GIGASTROKE_EAS_AIS_case_fraction_source_secondary_only": true,
+  "meta_conclusion": "EXPLORATORY_SHARED_REGIONAL_REGULATORY_LOCUS_NOT_UNIQUE_GENE",
+  "input_SHA256": {
+    "/srv/is-analysis/results/is/audits/is_col4a1_col4a2_paired_abf_sensitivity_20261011_v1/IS_COL4A1_COL4A2_THREE_QTL_P12_AF_N_ABF_SENSITIVITY.tsv": "f19dc48da97fab86505e3226f1fce59d4b72bb2f4107c91a40a2fb89cbacc674",
+    "/srv/is-analysis/results/is/audits/is_col4a1_col4a2_paired_coloc_20261011_v1/IS_COL4A1_COL4A2_TISSUE_PAIRED_COMMON_SNP_INPUT.tsv": "d713b3cd061391034cf4079c324f9985a03635fc4f443c4183c05a143f056a55",
+    "/srv/is-analysis/results/is/audits/is_eas5_studywide_BH_egenes_20261011_v1/IS_EAS5_720_OFFICIAL_STUDYWIDE_BH_EGENE_SOURCE_TESTS.tsv": "3b2f4e00a5f19074c7a690e1264a6e6f196eb96d033c5ef21844da56025d6646",
+    "/srv/is-analysis/results/is/audits/legacy_coloc_p12_sensitivity_20261010_v1/IS_LEGACY_646_ABF_P12_GRID.tsv": "562b5d4286871c597887a5ed105297796363b2c53d3510452ac89e3634fd7119"
+  }
+}

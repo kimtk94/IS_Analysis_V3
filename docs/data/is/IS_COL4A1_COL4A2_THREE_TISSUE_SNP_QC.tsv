@@ -1,0 +1,7 @@
+QTL_dataset	gene_symbol	official_tested_GRCh38_variant_count	QTL_fasta_valid_in_GWAS_allele_indices	QTL_strong_p_le_1e_4_on_paired_SNPs	EAS_AIS_GWS_p_lt_5e_8_on_paired_SNPs	both_marginal_sameSNP_QTL1e4_AIS5e8	median_QTL_AN_over_2	paired_nonpal_SNP_count	paired_nonpal_AF_delta_le_0p1	paired_nonpal_AF_delta_le_0p2
+QTD000131	COL4A1	9025	4730	0	2	0	387	4730	2591	3739
+QTD000131	COL4A2	9026	4730	0	2	0	387	4730	2591	3739
+QTD000171	COL4A1	8218	4648	0	2	0	205	4648	2413	3608
+QTD000171	COL4A2	8218	4648	5	2	0	205	4648	2413	3608
+QTD000434	COL4A1	8763	3946	6	2	1	560	3946	2053	3095
+QTD000434	COL4A2	8764	3946	9	2	2	560	3946	2053	3095
