@@ -1,0 +1,15 @@
+{
+  "status": "SAMPLED_EGENE_SNP_UNIVERSE_ALL_CONTRIBUTING_GIGASTROKE_SOURCE_ROWS_RAW_CANONICAL_FASTA_QC_PASS",
+  "all_original_study_records_scanned": 6725216,
+  "all_canonical_study_records_scanned": 6725216,
+  "unique_input_target_Fasta37_SNPs": 23893,
+  "source_geneQTL_variant_rows_scanned": 321538,
+  "GIGA_original_EBI_RAW_MD5": "904e12e33ec3c2eeefe4dc93bec4995c",
+  "verified_records": 23893,
+  "historical_allele_order_counts": {
+    "RAW_CANONICAL_ALLELE_EFFECT_FREQ_NUMERIC_AND_FASTA_VERIFIED": 23893,
+    "FASTA_REF_ALT": 13358,
+    "OTHER_EFFECT_ORDER": 10535
+  },
+  "no_independent_stroke_repl_or_new_coloc": true
+}

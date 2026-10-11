@@ -48,6 +48,8 @@ on:
       - "scripts/is/merge_is_eas5_full_cis_readiness.py"
       - "scripts/is/audit_is_eas5_permuted_studywide_bh_egenes.py"
       - "scripts/is/build_is_eas5_240_qtl_gwas_source_triage.py"
+      - "scripts/is/audit_is_eas5_98_egene_fullcis_gwas_exact.py"
+      - "scripts/is/audit_is_eas5_giga_raw_canonical_fastaref.py"
       - "scripts/is/render_is_eas5_full_cis_recovery.R"
       - "scripts/is/audit_is_8956_maf_palindrome_reference.py"
       - "scripts/is/summarize_is_646_prior_h3h4_2225_genes.py"
@@ -84,6 +86,8 @@ on:
       - "tests/test_is_eas5_full_cis_recovery.py"
       - "tests/test_is_eas5_permuted_studywide_bh_egenes.py"
       - "tests/test_is_eas5_240_qtl_gwas_source_triage.py"
+      - "tests/test_is_eas5_98_egene_fullcis_gwas_exact.py"
+      - "tests/test_is_eas5_giga_raw_canonical_fastaref.py"
       - "tests/test_is_8956_maf_palindrome_reference.py"
       - "tests/test_is_646_prior_h3h4_2225_genes.py"
       - "tests/test_is_eas30_qtl_gap_priority.py"
@@ -148,6 +152,8 @@ jobs:
             scripts/is/merge_is_eas5_full_cis_readiness.py \
             scripts/is/audit_is_eas5_permuted_studywide_bh_egenes.py \
             scripts/is/build_is_eas5_240_qtl_gwas_source_triage.py \
+            scripts/is/audit_is_eas5_98_egene_fullcis_gwas_exact.py \
+            scripts/is/audit_is_eas5_giga_raw_canonical_fastaref.py \
             scripts/is/audit_is_8956_maf_palindrome_reference.py \
             scripts/is/summarize_is_646_prior_h3h4_2225_genes.py \
             scripts/is/build_is_eas30_qtl_gap_priority.py
@@ -187,6 +193,8 @@ jobs:
             test_is_eas5_full_cis_recovery.py \
             test_is_eas5_permuted_studywide_bh_egenes.py \
             test_is_eas5_240_qtl_gwas_source_triage.py \
+            test_is_eas5_98_egene_fullcis_gwas_exact.py \
+            test_is_eas5_giga_raw_canonical_fastaref.py \
             test_is_8956_maf_palindrome_reference.py \
             test_is_646_prior_h3h4_2225_genes.py \
             test_is_eas30_qtl_gap_priority.py

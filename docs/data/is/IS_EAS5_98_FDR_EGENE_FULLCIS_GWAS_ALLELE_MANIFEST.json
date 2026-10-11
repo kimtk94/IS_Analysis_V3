@@ -1,0 +1,53 @@
+{
+  "status": "98_STUDYWIDE_EBI_EGENE_FULL_CIS_GRCH37_FASTA_ALLELE_EXACT_GWAS_OVERLAP_ONLY",
+  "eGene_BH05_assays": 98,
+  "distinct_source_eGenes": 66,
+  "GWAS_SNP_match_total_record_unit_gene_tissue_SNP": 255753,
+  "OLD_GWAS_SNP_match_record_unit_gene_tissue_SNP": 86965,
+  "sameSNP_marginal_threshold_joint_assays": 1,
+  "sameSNP_marginal_threshold_joint_distinct_genes": 1,
+  "all_66_are_EBI_reprocessed_eGenes_NOT_stroke_causal_genes": true,
+  "full_cis_variant_count_lead_ID_independent_study_LD_not_assessed": true,
+  "n_fullcis_QTL_verified_geneSNP_records": 490373,
+  "GWAS_source_scans": {
+    "BBJ_IS": {
+      "source_rows": 13435531,
+      "GWAS_at_QTL_mapped_position": 25442,
+      "VALID_GWAS_SOURCE_REF_ALT_EFFECT": 25442
+    },
+    "GIGASTROKE_EAS_AIS": {
+      "source_rows": 6725216,
+      "GWAS_at_QTL_mapped_position": 23893,
+      "FASTA_ANCHORED_HISTORICAL_REF_ALT_ORDER": 13358,
+      "FASTA_ANCHORED_HISTORICAL_OTHER_EFFECT_ORDER": 10535
+    }
+  },
+  "raw_eQTL_source_sha256": {
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_G0015_extended_cis_20261011_v1/IS_XDATA_G0015__QTD000131__GRCh38_10_101403919_105460593.tsv.gz": "863d725471dde0662e8d709a9a57746498f9901699bd2eb9ea49359f74522ea9",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_G0015_extended_cis_20261011_v1/IS_XDATA_G0015__QTD000171__GRCh38_10_101403919_105460593.tsv.gz": "deec8a4358a7886c8b02722611976f3aeb6fab9557c285c8db2a37a521b35409",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_G0015_extended_cis_20261011_v1/IS_XDATA_G0015__QTD000434__GRCh38_10_101403919_105460593.tsv.gz": "8e116e56217c6548f95d7013f37e3728180912d4ef87646c7054d0ab2bb3adab",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_G0018_edge_cis_20261011_v1/IS_XDATA_G0018__QTD000131__GRCh38_11_377434_3387434.tsv.gz": "343b19c7a97b27babd6c7a17ea1b69a3b39e7c3f201bb4e20e1b7f92f4bc9cce",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_G0018_edge_cis_20261011_v1/IS_XDATA_G0018__QTD000171__GRCh38_11_377434_3387434.tsv.gz": "22458df0d8dca11eaa1e43607e7be7ac6f510fd38f0c7b33104a02049b6c456b",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_G0018_edge_cis_20261011_v1/IS_XDATA_G0018__QTD000434__GRCh38_11_377434_3387434.tsv.gz": "376e1eef8e3c444de9fe92bb6e3d7d54612176fc0b5a5c4123e575433302fe6d",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_T1_extended_cis_20261011_v1/IS_XDATA_G0023__QTD000131__GRCh38_13_108801501_111807358.tsv.gz": "cf1c2cd36eae739f66429ea6a7bdead065171da557dcf3e6e5548ee8724aca0d",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_T1_extended_cis_20261011_v1/IS_XDATA_G0023__QTD000434__GRCh38_13_108801501_111807358.tsv.gz": "7fe9cd8392c51688a4353fa08876a6ba0c346f2b78db7d07a68a148977cebc70",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_T4_extended_cis_20261011_v1/IS_XDATA_G0025__QTD000131__GRCh38_17_5691879_8725409.tsv.gz": "2e4b9afb44ca2a366ea55ec7d61db7b745d5e587baa6e2326d202770bf963c2b",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_T4_extended_cis_20261011_v1/IS_XDATA_G0025__QTD000171__GRCh38_17_5691879_8725409.tsv.gz": "a8c6a4be5e3c5d85d1b140b635ac8cd79971e1893662c454c79e1702a443e04c",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_T4_extended_cis_20261011_v1/IS_XDATA_G0025__QTD000434__GRCh38_17_5691879_8725409.tsv.gz": "a2c824620691782f5085554d2f9f1184f031c2a929d248a1a596b5d5cdcecc1f"
+  },
+  "sha256_additional_inputs": {
+    "/srv/is-analysis/results/is/audits/is_eas5_studywide_BH_egenes_20261011_v1/IS_EAS5_720_OFFICIAL_STUDYWIDE_BH_EGENE_SOURCE_TESTS.tsv": "3b2f4e00a5f19074c7a690e1264a6e6f196eb96d033c5ef21844da56025d6646",
+    "/srv/is-analysis/results/is/audits/is_eas5_full_cis_master_readiness_20261011_v1/IS_EAS5_720_QTL_FULLCIS_BEFORE_AFTER_READINESS.tsv": "dbe6fa727365b35ecfa2140252f58e36035f547530643fa69c7b031195d8d8a2",
+    "/srv/is-analysis/results/is/audits/is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1/IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv": "bca32f5ec475da7029bd5375c42d4baae80df8b61f910becef4eb6d4c16f9766",
+    "/srv/is-analysis/data/reference/hg38ToHg19.over.chain": "e3a42338508eee1fa55ab8d0f70054079a3e84ed8c41984ffbf87b5b584d0838",
+    "/srv/is-analysis/data/is/processed/japan/bbj/BBJ_IS_GRCh37.canonical.tsv.gz": "f107f8e37d28d354458bbd44f0ba0640438d27b64077bcc83cb8457336d09b90",
+    "/srv/is-analysis/data/is/processed/gigastroke/eas/GCST90104545_AIS_GRCh37.canonical.tsv.gz": "24edcfcde24acad1fa4786f272a54a53dd4c73caa489a88c7b2ca67160eb4d66"
+  },
+  "any_colocalization_calculated": false,
+  "EAS_QTL_genotype_LD_verified": false,
+  "GIGASTROKE_EAS_BBJ_independent_replication": false,
+  "GIGASTROKE_pre_GWAS_SSF_historical_ID_is_other_effect_order_in_some_SNPs": true,
+  "GIGASTROKE_original_MD5_and_metadata_verified": true,
+  "GIGASTROKE_alleles_for_recoded_variants_anchored_to_GRCh37_FASTA": true,
+  "genetic_causal_gene_promotion": false
+}
