@@ -68,3 +68,35 @@ No original GTEx_v8 source file, prior legacy H4/646 posterior, or IS **2,225-ge
 **Most important next:** compare the **same reprocessed QTD000161 × BBJ source** under old 1,694/1,583 intersected SNP subsets versus 2,773/2,772/2,766/2,739 new coverage at fixed N and p12, with allele-consistent SNP matching and identical per-study data. This isolates one main hypothesis: whether the expanded SNP universe itself changes PP.H4.
 
 For formal multi-signal colocalization: authenticate QTD tissue's actual expression-association effective N, obtain donor-cohort QTL LD if permitted (or clearly specify EUR reference LD proxy assumptions), test conditional independent signals and publish prior sensitivity. Candidate-gene inference remains exploratory until those gates pass.
+
+## Controlled nested-SNP comparison — EXECUTED, additional 60 scenarios
+
+The controlled comparison recommended above was also executed. We held **the exact EBI QTL/BBJ GWAS β, SE, AF and per-SNP allele orientation**, as well as the same three assumed QTL N values and five prior values, fixed. Only SNP inclusion changed:
+
+- **Nested:** previously archived common SNP overlap *that is also present in EBI QTD000161* and passed the new exact BBJ/FASTA and non-palindromic gate (**FGF5/C4orf22 1,286; CALHM2/NEURL 1,342**). This is **not** an attempt to reuse archived GTEx QTL coefficients.
+- **Expanded:** every new EBI QTD000161 full-cis tested SNP with same QC, exact BBJ match and non-palindromic gate (**2,773 / 2,772 / 2,766 / 2,739**).
+
+| Gene | Same-source nested n | Expanded n | Nested H4 | Expanded H4 | **Expanded − nested H4** |
+|---|---:|---:|---:|---:|---:|
+| FGF5 | 1,286 | 2,773 | 0.9260 | 0.9132 | **−0.0128** |
+| C4orf22 | 1,286 | 2,772 | 0.4556 | 0.4209 | **−0.0347** |
+| CALHM2 | 1,342 | 2,766 | 0.9166 | 0.9054 | **−0.0112** |
+| NEURL | 1,342 | 2,739 | 0.0666 | 0.0605 | **−0.0061** |
+
+Reference scenario `N=175, p12=1e-5`. Across **all 15 paired N/p12 settings for each gene** (60 paired contrasts), the expanded input produced lower H4 than the same-source nested input, with the larger reduction of ~0.035 at C4orf22. The EBI molecular QTL and GWAS statistical inputs for each retained SNP were **bitwise-equivalent TSV row fields**, checked by nested-subset regression test. This supports the narrow conclusion that expanding the EBI–BBJ SNP universe **slightly lowers H4 in this particular single-signal ABF model**, rather than accounting for the large changes between *historical* and *new* source models.
+
+It does not establish causal independence, show EBI and historic GTEx QTL algorithms are equivalent, or prove that one SNP collection is universally optimal. `coloc.abf` assumes at most one causal signal per trait; adding correlated tags can redistribute modeled hypotheses.
+
+![Controlled nested versus expanded same-source ABF comparison](figures/IS_PRIORITY4_EBI_BBJ_SAME_SOURCE_NESTED_VS_FULL_ABF_20261011.svg)
+
+### Controlled model artifacts and tests
+
+- `scripts/is/prepare_is_priority4_ebi_bbj_nested_snps.py` prepares only the exactly matching SNP subset from the frozen 11,050-row source.
+- `scripts/is/run_is_priority4_ebi_bbj_abf_sensitivity.R INPUT OUT ARCHIVED_NESTED` performs another 60 identical-statistics, different-SNP-count scenarios, with strict expected per-gene SNP counts.
+- `scripts/is/audit_is_priority4_ebi_bbj_nested_abf.py` pairs and checks both 60-scenario grids, effect-model assumptions, subset cardinality and archived-analysis non-modification flags.
+- `scripts/is/render_is_priority4_nested_abf_control_figure.py` and `tests/test_is_priority4_ebi_bbj_nested_abf.py`.
+
+Server results (nonoverwriting):
+`/srv/is-analysis/results/is/audits/is_priority4_ebi_bbj_nested_fixedsource_20261011_v1/` (frozen nested source),
+`.../is_priority4_ebi_bbj_nested_fixedsource_20261011_v2/` (60 nested ABF runs),
+`.../is_priority4_ebi_bbj_nested_control_20261011_v1/` (60 paired comparisons, per-gene summary, SHA256 manifest).

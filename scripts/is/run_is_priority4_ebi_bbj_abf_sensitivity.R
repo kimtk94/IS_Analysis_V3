@@ -3,7 +3,9 @@
 # GENOTYPE AN/2 does not independently attest the QTL expression-effective N.
 # No SuSiE conditional inference or historical H4 revision.
 args <- commandArgs(trailingOnly=TRUE)
-if(length(args)!=2)stop("usage: Rscript runner.R INPUT.tsv OUTPUT_DIR")
+if(!(length(args) %in% c(2L,3L)))stop("usage: Rscript runner.R INPUT.tsv OUTPUT_DIR [ARCHIVED_NESTED]")
+mode <- if(length(args)==3L)args[[3]] else "FULL"
+if(!(mode %in% c("FULL","ARCHIVED_NESTED")))stop("unapproved subset mode")
 inp <- args[[1]]; dest <- args[[2]]
 if(!file.exists(inp))stop("missing input")
 if(dir.exists(dest) && length(list.files(dest))>0)stop("refuse overwriting science output")
@@ -14,7 +16,8 @@ need <- c("gene_symbol","gene_id","locus","variant_GRCh37_REF_ALT","BBJ_beta_ALT
  "BBJ_se","BBJ_p","BBJ_MAF","EBI_QTD_beta_ALT","EBI_QTD_se",
  "EBI_QTD_p","EBI_QTD_maf","EBI_QTD_AN")
 if(!all(need %in% names(d)))stop("input source schema drift")
-if(nrow(d)!=11050L || length(unique(d$gene_symbol))!=4L)stop("source cardinality drift")
+n_total_expected <- if(mode=="ARCHIVED_NESTED")5256L else 11050L
+if(nrow(d)!=n_total_expected || length(unique(d$gene_symbol))!=4L)stop("source cardinality drift")
 for(v in c("BBJ_beta_ALT","BBJ_se","BBJ_p","BBJ_MAF","EBI_QTD_beta_ALT",
            "EBI_QTD_se","EBI_QTD_p","EBI_QTD_maf","EBI_QTD_AN")) {
  d[[v]] <- as.numeric(d[[v]])
@@ -29,7 +32,9 @@ if(any(!as.character(d$QTD_nominal_full_cis_tested) %in% c("True","TRUE")) ||
    any(!as.character(d$BBJ_GWAS_exact_FASTA_ref) %in% c("True","TRUE")))stop("upstream attestation flags absent")
 if(any(d$harmonization!="ALT_AFTER_CHAIN_AND_FASTA_REF_EQUIVALENCE"))stop("not exact allele ALT")
 genes <- c("FGF5","C4orf22","CALHM2","NEURL")
-expected <- c(FGF5=2773,C4orf22=2772,CALHM2=2766,NEURL=2739)
+expected <- if(mode=="ARCHIVED_NESTED") {
+ c(FGF5=1286,C4orf22=1286,CALHM2=1342,NEURL=1342)
+} else c(FGF5=2773,C4orf22=2772,CALHM2=2766,NEURL=2739)
 ns <- c(125,150,175)
 priors <- c(1e-6,3e-6,1e-5,3e-5,1e-4)
 res <- list();qc <- list();rownum <- 0L
@@ -77,7 +82,7 @@ for(g in genes) {
           PP_H0=v[[1]],PP_H1=v[[2]],PP_H2=v[[3]],PP_H3=v[[4]],
           PP_H4=v[[5]],max_single_variant_SNP_PP_H4=max(snppp,na.rm=TRUE),
           status="EXPLORATORY_ABF_SUCCESS",
-          diagnostic_message="EBI reanalysis; inferred N scenario; single causal per trait assumption",
+          diagnostic_message=paste("EBI reanalysis; inferred N scenario; single causal per trait assumption; mode",mode),
           original_GTEx_v8_model_reproduced=FALSE,study_matched_QTL_LD_available=FALSE)
       }
    }
