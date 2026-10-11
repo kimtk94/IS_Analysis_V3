@@ -37,6 +37,9 @@ on:
       - "scripts/is/render_is_eas30_gwas_qtl_coverage.R"
       - "scripts/is/render_is_eas30_2225_public_qtl_gene_readiness.R"
       - "scripts/is/merge_is_eas30_public_nominal_qtl_15_sources.py"
+      - "scripts/is/audit_is_eas5_public_qtl_gwas_snp_overlap.py"
+      - "scripts/is/audit_is_eas5_official_alt_effect_and_dedup.py"
+      - "scripts/is/audit_is_eas5_same_variant_qtl_ais_p.py"
       - "scripts/is/audit_is_8956_maf_palindrome_reference.py"
       - "scripts/is/summarize_is_646_prior_h3h4_2225_genes.py"
       - "scripts/is/build_is_eas30_qtl_gap_priority.py"
@@ -65,6 +68,9 @@ on:
       - "tests/test_is_eas30_gwas_qtl_expansion_queue.py"
       - "tests/test_is_eas30_crossgwas_source_leads.py"
       - "tests/test_is_eas30_public_nominal_qtl_15_sources.py"
+      - "tests/test_is_eas5_public_qtl_gwas_snp_overlap.py"
+      - "tests/test_is_eas5_official_alt_effect_and_dedup.py"
+      - "tests/test_is_eas5_same_variant_qtl_ais_p.py"
       - "tests/test_is_8956_maf_palindrome_reference.py"
       - "tests/test_is_646_prior_h3h4_2225_genes.py"
       - "tests/test_is_eas30_qtl_gap_priority.py"
@@ -118,6 +124,9 @@ jobs:
             scripts/is/build_is_eas30_gwas_qtl_expansion_queue.py \
             scripts/is/audit_is_eas30_crossgwas_source_leads.py \
             scripts/is/merge_is_eas30_public_nominal_qtl_15_sources.py \
+            scripts/is/audit_is_eas5_public_qtl_gwas_snp_overlap.py \
+            scripts/is/audit_is_eas5_official_alt_effect_and_dedup.py \
+            scripts/is/audit_is_eas5_same_variant_qtl_ais_p.py \
             scripts/is/audit_is_8956_maf_palindrome_reference.py \
             scripts/is/summarize_is_646_prior_h3h4_2225_genes.py \
             scripts/is/build_is_eas30_qtl_gap_priority.py
@@ -150,6 +159,9 @@ jobs:
             test_is_eas30_gwas_qtl_expansion_queue.py \
             test_is_eas30_crossgwas_source_leads.py \
             test_is_eas30_public_nominal_qtl_15_sources.py \
+            test_is_eas5_public_qtl_gwas_snp_overlap.py \
+            test_is_eas5_official_alt_effect_and_dedup.py \
+            test_is_eas5_same_variant_qtl_ais_p.py \
             test_is_8956_maf_palindrome_reference.py \
             test_is_646_prior_h3h4_2225_genes.py \
             test_is_eas30_qtl_gap_priority.py

@@ -1,0 +1,26 @@
+{
+  "status": "OFFICIAL_EQTL_CATALOGUE_ALT_BETA_SEMANTICS_PLUS_FASTA37_GWAS_MATCH",
+  "official_eQTL_catalogue_column_definition": "https://github.com/eQTL-Catalogue/eQTL-Catalogue-resources/blob/master/tabix/Columns.md",
+  "official_eQTL_catalogue_FAQ": "https://www.ebi.ac.uk/eqtl/Data_access/",
+  "n_unique_harmonized_geneSNP_records": 809245,
+  "n_gene_tissue_with_GWAS_variant_match": 393,
+  "n_unique_gene_ids_with_any_GWAS_variant_match": 149,
+  "n_unique_new_gene_ids_without_historical_ABF": 124,
+  "n_gene_tissue_potential_ABF_followup_under_input_only_heuristics": 36,
+  "genetic_allele_matching_pass_not_coloc": true,
+  "no_QTL_ancestry_verification": true,
+  "no_causal_gene_promotion": true,
+  "duplicate_source_rsids_removed_per_gene_variant": 0,
+  "matched_row_QC": {
+    "source_matched_rows": 809245,
+    "deduplicated_geneSNP": 809245,
+    "both_SNP_sources": 423051,
+    "both_SNP_sources_nonpalindromic": 376334,
+    "palindromic_rows": 100870,
+    "EAS_AIS_QTL_ALT_AF_delta_ge_0p1": 211866,
+    "EAS_AIS_QTL_ALT_AF_delta_ge_0p2": 93024
+  },
+  "sha256_inputs": {
+    "/srv/is-analysis/results/is/audits/is_eas5_qtl_gwas_snp_ref37_20261011_v2/IS_QTL_5REGION_EXACT_GWAS_VARIANT_MATCHES.tsv.gz": "c02057e9f5f693ac3acb9a5073c937da8c2cb5a6e2951c26a9c175f932ec3ace"
+  }
+}

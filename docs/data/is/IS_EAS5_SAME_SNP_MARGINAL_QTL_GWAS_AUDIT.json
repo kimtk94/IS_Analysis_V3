@@ -1,0 +1,15 @@
+{
+  "status": "OFFICIAL_ALT_ALIGNED_MARGINAL_SAME_SNP_QTL_GWAS_THRESHOLD_AUDIT",
+  "n_gene_tissue_tests": 393,
+  "n_gene_tissue_with_same_SNP_joint": 0,
+  "n_gene_tissue_joint_with_AF_delta_le_0p1": 0,
+  "n_distinct_genes_joint": 0,
+  "n_distinct_new_untested_ABF_genes_joint": 0,
+  "n_distinct_new_genes_joint_with_AF_delta_le_0p1": 0,
+  "5e8_and_1e4_thresholds_descriptive_not_formal_coloc": true,
+  "same_SNP_and_same_sign_not_shared_causality": true,
+  "source_SHA256": {
+    "/srv/is-analysis/results/is/audits/is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1/IS_EAS5_OFFICIAL_QTL_ALT_GWAS_HARMONIZED_VARIANTS.tsv": "6c40fae55638b2e8504233b6d6178dfc3df77aa04a19f6bf4170fa87dc5f36f7",
+    "/srv/is-analysis/results/is/audits/is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1/IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv": "bca32f5ec475da7029bd5375c42d4baae80df8b61f910becef4eb6d4c16f9766"
+  }
+}
