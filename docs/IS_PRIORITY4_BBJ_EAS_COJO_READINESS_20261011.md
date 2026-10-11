@@ -51,3 +51,13 @@ No downstream biological claim has changed. Original **2,225 positional IS candi
 ## Next legitimate COJO step
 
 Find or obtain a large, ancestry-matched **BBJ cohort / Japanese genotype LD panel** with enough participants (official GCTA guidance suggests >4,000), verify effective sample-size convention and complete BBJ summary statistics, then construct an appropriate COJO reference and rerun allele/frequency/source regression QC. Before that, the EUR503, EAS504 and JPT104 work provides **reference-specific LD diagnostic evidence** only, not valid independent conditional stroke signals. For QTL fine-mapping the separately missing GTEx molecular donor cohort LD is still an independent blocker.
+
+## Identified larger Japanese LD reference (future controlled-access option)
+
+**BioBank Japan official published inventory** (as of 2025-12-01): the 1000G-augmented BBJ imputation reference panel includes **7,472 Japanese BBJ WGS samples** under **NBDC JGAS000738 / JGAD000873**. The official published inventory also lists 15,646 BBJ WGS participants and 269,000 SNP-array individuals, with different levels of access. Dataset https://biobankjp.org/researchers/730 . A population-specific 7K BBJ reference-panel study is https://pubmed.ncbi.nlm.nih.gov/39702642/ .
+
+The 7,472-person panel **exceeds GCTA's suggested >4,000 reference sample guideline**, but the raw variant-level genotypes are **controlled-access**: approval and permissible reuse must be checked. No claim of authorization or file possession is made. This option is explicitly **DEFERRED** to avoid blocking public-data-only thesis progress. It would still need overlap-with-GWAS assessment, variant/QC harmonization, effective case-control sample-size agreement, and appropriate genome-wide BBJ summary input before formal COJO.
+
+Frequency panels such as jMorp 8.3KJPN / 54KJPN provide allele frequencies but do **not by themselves** supply the signed, participant-level LD correlation matrix required for this analysis. Source https://jmorp.megabank.tohoku.ac.jp/docs/guide-en/overview/access_to_datasets/ .
+
+**Current runnable public-data task ends at reproducible COJO-format input QC**; no COJO command was executed. No controlled BBJ genotype access was attempted.
