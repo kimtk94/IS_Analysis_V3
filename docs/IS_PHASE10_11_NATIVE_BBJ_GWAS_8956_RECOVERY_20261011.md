@@ -33,6 +33,10 @@ New result directory: MyDrive/MASTER_DEGREE/IS_COLAB/results/IS_PHASE10_11_646_V
 
 **The original first V1 notebook (IS_PHASE10_11_646_VARIANT_N_SDY_ONECELL.ipynb) contains the bad 8309==full union gate and must NOT be rerun. It remains only as reproducible failure evidence.**
 
+## Latest V2 output provenance guard
+
+The repaired V2 notebook now writes the explicitly versioned manifest schema IS_PHASE10_11_646_VARIANT_N_SDY_COLAB_V2. An independent full 646/8956 saved-output validator and five release-gate regression tests have been added; see [V2 independent output audit protocol](IS_PHASE10_11_V2_FULL_RELEASE_AUDIT_CONTRACT_20261011.md). V2 actual Colab execution is not yet observed.
+
 ## Scientific gates
 
 - G0 original four-locus 646/646 numerical coloc H0–H4: COMPLETE, unchanged.

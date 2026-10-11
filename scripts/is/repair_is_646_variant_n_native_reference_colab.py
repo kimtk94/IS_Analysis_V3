@@ -118,6 +118,9 @@ print("FULL_8956_NATIVE_BBJ_ORIGINAL_EFFECT_ALLELE_AND_LIFTOVER_VERIFIED")
     py=py.replace(old,'"native_BBJ_unique_variants_full_646":len(combined),')
     py=py.replace('One-cell 646 historical BBJ x GTEx variant-specific QTL-N assisted common-sdY calibration.',
       'One-cell 646 original coloc QTL-N common-sdY and 8956 original BBJ native source-chain verification.')
+    old_schema='"schema":"IS_PHASE10_11_646_VARIANT_N_SDY_COLAB_V1",'
+    assert py.count(old_schema)==1, "V2_SCHEMA_EXPECTED_FROM_TEMPLATE"
+    py=py.replace(old_schema,'"schema":"IS_PHASE10_11_646_VARIANT_N_SDY_COLAB_V2",')
     ast.parse(py)
     original["cells"][0]["source"]=py.splitlines(keepends=True)
     original["cells"][0]["outputs"]=[]
