@@ -1,0 +1,38 @@
+{
+  "status": "EBI_PERMUTED_STUDYWIDE_BENJAMINI_HOCHBERG_QTL_ONLY",
+  "original_2225_gene_ids_preserved": true,
+  "studied_region_genes": 240,
+  "gene_tissue_pairs": 720,
+  "study_source_permutation_counts": {
+    "QTD000131": {
+      "study": "GTEx Aorta",
+      "original_all_permutation_molecular_traits": 21888,
+      "total_genes_with_finite_p_beta": 21888,
+      "genome_wide_FDR_method": "BH_all_permuted_source_gene_tests"
+    },
+    "QTD000171": {
+      "study": "GTEx Cortex",
+      "original_all_permutation_molecular_traits": 24675,
+      "total_genes_with_finite_p_beta": 24675,
+      "genome_wide_FDR_method": "BH_all_permuted_source_gene_tests"
+    },
+    "QTD000434": {
+      "study": "ROSMAP DLPFC",
+      "original_all_permutation_molecular_traits": 23076,
+      "total_genes_with_finite_p_beta": 23076,
+      "genome_wide_FDR_method": "BH_all_permuted_source_gene_tests"
+    }
+  },
+  "qtl_gene_tissue_official_permuted_tests": 393,
+  "qtl_gene_tissue_BH_q_le_0p05": 98,
+  "unique_genes_BH_q_le_0p05": 66,
+  "unique_new_unarchived_ABF_genes_BH_q_le_0p05": 56,
+  "these_are_not_AIS_coloc_genes": true,
+  "all_QTL_genome_wide_cis_eGenes_not_EAS_matched_genotype_LD": true,
+  "BH_applied_to_ALL_source_study_permuted_genes_not_240_IS_subset": true,
+  "SHA256_permuted_inputs": {
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_permuted_20261011_v1/QTD000131.permuted.tsv.gz": "6366a7272124f512bb3a5e6ca5a55f62329492ecd9b5c5921755d9a93e061d10",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_permuted_20261011_v1/QTD000171.permuted.tsv.gz": "fc76a8b0b3de5156767bf6871ddff2b3f3af7f382c31135d415a48ca13e7a735",
+    "/srv/is-analysis/data/is/qtl/eqtl_catalogue/eas5_permuted_20261011_v1/QTD000434.permuted.tsv.gz": "adf13cbe9f784cd56a832700b710ffd6abe76a962a38918667a1d80c51413091"
+  }
+}

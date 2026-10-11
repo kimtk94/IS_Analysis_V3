@@ -1,0 +1,25 @@
+{
+  "status": "ALL_5_PUBLIC_NOMINAL_QTL_REGIONS_PERMUTED_CIS_COUNT_RESTORATION",
+  "original_positional_gene_universe": 2225,
+  "5_regions_candidate_gene_ids": 240,
+  "QTL_genes_times_tissues": 720,
+  "cis_complete_before": 10,
+  "cis_complete_after": 393,
+  "newly_recovered_count_equal": 383,
+  "still_partial": 0,
+  "not_reported_in_public_permutation_table": 327,
+  "is_complete_variant_identity_verified_independently": false,
+  "is_molecular_QTL_ancestry_matched": false,
+  "is_original_EAS_AIS_case_control_cohort_table_attested": false,
+  "is_ext_GWAS_allele_harmonization_done": false,
+  "can_claim_shared_causal_variant": false,
+  "SHA256_sources": {
+    "/srv/is-analysis/results/is/audits/is_eas5_full_cis_tested_universe_20261011_v1/IS_EAS5_720_GENE_QTL_FULL_CIS_UNIVERSE_AUDIT.tsv": "643fe0647073e99f4787662951d3cc9b2e9bbcdac651ad7860febbf41edfd295",
+    "/srv/is-analysis/results/is/audits/is_gigastroke_eas_ais_case_fraction_20261011_v1/IS_GIGASTROKE_EAS_AS_AIS_CASE_FRACTION_SECONDARY_CROSSCHECK.tsv": "e58134aaa36c04ff359fb85acae9915017d66ac61512495864ebfd4938c4b8dc",
+    "/srv/is-analysis/results/is/audits/is_eas5_extended_cis_consistent_20261011_v3/IS_XDATA_G0015/IS_XDATA_G0015_EXTENDED_CIS_GENE_QTL_UNIVERSE.tsv": "0ad79ae3496ec0aed1ab510b8517059cd6eb1c7090c7d63aad3efcc72958aa66",
+    "/srv/is-analysis/results/is/audits/is_eas5_extended_cis_consistent_20261011_v3/IS_XDATA_G0023/IS_XDATA_G0023_EXTENDED_CIS_GENE_QTL_UNIVERSE.tsv": "78d98fbea70dc01d40cfe9b39c788b1dc0620f6d8f4ef4a21c81fb3bde8cdb67",
+    "/srv/is-analysis/results/is/audits/is_eas5_extended_cis_consistent_20261011_v3/IS_XDATA_G0007/IS_XDATA_G0007_EXTENDED_CIS_GENE_QTL_UNIVERSE.tsv": "30c6d4b89aa6191b7cd6fb0988968026242690f84741e3e95a106ae4929396c1",
+    "/srv/is-analysis/results/is/audits/is_eas5_extended_cis_consistent_20261011_v3/IS_XDATA_G0025/IS_XDATA_G0025_EXTENDED_CIS_GENE_QTL_UNIVERSE.tsv": "fd7294a3029f668534935f8fe4aadff30adf6b0ff5329f92fb3ef72d18b43c2c",
+    "/srv/is-analysis/results/is/audits/is_eas5_extended_cis_consistent_20261011_v3/IS_XDATA_G0018/IS_XDATA_G0018_EXTENDED_CIS_GENE_QTL_UNIVERSE.tsv": "a4447316ad15da6d2541ff2b00e19332a947a8e1101e5578d5db660037563505"
+  }
+}

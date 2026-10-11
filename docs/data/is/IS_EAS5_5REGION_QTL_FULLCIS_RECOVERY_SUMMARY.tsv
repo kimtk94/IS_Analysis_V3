@@ -1,0 +1,6 @@
+region_id	distinct_positional_genes	gene_QTL_dataset_pairs	original_full_cis_count_matched	new_full_cis_count_matched	newly_restored_full_cis_count_matched	remaining_partial	no_permutation_record	new_coloc_causing_variant_claim
+IS_XDATA_G0015	71	213	10	121	111	0	92	NONE
+IS_XDATA_G0023	14	42	0	22	22	0	20	NONE
+IS_XDATA_G0007	10	30	0	11	11	0	19	NONE
+IS_XDATA_G0025	92	276	0	167	167	0	109	NONE
+IS_XDATA_G0018	53	159	0	72	72	0	87	NONE

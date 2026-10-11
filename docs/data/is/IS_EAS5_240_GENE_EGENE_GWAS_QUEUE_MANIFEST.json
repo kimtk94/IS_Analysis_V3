@@ -1,0 +1,16 @@
+{
+  "status": "PUBLIC_STUDYWIDE_FDR_CIS_EGENE_AND_REGIONAL_GWAS_TECHNICAL_QUEUE_NOT_CAUSAL",
+  "EAS5_original_positional_gene_ids": 240,
+  "QTL_source_eGenes_studywide_BH05": 66,
+  "new_QTL_source_eGenes_not_archived_ABF": 56,
+  "T1_candidate_eGenes_source_only": 26,
+  "T1_new_source_eGenes_not_archived_ABF": 16,
+  "new_causal_genes": 0,
+  "new_coloc_results": 0,
+  "source_SHA256": {
+    "/srv/is-analysis/results/is/audits/is_eas5_studywide_BH_egenes_20261011_v1/IS_EAS5_240_POSITIONAL_GENE_PUBLIC_CIS_EGENE_EVIDENCE.tsv": "60f21167e23734e20641f2b959a0652fbf3c7801f5cb7e2009bf1f4ec9eae990",
+    "/srv/is-analysis/results/is/audits/is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1/IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv": "bca32f5ec475da7029bd5375c42d4baae80df8b61f910becef4eb6d4c16f9766",
+    "/srv/is-analysis/results/is/audits/is_eas30_gwas_qtl_priority_20261011_v3/IS_EAS30_OUTCOME_QTL_EXPANSION_PRIORITY.tsv": "67988fceff9c8b3b1828303092f6e9c9fabe8ed19d2d7fe4b72ea6198bd587cf",
+    "/srv/is-analysis/results/is/audits/is_gigastroke_eas_ais_case_fraction_20261011_v1/IS_GIGASTROKE_EAS_AS_AIS_CASE_FRACTION_SECONDARY_CROSSCHECK.tsv": "e58134aaa36c04ff359fb85acae9915017d66ac61512495864ebfd4938c4b8dc"
+  }
+}

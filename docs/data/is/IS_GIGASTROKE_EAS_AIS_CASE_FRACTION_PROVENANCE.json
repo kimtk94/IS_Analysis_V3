@@ -1,0 +1,19 @@
+{
+  "status": "SECONDARY_CASE_CONTROL_FRACTION_VERIFIED_VS_LOCAL_EBI_TOTAL_NO_ORIGINAL_COHORT_BREAKDOWN",
+  "AIS_n_cases": 19032,
+  "AIS_n_controls": 237242,
+  "AIS_total": 256274,
+  "AIS_secondary_case_fraction": 0.07426426402990549,
+  "source_primary_GIGASTROKE_paper": "https://www.nature.com/articles/s41586-022-05165-3",
+  "AIS_case_control_secondary_source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11354504/",
+  "AIS_case_control_recent_corrob": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13621555/",
+  "n_assessed_traits": 2,
+  "case_fraction_source_type": "SECONDARY_PAPERS_RECONCILED_EBI_META",
+  "sample_overlap_BBJ_not_excluded": true,
+  "molecular_QTL_LD_not_verified": true,
+  "new_coloc_H4_not_calculated": true,
+  "local_YAML_SHA256": {
+    "/srv/is-analysis/data/is/reference/gigastroke/metadata_phase8/GCST90104544-meta.yaml": "29cfecfda5d66e4e6db1c06963c5ff3c7374af1b163bcadf141afdf1c1b7a021",
+    "/srv/is-analysis/data/is/reference/gigastroke/metadata_phase8/GCST90104545-meta.yaml": "7383b859ce9bb4811c15bc634592ee1544788536797a5c663644e1aa648f1d3e"
+  }
+}
