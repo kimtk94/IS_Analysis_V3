@@ -46,8 +46,19 @@ def validate(path, expected_genes=2225):
             p = row["min_source_nominal_QTL_p"]
             if count and not p:
                 raise ValueError(f"Missing nominal p-value at row {lineno}")
-            if p and not 0 < float(p) <= 1:
-                raise ValueError(f"Invalid p-value at row {lineno}")
+            if p:
+                try:
+                    p_numeric = float(p)
+                except ValueError as exc:
+                    raise ValueError(f"Invalid p-value at row {lineno}") from exc
+                if not 0 < p_numeric <= 1:
+                    raise ValueError(f"Invalid p-value at row {lineno}")
+            if count == 0 and p:
+                raise ValueError(f"Nominal p-value without QTL rows at row {lineno}")
+            if count > 0 and not row["source_nominal_QTL_ids"]:
+                raise ValueError(f"Missing nominal QTL source IDs at row {lineno}")
+            if row["coloc_recomputed"] == "True" and row["GWAS_and_QTL_alleles_coharmonized"] != "True":
+                raise ValueError(f"Coloc without harmonized alleles at row {lineno}")
             if row["ischemic_stroke_causal_gene"] != "NOT_ESTABLISHED":
                 raise ValueError(f"Unreviewed causal status at row {lineno}")
             status = row["new_nominal_QTL_gene_source_status"]
