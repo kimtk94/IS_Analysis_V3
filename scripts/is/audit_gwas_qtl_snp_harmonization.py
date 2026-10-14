@@ -58,6 +58,8 @@ def audit(gwas, qtl, gwas_build, qtl_build, out):
         raise ValueError("Genome builds must be identical and explicit")
     g = read_variants(gwas)
     q = read_variants(qtl)
+    if not g or not q:
+        raise ValueError("GWAS and QTL must each contain at least one SNP")
     counts = Counter()
     rows = []
     for chrom, pos in sorted(g.keys() & q.keys()):
@@ -79,6 +81,7 @@ def audit(gwas, qtl, gwas_build, qtl_build, out):
         writer.writerows(rows)
     report = {"status": "ALLELE_AUDIT_ONLY", "genome_build": gwas_build,
               "n_gwas": len(g), "n_qtl": len(q), "n_overlapping_positions": len(rows),
+              "n_usable_nonpalindromic": counts["MATCHED"] + counts["SWAPPED"],
               "counts": dict(counts), "ld_verified": False, "coloc_recomputed": False}
     (output / "ALLELE_HARMONIZATION_AUDIT.json").write_text(json.dumps(report, indent=2) + "\n")
     return report
