@@ -5,6 +5,7 @@ ROOT=pathlib.Path("/srv/is-analysis")
 REPO=ROOT/"IS_Analysis_V3"
 RESULTS=ROOT/"results/is"
 API="https://api.github.com/repos/kimtk94/IS_Analysis_V3"
+WORKER_VERSION="20261015-headers-v2"
 ALLOWED={"status","inventory","tests","mkdir-output","headers"}
 def api(method,path,token,data=None):
     body=None if data is None else json.dumps(data).encode()
@@ -55,6 +56,7 @@ def main():
     p.add_argument("--interval",type=int,default=60)
     args=p.parse_args()
     if args.interval<30: p.error("interval must be >= 30")
+    print(f"worker version: {WORKER_VERSION}; allowed: {sorted(ALLOWED)}",flush=True)
     token=os.environ.get("IS_QUEUE_GITHUB_TOKEN","")
     if not token: p.error("IS_QUEUE_GITHUB_TOKEN missing")
     while True:
@@ -74,7 +76,7 @@ def main():
                     spec=json.loads(body)
                     op=spec["operation"]
                     if op not in ALLOWED or set(spec)!={"operation"}:
-                        print(f"issue #{num}: skipped (unsupported request)",flush=True)
+                        print(f"issue #{num}: skipped (unsupported request, operation={op!r}, fields={sorted(spec)})",flush=True)
                         continue
                 except (ValueError,TypeError,KeyError):
                     print(f"issue #{num}: skipped (invalid JSON)",flush=True)
