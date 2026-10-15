@@ -5,20 +5,21 @@ ROOT=pathlib.Path("/srv/is-analysis")
 REPO=ROOT/"IS_Analysis_V3"
 RESULTS=ROOT/"results/is"
 API="https://api.github.com/repos/kimtk94/IS_Analysis_V3"
-WORKER_VERSION="20261015-daily-scheduler-v1"
+WORKER_VERSION="20261015-30minute-scheduler-v1"
 ALLOWED={"status","inventory","tests","mkdir-output","headers","eas5-audit","candidate-2225-audit","figure-manifest","research-refresh"}
 def is_trusted_issue(author, operation, title):
-    """GitHub Actions bot may enqueue only our fixed, daily research refresh job."""
+    """Bot may only enqueue restricted scheduled research refresh jobs."""
     if author.lower() == "kimtk94":
         return True
-    return (
-        author.lower() == "github-actions[bot]"
-        and operation == "research-refresh"
-        and bool(re.fullmatch(
-            r"IS Harness daily research refresh \d{4}-\d{2}-\d{2} KST",
-            title or ""
-        ))
+    if author.lower() != "github-actions[bot]" or operation != "research-refresh":
+        return False
+    title = title or ""
+    legacy_daily = r"IS Harness daily research refresh \d{4}-\d{2}-\d{2} KST"
+    interval = (
+        r"IS Harness scheduled research refresh "
+        r"\d{4}-\d{2}-\d{2} (?:[01]\d|2[0-3]):(?:17|47) KST"
     )
+    return bool(re.fullmatch(legacy_daily, title) or re.fullmatch(interval, title))
 
 def api(method,path,token,data=None):
     body=None if data is None else json.dumps(data).encode()
@@ -89,7 +90,7 @@ def main():
             for issue in issues:
                 if "pull_request" in issue: continue
                 num=issue["number"]
-                # The exact GitHub Actions bot daily title is trusted for research-refresh ONLY.
+                # Only the exact scheduled GitHub Actions bot title can request research-refresh.
                 author=issue.get("user",{}).get("login","")
                 body=issue.get("body") or ""
                 try:
