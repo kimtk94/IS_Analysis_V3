@@ -225,6 +225,42 @@ def download_frozen_readiness() -> bytes:
     return data
 
 
+def audit_p1_ld_gates() -> dict:
+    """Review EAS5 molecular-QTL ancestry/LD readiness; no external LD is inferred."""
+    statuses = collections.Counter()
+    per_region = collections.defaultdict(collections.Counter)
+    representative = []
+    count = 0
+    for _, row in safe_table(EAS5_READINESS, REQUIRED_READINESS_COLUMNS):
+        if row is None:
+            continue
+        count += 1
+        region = row["region_id"]
+        key = per_region[region]
+        key["gene_tissue_rows"] += 1
+        ancestry = str(row["QTL_source_ancestry_verified"]).strip().lower() in {"true","1","yes"}
+        ld = str(row["molecular_QTL_matched_LD_verified"]).strip().lower() in {"true","1","yes"}
+        direction = str(row.get("can_now_assert_OFFICIAL_ALT_EFFECT_DIRECTION", "")).strip().lower() in {"true","1","yes"}
+        if ancestry:key["source_ancestry_verified"] += 1
+        if ld:key["molecular_qtl_ld_verified"] += 1
+        if direction:key["official_alt_direction_assertable"] += 1
+        statuses[row["scientific_status"] or "MISSING_STATUS"] += 1
+        if len(representative)<20 and not ancestry and not ld:
+            representative.append({
+                "region_id":region,"QTL_dataset":row["QTL_dataset"],
+                "gene_id":row["gene_id"],"status":row["scientific_status"]
+            })
+    if not count:
+        raise ValueError("LD readiness table empty")
+    return {
+        "schema":"is-p1-ld-feasibility-v1", "generated_at":now(), "integrity":"PASS",
+        "rows":count,"scientific_status_counts":dict(statuses),
+        "by_region":dict(sorted((k,dict(v)) for k,v in per_region.items())),
+        "illustrative_unverified":representative,
+        "interpretation":"Review-only cohort/source LD gates; no LD reference, matrix or fine-mapping generated.",
+    }
+
+
 def audit_candidates(data: bytes | None = None) -> dict:
     data = download_frozen_readiness() if data is None else data
     reader = csv.DictReader(io.StringIO(data.decode("utf-8-sig"), newline=""), delimiter="\t")
@@ -237,6 +273,7 @@ def audit_candidates(data: bytes | None = None) -> dict:
     unique = set()
     causal_status = collections.Counter()
     flags = collections.Counter()
+    p4_candidates = []
     rows = 0
     for row in reader:
         if None in row or None in row.values():
@@ -246,13 +283,47 @@ def audit_candidates(data: bytes | None = None) -> dict:
             raise ValueError("Duplicate or invalid Ensembl gene identifier")
         unique.add(gene)
         rows += 1
-        statuses[row["new_nominal_QTL_gene_source_status"]] += 1
+        status = row["new_nominal_QTL_gene_source_status"]
+        statuses[status] += 1
         causal_status[row["ischemic_stroke_causal_gene"]] += 1
+        if status == "RAW_NOMINAL_QTL_RECORDS_AVAILABLE_NO_COLOC":
+            raw_count = row.get("n_new_nominal_QTL_gene_variant_rows", "")
+            try:
+                variant_rows = int(raw_count)
+                if variant_rows < 0: raise ValueError("negative rows")
+            except (ValueError, TypeError):
+                raise ValueError("Invalid nominal QTL candidate row count")
+            reported_p = row.get("min_source_nominal_QTL_p", "")
+            p_present,p_valid = valid_numeric(reported_p,pvalue=True)
+            if p_present and not p_valid:
+                raise ValueError("Invalid nominal QTL candidate minimum p")
+            p4_candidates.append({
+                "gene_id": gene,
+                "gene_symbol": row.get("canonical_gene_symbol",""),
+                "region_id":row.get("region_id",""),
+                "source_nominal_QTL_ids":row.get("source_nominal_QTL_ids",""),
+                "nominal_variant_rows":variant_rows,
+                "nominal_min_p":float(reported_p) if p_present else None,
+                "alleles_coharmonized": row["GWAS_and_QTL_alleles_coharmonized"],
+                "matched_qtl_ld_verified":row["matched_QTL_LD_verified"],
+                "coloc_recomputed":row["coloc_recomputed"],
+                "interpretation":"nominal availability only; not a validated stroke target",
+            })
         for key in ("coloc_recomputed", "GWAS_and_QTL_alleles_coharmonized", "matched_QTL_LD_verified"):
             if row[key].strip().lower() in {"true", "1", "yes"}:
                 flags[key] += 1
     if rows != 2225 or dict(statuses) != EXPECTED_READY:
         raise ValueError(f"Snapshot integrity failed (rows={rows}, statuses={dict(statuses)})")
+    p4_candidates.sort(key=lambda r: (
+        r["nominal_min_p"] is None, r["nominal_min_p"] if r["nominal_min_p"] is not None else float("inf"),
+        -r["nominal_variant_rows"], r["gene_id"]
+    ))
+    p4_detail = {
+        "schema":"is-p4-candidate-triage-v1","generated_at":now(),"integrity":"PASS",
+        "screened_gene_count":rows,"nominal_qtl_candidate_count":len(p4_candidates),
+        "candidates":p4_candidates,
+        "classification":"Descriptive triage sorted by nominal p; no FDR/MR/coloc causal ranking",
+    }
     return {
         "schema": "is-candidate-audit-v1",
         "generated_at": now(), "integrity": "PASS",
@@ -262,6 +333,7 @@ def audit_candidates(data: bytes | None = None) -> dict:
         "readiness_status_counts": dict(sorted(statuses.items())),
         "flags_true": dict(sorted(flags.items())),
         "causal_gene_status_counts": dict(sorted(causal_status.items())),
+        "p4_detail":p4_detail,
         "causal_gene_conclusions": "NOT_ESTABLISHED_BY_THIS_AUDIT",
     }
 
