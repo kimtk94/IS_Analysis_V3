@@ -85,3 +85,28 @@ The chr4 / chr10 GWAS-QTL multitrack SVGs from the broad research branch are alr
 4. Advisor review of study question and figure/claim boundaries, then **analysis freeze**.
 
 See [runbook](./THESIS_EVIDENCE_FREEZE_RUNBOOK_20261015.md), [audit](./RESEARCH_SCOPE_COVERAGE_AUDIT_20261015.md), and [Won-guided research direction](./RESEARCH_DIRECTION_WON_HIGH_IMPACT_20261015.md).
+
+## 6. 최신 서버 원본 기반 후보별 기술 상태 (분석 재계산 아님)
+
+[2026-10-15 read-only source freeze 재실행](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/38777399956)에서 원본 SHA256 4개를 재확인하고 **IS 2,225 / 2,425 + CKD 9행의 구조 검증이 모두 통과**했다. 아래 표는 현재 서버의 `CKD_9GENE_EVIDENCE_MATRIX.tsv`에 이미 기록된 **상태 문자열을 분류한 결과**이며, 생물학적 검증이 아니다.
+
+| Gene | EUR multi-signal 미해결 flag | EUR ABF–SuSiE 불일치 flag | EAS dual-LD 미해결 flag |
+|---|---|---|---|
+| ACP1 | 아니오 | 아니오 | 예 |
+| CPVL | 예 | 아니오 | 아니오 |
+| F12 | 예 | 아니오 | 아니오 |
+| GSTA1 | 아니오 | 예 | 예 |
+| GSTA3 | 아니오 | 아니오 | 예 |
+| HLA-E | 예 | 아니오 | 아니오 |
+| INHBC | 아니오 | 예 | 예 |
+| SDCCAG8 | 아니오 | 아니오 | 예 |
+| UMOD | **예** | 아니오 | 아니오 |
+
+**기술 상태 플래그 ≠ 유전적 인과관계 결론**: 예를 들어 ACP1, GSTA3, SDCCAG8에서 EUR ABF–SuSiE가 일치하더라도 EAS dual-LD는 별도 보조 결과에서 미해결일 수 있다. 반대로 `EAS dual-LD 미해결 아니오`가 EAS 임상 검증 완료를 뜻하지 않는다. F12/HLA-E 등의 'EUR multi-signal 미해결'은 입력 source의 상태 정의에 따라 실제 미수렴뿐 아니라 미해결 또는 비공유 신호 분류를 포함할 수 있으므로, 원천 `comparison_status`와 `credible_sets`를 확인해야 한다.
+
+- 통합 매트릭스에서 EUR ABF, EAS eGFR ABF, kidney cell-type 필드는 각 **9/9 존재**했다. EUR SuSiE 수치 존재는 **7/9**이며 결측 2개를 수치 0으로 채우지 않는다.
+- `KoGES anchor rsID exists`와 `KoGES participant-level longitudinal genotype validation`은 서로 다른 개념이다. 후자는 **9/9 모두 검증되지 않았다**.
+- 기존 검증기의 누락(UMOD EUR SuSiE 미해결 표시)이 발견되어 `scripts/audit_thesis_evidence_freeze.py`를 수정하고, 합성 회귀 검사를 통과시킨 뒤 실제 동일 SHA 원본으로 재확인했다.
+
+**현재 결론:** IS/CKD 기존 파일 확보와 데이터 구조 Freeze는 통과. 원문 기준 allele/LD/priors/신호 구조를 대조하는 **과학적 QC**, 최종 4개 Figure의 완성 및 지도교수 검토는 여전히 진행 대상이다.
+
