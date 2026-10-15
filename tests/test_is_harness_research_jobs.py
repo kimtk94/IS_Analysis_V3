@@ -89,10 +89,17 @@ class FiveMinuteFallbackTest(unittest.TestCase):
                              "PENDING_REFRESH_EXISTS")
         self.assertEqual(client.call_count,2)
 
-    def test_non_slot_minutes_skip_without_api(self):
-        with mock.patch.object(worker,"api") as client:
+    def test_late_minute_rolls_into_current_bucket(self):
+        self.assertEqual(worker.scheduled_slot_title(self.now(7)),
+                         "IS Harness scheduled research refresh 2026-10-15 21:05 KST")
+        self.assertEqual(worker.scheduled_slot_title(self.now(9)),
+                         "IS Harness scheduled research refresh 2026-10-15 21:05 KST")
+
+    def test_unchanged_source_fingerprint_skips_issue_and_recompute(self):
+        with mock.patch.object(worker,"unchanged_inputs_within_hour",return_value=True), \
+             mock.patch.object(worker,"api") as client:
             self.assertEqual(worker.ensure_scheduled_research_issue("TOKEN",self.now(7)),
-                             "OUTSIDE_FIVE_MINUTE_SLOT")
+                             "UNCHANGED_SOURCES_FAST_CHECK")
         client.assert_not_called()
 
 
