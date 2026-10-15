@@ -359,7 +359,7 @@ def load_validated(path: Path, schema: str) -> dict:
     return value
 
 
-def manifest(eas5: dict, cand: dict) -> dict:
+def manifest(eas5: dict, cand: dict, p1: dict | None = None) -> dict:
     if eas5.get("integrity") != "PASS" or cand.get("integrity") != "PASS":
         raise ValueError("Unvalidated source audits")
     statuses = cand["readiness_status_counts"]
@@ -392,6 +392,27 @@ def manifest(eas5: dict, cand: dict) -> dict:
             "readiness_source_sha256": cand["source_sha256"],
             "eas5_variants_sha256": eas5["variants_file_sha256"],
         },
+        "input_metadata_signature": input_metadata_signature(),
+        "research_qc": {
+            "p1_ld": {
+                "readiness_rows": p1["rows"] if p1 else None,
+                "matched_ld_verified_rows": sum(v.get("molecular_qtl_ld_verified",0) for v in p1["by_region"].values()) if p1 else None,
+                "ancestry_verified_rows": sum(v.get("source_ancestry_verified",0) for v in p1["by_region"].values()) if p1 else None,
+                "scope": "QTL cohort ancestry/LD evidence flags, no new LD reference computed",
+            },
+            "p2_qc": {
+                "region_gene_dataset_groups":eas5["p2_detail"]["group_count"],
+                "invalid_qtl_p":eas5["p2_detail"]["qc"].get("QTL_p_invalid_nonmissing",0),
+                "invalid_bbj_p":eas5["p2_detail"]["qc"].get("BBJ_p_invalid_nonmissing",0),
+                "invalid_eas_p":eas5["p2_detail"]["qc"].get("EAS_AIS_p_invalid_nonmissing",0),
+                "scope":"Descriptive existing summary rows, not a new allele FASTA validation",
+            },
+            "p4_candidates": {
+                "nominal_qtl_candidate_count":cand["p4_detail"]["nominal_qtl_candidate_count"],
+                "top_gene_symbols":[r["gene_symbol"] for r in cand["p4_detail"]["candidates"][:10]],
+                "scope":"Nominal p ordering only, not a validated gene discovery or causal ranking",
+            },
+        },
         "scientific_limitations": [
             "Counts are data-readiness and QC measures, not causal gene evidence.",
             "Nominal QTL presence does not establish allele harmonization or colocalization.",
@@ -404,28 +425,41 @@ def manifest(eas5: dict, cand: dict) -> dict:
 def dispatch(op: str) -> dict:
     if op == "eas5-audit":
         e = audit_eas5()
-        atomic_json(OUTPUT / "eas5_audit.json", e)
+        p1 = audit_p1_ld_gates()
+        atomic_json(OUTPUT / "eas5_audit.json", {k:v for k,v in e.items() if k != "p2_detail"})
+        atomic_json(OUTPUT / "p2_region_qc.json", e["p2_detail"])
+        atomic_json(OUTPUT / "p1_ld_gate.json", p1)
         return {"operation": op, "integrity": "PASS", "rows": e["rows"],
                 "regions": e["regions"], "ld_verified_rows": e["matched_qtl_ld_verified_rows"],
-                "coloc_recomputed_rows": e["coloc_recomputed_rows"]}
+                "coloc_recomputed_rows": e["coloc_recomputed_rows"],
+                "p2_groups":e["p2_detail"]["group_count"], "p1_review_rows":p1["rows"]}
     if op == "candidate-2225-audit":
         c = audit_candidates()
-        atomic_json(OUTPUT / "candidate_2225_audit.json", c)
+        atomic_json(OUTPUT / "candidate_2225_audit.json", {k:v for k,v in c.items() if k != "p4_detail"})
+        atomic_json(OUTPUT / "p4_nominal_candidate_triage.json", c["p4_detail"])
         return {"operation": op, "integrity": "PASS",
                 "unique_genes": c["unique_ensembl_genes"],
+                "nominal_triage_genes":c["p4_detail"]["nominal_qtl_candidate_count"],
                 "status_counts": c["readiness_status_counts"]}
     if op == "figure-manifest":
         e = load_validated(OUTPUT / "eas5_audit.json", "is-eas5-audit-v1")
         c = load_validated(OUTPUT / "candidate_2225_audit.json", "is-candidate-audit-v1")
-        m = manifest(e, c)
+        e["p2_detail"] = load_validated(OUTPUT / "p2_region_qc.json", "is-p2-eas5-qc-v1")
+        c["p4_detail"] = load_validated(OUTPUT / "p4_nominal_candidate_triage.json", "is-p4-candidate-triage-v1")
+        p1 = load_validated(OUTPUT / "p1_ld_gate.json", "is-p1-ld-feasibility-v1")
+        m = manifest(e, c, p1)
         atomic_json(OUTPUT / "research_manifest.json", m)
         return m
     if op == "research-refresh":
         e = audit_eas5()
         c = audit_candidates()
-        m = manifest(e, c)
-        atomic_json(OUTPUT / "eas5_audit.json", e)
-        atomic_json(OUTPUT / "candidate_2225_audit.json", c)
+        p1 = audit_p1_ld_gates()
+        m = manifest(e, c, p1)
+        atomic_json(OUTPUT / "eas5_audit.json", {k:v for k,v in e.items() if k != "p2_detail"})
+        atomic_json(OUTPUT / "p2_region_qc.json", e["p2_detail"])
+        atomic_json(OUTPUT / "candidate_2225_audit.json", {k:v for k,v in c.items() if k != "p4_detail"})
+        atomic_json(OUTPUT / "p4_nominal_candidate_triage.json", c["p4_detail"])
+        atomic_json(OUTPUT / "p1_ld_gate.json", p1)
         atomic_json(OUTPUT / "research_manifest.json", m)
         return m
     raise ValueError("Unsupported research operation")
