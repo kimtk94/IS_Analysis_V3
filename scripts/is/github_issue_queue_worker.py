@@ -1,12 +1,25 @@
 #!/usr/bin/env python3
 """Restricted GitHub issue queue runner for IS research. No arbitrary shell execution."""
-import argparse, datetime as dt, json, os, pathlib, subprocess, time, urllib.request, urllib.error, gzip, sys
+import argparse, datetime as dt, json, os, pathlib, subprocess, time, urllib.request, urllib.error, gzip, sys, re
 ROOT=pathlib.Path("/srv/is-analysis")
 REPO=ROOT/"IS_Analysis_V3"
 RESULTS=ROOT/"results/is"
 API="https://api.github.com/repos/kimtk94/IS_Analysis_V3"
-WORKER_VERSION="20261015-research-audit-v1"
+WORKER_VERSION="20261015-daily-scheduler-v1"
 ALLOWED={"status","inventory","tests","mkdir-output","headers","eas5-audit","candidate-2225-audit","figure-manifest","research-refresh"}
+def is_trusted_issue(author, operation, title):
+    """GitHub Actions bot may enqueue only our fixed, daily research refresh job."""
+    if author.lower() == "kimtk94":
+        return True
+    return (
+        author.lower() == "github-actions[bot]"
+        and operation == "research-refresh"
+        and bool(re.fullmatch(
+            r"IS Harness daily research refresh \d{4}-\d{2}-\d{2} KST",
+            title or ""
+        ))
+    )
+
 def api(method,path,token,data=None):
     body=None if data is None else json.dumps(data).encode()
     req=urllib.request.Request(API+path,data=body,method=method,headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","User-Agent":"is-research-queue"})
@@ -76,11 +89,8 @@ def main():
             for issue in issues:
                 if "pull_request" in issue: continue
                 num=issue["number"]
-                # Require trusted author; avoid letting arbitrary issue authors execute server operations.
+                # The exact GitHub Actions bot daily title is trusted for research-refresh ONLY.
                 author=issue.get("user",{}).get("login","")
-                if author.lower()!="kimtk94":
-                    print(f"issue #{num}: skipped (untrusted author)",flush=True)
-                    continue
                 body=issue.get("body") or ""
                 try:
                     spec=json.loads(body)
@@ -90,6 +100,9 @@ def main():
                         continue
                 except (ValueError,TypeError,KeyError):
                     print(f"issue #{num}: skipped (invalid JSON)",flush=True)
+                    continue
+                if not is_trusted_issue(author, op, issue.get("title","")):
+                    print(f"issue #{num}: skipped (untrusted author for {op})",flush=True)
                     continue
                 # Claim by removing queued label BEFORE executing. If claim fails, do not execute.
                 try: api("DELETE",f"/issues/{num}/labels/is-harness-queued",token)
