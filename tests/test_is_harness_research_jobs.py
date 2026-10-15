@@ -103,6 +103,8 @@ class ReadinessTest(unittest.TestCase):
             "gene_id_stable", "new_nominal_QTL_gene_source_status",
             "ischemic_stroke_causal_gene", "coloc_recomputed",
             "GWAS_and_QTL_alleles_coharmonized", "matched_QTL_LD_verified",
+            "canonical_gene_symbol", "region_id", "source_nominal_QTL_ids",
+            "n_new_nominal_QTL_gene_variant_rows", "min_source_nominal_QTL_p",
         ]
         lines = ["\t".join(headers)]
         n = 0
@@ -112,7 +114,12 @@ class ReadinessTest(unittest.TestCase):
                 gene = f"ENSG{n:011d}"
                 if duplicate and n == 2:
                     gene = f"ENSG{1:011d}"
-                lines.append("\t".join([gene, category, "NOT_ESTABLISHED", "False", "False", "False"]))
+                nominal = category == "RAW_NOMINAL_QTL_RECORDS_AVAILABLE_NO_COLOC"
+                lines.append("\t".join([
+                    gene, category, "NOT_ESTABLISHED", "False", "False", "False",
+                    "GENE_"+str(n), "R1" if nominal else "", "QTD1" if nominal else "",
+                    "5" if nominal else "0", "0.00001" if nominal else "",
+                ]))
         return ("\n".join(lines) + "\n").encode()
 
     def test_frozen_snapshot_pass(self):
@@ -172,10 +179,61 @@ class EvidenceAuditTest(unittest.TestCase):
             self.assertEqual(report["coloc_recomputed_rows"], 0)
             self.assertEqual(report["causal_gene_conclusions"], "NOT_ESTABLISHED_BY_THIS_AUDIT")
             cand = jobs.audit_candidates(ReadinessTest().make_frozen())
-            manifest = jobs.manifest(report, cand)
+            manifest = jobs.manifest(report, cand, input_signature="UNIT_TEST_FROZEN_METADATA")
             self.assertEqual(manifest["schema"], "is-research-evidence-v1")
             self.assertEqual(sum(x["value"] for x in manifest["figures"][0]["bars"]), 2225)
             self.assertEqual(manifest["figures"][1]["bars"][-1]["value"], 0)
+
+
+    def test_deep_p2_qc_and_p4_gene_triage(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            variants = root / "variants.tsv"
+            cols = jobs.REQUIRED_VARIANT_COLUMNS + ("BBJ_p","EAS_AIS_p")
+            rows = []
+            for i in range(5):
+                data = dict.fromkeys(cols,"")
+                data.update({
+                    "region_id":f"R{i+1}","QTL_dataset":"QTD1",
+                    "gene_id":f"ENSG{i:011d}",
+                    "QTL_p":"0.005" if i!=2 else "invalid",
+                    "BBJ_p":"0.02","EAS_AIS_p":"1.5" if i==3 else "0.03",
+                    "QTL_beta_mapped_GRCh37_ALT_OFFICIAL_DEFINITION":"-0.12",
+                    "BBJ_exact_SNP":"1:1:A:C","EAS_AIS_exact_SNP":"1:1:A:C",
+                    "both_GWAS_sources_nonpalindromic":"True",
+                })
+                rows.append(data)
+            self.write_table(variants, cols, rows)
+            readiness = root/"readiness.tsv"
+            self.write_table(readiness,jobs.REQUIRED_READINESS_COLUMNS,[
+                {"region_id":"R1","QTL_dataset":"QTD1","gene_id":"ENSG1",
+                 "scientific_status":"BLOCKED","QTL_source_ancestry_verified":"False",
+                 "molecular_QTL_matched_LD_verified":"False"}
+            ])
+            overlap = root/"overlap.tsv"
+            self.write_table(overlap,jobs.REQUIRED_OVERLAP_COLUMNS,[{
+                "region_id":"R1","QTL_dataset":"QTD1","gene_id":"ENSG1"
+            }])
+            with mock.patch.object(jobs,"EAS5_VARIANTS",variants), \
+                 mock.patch.object(jobs,"EAS5_READINESS",readiness), \
+                 mock.patch.object(jobs,"EAS5_OVERLAP",overlap):
+                e=jobs.audit_eas5()
+                p1=jobs.audit_p1_ld_gates()
+                meta=jobs.input_metadata_signature()
+            self.assertEqual(e["p2_detail"]["group_count"],5)
+            self.assertEqual(e["p2_detail"]["qc"]["QTL_p_invalid_nonmissing"],1)
+            self.assertEqual(e["p2_detail"]["qc"]["EAS_AIS_p_invalid_nonmissing"],1)
+            self.assertEqual(p1["rows"],1)
+            self.assertEqual(p1["by_region"]["R1"].get("molecular_qtl_ld_verified",0),0)
+            self.assertEqual(len(meta),64)
+            c=jobs.audit_candidates(ReadinessTest().make_frozen())
+            self.assertEqual(c["p4_detail"]["nominal_qtl_candidate_count"],149)
+            self.assertEqual(len(c["p4_detail"]["candidates"]),149)
+            summary=jobs.manifest(e,c,p1,input_signature=meta)
+            self.assertEqual(summary["research_qc"]["p2_qc"]["invalid_qtl_p"],1)
+            self.assertEqual(summary["research_qc"]["p4_candidates"]["nominal_qtl_candidate_count"],149)
+            self.assertEqual(summary["research_qc"]["p1_ld"]["matched_ld_verified_rows"],0)
+
 
 
 if __name__ == "__main__":
