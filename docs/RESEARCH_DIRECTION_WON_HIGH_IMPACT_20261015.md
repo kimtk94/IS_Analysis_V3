@@ -13,6 +13,8 @@ source_repository: "kimtk94/IS_Analysis_V3"
 
 > **핵심 결정:** 새로운 분석법을 계속 덧붙이지 않는다. *Nature*, *Nature Medicine*, *Nature Genetics*급 **질문 관련 workflow**와 원홍희(Hong-Hee Won) 교수의 **유전학→molecular QTL→MR/SMR→colocalization→조직·세포 근거→후보 우선순위화**라는 연구 문법을 충족하면 분석을 중단하고 논문 작성으로 전환한다. 저널 IF는 문헌 선별 힌트일 뿐 분석 타당성의 직접 척도가 아니다.
 
+> **최신 진행 감사(2026-10-15):** [IS·CKD high-impact workflow coverage audit](./RESEARCH_SCOPE_COVERAGE_AUDIT_20261015.md). 서버 결과의 독립적 검증과 GitHub CI 회귀 테스트를 구분하여 읽을 것.
+
 ## 0. 문서 적용 범위와 출처/한계
 
 - 본 문서는 **연구 방향과 중단 기준**을 확정하는 설계 문서이며, 서버 원자료와 전체 결과를 직접 재실행하여 검증한 문서가 아니다.
