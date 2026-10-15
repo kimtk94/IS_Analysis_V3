@@ -1,9 +1,10 @@
-name: IS Harness Daily Research Refresh
+name: IS Harness 30-Minute Research Refresh
 
 on:
   schedule:
-    # 09:17 KST every day (00:17 UTC); scheduled jobs may start late on GitHub.
-    - cron: "17 0 * * *"
+    # Every 30 minutes, 17 and 47 minutes past each UTC hour.
+    # KST also runs at :17 and :47; GitHub may delay scheduled workflows.
+    - cron: "17,47 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -15,7 +16,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: is-harness-daily-research-refresh
+  group: is-harness-30minute-research-refresh
   cancel-in-progress: false
 
 jobs:
@@ -24,29 +25,62 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Register at most one daily research audit issue
+      - name: Register at most one research refresh per 30-minute slot
         uses: actions/github-script@v7
         with:
           script: |
             const owner = 'kimtk94';
             const repo = 'IS_Analysis_V3';
-            // Seoul has a fixed UTC+09:00 offset and does not observe DST.
-            const dayKst = new Date(Date.now() + 9 * 60 * 60 * 1000)
-              .toISOString().slice(0, 10);
-            const title = `IS Harness daily research refresh ${dayKst} KST`;
-            const operation = JSON.stringify({ operation: 'research-refresh' });
+            // Format the current wall clock in KST using a fixed +09:00 offset.
+            // The scheduled slots are at HH:17 and HH:47 KST.
+            const slot = new Date(Date.now() + 9 * 60 * 60 * 1000);
+            const minute = slot.getUTCMinutes();
+            if (minute >= 47) {
+              slot.setUTCMinutes(47, 0, 0);
+            } else if (minute >= 17) {
+              slot.setUTCMinutes(17, 0, 0);
+            } else {
+              slot.setUTCHours(slot.getUTCHours() - 1);
+              slot.setUTCMinutes(47, 0, 0);
+            }
+            const dayKst = slot.toISOString().slice(0, 10);
+            const timeKst = slot.toISOString().slice(11, 16);
+            const title = 'IS Harness scheduled research refresh ' + dayKst + ' ' + timeKst + ' KST';
+            const body = JSON.stringify({ operation: 'research-refresh' });
+
+            // Keep a stable issue title per half-hour for retry/manual dispatch deduplication.
             const recent = await github.rest.issues.listForRepo({
               owner, repo, state: 'all', per_page: 100,
               sort: 'created', direction: 'desc',
             });
-            const existing = recent.data.find(issue => issue.title === title);
+            const existing = recent.data.find(issue => !issue.pull_request && issue.title === title);
             if (existing) {
-              core.notice(`Daily research refresh already registered: #${existing.number}`);
+              core.notice('Slot already registered: #' + existing.number + ' (' + title + ')');
               return;
             }
-            const result = await github.rest.issues.create({
-              owner, repo, title, body: operation,
+
+            // If the worker is offline or a previous research refresh is still
+            // queued/running, do not accumulate potentially unbounded backlog.
+            for (const label of ['is-harness-queued', 'is-harness-running']) {
+              const pending = await github.rest.issues.listForRepo({
+                owner, repo, state: 'open', labels: label, per_page: 100,
+              });
+              const existingResearchJob = pending.data.find(issue => {
+                if (issue.pull_request) return false;
+                try {
+                  return JSON.parse(issue.body || '{}').operation === 'research-refresh';
+                } catch { return false; }
+              });
+              if (existingResearchJob) {
+                core.warning('Skipped slot ' + title + ': existing research refresh #' +
+                  existingResearchJob.number + ' is ' + label);
+                return;
+              }
+            }
+
+            const created = await github.rest.issues.create({
+              owner, repo, title, body,
               labels: ['is-harness-queued'],
             });
-            core.notice(`Daily research refresh queued: #${result.data.number}`);
-            core.notice(result.data.html_url);
+            core.notice('30-minute research refresh queued: #' + created.data.number);
+            core.notice(created.data.html_url);
