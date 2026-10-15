@@ -15,7 +15,7 @@ def api(method,path,token,data=None):
         return json.loads(payload) if payload else None
 def run_job(op):
     if op in {"eas5-audit", "candidate-2225-audit", "figure-manifest", "research-refresh"}:
-        script=Path(__file__).resolve().with_name("harness_research_jobs.py")
+        script=pathlib.Path(__file__).resolve().with_name("harness_research_jobs.py")
         if not script.is_file():
             raise RuntimeError("Harness research helper missing; install companion file first")
         proc=subprocess.run([sys.executable, str(script), "--operation", op],
