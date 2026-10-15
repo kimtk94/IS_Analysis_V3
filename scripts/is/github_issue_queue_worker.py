@@ -89,13 +89,20 @@ def main():
                     if args.once: raise SystemExit(1) from e
                     continue
                 api("POST",f"/issues/{num}/labels",token,{"labels":["is-harness-running"]})
+                started_at=dt.datetime.now(dt.timezone.utc)
+                start_iso=started_at.isoformat()
+                print(f"issue #{num}: START {start_iso}",flush=True)
+                api("POST",f"/issues/{num}/comments",token,{"body":f"IS HARNESS START | operation={op} | started_at={start_iso}"})
                 try:
                     result=run_job(op)
                     status="PASS"
                 except Exception as e:
                     result=str(e)
                     status="FAIL"
-                comment=f"IS HARNESS {status} | operation={op} | UTC={dt.datetime.now(dt.timezone.utc).isoformat()}\n\n```text\n{result[:12000]}\n```"
+                ended_at=dt.datetime.now(dt.timezone.utc)
+                end_iso=ended_at.isoformat()
+                duration_s=(ended_at-started_at).total_seconds()
+                comment=f"IS HARNESS {status} | operation={op} | started_at={start_iso} | ended_at={end_iso} | duration_seconds={duration_s:.3f} | UTC={end_iso}\n\n```text\n{result[:12000]}\n```"
                 api("POST",f"/issues/{num}/comments",token,{"body":comment})
                 try: api("DELETE",f"/issues/{num}/labels/is-harness-running",token)
                 except urllib.error.HTTPError: pass
