@@ -5,7 +5,7 @@ ROOT=pathlib.Path("/srv/is-analysis")
 REPO=ROOT/"IS_Analysis_V3"
 RESULTS=ROOT/"results/is"
 API="https://api.github.com/repos/kimtk94/IS_Analysis_V3"
-WORKER_VERSION="20261015-30minute-scheduler-v1"
+WORKER_VERSION="20261015-5minute-scheduler-v1"
 ALLOWED={"status","inventory","tests","mkdir-output","headers","eas5-audit","candidate-2225-audit","figure-manifest","research-refresh"}
 def is_trusted_issue(author, operation, title):
     """Bot may only enqueue restricted scheduled research refresh jobs."""
@@ -15,11 +15,19 @@ def is_trusted_issue(author, operation, title):
         return False
     title = title or ""
     legacy_daily = r"IS Harness daily research refresh \d{4}-\d{2}-\d{2} KST"
-    interval = (
+    interval_legacy = (
         r"IS Harness scheduled research refresh "
         r"\d{4}-\d{2}-\d{2} (?:[01]\d|2[0-3]):(?:17|47) KST"
     )
-    return bool(re.fullmatch(legacy_daily, title) or re.fullmatch(interval, title))
+    interval_5m = (
+        r"IS Harness scheduled research refresh "
+        r"\d{4}-\d{2}-\d{2} (?:[01]\d|2[0-3]):[0-5][05] KST"
+    )
+    return bool(
+        re.fullmatch(legacy_daily, title)
+        or re.fullmatch(interval_legacy, title)
+        or re.fullmatch(interval_5m, title)
+    )
 
 def api(method,path,token,data=None):
     body=None if data is None else json.dumps(data).encode()
