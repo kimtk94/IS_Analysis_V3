@@ -60,3 +60,15 @@ Each slot creates a uniquely titled Issue: `IS Harness scheduled research refres
 The web API `/api/is-evidence` recognizes both scheduled titles and historical daily titles, validates the summarized evidence contract, and refreshes the displayed figures every 30 seconds while the IS page is open. This is a **repeat audit of existing source data**; it does not re-run GWAS, MR, or colocalization and is not evidence of new findings when the input hashes and counts are unchanged.
 
 First tested scheduled-workflow push run: GitHub Actions run #38729592289, with Issue #43 processed as `IS HARNESS PASS` (13.905 seconds). This validates the enqueue-to-server-to-Issue path; the next cron-triggered run has not yet been observed as part of that specific test.
+
+## Scheduler update — every 5 minutes
+
+Effective from 2026-10-15, the existing workflow `.github/workflows/is-harness-daily-research.yml` now uses `*/5 * * * *` (UTC; also every five minutes in KST). The file path remains unchanged for continuity, but its workflow name is **IS Harness 5-Minute Research Refresh**.
+
+Each interval is recorded as a unique title `IS Harness scheduled research refresh YYYY-MM-DD HH:MM KST`, with `MM` one of `00,05,10,...,55`. The bot's trusted-issue rule and the IS web `/api/is-evidence` validator both support the new five-minute slot convention and retain historical daily/half-hour formats.
+
+Backlog suppression and duplicate-slot checks remain enabled. GitHub scheduled tasks are best-effort: the server queue poll runs every ~60 seconds, but the scheduled research job itself is initiated by GitHub every five minutes **subject to GitHub delay or skipped runs**.
+
+Expected maximum frequency: 288 audit jobs/issues per 24 hours, assuming no slot is skipped, which is operationally verbose. Re-evaluate audit frequency or switch to an append-only compact log if GitHub Issue volume becomes cumbersome. Each run rechecks **existing** source files; equal hashes indicate no change in evidence, not a new scientific result.
+
+Validation: new 5-minute GitHub Actions push-trigger run #38730705065 reported SUCCESS and created test Issue #44. A cron-triggered run and completed server execution must be verified separately before claiming end-to-end regular interval accuracy.
