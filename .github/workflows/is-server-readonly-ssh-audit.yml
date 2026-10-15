@@ -1,0 +1,91 @@
+name: IS Server Read-Only SSH Audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      audit:
+        description: Read-only audit task
+        required: true
+        default: inventory
+        type: choice
+        options:
+          - inventory
+          - headers
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-server-readonly-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: is-research-readonly
+    steps:
+      - name: Check SSH secrets
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          for name in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then echo "::error::Missing secret: $name"; exit 1; fi
+          done
+      - name: Prepare pinned SSH identity
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_is_audit
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_is_audit ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/id_is_audit > /dev/null
+      - name: Run approved read-only audit
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          AUDIT: ${{ inputs.audit }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -i ~/.ssh/id_is_audit \
+            "$SSH_USER@$SSH_HOST" "bash -s -- '$AUDIT'" <<'REMOTE'
+          set -u
+          mode="$1"
+          root=/srv/is-analysis/results/is/audits
+          case "$mode" in
+            inventory)
+              find "$root" -type f \( -name 'IS_EAS5*GWAS*' -o -name 'IS_QTL_5REGION_EXACT_GWAS_VARIANT_MATCHES.tsv.gz' \) \
+                -printf '%P\t%s bytes\n' | sort | head -80
+              ;;
+            headers)
+              python3 - <<'PY'
+          from pathlib import Path
+          import gzip
+          root=Path('/srv/is-analysis/results/is/audits')
+          names=[
+            'IS_EAS5_OFFICIAL_QTL_ALT_GWAS_HARMONIZED_VARIANTS.tsv',
+            'IS_QTL_5REGION_EXACT_GWAS_VARIANT_MATCHES.tsv.gz',
+            'IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv',
+          ]
+          for name in names:
+              matches=list(root.rglob(name))
+              print('FILE',name,'MATCHES',len(matches))
+              for path in matches[:5]:
+                  opener=gzip.open if path.suffix=='.gz' else open
+                  with opener(path,'rt',errors='replace') as f:
+                      print('PATH',path.relative_to(root))
+                      print('HEADER',f.readline().strip()[:2000])
+          PY
+              ;;
+            *) echo "Unsupported audit"; exit 2;;
+          esac
+          REMOTE
+      - name: Delete SSH identity
+        if: always()
+        run: rm -f ~/.ssh/id_is_audit
