@@ -47,7 +47,14 @@ def write_ckd(root):
             "eas_bun_abf_h4": "",
             "top_cell_type": "proximal tubule" if i == 0 else "",
             "koges_rsid": "rs123" if i == 0 else "",
-            "technical_status": "UMOD_SUSIE_UNRESOLVED" if g == "UMOD" else "",
+            "eur_stage2_class": ("susie_unresolved" if g == "UMOD"
+                                 else "abf_susie_discordant" if g == "INHBC"
+                                 else "core_shared_signal"),
+            "eur_comparison_status": ("SuSiE_nonconverged_or_failed" if g == "UMOD"
+                                      else "ABF_not_confirmed_by_SuSiE" if g == "INHBC"
+                                      else "ABF_and_SuSiE_shared_signal"),
+            # EUR source status alone must flag UMOD; no preassigned technical marker.
+            "technical_status": "",
             "dual_egfr_status": "",
             "dual_bun_status": "",
         } for i, g in enumerate(CKD_GENES)
@@ -96,6 +103,9 @@ class EvidenceFreezeTests(unittest.TestCase):
             self.assertEqual(rows[0]["koges_anchor_present"], "TRUE")
             self.assertEqual(rows[0]["koges_longitudinal_validated"], "FALSE")
             self.assertIn("MULTISIGNAL_TECHNICAL_UNRESOLVED", rows[-1]["limitations"])
+            self.assertIn("EUR_MULTISIGNAL_UNRESOLVED", rows[-1]["limitations"])
+            inhbc = next(x for x in rows if x["gene_symbol"] == "INHBC")
+            self.assertIn("EUR_ABF_SUSIE_DISCORDANT", inhbc["limitations"])
 
     def test_ckd_duplicate_or_missing_candidate_fails_closed(self):
         with tempfile.TemporaryDirectory() as d:
