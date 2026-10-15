@@ -1,5 +1,6 @@
 """Unit tests for the strictly allowlisted IS Harness evidence jobs."""
 import importlib.util
+import datetime as dt
 import io
 import json
 import pathlib
@@ -46,6 +47,54 @@ class ScheduledQueueSecurityTest(unittest.TestCase):
                                                   "IS Harness scheduled research refresh 2026-10-15 19:06 KST"))
         self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "research-refresh",
                                                   "IS Harness scheduled research refresh 2026-10-15 19:60 KST"))
+
+
+
+class FiveMinuteFallbackTest(unittest.TestCase):
+    def now(self, minute=5):
+        return dt.datetime(2026,10,15,12,minute,23,tzinfo=dt.timezone.utc)
+
+    def test_fallback_queues_missing_slot_with_allowlisted_body(self):
+        calls = []
+        def fake_api(method,path,token,data=None):
+            calls.append((method,path,data))
+            if method=="GET":
+                return []
+            if method=="POST":
+                return {"number":202}
+            raise AssertionError(method)
+        with mock.patch.object(worker,"api",side_effect=fake_api):
+            result=worker.ensure_scheduled_research_issue("TEST_TOKEN",self.now())
+        self.assertEqual(result,"FALLBACK_ENQUEUED_ISSUE_202")
+        _,_,request=calls[-1]
+        self.assertEqual(request["title"],"IS Harness scheduled research refresh 2026-10-15 21:05 KST")
+        self.assertEqual(json.loads(request["body"]),{"operation":"research-refresh"})
+        self.assertEqual(request["labels"],["is-harness-queued"])
+        self.assertTrue(worker.is_trusted_issue("kimtk94","research-refresh",request["title"]))
+
+    def test_gh_cron_same_title_prevents_duplicate(self):
+        title=worker.scheduled_slot_title(self.now())
+        def fake_api(method,path,token,data=None):
+            return [{"number":43,"title":title,"labels":[{"name":"is-harness-done"}]}]
+        with mock.patch.object(worker,"api",side_effect=fake_api) as client:
+            self.assertEqual(worker.ensure_scheduled_research_issue("TOKEN",self.now()),
+                             "SLOT_ALREADY_ENQUEUED")
+        client.assert_called_once()
+
+    def test_pending_research_blocks_new_slot(self):
+        pending={"number":43,"body":'{"operation":"research-refresh"}',
+                 "labels":[{"name":"is-harness-running"}]}
+        with mock.patch.object(worker,"api",side_effect=[[],[pending]]) as client:
+            self.assertEqual(worker.ensure_scheduled_research_issue("TOKEN",self.now()),
+                             "PENDING_REFRESH_EXISTS")
+        self.assertEqual(client.call_count,2)
+
+    def test_non_slot_minutes_skip_without_api(self):
+        with mock.patch.object(worker,"api") as client:
+            self.assertEqual(worker.ensure_scheduled_research_issue("TOKEN",self.now(7)),
+                             "OUTSIDE_FIVE_MINUTE_SLOT")
+        client.assert_not_called()
+
 
 
 class ReadinessTest(unittest.TestCase):
