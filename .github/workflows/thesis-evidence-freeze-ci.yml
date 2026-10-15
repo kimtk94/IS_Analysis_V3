@@ -1,0 +1,29 @@
+name: Thesis evidence freeze guardrails
+on:
+  push:
+    branches:
+      - research/thesis-evidence-freeze-20261015
+    paths:
+      - "scripts/audit_thesis_evidence_freeze.py"
+      - "tests/test_thesis_evidence_freeze.py"
+      - ".github/workflows/thesis-evidence-freeze-ci.yml"
+  pull_request:
+    paths:
+      - "scripts/audit_thesis_evidence_freeze.py"
+      - "tests/test_thesis_evidence_freeze.py"
+      - ".github/workflows/thesis-evidence-freeze-ci.yml"
+  workflow_dispatch:
+jobs:
+  synthetic-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile read-only audit
+        run: python -m py_compile scripts/audit_thesis_evidence_freeze.py
+      - name: Synthetic evidence regression
+        run: python -m unittest discover -s tests -p "test_thesis_evidence_freeze.py" -v
