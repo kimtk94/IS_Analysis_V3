@@ -1,0 +1,52 @@
+name: IS Harness Daily Research Refresh
+
+on:
+  schedule:
+    # 09:17 KST every day (00:17 UTC); scheduled jobs may start late on GitHub.
+    - cron: "17 0 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/is-harness-daily-research.yml"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: is-harness-daily-research-refresh
+  cancel-in-progress: false
+
+jobs:
+  enqueue-research-refresh:
+    if: github.repository == 'kimtk94/IS_Analysis_V3'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Register at most one daily research audit issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = 'kimtk94';
+            const repo = 'IS_Analysis_V3';
+            // Seoul has a fixed UTC+09:00 offset and does not observe DST.
+            const dayKst = new Date(Date.now() + 9 * 60 * 60 * 1000)
+              .toISOString().slice(0, 10);
+            const title = `IS Harness daily research refresh ${dayKst} KST`;
+            const operation = JSON.stringify({ operation: 'research-refresh' });
+            const recent = await github.rest.issues.listForRepo({
+              owner, repo, state: 'all', per_page: 100,
+              sort: 'created', direction: 'desc',
+            });
+            const existing = recent.data.find(issue => issue.title === title);
+            if (existing) {
+              core.notice(`Daily research refresh already registered: #${existing.number}`);
+              return;
+            }
+            const result = await github.rest.issues.create({
+              owner, repo, title, body: operation,
+              labels: ['is-harness-queued'],
+            });
+            core.notice(`Daily research refresh queued: #${result.data.number}`);
+            core.notice(result.data.html_url);
