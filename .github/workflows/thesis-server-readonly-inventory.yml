@@ -5,6 +5,7 @@ on:
       - research/thesis-evidence-freeze-20261015
     paths:
       - "scripts/audit_thesis_server_manifest.py"
+      - "scripts/audit_thesis_evidence_freeze.py"
       - ".github/workflows/thesis-server-readonly-inventory.yml"
   workflow_dispatch:
 
@@ -139,7 +140,9 @@ jobs:
                     "EUROPEAN_ABF",row["eur_abf_h4"]!="NOT_ASSESSED",
                     "EAS_EGFR_ABF",row["eas_egfr_abf_h4"]!="NOT_ASSESSED",
                     "CELL_CONTEXT",row["top_cell_type"]!="NOT_ASSESSED",
-                    "MULTISIGNAL_UNRESOLVED", "MULTISIGNAL_TECHNICAL_UNRESOLVED" in flags,
+                    "EUR_MULTISIGNAL_UNRESOLVED", "EUR_MULTISIGNAL_UNRESOLVED" in flags,
+                    "EUR_ABF_SUSIE_DISCORDANT", "EUR_ABF_SUSIE_DISCORDANT" in flags,
+                    "EAS_DUAL_LD_UNRESOLVED", "EAS_DUAL_LD_UNRESOLVED" in flags,
                     "KOGES_LONGITUDINAL_VALIDATED",row["koges_longitudinal_validated"])
           PY
       - name: Securely delete temporary SSH credentials and private inventory
