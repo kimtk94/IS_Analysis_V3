@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Restricted GitHub issue queue runner for IS research. No arbitrary shell execution."""
-import argparse, datetime as dt, json, os, pathlib, subprocess, time, urllib.request, urllib.error
+import argparse, datetime as dt, json, os, pathlib, subprocess, time, urllib.request, urllib.error, gzip
 ROOT=pathlib.Path("/srv/is-analysis")
 REPO=ROOT/"IS_Analysis_V3"
 RESULTS=ROOT/"results/is"
 API="https://api.github.com/repos/kimtk94/IS_Analysis_V3"
-ALLOWED={"status","inventory","tests","mkdir-output"}
+ALLOWED={"status","inventory","tests","mkdir-output","headers"}
 def api(method,path,token,data=None):
     body=None if data is None else json.dumps(data).encode()
     req=urllib.request.Request(API+path,data=body,method=method,headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","User-Agent":"is-research-queue"})
@@ -19,6 +19,26 @@ def run_job(op):
         commands=[["find",str(RESULTS/"audits"),"-maxdepth","3","-type","f","-name","IS_EAS5*"]]
     elif op=="tests":
         commands=[["python3","-m","pytest","-q","tests/test_is_public_nominal_qtl_readiness.py","tests/test_is_public_nominal_qtl_region_queue.py","tests/test_is_gwas_qtl_snp_harmonization.py","tests/test_is_inventory_snp_inputs.py"]]
+    elif op=="headers":
+        base=RESULTS/"audits"
+        targets=[
+            ("is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1","IS_EAS5_OFFICIAL_QTL_ALT_GWAS_HARMONIZED_VARIANTS.tsv"),
+            ("is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1","IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv"),
+            ("is_eas5_qtl_gwas_snp_ref37_20261011_v2","IS_EAS5_GENE_TISSUE_GWAS_SNP_OVERLAP_QC.tsv"),
+            ("is_eas5_98_egene_fullcis_gwas_overlap_20261011_v3_fastaanchored","IS_EAS5_98_FDR_EGENE_FULLCIS_BBJ_EAS_MATCHED_VARIANTS.tsv.gz"),
+        ]
+        lines=[]
+        for directory,name in targets:
+            p=base/directory/name
+            if not p.is_file():
+                lines.append(f"MISSING\\t{directory}/{name}")
+                continue
+            opener=gzip.open if p.suffix==".gz" else open
+            with opener(p,"rt",encoding="utf-8",errors="replace") as stream:
+                header=stream.readline().rstrip("\\n\\r")
+            lines.append(f"FILE\\t{directory}/{name}\\tbytes={p.stat().st_size}\\tcolumns={len(header.split(chr(9)))}")
+            lines.append(f"HEADER\\t{header[:3000]}")
+        return "\\n".join(lines)
     elif op=="mkdir-output":
         (RESULTS/"github_actions_runs").mkdir(parents=True,exist_ok=True)
         return "WRITE_ACCESS_CONFIRMED"
