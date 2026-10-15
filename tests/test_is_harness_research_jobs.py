@@ -23,7 +23,13 @@ class ScheduledQueueSecurityTest(unittest.TestCase):
         legacy = "IS Harness daily research refresh 2026-10-15 KST"
         slot_17 = "IS Harness scheduled research refresh 2026-10-15 19:17 KST"
         slot_47 = "IS Harness scheduled research refresh 2026-10-15 19:47 KST"
-        for title in (legacy, slot_17, slot_47):
+        slots_5m = [
+            "IS Harness scheduled research refresh 2026-10-15 19:00 KST",
+            "IS Harness scheduled research refresh 2026-10-15 19:05 KST",
+            "IS Harness scheduled research refresh 2026-10-15 19:30 KST",
+            "IS Harness scheduled research refresh 2026-10-15 19:55 KST",
+        ]
+        for title in (legacy, slot_17, slot_47, *slots_5m):
             self.assertTrue(worker.is_trusted_issue("github-actions[bot]", "research-refresh", title))
             self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "tests", title))
             self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "mkdir-output", title))
@@ -36,6 +42,10 @@ class ScheduledQueueSecurityTest(unittest.TestCase):
                                                   "IS Harness scheduled research refresh 2026-10-15 25:17 KST"))
         self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "research-refresh",
                                                   "IS Harness scheduled research refresh 2026-10-15 19:47 KST anything"))
+        self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "research-refresh",
+                                                  "IS Harness scheduled research refresh 2026-10-15 19:06 KST"))
+        self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "research-refresh",
+                                                  "IS Harness scheduled research refresh 2026-10-15 19:60 KST"))
 
 
 class ReadinessTest(unittest.TestCase):
