@@ -5,7 +5,7 @@ ROOT=pathlib.Path("/srv/is-analysis")
 REPO=ROOT/"IS_Analysis_V3"
 RESULTS=ROOT/"results/is"
 API="https://api.github.com/repos/kimtk94/IS_Analysis_V3"
-WORKER_VERSION="20261015-5minute-scheduler-v1"
+WORKER_VERSION="20261015-5minute-scheduler-fallback-v1"
 ALLOWED={"status","inventory","tests","mkdir-output","headers","eas5-audit","candidate-2225-audit","figure-manifest","research-refresh"}
 def is_trusted_issue(author, operation, title):
     """Bot may only enqueue restricted scheduled research refresh jobs."""
@@ -35,6 +35,47 @@ def api(method,path,token,data=None):
     with urllib.request.urlopen(req,timeout=20) as response:
         payload=response.read()
         return json.loads(payload) if payload else None
+def scheduled_slot_title(now_utc):
+    """Five-minute fixed KST bucket. Returns None outside the slot's first minute."""
+    if now_utc.minute % 5 != 0:
+        return None
+    slot=now_utc.replace(second=0,microsecond=0)+dt.timedelta(hours=9)
+    return "IS Harness scheduled research refresh "+slot.strftime("%Y-%m-%d %H:%M KST")
+
+def is_pending_research_issue(issue):
+    if "pull_request" in issue:
+        return False
+    labels={label.get("name") for label in issue.get("labels",[])}
+    if not labels.intersection({"is-harness-queued","is-harness-running"}):
+        return False
+    try:
+        return json.loads(issue.get("body") or "{}")=={"operation":"research-refresh"}
+    except (ValueError,TypeError):
+        return False
+
+def ensure_scheduled_research_issue(token,now_utc):
+    """Server-side fallback if GitHub cron is delayed; no catch-up or arbitrary jobs.
+
+    Called from the existing locked user systemd unit, at most once per minute.
+    Existing GitHub-scheduled Issues use exactly the same title and JSON body.
+    """
+    title=scheduled_slot_title(now_utc)
+    if title is None:
+        return "OUTSIDE_FIVE_MINUTE_SLOT"
+    recent=api("GET","/issues?state=all&sort=created&direction=desc&per_page=100",token)
+    if any("pull_request" not in issue and issue.get("title")==title for issue in recent):
+        return "SLOT_ALREADY_ENQUEUED"
+    # Block backlogs if any previous refresh is still queued or running.
+    active=api("GET","/issues?state=open&sort=updated&direction=desc&per_page=100",token)
+    if any(is_pending_research_issue(issue) for issue in active):
+        return "PENDING_REFRESH_EXISTS"
+    created=api("POST","/issues",token,{
+        "title":title,
+        "body":json.dumps({"operation":"research-refresh"}),
+        "labels":["is-harness-queued"],
+    })
+    return "FALLBACK_ENQUEUED_ISSUE_"+str(created["number"])
+
 def run_job(op):
     if op in {"eas5-audit", "candidate-2225-audit", "figure-manifest", "research-refresh"}:
         script=pathlib.Path(__file__).resolve().with_name("harness_research_jobs.py")
@@ -93,6 +134,14 @@ def main():
     if not token: p.error("IS_QUEUE_GITHUB_TOKEN missing")
     while True:
         try:
+            try:
+                fallback=ensure_scheduled_research_issue(token,dt.datetime.now(dt.timezone.utc))
+                if fallback!="OUTSIDE_FIVE_MINUTE_SLOT":
+                    print("five-minute scheduling:",fallback,flush=True)
+            except Exception as fallback_error:
+                # Scheduling error must never block manual or GitHub-enqueued jobs.
+                print("five-minute scheduling unavailable:",
+                      type(fallback_error).__name__,str(fallback_error)[:300],flush=True)
             issues=api("GET","/issues?state=open&labels=is-harness-queued&per_page=30",token)
             print(f"queue poll: {len(issues)} queued issue(s)", flush=True)
             for issue in issues:
