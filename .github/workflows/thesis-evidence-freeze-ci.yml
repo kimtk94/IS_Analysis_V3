@@ -27,3 +27,18 @@ jobs:
         run: python -m py_compile scripts/audit_thesis_evidence_freeze.py
       - name: Synthetic evidence regression
         run: python -m unittest discover -s tests -p "test_thesis_evidence_freeze.py" -v
+      - name: Verify published IS 2225-row source from research branch
+        run: |
+          git fetch --no-tags --depth=1 origin research/is-broad-discovery-20261009
+          git show FETCH_HEAD:docs/data/is/IS_2225_GENES_PUBLIC_NOMINAL_QTL_READINESS.tsv > "$RUNNER_TEMP/IS_2225_SOURCE.tsv"
+          actual="$(git hash-object "$RUNNER_TEMP/IS_2225_SOURCE.tsv")"
+          expected="a99539a73431dc208d010f1a09256e9aad414624"
+          if [ "$actual" != "$expected" ]; then
+            echo "Source blob changed: expected $expected, got $actual" >&2
+            exit 1
+          fi
+          python scripts/audit_thesis_evidence_freeze.py \
+            --is-input "$RUNNER_TEMP/IS_2225_SOURCE.tsv" \
+            --out-dir "$RUNNER_TEMP/IS_2225_SOURCE_AUDIT"
+          python -c "import json,sys; from pathlib import Path; p=Path(sys.argv[1]); x=json.loads(p.read_text()); assert x['coverage']['IS']['gene_rows']==2225; assert x['scientific_validation_completed'] is False" \
+            "$RUNNER_TEMP/IS_2225_SOURCE_AUDIT/EVIDENCE_FREEZE_PROVENANCE.json"
