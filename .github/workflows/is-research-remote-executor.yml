@@ -1,0 +1,92 @@
+name: IS Research Remote Executor
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Approved research operation
+        required: true
+        type: choice
+        default: status
+        options:
+          - status
+          - tests
+          - inventory
+          - mkdir-output
+      confirm_write:
+        description: Type ALLOW_RESEARCH_WRITE for mkdir-output
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-research-remote-executor
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: is-research-readonly
+    steps:
+      - name: Prepare SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          set -eu
+          for name in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            test -n "${!name}" || { echo "::error::Missing $name"; exit 1; }
+          done
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_is_research
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_is_research ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/id_is_research >/dev/null
+      - name: Execute allowlisted research operation
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          OPERATION: ${{ inputs.operation }}
+          CONFIRM_WRITE: ${{ inputs.confirm_write }}
+        run: |
+          set -eu
+          if [ "$OPERATION" = mkdir-output ] && [ "$CONFIRM_WRITE" != ALLOW_RESEARCH_WRITE ]; then
+            echo "::error::Write confirmation required"; exit 2
+          fi
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 \
+            -i ~/.ssh/id_is_research "$SSH_USER@$SSH_HOST" \
+            "bash -s -- '$OPERATION'" <<'REMOTE'
+          set -eu
+          operation="$1"
+          repo=/srv/is-analysis/IS_Analysis_V3
+          results=/srv/is-analysis/results/is
+          case "$operation" in
+            status)
+              id
+              git -C "$repo" status --short
+              git -C "$repo" branch --show-current
+              ;;
+            tests)
+              cd "$repo"
+              python3 -m pytest -q tests/test_is_public_nominal_qtl_readiness.py tests/test_is_public_nominal_qtl_region_queue.py tests/test_is_gwas_qtl_snp_harmonization.py tests/test_is_inventory_snp_inputs.py
+              ;;
+            inventory)
+              find "$results/audits" -maxdepth 3 -type f -name 'IS_EAS5*' -printf '%P\t%s bytes\n' | head -100
+              ;;
+            mkdir-output)
+              mkdir -p "$results/github_actions_runs"
+              test -w "$results/github_actions_runs"
+              printf 'WRITE_ACCESS_CONFIRMED\n'
+              ;;
+            *) echo 'Unsupported operation' >&2; exit 2 ;;
+          esac
+          REMOTE
+      - name: Remove SSH identity
+        if: always()
+        run: rm -f ~/.ssh/id_is_research
