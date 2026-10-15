@@ -190,10 +190,30 @@ def prepare_ckd(path: Path) -> tuple[list[dict], dict]:
             flags.append("EAS_EGFR_COLOC_NOT_ASSESSED")
         if not present(r.get("top_cell_type")):
             flags.append("KIDNEY_CELL_CONTEXT_NOT_ASSESSED")
-        statuses = [r.get("dual_egfr_status", ""), r.get("dual_bun_status", ""),
-                    r.get("technical_status", "")]
-        if any(("UNRESOLVED" in str(x).upper() or "FAIL" in str(x).upper())
-               for x in statuses):
+        # EUR discovery multi-signal and EAS dual-LD are separate analyses.
+        # Previous freeze script only inspected dual-LD/technical_status, so
+        # UMOD's documented EUR "susie_unresolved" was silently missed.
+        eur_status = " ".join(
+            str(r.get(k, "")) for k in
+            ("eur_stage2_class", "eur_comparison_status")
+        ).upper()
+        dual_statuses = [
+            str(r.get("dual_egfr_status", "")).upper(),
+            str(r.get("dual_bun_status", "")).upper(),
+        ]
+        technical = str(r.get("technical_status", "")).upper()
+        if probabilities["eur_susie_max_h4"] == "NOT_ASSESSED":
+            flags.append("EUR_SUSIE_RESULT_NOT_ASSESSED")
+        if ("UNRESOLVED" in eur_status or "NONCONVERGED" in eur_status
+                or "FAILED" in eur_status or "FAIL" in technical):
+            flags.append("EUR_MULTISIGNAL_UNRESOLVED")
+        if "DISCORDANT" in eur_status or "NOT_CONFIRMED_BY_SUSIE" in eur_status:
+            flags.append("EUR_ABF_SUSIE_DISCORDANT")
+        if any("UNRESOLVED" in s or "FAIL" in s for s in dual_statuses):
+            flags.append("EAS_DUAL_LD_UNRESOLVED")
+        if ("EUR_MULTISIGNAL_UNRESOLVED" in flags
+                or "EAS_DUAL_LD_UNRESOLVED" in flags
+                or "UNRESOLVED" in technical or "FAIL" in technical):
             flags.append("MULTISIGNAL_TECHNICAL_UNRESOLVED")
         out.append({
             "gene_symbol": gene,
