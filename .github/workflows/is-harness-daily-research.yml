@@ -1,10 +1,9 @@
-name: IS Harness 30-Minute Research Refresh
+name: IS Harness 5-Minute Research Refresh
 
 on:
   schedule:
-    # Every 30 minutes, 17 and 47 minutes past each UTC hour.
-    # KST also runs at :17 and :47; GitHub may delay scheduled workflows.
-    - cron: "17,47 * * * *"
+    # Every 5 minutes. GitHub may delay or skip some scheduled runs.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -16,7 +15,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: is-harness-30minute-research-refresh
+  group: is-harness-5minute-research-refresh
   cancel-in-progress: false
 
 jobs:
@@ -25,30 +24,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Register at most one research refresh per 30-minute slot
+      - name: Register at most one research refresh per 5-minute slot
         uses: actions/github-script@v7
         with:
           script: |
             const owner = 'kimtk94';
             const repo = 'IS_Analysis_V3';
-            // Format the current wall clock in KST using a fixed +09:00 offset.
-            // The scheduled slots are at HH:17 and HH:47 KST.
+            // KST is UTC+09:00 without DST. Use the latest 5-minute slot.
+            // Keep a stable title even when the scheduled workflow starts late.
             const slot = new Date(Date.now() + 9 * 60 * 60 * 1000);
             const minute = slot.getUTCMinutes();
-            if (minute >= 47) {
-              slot.setUTCMinutes(47, 0, 0);
-            } else if (minute >= 17) {
-              slot.setUTCMinutes(17, 0, 0);
-            } else {
-              slot.setUTCHours(slot.getUTCHours() - 1);
-              slot.setUTCMinutes(47, 0, 0);
-            }
+            slot.setUTCMinutes(Math.floor(minute / 5) * 5, 0, 0);
             const dayKst = slot.toISOString().slice(0, 10);
             const timeKst = slot.toISOString().slice(11, 16);
             const title = 'IS Harness scheduled research refresh ' + dayKst + ' ' + timeKst + ' KST';
             const body = JSON.stringify({ operation: 'research-refresh' });
 
-            // Keep a stable issue title per half-hour for retry/manual dispatch deduplication.
+            // Keep a stable issue title per five-minute slot for retries and deduplication.
             const recent = await github.rest.issues.listForRepo({
               owner, repo, state: 'all', per_page: 100,
               sort: 'created', direction: 'desc',
@@ -82,5 +74,5 @@ jobs:
               owner, repo, title, body,
               labels: ['is-harness-queued'],
             });
-            core.notice('30-minute research refresh queued: #' + created.data.number);
+            core.notice('5-minute research refresh queued: #' + created.data.number);
             core.notice(created.data.html_url);
