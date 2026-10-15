@@ -19,14 +19,23 @@ worker_spec.loader.exec_module(worker)
 
 
 class ScheduledQueueSecurityTest(unittest.TestCase):
-    def test_bot_can_request_only_fixed_daily_refresh(self):
-        name = "IS Harness daily research refresh 2026-10-15 KST"
-        self.assertTrue(worker.is_trusted_issue("github-actions[bot]", "research-refresh", name))
+    def test_bot_can_request_only_approved_scheduled_refresh(self):
+        legacy = "IS Harness daily research refresh 2026-10-15 KST"
+        slot_17 = "IS Harness scheduled research refresh 2026-10-15 19:17 KST"
+        slot_47 = "IS Harness scheduled research refresh 2026-10-15 19:47 KST"
+        for title in (legacy, slot_17, slot_47):
+            self.assertTrue(worker.is_trusted_issue("github-actions[bot]", "research-refresh", title))
+            self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "tests", title))
+            self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "mkdir-output", title))
+            self.assertFalse(worker.is_trusted_issue("random-collaborator", "research-refresh", title))
         self.assertTrue(worker.is_trusted_issue("kimtk94", "headers", "IS arbitrary approved issue"))
-        self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "tests", name))
-        self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "mkdir-output", name))
         self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "research-refresh", "IS Harness bootstrap"))
-        self.assertFalse(worker.is_trusted_issue("random-collaborator", "research-refresh", name))
+        self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "research-refresh",
+                                                  "IS Harness scheduled research refresh 2026-10-15 19:18 KST"))
+        self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "research-refresh",
+                                                  "IS Harness scheduled research refresh 2026-10-15 25:17 KST"))
+        self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "research-refresh",
+                                                  "IS Harness scheduled research refresh 2026-10-15 19:47 KST anything"))
 
 
 class ReadinessTest(unittest.TestCase):
