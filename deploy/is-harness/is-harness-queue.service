@@ -1,0 +1,16 @@
+[Unit]
+Description=IS research GitHub Issue queue (single poll)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=%h/.config/is-harness/github.env
+WorkingDirectory=%h/is-harness
+ExecStart=/usr/bin/flock -n %t/is-harness-queue.lock /usr/bin/python3 %h/is-harness/github_issue_queue_worker.py --once
+TimeoutStartSec=300
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectHome=no
