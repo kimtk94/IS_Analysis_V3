@@ -50,6 +50,18 @@ jobs:
               core.notice('Slot already registered: #' + existing.number + ' (' + title + ')');
               return;
             }
+            // Server performs a local source-metadata check every ~5 minutes.
+            // GitHub cron cannot see private server file updates; its role is a
+            // low-volume hourly failover, not 288 identical audit Issues/day.
+            const latestPassed = recent.data.find(issue =>
+              !issue.pull_request &&
+              issue.labels?.some(l => l.name === 'is-harness-done') &&
+              (() => { try { return JSON.parse(issue.body||'{}').operation === 'research-refresh'; } catch {return false;} })()
+            );
+            if (latestPassed && (Date.now() - Date.parse(latestPassed.updated_at)) < 60 * 60 * 1000) {
+              core.notice('Recent validated research refresh exists; server watches input changes. No duplicate Issue.');
+              return;
+            }
 
             // If the worker is offline or a previous research refresh is still
             // queued/running, do not accumulate potentially unbounded backlog.
