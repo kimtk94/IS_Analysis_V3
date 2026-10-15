@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Restricted GitHub issue queue runner for IS research. No arbitrary shell execution."""
-import argparse, datetime as dt, json, os, pathlib, subprocess, time, urllib.request, urllib.error, gzip, sys, re
+import argparse, datetime as dt, json, os, pathlib, subprocess, time, urllib.request, urllib.error, gzip, sys, re, importlib.util
 ROOT=pathlib.Path("/srv/is-analysis")
 REPO=ROOT/"IS_Analysis_V3"
 RESULTS=ROOT/"results/is"
 API="https://api.github.com/repos/kimtk94/IS_Analysis_V3"
-WORKER_VERSION="20261015-5minute-scheduler-fallback-v1"
+WORKER_VERSION="20261016-smart-change-detection-v1"
 ALLOWED={"status","inventory","tests","mkdir-output","headers","eas5-audit","candidate-2225-audit","figure-manifest","research-refresh"}
 def is_trusted_issue(author, operation, title):
     """Bot may only enqueue restricted scheduled research refresh jobs."""
@@ -36,11 +36,39 @@ def api(method,path,token,data=None):
         payload=response.read()
         return json.loads(payload) if payload else None
 def scheduled_slot_title(now_utc):
-    """Five-minute fixed KST bucket. Returns None outside the slot's first minute."""
-    if now_utc.minute % 5 != 0:
-        return None
-    slot=now_utc.replace(second=0,microsecond=0)+dt.timedelta(hours=9)
+    """Latest 5-min KST bucket; a late systemd invocation may still recover it."""
+    if now_utc.tzinfo is None:
+        raise ValueError("Timezone-aware datetime required")
+    slot=now_utc.replace(minute=(now_utc.minute//5)*5,second=0,microsecond=0)
+    slot=slot.astimezone(dt.timezone.utc)+dt.timedelta(hours=9)
     return "IS Harness scheduled research refresh "+slot.strftime("%Y-%m-%d %H:%M KST")
+
+
+def unchanged_inputs_within_hour(now_utc):
+    """Suppress costly repeat audits, but force full input hashing at least hourly.
+
+    This is only a metadata fast path; a same-size/same-mtime rewrite may escape
+    the fast check for at most 60 minutes. Full audit records SHA256 content.
+    """
+    path=RESULTS/"github_actions_runs"/"evidence"/"research_manifest.json"
+    try:
+        obj=json.loads(path.read_text(encoding="utf-8"))
+        if obj.get("schema")!="is-research-evidence-v1" or obj.get("integrity")!="PASS":
+            return False
+        generated=dt.datetime.fromisoformat(obj["generated_at"].replace("Z","+00:00"))
+        age=(now_utc-generated).total_seconds()
+        if age<0 or age>=3600:
+            return False
+        helper=pathlib.Path(__file__).resolve().with_name("harness_research_jobs.py")
+        spec=importlib.util.spec_from_file_location("is_harness_signature_check",helper)
+        if spec is None or spec.loader is None: return False
+        module=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        expected=obj.get("input_metadata_signature")
+        return bool(expected and expected==module.input_metadata_signature())
+    except (OSError,ValueError,KeyError,TypeError,AttributeError):
+        return False
+
 
 def is_pending_research_issue(issue):
     if "pull_request" in issue:
@@ -60,8 +88,10 @@ def ensure_scheduled_research_issue(token,now_utc):
     Existing GitHub-scheduled Issues use exactly the same title and JSON body.
     """
     title=scheduled_slot_title(now_utc)
-    if title is None:
-        return "OUTSIDE_FIVE_MINUTE_SLOT"
+    # Five-minute heartbeat checks local source metadata first.
+    # No new Issue is needed when all sources match the latest full audit.
+    if unchanged_inputs_within_hour(now_utc):
+        return "UNCHANGED_SOURCES_FAST_CHECK"
     recent=api("GET","/issues?state=all&sort=created&direction=desc&per_page=100",token)
     if any("pull_request" not in issue and issue.get("title")==title for issue in recent):
         return "SLOT_ALREADY_ENQUEUED"
@@ -136,7 +166,7 @@ def main():
         try:
             try:
                 fallback=ensure_scheduled_research_issue(token,dt.datetime.now(dt.timezone.utc))
-                if fallback!="OUTSIDE_FIVE_MINUTE_SLOT":
+                if fallback not in {"UNCHANGED_SOURCES_FAST_CHECK"}:
                     print("five-minute scheduling:",fallback,flush=True)
             except Exception as fallback_error:
                 # Scheduling error must never block manual or GitHub-enqueued jobs.
