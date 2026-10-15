@@ -359,7 +359,7 @@ def load_validated(path: Path, schema: str) -> dict:
     return value
 
 
-def manifest(eas5: dict, cand: dict, p1: dict | None = None) -> dict:
+def manifest(eas5: dict, cand: dict, p1: dict | None = None, input_signature: str | None = None) -> dict:
     if eas5.get("integrity") != "PASS" or cand.get("integrity") != "PASS":
         raise ValueError("Unvalidated source audits")
     statuses = cand["readiness_status_counts"]
@@ -392,7 +392,7 @@ def manifest(eas5: dict, cand: dict, p1: dict | None = None) -> dict:
             "readiness_source_sha256": cand["source_sha256"],
             "eas5_variants_sha256": eas5["variants_file_sha256"],
         },
-        "input_metadata_signature": input_metadata_signature(),
+        "input_metadata_signature": input_signature if input_signature is not None else input_metadata_signature(),
         "research_qc": {
             "p1_ld": {
                 "readiness_rows": p1["rows"] if p1 else None,
