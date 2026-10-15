@@ -56,3 +56,7 @@ A stage is **PASS** only when **(a)** original output and QC/provenance exist, *
 A stage is **PARTIAL** if only code, a snapshot, or incomplete evidence exists; **BLOCKED** when a required reference input is unavailable. Do not spend research time on data acquisition when the data cannot realistically be obtained; qualify the claim instead.
 
 **Change policy:** new analysis may be added only to close a concrete gap in one of the four reference workflows or repair an identified validity problem. Any added stage must state the exact paper/method and the unsupported manuscript claim it repairs. Otherwise it is out of scope.
+
+## Won lab alignment and final thesis direction
+
+See [RESEARCH_DIRECTION_WON_HIGH_IMPACT_20261015.md](./RESEARCH_DIRECTION_WON_HIGH_IMPACT_20261015.md) for Hong-Hee Won publication workflows, IS/CKD-specific questions, statistical criteria, evidence tiers, figure plans, data-access blockers, and analysis stop gates. This document remains the minimal high-impact benchmark; the Won lab study structures are selected by research-question relevance rather than treated as extra mandatory analyses.
