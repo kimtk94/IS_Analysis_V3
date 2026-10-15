@@ -1,0 +1,77 @@
+name: IS Harness Safe Research Worker Update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/is/github_issue_queue_worker.py"
+      - "scripts/is/harness_research_jobs.py"
+      - "tests/test_is_harness_research_jobs.py"
+      - ".github/workflows/is-harness-safe-worker-update.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-harness-safe-worker-update
+  cancel-in-progress: false
+
+jobs:
+  validate-and-install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: is-research-readonly
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate allowlisted research scripts
+        run: |
+          python3 -m py_compile scripts/is/github_issue_queue_worker.py scripts/is/harness_research_jobs.py
+          python3 -m unittest discover -s tests -p 'test_is_harness_research_jobs.py' -v
+      - name: Configure verified SSH identity
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          set -eu
+          for name in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then echo "::error::Missing secret $name"; exit 1; fi
+          done
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/is_harness_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/is_harness_key ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/is_harness_key >/dev/null
+      - name: Stage and install worker under research home only
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          set -eu
+          SSH_ARGS=(-o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i "$HOME/.ssh/is_harness_key")
+          TARGET="${SSH_USER}@${SSH_HOST}"
+          scp "${SSH_ARGS[@]}" scripts/is/github_issue_queue_worker.py "$TARGET:is-harness/.queue_worker.pending.py"
+          scp "${SSH_ARGS[@]}" scripts/is/harness_research_jobs.py "$TARGET:is-harness/.research_jobs.pending.py"
+          ssh "${SSH_ARGS[@]}" "$TARGET" 'bash -se' <<'REMOTE'
+          set -euo pipefail
+          cd "$HOME/is-harness"
+          lock="/run/user/$(id -u)/is-harness-queue.lock"
+          test -d "/run/user/$(id -u)" || { echo "User runtime directory unavailable"; exit 3; }
+          flock -w 90 "$lock" bash -se <<'LOCKED'
+          python3 -m py_compile .queue_worker.pending.py .research_jobs.pending.py
+          chmod 600 .queue_worker.pending.py .research_jobs.pending.py
+          mv -f .research_jobs.pending.py harness_research_jobs.py
+          mv -f .queue_worker.pending.py github_issue_queue_worker.py
+          echo "RESEARCH_HARNESS_SCRIPTS_INSTALLED"
+          LOCKED
+          systemctl --user start is-harness-queue.service || echo "Service trigger unavailable; scheduled timer will run next"
+          REMOTE
+      - name: Remove SSH identity
+        if: always()
+        run: rm -f ~/.ssh/is_harness_key
