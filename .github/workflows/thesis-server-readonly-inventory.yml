@@ -80,7 +80,70 @@ jobs:
                   print("CKD_GENE_SET_EXACT",meta.get("ckd_9_gene_set_exact"))
                   print("CKD_FIELDS_PRESENT",meta.get("field_present_counts",{}))
           PY
+      - name: Freeze existing full IS and CKD matrices on ephemeral runner only
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/thesis_input"
+          SSH_OPTS=(-o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i "$HOME/.ssh/thesis_readonly_key")
+          ssh "${SSH_OPTS[@]}" "$SSH_USER@$SSH_HOST" \
+            'cat /srv/is-analysis/results/is/audits/is_existing_2225_evidence_matrix_20261011_v1/IS_2225_GENE_EVIDENCE_MATRIX.tsv' \
+            > "$RUNNER_TEMP/thesis_input/is_genes.tsv" || exit 2
+          ssh "${SSH_OPTS[@]}" "$SSH_USER@$SSH_HOST" \
+            'cat /srv/is-analysis/results/is/audits/is_existing_2225_evidence_matrix_20261011_v1/IS_2425_GENE_REGION_EVIDENCE.tsv' \
+            > "$RUNNER_TEMP/thesis_input/is_regions.tsv" || exit 2
+          ssh "${SSH_OPTS[@]}" "$SSH_USER@$SSH_HOST" \
+            'cat /srv/is-analysis/results/is/audits/is_existing_2225_evidence_matrix_20261011_v1/IS_GENE_EVIDENCE_MATRIX_MANIFEST.json' \
+            > "$RUNNER_TEMP/thesis_input/is_manifest.json" || exit 2
+          ssh "${SSH_OPTS[@]}" "$SSH_USER@$SSH_HOST" \
+            'cat /srv/is-analysis/results/ckd/integrated_evidence/CKD_9GENE_EVIDENCE_MATRIX.tsv' \
+            > "$RUNNER_TEMP/thesis_input/ckd_9gene.tsv" || exit 2
+          python3 - "$RUNNER_TEMP/thesis_input" <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          expected={
+            "is_genes.tsv":"591cc54583022cc7e09626cf6343b06a1534928f4d584d90e70bee43ade2ff94",
+            "is_regions.tsv":"3ad82780744c4ab571d44fbcf8c421860c0ea0719c6bd38c3a32b2bceb3f9560",
+            "is_manifest.json":"2753b22a8a6633bb00302083aeb55ee4e3b2493a4a09f7af9a7ead958d5ece94",
+            "ckd_9gene.tsv":"32fa0475461b206c48295833acfc3075bfb24d89c322b5f9be554b1883a2f3d3",
+          }
+          for name,digest in expected.items():
+              actual=hashlib.sha256((root/name).read_bytes()).hexdigest()
+              if actual != digest:
+                  raise SystemExit("FROZEN_SOURCE_CHECKSUM_MISMATCH: "+name)
+          print("ALL_FOUR_REMOTE_SOURCE_HASHES_VERIFIED")
+          PY
+          python3 scripts/audit_thesis_evidence_freeze.py \
+            --is-input "$RUNNER_TEMP/thesis_input/is_genes.tsv" \
+            --is-regions "$RUNNER_TEMP/thesis_input/is_regions.tsv" \
+            --is-manifest "$RUNNER_TEMP/thesis_input/is_manifest.json" \
+            --ckd-input "$RUNNER_TEMP/thesis_input/ckd_9gene.tsv" \
+            --out-dir "$RUNNER_TEMP/thesis_frozen"
+          python3 - "$RUNNER_TEMP/thesis_frozen" <<'PY'
+          import csv,json,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          info=json.loads((root/"EVIDENCE_FREEZE_PROVENANCE.json").read_text())
+          assert not info["scientific_validation_completed"]
+          assert info["coverage"]["IS"]["gene_rows"] == 2225
+          assert info["coverage"]["CKD"]["candidate_rows"] == 9
+          print("IS_CKD_EXISTING_SOURCE_FREEZE_PASS")
+          print("COVERAGE",json.dumps(info["coverage"],sort_keys=True))
+          with (root/"CKD_EVIDENCE_READINESS_FROZEN.tsv").open(newline="") as f:
+              rows=list(csv.DictReader(f,delimiter="\t"))
+          for row in rows:
+              flags=row["limitations"].split(";")
+              print("CKD_CANDIDATE",row["gene_symbol"],
+                    "EUROPEAN_ABF",row["eur_abf_h4"]!="NOT_ASSESSED",
+                    "EAS_EGFR_ABF",row["eas_egfr_abf_h4"]!="NOT_ASSESSED",
+                    "CELL_CONTEXT",row["top_cell_type"]!="NOT_ASSESSED",
+                    "MULTISIGNAL_UNRESOLVED", "MULTISIGNAL_TECHNICAL_UNRESOLVED" in flags,
+                    "KOGES_LONGITUDINAL_VALIDATED",row["koges_longitudinal_validated"])
+          PY
       - name: Securely delete temporary SSH credentials and private inventory
         if: always()
         run: |
           rm -f "$HOME/.ssh/thesis_readonly_key" "$RUNNER_TEMP/thesis_readonly_inventory.json"
+          rm -rf "$RUNNER_TEMP/thesis_input" "$RUNNER_TEMP/thesis_frozen"
