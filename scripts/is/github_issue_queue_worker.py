@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Restricted GitHub issue queue runner for IS research. No arbitrary shell execution."""
-import argparse, datetime as dt, json, os, pathlib, subprocess, time, urllib.request, urllib.error, gzip
+import argparse, datetime as dt, json, os, pathlib, subprocess, time, urllib.request, urllib.error, gzip, sys
 ROOT=pathlib.Path("/srv/is-analysis")
 REPO=ROOT/"IS_Analysis_V3"
 RESULTS=ROOT/"results/is"
 API="https://api.github.com/repos/kimtk94/IS_Analysis_V3"
-WORKER_VERSION="20261015-headers-v2"
-ALLOWED={"status","inventory","tests","mkdir-output","headers"}
+WORKER_VERSION="20261015-research-audit-v1"
+ALLOWED={"status","inventory","tests","mkdir-output","headers","eas5-audit","candidate-2225-audit","figure-manifest","research-refresh"}
 def api(method,path,token,data=None):
     body=None if data is None else json.dumps(data).encode()
     req=urllib.request.Request(API+path,data=body,method=method,headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","User-Agent":"is-research-queue"})
@@ -14,6 +14,16 @@ def api(method,path,token,data=None):
         payload=response.read()
         return json.loads(payload) if payload else None
 def run_job(op):
+    if op in {"eas5-audit", "candidate-2225-audit", "figure-manifest", "research-refresh"}:
+        script=Path(__file__).resolve().with_name("harness_research_jobs.py")
+        if not script.is_file():
+            raise RuntimeError("Harness research helper missing; install companion file first")
+        proc=subprocess.run([sys.executable, str(script), "--operation", op],
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            text=True, timeout=260, check=False, cwd=script.parent)
+        if proc.returncode:
+            raise RuntimeError(f"Research audit failed (exit {proc.returncode}): "+proc.stdout[-3500:])
+        return proc.stdout[-9000:]
     if op=="status":
         commands=[["git","-C",str(REPO),"status","--short"],["git","-C",str(REPO),"branch","--show-current"]]
     elif op=="inventory":
