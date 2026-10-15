@@ -72,3 +72,19 @@ Backlog suppression and duplicate-slot checks remain enabled. GitHub scheduled t
 Expected maximum frequency: 288 audit jobs/issues per 24 hours, assuming no slot is skipped, which is operationally verbose. Re-evaluate audit frequency or switch to an append-only compact log if GitHub Issue volume becomes cumbersome. Each run rechecks **existing** source files; equal hashes indicate no change in evidence, not a new scientific result.
 
 Validation: new 5-minute GitHub Actions push-trigger run #38730705065 reported SUCCESS and created test Issue #44. A cron-triggered run and completed server execution must be verified separately before claiming end-to-end regular interval accuracy.
+
+## 2026-10-15 scheduling reliability check and server fallback
+
+An audit after enabling the five-minute GitHub Actions `schedule` trigger found **zero** true `event=schedule` workflow runs even though the push-triggered smoke tests were successful. Hence the push test alone was not sufficient evidence of recurring scheduling.
+
+The queue worker now has a **server-side five-minute fallback**, implemented in `scripts/is/github_issue_queue_worker.py` and deployed via `.github/workflows/is-harness-safe-worker-update.yml`. The existing `is-harness-queue.timer` polls around once per minute. In a minute divisible by five, the worker:
+
+1. Computes the current KST five-minute interval and deterministic title `IS Harness scheduled research refresh YYYY-MM-DD HH:MM KST`.
+2. Queries recent repository Issues to avoid creating the same interval twice, including when GitHub Actions already created the Issue.
+3. Checks for outstanding queued/running research-refresh tasks and skips rather than accumulating backlog.
+4. Uses the existing restricted GitHub token and exact allowlisted body `{"operation":"research-refresh"}` to create a missing Issue. The normal queue processes it; no additional scientific commands become allowed.
+5. Does not backfill missed time buckets after downtime. Scheduling failures are logged but never block the normal queue.
+
+This remains a **best-effort interval**: a stopped server, unavailable GitHub API, token expiration, or missed timer invocation can leave gaps. GitHub Actions is retained as a redundant trigger. In a narrow API race it remains possible for both schedulers to attempt the same interval, though the deterministic title plus recent-issue checks greatly reduce this risk.
+
+Validation: Issue [#45](https://github.com/kimtk94/IS_Analysis_V3/issues/45) was created by the server fallback for the **2026-10-15 21:10 KST** slot (rather than by a GitHub scheduled run). The queue executed the allowed `research-refresh` operation and recorded `IS HARNESS PASS` with **14.331 seconds**. All synthetic tests and the protected automatic server deployment completed successfully. End-to-end *single-slot* reliability is confirmed; sustained five-minute cadence requires observing successive slots.
