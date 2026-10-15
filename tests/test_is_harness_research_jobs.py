@@ -12,6 +12,22 @@ spec = importlib.util.spec_from_file_location("is_harness_research_jobs", SCRIPT
 jobs = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(jobs)
 
+WORKER_SCRIPT = pathlib.Path(__file__).resolve().parents[1] / "scripts/is/github_issue_queue_worker.py"
+worker_spec = importlib.util.spec_from_file_location("is_github_queue_worker", WORKER_SCRIPT)
+worker = importlib.util.module_from_spec(worker_spec)
+worker_spec.loader.exec_module(worker)
+
+
+class ScheduledQueueSecurityTest(unittest.TestCase):
+    def test_bot_can_request_only_fixed_daily_refresh(self):
+        name = "IS Harness daily research refresh 2026-10-15 KST"
+        self.assertTrue(worker.is_trusted_issue("github-actions[bot]", "research-refresh", name))
+        self.assertTrue(worker.is_trusted_issue("kimtk94", "headers", "IS arbitrary approved issue"))
+        self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "tests", name))
+        self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "mkdir-output", name))
+        self.assertFalse(worker.is_trusted_issue("github-actions[bot]", "research-refresh", "IS Harness bootstrap"))
+        self.assertFalse(worker.is_trusted_issue("random-collaborator", "research-refresh", name))
+
 
 class ReadinessTest(unittest.TestCase):
     def make_frozen(self, *, duplicate=False):
