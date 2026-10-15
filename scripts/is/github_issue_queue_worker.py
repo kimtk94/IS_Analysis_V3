@@ -31,14 +31,14 @@ def run_job(op):
         for directory,name in targets:
             p=base/directory/name
             if not p.is_file():
-                lines.append(f"MISSING\\t{directory}/{name}")
+                lines.append(f"MISSING\t{directory}/{name}")
                 continue
             opener=gzip.open if p.suffix==".gz" else open
             with opener(p,"rt",encoding="utf-8",errors="replace") as stream:
-                header=stream.readline().rstrip("\\n\\r")
-            lines.append(f"FILE\\t{directory}/{name}\\tbytes={p.stat().st_size}\\tcolumns={len(header.split(chr(9)))}")
-            lines.append(f"HEADER\\t{header[:3000]}")
-        return "\\n".join(lines)
+                header=stream.readline().rstrip("\n\r")
+            lines.append(f"FILE\t{directory}/{name}\\tbytes={p.stat().st_size}\\tcolumns={len(header.split(chr(9)))}")
+            lines.append(f"HEADER\t{header[:3000]}")
+        return "\n".join(lines)
     elif op=="mkdir-output":
         (RESULTS/"github_actions_runs").mkdir(parents=True,exist_ok=True)
         return "WRITE_ACCESS_CONFIRMED"
