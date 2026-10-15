@@ -62,7 +62,9 @@ def main():
                 # Claim by removing queued label BEFORE executing. If claim fails, do not execute.
                 try: api("DELETE",f"/issues/{num}/labels/is-harness-queued",token)
                 except urllib.error.HTTPError as e:
-                    print(f"issue #{num}: claim failed HTTP {e.code}",flush=True)
+                    detail=e.read().decode("utf-8",errors="replace")[:700]
+                    print(f"issue #{num}: claim failed HTTP {e.code}: {detail}",flush=True)
+                    if args.once: raise SystemExit(1) from e
                     continue
                 api("POST",f"/issues/{num}/labels",token,{"labels":["is-harness-running"]})
                 try:
