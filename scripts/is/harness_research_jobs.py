@@ -30,6 +30,7 @@ EAS5_VARIANTS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v
 EAS5_READINESS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1" / "IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv"
 EAS5_OVERLAP = AUDITS / "is_eas5_qtl_gwas_snp_ref37_20261011_v2" / "IS_EAS5_GENE_TISSUE_GWAS_SNP_OVERLAP_QC.tsv"
 
+AUDIT_SCHEMA_REV = "20261016-p2-p4-qc-v1"
 EXPECTED_READY = {
     "NOT_IN_EAS_30_GROUPS": 1356,
     "PUBLIC_NOMINAL_QTL_REGIONAL_PILOT_NOT_EXECUTED": 629,
@@ -54,6 +55,49 @@ REQUIRED_OVERLAP_COLUMNS = (
     "both_GWAS_exact_nonpalindromic_rows", "eligible_for_coloc", "blocked_on"
 )
 
+
+
+def input_metadata_signature() -> str:
+    """Fast change hint; metadata is not content proof. Hourly full hashing remains required."""
+    inputs = [EAS5_VARIANTS, EAS5_READINESS, EAS5_OVERLAP]
+    items = []
+    for path in inputs:
+        stat = path.stat()
+        items.append([str(path), stat.st_size, stat.st_mtime_ns])
+    raw = json.dumps({
+        "frozen_commit": FROZEN_COMMIT,
+        "schema_rev": AUDIT_SCHEMA_REV,
+        "files": items,
+    }, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def valid_numeric(value, *, pvalue=False):
+    """Return (present, valid) without interpreting missing statistics as negative evidence."""
+    if str(value).strip() in ("", "NA", "NaN", "nan", "None", "."):
+        return False, False
+    try:
+        numeric = float(value)
+        return True, math.isfinite(numeric) and (not pvalue or 0 <= numeric <= 1)
+    except (ValueError, TypeError):
+        return True, False
+
+
+def detail_from_variant_groups(group_counts, qc_flags, total):
+    """P2: descriptive eligibility only; never asserts full allele validation."""
+    return {
+        "schema": "is-p2-eas5-qc-v1",
+        "generated_at": now(),
+        "rows": total,
+        "group_count": len(group_counts),
+        "groups": [
+            {"region_id": key[0], "QTL_dataset": key[1], "gene_id": key[2], **dict(value)}
+            for key, value in sorted(group_counts.items())
+        ],
+        "qc": dict(sorted(qc_flags.items())),
+        "statement": "Existing harmonized-table descriptive QC; not a new FASTA/EAF audit or independent coloc",
+        "integrity": "PASS",
+    }
 
 def now():
     return dt.datetime.now(dt.timezone.utc).isoformat()
@@ -109,6 +153,8 @@ def audit_eas5() -> dict:
     rows = 0
     region_counts = collections.Counter()
     status_counts = collections.Counter()
+    group_counts = collections.defaultdict(collections.Counter)
+    qc_flags = collections.Counter()
     dual = nonpal = ld = coloc = ancestry = 0
     for header, row in safe_table(EAS5_VARIANTS, REQUIRED_VARIANT_COLUMNS):
         if row is None:
@@ -116,6 +162,24 @@ def audit_eas5() -> dict:
         rows += 1
         region_counts[row["region_id"]] += 1
         status_counts[row["status"] or "MISSING_STATUS"] += 1
+        group = group_counts[(row["region_id"], row["QTL_dataset"], row["gene_id"])]
+        group["rows"] += 1
+        for field in ("QTL_p", "BBJ_p", "EAS_AIS_p"):
+            present, valid = valid_numeric(row.get(field, ""), pvalue=True)
+            if present and not valid:
+                qc_flags[field + "_invalid_nonmissing"] += 1
+                group[field + "_invalid_nonmissing"] += 1
+            if not present:
+                qc_flags[field + "_missing"] += 1
+        for field in ("QTL_beta_mapped_GRCh37_ALT_OFFICIAL_DEFINITION",
+                      "BBJ_beta_mapped_ALT", "EAS_AIS_beta_mapped_ALT"):
+            present, valid = valid_numeric(row.get(field, ""))
+            if present and not valid:
+                qc_flags[field + "_invalid_nonmissing"] += 1
+        if row["BBJ_exact_SNP"] and row["EAS_AIS_exact_SNP"]:
+            group["dual_gwas_exact_snp_rows"] += 1
+        if str(row["both_GWAS_sources_nonpalindromic"]).strip().lower() in {"true", "1", "yes"}:
+            group["both_nonpalindromic_rows"] += 1
         if row["BBJ_exact_SNP"] and row["EAS_AIS_exact_SNP"]:
             dual += 1
         if str(row["both_GWAS_sources_nonpalindromic"]).strip().lower() in {"true", "1", "yes"}:
@@ -146,6 +210,7 @@ def audit_eas5() -> dict:
         "variants_file_sha256": sha256_path(EAS5_VARIANTS),
         "readiness_table": table_summary(EAS5_READINESS, REQUIRED_READINESS_COLUMNS),
         "overlap_qc_table": table_summary(EAS5_OVERLAP, REQUIRED_OVERLAP_COLUMNS),
+        "p2_detail": detail_from_variant_groups(group_counts, qc_flags, rows),
         "causal_gene_conclusions": "NOT_ESTABLISHED_BY_THIS_AUDIT",
     }
     return result
