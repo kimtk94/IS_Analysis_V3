@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Restricted GitHub issue queue runner for IS research. No arbitrary shell execution."""
-import argparse, datetime as dt, json, os, pathlib, subprocess, time, urllib.request, urllib.error, gzip, sys, re, importlib.util
+import argparse, datetime as dt, json, os, pathlib, subprocess, time, urllib.request, urllib.error, gzip, sys, re, importlib.util, tempfile
 ROOT=pathlib.Path("/srv/is-analysis")
 REPO=ROOT/"IS_Analysis_V3"
 RESULTS=ROOT/"results/is"
 API="https://api.github.com/repos/kimtk94/IS_Analysis_V3"
-WORKER_VERSION="20261016-smart-change-detection-v1"
+WORKER_VERSION="20261016-science-heartbeat-v2"
 ALLOWED={"status","inventory","tests","mkdir-output","headers","eas5-audit","candidate-2225-audit","figure-manifest","research-refresh"}
 def is_trusted_issue(author, operation, title):
     """Bot may only enqueue restricted scheduled research refresh jobs."""
@@ -106,6 +106,41 @@ def ensure_scheduled_research_issue(token,now_utc):
     })
     return "FALLBACK_ENQUEUED_ISSUE_"+str(created["number"])
 
+def record_heartbeat(now_utc, decision, path=None):
+    """One local record per slot/status, separate from research results.
+
+    A heartbeat establishes only that the watcher ran, not that science data
+    changed or an MR/coloc was computed. Never publishes arbitrary server data.
+    """
+    path = pathlib.Path(path) if path is not None else RESULTS/"github_actions_runs"/"evidence"/"harness_heartbeat.json"
+    slot = scheduled_slot_title(now_utc)
+    event = {
+        "schema":"is-harness-heartbeat-v1",
+        "observed_at":now_utc.isoformat(),
+        "slot_kst":slot,
+        "watcher_status":decision,
+        "is_new_scientific_result":False,
+        "interpretation":"Input-change watcher only; scientific progress is separately verified.",
+    }
+    try:
+        previous=json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+        if previous.get("slot_kst")==slot and previous.get("watcher_status")==decision:
+            return "UNCHANGED_HEARTBEAT"
+        path.parent.mkdir(parents=True,exist_ok=True)
+        with tempfile.NamedTemporaryFile("w",dir=path.parent,prefix=".hb_",suffix=".json",
+                                         encoding="utf-8",delete=False) as handle:
+            json.dump(event,handle,ensure_ascii=False,indent=2)
+            handle.write("\n")
+            tmp=pathlib.Path(handle.name)
+        try:
+            os.replace(tmp,path)
+        finally:
+            tmp.unlink(missing_ok=True)
+        return "HEARTBEAT_WRITTEN"
+    except (OSError,ValueError,TypeError):
+        return "HEARTBEAT_UNAVAILABLE"
+
+
 def run_job(op):
     if op in {"eas5-audit", "candidate-2225-audit", "figure-manifest", "research-refresh"}:
         script=pathlib.Path(__file__).resolve().with_name("harness_research_jobs.py")
@@ -165,9 +200,11 @@ def main():
     while True:
         try:
             try:
-                fallback=ensure_scheduled_research_issue(token,dt.datetime.now(dt.timezone.utc))
+                poll_time=dt.datetime.now(dt.timezone.utc)
+                fallback=ensure_scheduled_research_issue(token,poll_time)
+                heartbeat_state=record_heartbeat(poll_time,fallback)
                 if fallback not in {"UNCHANGED_SOURCES_FAST_CHECK"}:
-                    print("five-minute scheduling:",fallback,flush=True)
+                    print("five-minute scheduling:",fallback,"heartbeat:",heartbeat_state,flush=True)
             except Exception as fallback_error:
                 # Scheduling error must never block manual or GitHub-enqueued jobs.
                 print("five-minute scheduling unavailable:",
