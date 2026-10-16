@@ -1,0 +1,4 @@
+dataset_id	study_id	study_label	sample_group	tissue_label	sample_size	source_ancestry	matched_qtl_ld	metadata_source	metadata_blob_sha
+QTD000131	QTS000015	GTEx	artery_aorta	artery (aorta)	387	UNVERIFIED	NOT_VERIFIED	https://github.com/eQTL-Catalogue/eQTL-Catalogue-resources/blob/0bc275374c210b4feaaecf217c1d612472f7ec87/tabix/tabix_ftp_paths.tsv	2a5aea0b8fe7f75ace257dc3b4ff59ec18b97a68
+QTD000171	QTS000015	GTEx	brain_cortex	brain (cortex)	205	UNVERIFIED	NOT_VERIFIED	https://github.com/eQTL-Catalogue/eQTL-Catalogue-resources/blob/0bc275374c210b4feaaecf217c1d612472f7ec87/tabix/tabix_ftp_paths.tsv	2a5aea0b8fe7f75ace257dc3b4ff59ec18b97a68
+QTD000434	QTS000025	ROSMAP	brain_naive	brain (DLPFC)	560	UNVERIFIED	NOT_VERIFIED	https://github.com/eQTL-Catalogue/eQTL-Catalogue-resources/blob/0bc275374c210b4feaaecf217c1d612472f7ec87/tabix/tabix_ftp_paths.tsv	2a5aea0b8fe7f75ace257dc3b4ff59ec18b97a68
