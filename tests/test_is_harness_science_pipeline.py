@@ -62,6 +62,38 @@ class ScienceGateTests(unittest.TestCase):
             self.assertEqual(obj["fasta_status"],"BLOCKED_NO_APPROVED_GRCH37_FASTA")
             self.assertNotIn("coloc",obj["schema"])
 
+    def test_boolean_exact_source_flags_are_not_independent_snp_ids(self):
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"boolean_flags.tsv"
+            columns=["region_id","QTL_dataset","gene_id","mapped_variant_GRCh37",
+                     "BBJ_exact_SNP","EAS_AIS_exact_SNP","QTL_alt_eaf_ac_div_an",
+                     "BBJ_alt_eaf","EAS_AIS_alt_eaf"]
+            tsv(path,columns,[
+                {"region_id":"R1","QTL_dataset":"Q1","gene_id":"ENSG1",
+                 "mapped_variant_GRCh37":"chr1:125:A:C","BBJ_exact_SNP":"True",
+                 "EAS_AIS_exact_SNP":"True","QTL_alt_eaf_ac_div_an":"0.4",
+                 "BBJ_alt_eaf":"0.4","EAS_AIS_alt_eaf":"0.41"},
+                {"region_id":"R1","QTL_dataset":"Q1","gene_id":"ENSG1",
+                 "mapped_variant_GRCh37":"chr1:130:C:G","BBJ_exact_SNP":"False",
+                 "EAS_AIS_exact_SNP":"True","QTL_alt_eaf_ac_div_an":"0.4",
+                 "BBJ_alt_eaf":"0.42","EAS_AIS_alt_eaf":"0.43"}
+            ])
+            report=science.independent_p2_qc(path)
+            totals=report["counters"]
+            self.assertEqual(totals["dual_source_reported_exact_snp"],1)
+            self.assertEqual(totals["dual_allele_key_equal"],0)
+            self.assertEqual(totals["bbj_SOURCE_FALSE_FLAG"],1)
+            self.assertEqual(totals["eas_SOURCE_TRUE_FLAG"],2)
+            self.assertEqual(totals["mapped_variant_parseable"],2)
+            p1={"rows":[{"gene_id":"ENSG1","region_id":"R1",
+                          "QTL_dataset":"Q1","p1_status":"BLOCKED_NO_VERIFIED_COHORT_MATCHED_LD"}]}
+            p3={"rows":[{"gene_id":"ENSG1","status":"BLOCKED"}]}
+            p4=science.join_p4_candidates({"candidates":[{
+                "gene_id":"ENSG1","gene_symbol":"GENE1",
+                "nominal_min_p":0.01,"nominal_variant_rows":2
+            }]},report,p1,p3)
+            self.assertEqual(p4["candidates"][0]["evidence_tier"],"SOURCE_MATCH_FLAG_ONLY")
+
     def test_p1_ld_cohort_and_sha_must_match(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)
@@ -129,13 +161,14 @@ class ScienceGateTests(unittest.TestCase):
                 registry=root/"missing1.tsv",reference=root/"missingref.json",
                 p3_registry=root/"missing3.tsv",root=root)
             self.assertEqual(summary["p1"]["approved_matched_ld"],0)
+            self.assertEqual(summary["p1"]["source_datasets"],1)
             self.assertEqual(summary["p3"]["coloc_executed"],0)
             self.assertEqual(summary["p4"]["candidate_count"],1)
             self.assertEqual(summary["p2"]["nonpalindromic_records"],1)
             self.assertEqual(summary["scientific_result"],"NO_NEW_COLOC_OR_CAUSAL_GENE_EVIDENCE")
             for name in ("p1_cohort_ld_review.json","p2_independent_variant_qc.json",
                          "p3_coloc_gates.json","p4_candidate_cross_evidence.json",
-                         "science_pipeline_summary.json"):
+                         "science_pipeline_summary.json","p1_source_catalog.json"):
                 self.assertTrue((output/"science"/name).is_file())
 
 
