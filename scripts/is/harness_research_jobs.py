@@ -10,6 +10,7 @@ import csv
 import datetime as dt
 import hashlib
 import io
+import importlib.util
 import json
 import math
 import os
@@ -30,7 +31,7 @@ EAS5_VARIANTS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v
 EAS5_READINESS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1" / "IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv"
 EAS5_OVERLAP = AUDITS / "is_eas5_qtl_gwas_snp_ref37_20261011_v2" / "IS_EAS5_GENE_TISSUE_GWAS_SNP_OVERLAP_QC.tsv"
 
-AUDIT_SCHEMA_REV = "20261016-p2-p4-qc-v1"
+AUDIT_SCHEMA_REV = "20261016-staged-science-v2"
 EXPECTED_READY = {
     "NOT_IN_EAS_30_GROUPS": 1356,
     "PUBLIC_NOMINAL_QTL_REGIONAL_PILOT_NOT_EXECUTED": 629,
@@ -60,10 +61,24 @@ REQUIRED_OVERLAP_COLUMNS = (
 def input_metadata_signature() -> str:
     """Fast change hint; metadata is not content proof. Hourly full hashing remains required."""
     inputs = [EAS5_VARIANTS, EAS5_READINESS, EAS5_OVERLAP]
+    optional_inputs = [
+        OUTPUT / "science_inputs" / "P1_APPROVED_QTL_LD.tsv",
+        OUTPUT / "science_inputs" / "P2_APPROVED_GRCH37_REFERENCE.json",
+        OUTPUT / "science_inputs" / "P3_APPROVED_COLOC_INPUTS.tsv",
+    ]
     items = []
     for path in inputs:
         stat = path.stat()
         items.append([str(path), stat.st_size, stat.st_mtime_ns])
+    for path in optional_inputs:
+        if path.is_file():
+            stat = path.stat()
+            items.append([str(path), stat.st_size, stat.st_mtime_ns])
+        else:
+            items.append([str(path), "MISSING"])
+    # Changes to the science implementation must force an immediate new audit.
+    stage_script = Path(__file__).resolve().with_name("harness_science_pipeline.py")
+    items.append([str(stage_script), sha256_path(stage_script) if stage_script.is_file() else "MISSING"])
     raw = json.dumps({
         "frozen_commit": FROZEN_COMMIT,
         "schema_rev": AUDIT_SCHEMA_REV,
@@ -422,6 +437,18 @@ def manifest(eas5: dict, cand: dict, p1: dict | None = None, input_signature: st
     }
 
 
+def perform_staged_science(eas5, candidates):
+    script=Path(__file__).resolve().with_name("harness_science_pipeline.py")
+    if not script.is_file():
+        raise RuntimeError("Staged science module missing: deployment incomplete")
+    spec=importlib.util.spec_from_file_location("is_harness_science_pipeline",script)
+    if not spec or not spec.loader:
+        raise RuntimeError("Staged science module cannot load")
+    module=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.advance(EAS5_VARIANTS,EAS5_READINESS,candidates["p4_detail"],output=OUTPUT)
+
+
 def dispatch(op: str) -> dict:
     if op == "eas5-audit":
         e = audit_eas5()
@@ -454,7 +481,17 @@ def dispatch(op: str) -> dict:
         e = audit_eas5()
         c = audit_candidates()
         p1 = audit_p1_ld_gates()
+        science = perform_staged_science(e,c)
         m = manifest(e, c, p1)
+        m["science_pipeline"] = {
+            "schema":science["schema"],
+            "p1":science["p1"],
+            "p2":science["p2"],
+            "p3":science["p3"],
+            "p4":science["p4"],
+            "p2_reference_state":science["p2_reference_state"],
+            "scientific_result":science["scientific_result"],
+        }
         atomic_json(OUTPUT / "eas5_audit.json", {k:v for k,v in e.items() if k != "p2_detail"})
         atomic_json(OUTPUT / "p2_region_qc.json", e["p2_detail"])
         atomic_json(OUTPUT / "candidate_2225_audit.json", {k:v for k,v in c.items() if k != "p4_detail"})
