@@ -6,7 +6,9 @@ on:
     paths:
       - "scripts/is/github_issue_queue_worker.py"
       - "scripts/is/harness_research_jobs.py"
+      - "scripts/is/harness_science_pipeline.py"
       - "tests/test_is_harness_research_jobs.py"
+      - "tests/test_is_harness_science_pipeline.py"
       - ".github/workflows/is-harness-safe-worker-update.yml"
   workflow_dispatch:
 
@@ -29,8 +31,8 @@ jobs:
           python-version: "3.11"
       - name: Validate allowlisted research scripts
         run: |
-          python3 -m py_compile scripts/is/github_issue_queue_worker.py scripts/is/harness_research_jobs.py
-          python3 -m unittest discover -s tests -p 'test_is_harness_research_jobs.py' -v
+          python3 -m py_compile scripts/is/github_issue_queue_worker.py scripts/is/harness_research_jobs.py scripts/is/harness_science_pipeline.py
+          python3 -m unittest discover -s tests -p 'test_is_harness*.py' -v
       - name: Configure verified SSH identity
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
@@ -58,14 +60,16 @@ jobs:
           TARGET="${SSH_USER}@${SSH_HOST}"
           scp "${SSH_ARGS[@]}" scripts/is/github_issue_queue_worker.py "$TARGET:is-harness/.queue_worker.pending.py"
           scp "${SSH_ARGS[@]}" scripts/is/harness_research_jobs.py "$TARGET:is-harness/.research_jobs.pending.py"
+          scp "${SSH_ARGS[@]}" scripts/is/harness_science_pipeline.py "$TARGET:is-harness/.science_pipeline.pending.py"
           ssh "${SSH_ARGS[@]}" "$TARGET" 'bash -se' <<'REMOTE'
           set -euo pipefail
           cd "$HOME/is-harness"
           lock="/run/user/$(id -u)/is-harness-queue.lock"
           test -d "/run/user/$(id -u)" || { echo "User runtime directory unavailable"; exit 3; }
           flock -w 90 "$lock" bash -se <<'LOCKED'
-          python3 -m py_compile .queue_worker.pending.py .research_jobs.pending.py
-          chmod 600 .queue_worker.pending.py .research_jobs.pending.py
+          python3 -m py_compile .queue_worker.pending.py .research_jobs.pending.py .science_pipeline.pending.py
+          chmod 600 .queue_worker.pending.py .research_jobs.pending.py .science_pipeline.pending.py
+          mv -f .science_pipeline.pending.py harness_science_pipeline.py
           mv -f .research_jobs.pending.py harness_research_jobs.py
           mv -f .queue_worker.pending.py github_issue_queue_worker.py
           echo "RESEARCH_HARNESS_SCRIPTS_INSTALLED"
