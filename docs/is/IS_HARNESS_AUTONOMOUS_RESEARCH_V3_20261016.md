@@ -53,3 +53,15 @@ Never put access tokens, controlled individual-level genotypes, unreviewed priva
 - P1 blocking task: [#100](https://github.com/kimtk94/IS_Analysis_V3/issues/100).
 
 **Next actual advancement:** identify QTL provenance for the discovered source dataset identifiers; secure authoritative per-cohort source/LD information; independently map official GRCh37 reference alleles; then open the strictly gated P3 multi-signal colocalization path. No further candidate causality should be claimed before those gates are satisfied.
+
+## Final integration acceptance (2026-10-16)
+
+[Issue #115](https://github.com/kimtk94/IS_Analysis_V3/issues/115) completed the updated full-staged pipeline **PASS** (48.984 s), with `source_metadata_resolved_datasets=3`.
+
+- P1: 393 region/gene/tissue groups; dataset IDs QTD000131 (GTEx aorta, N=387), QTD000171 (GTEx cortex, N=205), QTD000434 (ROSMAP DLPFC, N=560). Metadata pinned to eQTL Catalogue tabix FTP table commit `0bc275374c210b4feaaecf217c1d612472f7ec87`; source genotype ancestry and cohort-matched LD remain unverified.
+- P2: 809,245 source rows parsed; 423,051 with both *reported exact SNP match boolean flags* true. Independent BBJ/EAS literal SNP IDs verified **0**; independent FASTA REF verified **0**. Within 423,051 source dual-match rows having AF information, 91,959 have |QTL EAF − EAS-AIS EAF| > 0.2 and require review; such population frequency discrepancies do **not** by themselves prove strand errors.
+- P3: coloc **0** computed; all 393 groups blocked by missing source-cohort LD, independently approved GRCh37 REF/ALT, and reviewed coloc input records. Missing evidence cannot be interpreted as negative coloc.
+- P4: 149 nominal QTL candidate genes; 149 source-match-flag-only and 0 independently allele-validated groups. No causal ranking.
+- Automated watcher: every five-minute bucket checks for changed source metadata, writes local heartbeat, triggers full stage analysis on new source evidence or after approximately 60 minutes. This pipeline never modifies source GWAS/QTL files.
+
+Outstanding evidence gates tracked in [#100](https://github.com/kimtk94/IS_Analysis_V3/issues/100), [#116](https://github.com/kimtk94/IS_Analysis_V3/issues/116), [#117](https://github.com/kimtk94/IS_Analysis_V3/issues/117), [#118](https://github.com/kimtk94/IS_Analysis_V3/issues/118). The P3 SuSiE/coloc executor still requires review and integration; therefore do not claim that P3 automatically computes coloc merely when the input registries become populated.
