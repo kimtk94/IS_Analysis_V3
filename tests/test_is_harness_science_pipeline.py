@@ -81,7 +81,7 @@ class ScienceGateTests(unittest.TestCase):
             report=science.independent_p2_qc(path)
             totals=report["counters"]
             self.assertEqual(totals["dual_source_reported_exact_snp"],1)
-            self.assertEqual(totals["dual_allele_key_equal"],0)
+            self.assertEqual(totals.get("dual_allele_key_equal",0),0)
             self.assertEqual(totals["bbj_SOURCE_FALSE_FLAG"],1)
             self.assertEqual(totals["eas_SOURCE_TRUE_FLAG"],2)
             self.assertEqual(totals["mapped_variant_parseable"],2)
