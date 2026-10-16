@@ -180,6 +180,7 @@ class ApprovedFasta:
                     chrom = str(int(chrom))
                 self.fai[chrom] = tuple(int(v) for v in fields[1:5])
         self.ref = path
+        self._reader = path.open("rb")
         self.status = "APPROVED_REFERENCE_AVAILABLE"
 
     def reference(self, chrom, pos, size):
@@ -190,16 +191,19 @@ class ApprovedFasta:
             return None
         start = pos - 1
         try:
-            with self.ref.open("rb") as handle:
-                result = bytearray()
-                for i in range(size):
-                    absolute = start + i
-                    handle.seek(offset + (absolute//bases)*width + absolute%bases)
-                    result.extend(handle.read(1))
-                bases_read = result.decode("ascii").upper()
-                return bases_read if set(bases_read).issubset(NUCLEOTIDES) else None
+            result = bytearray()
+            for i in range(size):
+                absolute = start + i
+                self._reader.seek(offset + (absolute//bases)*width + absolute%bases)
+                result.extend(self._reader.read(1))
+            bases_read = result.decode("ascii").upper()
+            return bases_read if set(bases_read).issubset(NUCLEOTIDES) else None
         except (OSError, UnicodeError):
             return None
+
+    def close(self):
+        if getattr(self,"_reader",None) is not None:
+            self._reader.close()
 
 
 def independent_p2_qc(variants_path: Path, fasta=None, max_rows=2_000_000):
@@ -252,6 +256,7 @@ def independent_p2_qc(variants_path: Path, fasta=None, max_rows=2_000_000):
                 counters["palindromic_rows"] += 1
             else:
                 if dual_match:
+                    counters["nonpal_dual_allele_key_equal"] += 1
                     group["nonpal_dual_allele_key_equal"] += 1
                     by_gene[row["gene_id"]]["nonpal_dual_allele_key_equal"] += 1
             q_af = numeric_af(row["QTL_alt_eaf_ac_div_an"])
@@ -385,10 +390,12 @@ def join_p4_candidates(candidate_detail, p2, p1, p3):
         p3_by_gene[r["gene_id"]]["assayed_groups"]+=1
     results=[]
     status_counts=collections.Counter()
+    parsed_records=p2["counters"].get("mapped_variant_parseable",0)
     for candidate in candidate_detail["candidates"]:
         gene=candidate["gene_id"]
         e=p2_by_gene.get(gene,{})
-        label = ("HAS_INDEPENDENT_SNP_ID_OVERLAP" if e.get("nonpal_dual_key_rows",0)>0
+        label = ("BLOCKED_VARIANT_IDENTIFIER_SCHEMA" if not parsed_records
+                 else "HAS_INDEPENDENT_SNP_ID_OVERLAP" if e.get("nonpal_dual_key_rows",0)>0
                  else "NO_CONFIRMED_NONPAL_SNP_ID_OVERLAP")
         status_counts[label]+=1
         results.append({
@@ -428,6 +435,7 @@ def advance(variants_path, readiness_path, candidate_detail, output=OUT, *, regi
     p2=independent_p2_qc(variants_path,fasta=fasta)
     p3_rows,p3_state=registry_rows(p3_registry,P3_COLUMNS)
     p3=evaluate_p3_gate(p1,p2,approved,p3_rows,p2_fasta_approved=fasta.ref is not None)
+    fasta.close()
     p4=join_p4_candidates(candidate_detail,p2,p1,p3)
     report={
         "schema":"is-science-orchestrator-v1","generated_at":stamp(),"integrity":"PASS",
@@ -437,7 +445,7 @@ def advance(variants_path, readiness_path, candidate_detail, output=OUT, *, regi
                "blocked":p1["counts"].get("BLOCKED_NO_VERIFIED_COHORT_MATCHED_LD",0)},
         "p2": {"scanned_snp_records":p2["counters"]["total_rows"],
                "dual_id_equal":p2["counters"].get("dual_allele_key_equal",0),
-               "nonpalindromic_records":p2["counters"].get("dual_allele_key_equal",0)-p2["counters"].get("palindromic_rows",0),
+               "nonpalindromic_records":p2["counters"].get("nonpal_dual_allele_key_equal",0),
                "fasta_ref_equal_rows":p2["counters"].get("fasta_ref_equal_rows",0),
                "fasta_ref_mismatch_rows":p2["counters"].get("fasta_ref_mismatch_rows",0),
                "af_review_flags":p2["counters"].get("qtl_eas_af_delta_gt_0_2_review",0)},
