@@ -104,6 +104,19 @@ class FiveMinuteFallbackTest(unittest.TestCase):
 
 
 
+class HeartbeatAuditTest(unittest.TestCase):
+    def test_watcher_writes_heartbeat_without_science_claim(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path=pathlib.Path(folder)/"harness_heartbeat.json"
+            t=dt.datetime(2026,10,16,0,50,35,tzinfo=dt.timezone.utc)
+            self.assertEqual(worker.record_heartbeat(t,"UNCHANGED_SOURCES_FAST_CHECK",path),
+                             "HEARTBEAT_WRITTEN")
+            saved=json.loads(path.read_text())
+            self.assertFalse(saved["is_new_scientific_result"])
+            self.assertEqual(saved["watcher_status"],"UNCHANGED_SOURCES_FAST_CHECK")
+            self.assertEqual(worker.record_heartbeat(t,"UNCHANGED_SOURCES_FAST_CHECK",path),
+                             "UNCHANGED_HEARTBEAT")
+
 class ReadinessTest(unittest.TestCase):
     def make_frozen(self, *, duplicate=False):
         headers = [
