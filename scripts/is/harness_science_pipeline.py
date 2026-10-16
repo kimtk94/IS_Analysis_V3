@@ -290,10 +290,14 @@ def independent_p2_qc(variants_path: Path, fasta=None, max_rows=2_000_000):
             b_af = numeric_af(row["BBJ_alt_eaf"])
             if q_af is not None and e_af is not None:
                 counters["qtl_eas_af_comparable"] += 1
+                if reported_bbj and reported_eas and mapped:
+                    counters["qtl_eas_af_comparable_source_dual"] += 1
+                    if abs(q_af-e_af)>0.2:
+                        counters["qtl_eas_af_delta_gt_0_2_source_dual_review"] += 1
+                        group["qtl_eas_af_delta_gt_0_2_source_dual_review"] += 1
                 if abs(q_af-e_af)>0.2:
-                    counters["qtl_eas_af_delta_gt_0_2_review"] += 1
-                    group["qtl_eas_af_delta_gt_0_2_review"] += 1
-                elif dual_match:
+                    counters["qtl_eas_af_delta_gt_0_2_all_rows_diagnostic_only"] += 1
+                if abs(q_af-e_af)<=0.2 and dual_match:
                     group["allele_key_equal_and_qtl_eas_af_delta_le_0_2"] += 1
             if b_af is not None and e_af is not None:
                 counters["bbj_eas_af_comparable"] += 1
@@ -494,6 +498,7 @@ def advance(variants_path, readiness_path, candidate_detail, output=OUT, *, regi
         "p2_reference_state":fasta.status,"p3_input_registry_state":p3_state,
         "p1": {"assayed_groups":len(p1["rows"]),"approved_matched_ld":len(approved),
                "source_datasets":len(source_catalog["datasets"]),
+               "source_dataset_ids":[x["source_dataset_id"] for x in source_catalog["datasets"]][:20],
                "blocked":p1["counts"].get("BLOCKED_NO_VERIFIED_COHORT_MATCHED_LD",0)},
         "p2": {"scanned_snp_records":p2["counters"]["total_rows"],
                "dual_id_equal":p2["counters"].get("dual_allele_key_equal",0),
@@ -504,7 +509,9 @@ def advance(variants_path, readiness_path, candidate_detail, output=OUT, *, regi
                "nonpalindromic_records":p2["counters"].get("nonpal_dual_allele_key_equal",0),
                "fasta_ref_equal_rows":p2["counters"].get("fasta_ref_equal_rows",0),
                "fasta_ref_mismatch_rows":p2["counters"].get("fasta_ref_mismatch_rows",0),
-               "af_review_flags":p2["counters"].get("qtl_eas_af_delta_gt_0_2_review",0)},
+               "af_review_flags":p2["counters"].get("qtl_eas_af_delta_gt_0_2_source_dual_review",0),
+               "source_dual_af_comparable":p2["counters"].get("qtl_eas_af_comparable_source_dual",0),
+               "af_gt_0_2_all_rows_diagnostic_only":p2["counters"].get("qtl_eas_af_delta_gt_0_2_all_rows_diagnostic_only",0)},
         "p3": {"coloc_executed":0,"blocked_gates":p3["counts"]},
         "p4": {"candidate_count":p4["candidate_count"],"tier_counts":p4["tier_counts"]},
         "scientific_result":"NO_NEW_COLOC_OR_CAUSAL_GENE_EVIDENCE",
