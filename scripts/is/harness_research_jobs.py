@@ -31,7 +31,7 @@ EAS5_VARIANTS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v
 EAS5_READINESS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1" / "IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv"
 EAS5_OVERLAP = AUDITS / "is_eas5_qtl_gwas_snp_ref37_20261011_v2" / "IS_EAS5_GENE_TISSUE_GWAS_SNP_OVERLAP_QC.tsv"
 
-AUDIT_SCHEMA_REV = "20261016-staged-science-v2"
+AUDIT_SCHEMA_REV = "20261016-source-flag-aware-v3"
 EXPECTED_READY = {
     "NOT_IN_EAS_30_GROUPS": 1356,
     "PUBLIC_NOMINAL_QTL_REGIONAL_PILOT_NOT_EXECUTED": 629,
@@ -96,6 +96,18 @@ def valid_numeric(value, *, pvalue=False):
         return True, math.isfinite(numeric) and (not pvalue or 0 <= numeric <= 1)
     except (ValueError, TypeError):
         return True, False
+
+
+def source_exact_match(value):
+    """Interpret source booleans correctly; unknown encodings fail closed."""
+    raw=str(value or "").strip()
+    low=raw.lower()
+    if low in {"true","1","yes"}: return True
+    if low in {"false","0","no","","na","none"}: return False
+    import re
+    if re.fullmatch(r"(?:chr)?(?:[0-9]{1,2}|X|Y|MT):[0-9]+:[ACGT]+:[ACGT]+",raw,re.I):
+        return True
+    raise ValueError("Unknown source exact-SNP field encoding")
 
 
 def detail_from_variant_groups(group_counts, qc_flags, total):
@@ -191,11 +203,11 @@ def audit_eas5() -> dict:
             present, valid = valid_numeric(row.get(field, ""))
             if present and not valid:
                 qc_flags[field + "_invalid_nonmissing"] += 1
-        if row["BBJ_exact_SNP"] and row["EAS_AIS_exact_SNP"]:
+        if source_exact_match(row["BBJ_exact_SNP"]) and source_exact_match(row["EAS_AIS_exact_SNP"]):
             group["dual_gwas_exact_snp_rows"] += 1
         if str(row["both_GWAS_sources_nonpalindromic"]).strip().lower() in {"true", "1", "yes"}:
             group["both_nonpalindromic_rows"] += 1
-        if row["BBJ_exact_SNP"] and row["EAS_AIS_exact_SNP"]:
+        if source_exact_match(row["BBJ_exact_SNP"]) and source_exact_match(row["EAS_AIS_exact_SNP"]):
             dual += 1
         if str(row["both_GWAS_sources_nonpalindromic"]).strip().lower() in {"true", "1", "yes"}:
             nonpal += 1
