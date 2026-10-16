@@ -4,8 +4,10 @@ on:
   push:
     paths:
       - "scripts/is/harness_research_jobs.py"
+      - "scripts/is/harness_science_pipeline.py"
       - "scripts/is/github_issue_queue_worker.py"
       - "tests/test_is_harness_research_jobs.py"
+      - "tests/test_is_harness_science_pipeline.py"
       - ".github/workflows/is-harness-research-jobs-ci.yml"
   workflow_dispatch:
 
@@ -24,6 +26,7 @@ jobs:
       - name: Compile research worker
         run: |
           python -m py_compile scripts/is/harness_research_jobs.py
+          python -m py_compile scripts/is/harness_science_pipeline.py
           python -m py_compile scripts/is/github_issue_queue_worker.py
       - name: Run synthetic evidence regression tests
-        run: python -m unittest discover -s tests -p 'test_is_harness_research_jobs.py' -v
+        run: python -m unittest discover -s tests -p 'test_is_harness*.py' -v
