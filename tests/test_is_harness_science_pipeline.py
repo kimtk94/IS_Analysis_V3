@@ -58,7 +58,8 @@ class ScienceGateTests(unittest.TestCase):
             self.assertEqual(c["mapped_variant_parseable"],2)
             self.assertEqual(c["dual_allele_key_equal"],1)
             self.assertEqual(c["nonpal_dual_allele_key_equal"],1)
-            self.assertEqual(c["qtl_eas_af_delta_gt_0_2_review"],1)
+            self.assertEqual(c["qtl_eas_af_delta_gt_0_2_all_rows_diagnostic_only"],1)
+            self.assertEqual(c.get("qtl_eas_af_delta_gt_0_2_source_dual_review",0),0)
             self.assertEqual(obj["fasta_status"],"BLOCKED_NO_APPROVED_GRCH37_FASTA")
             self.assertNotIn("coloc",obj["schema"])
 
