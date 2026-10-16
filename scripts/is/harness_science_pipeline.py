@@ -26,6 +26,18 @@ INPUTS = OUT / "science_inputs"
 P1_REGISTRY = INPUTS / "P1_APPROVED_QTL_LD.tsv"
 P2_REF = INPUTS / "P2_APPROVED_GRCH37_REFERENCE.json"
 P3_REGISTRY = INPUTS / "P3_APPROVED_COLOC_INPUTS.tsv"
+EBI_METADATA_COMMIT = "0bc275374c210b4feaaecf217c1d612472f7ec87"
+EBI_METADATA_URL = ("https://github.com/eQTL-Catalogue/eQTL-Catalogue-resources/"
+                    "blob/"+EBI_METADATA_COMMIT+"/tabix/tabix_ftp_paths.tsv")
+# Rows audited verbatim against the authoritative EMBL-EBI dataset table.
+# These identify source study/tissue and samples, NOT source ancestry or LD.
+KNOWN_EQTL_DATASETS = {
+    "QTD000131":("QTS000015","GTEx","artery_aorta","artery (aorta)",387),
+    "QTD000171":("QTS000015","GTEx","brain_cortex","brain (cortex)",205),
+    "QTD000434":("QTS000025","ROSMAP","brain_naive","brain (DLPFC)",560),
+}
+
+
 P1_COLUMNS = (
     "region_id", "QTL_dataset", "gene_id", "qtl_source_cohort",
     "source_ancestry", "ld_source_cohort", "ld_ancestry", "ld_matrix_path",
@@ -369,10 +381,35 @@ def qtl_source_catalog(p1):
         entry["region_ids"].add(row["region_id"])
         if row["p1_status"]=="PROVENANCE_REVIEWED_LD_HASH_MATCH":
             entry["verified_cohort_matched_ld_rows"] += 1
+    entries=[]
+    for _,info in sorted(datasets.items()):
+        source_id=info["source_dataset_id"]
+        pinned=KNOWN_EQTL_DATASETS.get(source_id)
+        metadata = {
+            "source_metadata_status":"MATCHED_FROZEN_EBI_ROW" if pinned else "NEEDS_SOURCE_METADATA",
+            "source_study_id":pinned[0] if pinned else None,
+            "study_label":pinned[1] if pinned else None,
+            "sample_group":pinned[2] if pinned else None,
+            "tissue_label":pinned[3] if pinned else None,
+            "sample_size":pinned[4] if pinned else None,
+            "verified_ancestry":False,
+            "source_genotype_ld_provenance":"NOT_VERIFIED",
+        }
+        if pinned:
+            metadata["source_summary_stats_ftp"] = (
+                "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/"
+                +pinned[0]+"/"+source_id+"/"+source_id+".all.tsv.gz")
+            metadata["source_credible_sets_ftp"] = (
+                "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/susie/"
+                +pinned[0]+"/"+source_id+"/"+source_id+".credible_sets.tsv.gz")
+            metadata["source_lbf_ftp"] = (
+                "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/susie/"
+                +pinned[0]+"/"+source_id+"/"+source_id+".lbf_variable.txt.gz")
+        entries.append({**info,"region_ids":sorted(info["region_ids"]),**metadata})
     return {"schema":"is-p1-qtl-source-catalog-v1","generated_at":stamp(),
-            "datasets":[{**info,"region_ids":sorted(info["region_ids"])}
-                        for _,info in sorted(datasets.items())],
-            "interpretation":"Dataset identifiers are NOT evidence of EAS ancestry or source-matched LD."}
+            "source_metadata_url":EBI_METADATA_URL,
+            "datasets":entries,
+            "interpretation":"Dataset metadata is verified at the pinned EBI metadata table but cohort-specific ancestry and source-matched LD are NOT verified."}
 
 
 def evaluate_p3_gate(p1, p2, approved_ld, p3_inputs, p2_fasta_approved=False):
@@ -499,6 +536,9 @@ def advance(variants_path, readiness_path, candidate_detail, output=OUT, *, regi
         "p1": {"assayed_groups":len(p1["rows"]),"approved_matched_ld":len(approved),
                "source_datasets":len(source_catalog["datasets"]),
                "source_dataset_ids":[x["source_dataset_id"] for x in source_catalog["datasets"]][:20],
+               "source_metadata_resolved_datasets":sum(
+                   x["source_metadata_status"]=="MATCHED_FROZEN_EBI_ROW"
+                   for x in source_catalog["datasets"]),
                "blocked":p1["counts"].get("BLOCKED_NO_VERIFIED_COHORT_MATCHED_LD",0)},
         "p2": {"scanned_snp_records":p2["counters"]["total_rows"],
                "dual_id_equal":p2["counters"].get("dual_allele_key_equal",0),
