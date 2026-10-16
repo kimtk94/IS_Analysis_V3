@@ -147,6 +147,16 @@ class ReadinessTest(unittest.TestCase):
             jobs.audit_candidates(("\n".join(data[:-1])+"\n").encode())
 
 
+class SourceSnpFieldInterpretationTests(unittest.TestCase):
+    def test_false_string_is_not_true_snp_match(self):
+        self.assertFalse(jobs.source_exact_match("False"))
+        self.assertFalse(jobs.source_exact_match("0"))
+        self.assertFalse(jobs.source_exact_match(""))
+        self.assertTrue(jobs.source_exact_match("True"))
+        self.assertTrue(jobs.source_exact_match("chr1:123:A:C"))
+        with self.assertRaises(ValueError):
+            jobs.source_exact_match("UNKNOWN_ENCODING")
+
 class EvidenceAuditTest(unittest.TestCase):
     def write_table(self, path, columns, rows):
         with open(path, "w", encoding="utf-8") as stream:
