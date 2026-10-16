@@ -132,6 +132,20 @@ def parse_variant(value):
     return chrom, int(pos), ref, alt
 
 
+def exact_snp_encoding(value):
+    """Distinguish source boolean match claims from actual SNP identifiers."""
+    raw = str(value or "").strip()
+    if raw.lower() in TRUTH:
+        return "SOURCE_TRUE_FLAG"
+    if raw.lower() in {"false","0","no"}:
+        return "SOURCE_FALSE_FLAG"
+    if not raw or raw.lower() in {"na","none","nan"}:
+        return "SOURCE_MISSING"
+    if parse_variant(raw) is not None:
+        return "LITERAL_VARIANT_ID"
+    return "UNKNOWN_ENCODING"
+
+
 def allele_pair_equal(left, right):
     return left is not None and right is not None and left == right
 
@@ -235,8 +249,20 @@ def independent_p2_qc(variants_path: Path, fasta=None, max_rows=2_000_000):
             group = grouped[key]
             group["rows"] += 1
             mapped = parse_variant(row["mapped_variant_GRCh37"])
-            bbj = parse_variant(row["BBJ_exact_SNP"])
-            eas = parse_variant(row["EAS_AIS_exact_SNP"])
+            bbj_kind = exact_snp_encoding(row["BBJ_exact_SNP"])
+            eas_kind = exact_snp_encoding(row["EAS_AIS_exact_SNP"])
+            counters["bbj_"+bbj_kind] += 1
+            counters["eas_"+eas_kind] += 1
+            if bbj_kind == "UNKNOWN_ENCODING" or eas_kind == "UNKNOWN_ENCODING":
+                counters["unknown_source_exact_match_encoding"] += 1
+            bbj = parse_variant(row["BBJ_exact_SNP"]) if bbj_kind=="LITERAL_VARIANT_ID" else None
+            eas = parse_variant(row["EAS_AIS_exact_SNP"]) if eas_kind=="LITERAL_VARIANT_ID" else None
+            reported_bbj = bbj_kind=="SOURCE_TRUE_FLAG" or (bbj is not None and mapped==bbj)
+            reported_eas = eas_kind=="SOURCE_TRUE_FLAG" or (eas is not None and mapped==eas)
+            if reported_bbj and reported_eas:
+                group["dual_source_reported_exact_snp"] += 1
+                by_gene[row["gene_id"]]["dual_source_reported_exact_snp"] += 1
+                counters["dual_source_reported_exact_snp"] += 1
             if mapped:
                 counters["mapped_variant_parseable"] += 1
             else:
@@ -380,6 +406,7 @@ def join_p4_candidates(candidate_detail, p2, p1, p3):
     for r in p2["groups"]:
         z=p2_by_gene[r["gene_id"]]
         z["independently_parsed_allele_rows"]+=r.get("dual_allele_key_equal",0)
+        z["source_reported_dual_snp_rows"]+=r.get("dual_source_reported_exact_snp",0)
         z["nonpal_dual_key_rows"]+=r.get("nonpal_dual_allele_key_equal",0)
         z["fasta_validated_nonpal_rows"]+=r.get("fasta_and_nonpal_allele_key_equal",0)
     p1_by_gene=collections.defaultdict(collections.Counter)
@@ -396,6 +423,7 @@ def join_p4_candidates(candidate_detail, p2, p1, p3):
         e=p2_by_gene.get(gene,{})
         label = ("BLOCKED_VARIANT_IDENTIFIER_SCHEMA" if not parsed_records
                  else "HAS_INDEPENDENT_SNP_ID_OVERLAP" if e.get("nonpal_dual_key_rows",0)>0
+                 else "SOURCE_MATCH_FLAG_ONLY" if e.get("source_reported_dual_snp_rows",0)>0
                  else "NO_CONFIRMED_NONPAL_SNP_ID_OVERLAP")
         status_counts[label]+=1
         results.append({
@@ -403,6 +431,7 @@ def join_p4_candidates(candidate_detail, p2, p1, p3):
             "source_nominal_p":candidate["nominal_min_p"],
             "nominal_variant_rows":candidate["nominal_variant_rows"],
             "dual_allele_key_equal":e.get("independently_parsed_allele_rows",0),
+            "source_reported_dual_snp_rows":e.get("source_reported_dual_snp_rows",0),
             "nonpal_dual_allele_key_equal":e.get("nonpal_dual_key_rows",0),
             "fasta_validated_nonpal_rows":e.get("fasta_validated_nonpal_rows",0),
             "p1_registry_matched_ld":p1_by_gene.get(gene,{}).get("PROVENANCE_REVIEWED_LD_HASH_MATCH",0),
@@ -445,6 +474,10 @@ def advance(variants_path, readiness_path, candidate_detail, output=OUT, *, regi
                "blocked":p1["counts"].get("BLOCKED_NO_VERIFIED_COHORT_MATCHED_LD",0)},
         "p2": {"scanned_snp_records":p2["counters"]["total_rows"],
                "dual_id_equal":p2["counters"].get("dual_allele_key_equal",0),
+               "source_reported_exact_both":p2["counters"].get("dual_source_reported_exact_snp",0),
+               "mapped_variant_parseable":p2["counters"].get("mapped_variant_parseable",0),
+               "bbj_exact_encoding":{k.removeprefix("bbj_"):v for k,v in p2["counters"].items() if k.startswith("bbj_SOURCE_") or k.startswith("bbj_LITERAL_") or k.startswith("bbj_UNKNOWN_")},
+               "eas_exact_encoding":{k.removeprefix("eas_"):v for k,v in p2["counters"].items() if k.startswith("eas_SOURCE_") or k.startswith("eas_LITERAL_") or k.startswith("eas_UNKNOWN_")},
                "nonpalindromic_records":p2["counters"].get("nonpal_dual_allele_key_equal",0),
                "fasta_ref_equal_rows":p2["counters"].get("fasta_ref_equal_rows",0),
                "fasta_ref_mismatch_rows":p2["counters"].get("fasta_ref_mismatch_rows",0),
