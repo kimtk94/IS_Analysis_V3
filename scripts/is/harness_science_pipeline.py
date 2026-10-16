@@ -350,6 +350,27 @@ def evaluate_p1_gate(readiness_path: Path, approved):
     return {"schema":"is-p1-source-gates-v1","generated_at":stamp(),"counts":dict(summaries),"rows":rows}
 
 
+def qtl_source_catalog(p1):
+    """Enumerate original molecular-QTL datasets without asserting ancestry."""
+    datasets = {}
+    for row in p1["rows"]:
+        source = row["QTL_dataset"] or "MISSING_DATASET_IDENTIFIER"
+        entry = datasets.setdefault(source,{"source_dataset_id":source,
+            "region_gene_dataset_rows":0,"region_ids":set(),
+            "verified_cohort_matched_ld_rows":0,"required_provenance_fields":[
+                "original_cohort","cohort_ancestry","source_build","sample_size",
+                "signed_ld_matrix","ld_sample_cohort","variant_order","evidence_url"
+            ]})
+        entry["region_gene_dataset_rows"] += 1
+        entry["region_ids"].add(row["region_id"])
+        if row["p1_status"]=="PROVENANCE_REVIEWED_LD_HASH_MATCH":
+            entry["verified_cohort_matched_ld_rows"] += 1
+    return {"schema":"is-p1-qtl-source-catalog-v1","generated_at":stamp(),
+            "datasets":[{**info,"region_ids":sorted(info["region_ids"])}
+                        for _,info in sorted(datasets.items())],
+            "interpretation":"Dataset identifiers are NOT evidence of EAS ancestry or source-matched LD."}
+
+
 def evaluate_p3_gate(p1, p2, approved_ld, p3_inputs, p2_fasta_approved=False):
     """Never invoke coloc without individually reviewed, versioned full inputs.
 
@@ -460,6 +481,7 @@ def advance(variants_path, readiness_path, candidate_detail, output=OUT, *, regi
     p1_rows,p1_state=registry_rows(registry,P1_COLUMNS)
     approved,provenance_decisions=verified_p1_registry(p1_rows,root=root)
     p1=evaluate_p1_gate(readiness_path,approved)
+    source_catalog=qtl_source_catalog(p1)
     fasta=ApprovedFasta(reference)
     p2=independent_p2_qc(variants_path,fasta=fasta)
     p3_rows,p3_state=registry_rows(p3_registry,P3_COLUMNS)
@@ -471,6 +493,7 @@ def advance(variants_path, readiness_path, candidate_detail, output=OUT, *, regi
         "source_provenance_state":p1_state,"p1_registry_decisions":provenance_decisions,
         "p2_reference_state":fasta.status,"p3_input_registry_state":p3_state,
         "p1": {"assayed_groups":len(p1["rows"]),"approved_matched_ld":len(approved),
+               "source_datasets":len(source_catalog["datasets"]),
                "blocked":p1["counts"].get("BLOCKED_NO_VERIFIED_COHORT_MATCHED_LD",0)},
         "p2": {"scanned_snp_records":p2["counters"]["total_rows"],
                "dual_id_equal":p2["counters"].get("dual_allele_key_equal",0),
@@ -490,7 +513,8 @@ def advance(variants_path, readiness_path, candidate_detail, output=OUT, *, regi
     # Scientific inputs themselves are never mutated.
     science=output/"science"
     for name,value in [
-        ("p1_cohort_ld_review.json",p1),("p2_independent_variant_qc.json",p2),
+        ("p1_cohort_ld_review.json",p1),("p1_source_catalog.json",source_catalog),
+        ("p2_independent_variant_qc.json",p2),
         ("p3_coloc_gates.json",p3),("p4_candidate_cross_evidence.json",p4),
         ("science_pipeline_summary.json",report)
     ]:
