@@ -119,6 +119,27 @@ class ScienceGateTests(unittest.TestCase):
             self.assertEqual(len(approve),0)
             self.assertEqual(counts["LD_SHA256_MISMATCH"],1)
 
+    def test_official_qtl_metadata_lookup_does_not_assert_ancestry_or_ld(self):
+        p1={"rows":[
+            {"region_id":"R1","QTL_dataset":"QTD000131","gene_id":"ENSG1",
+             "p1_status":"BLOCKED_NO_VERIFIED_COHORT_MATCHED_LD"},
+            {"region_id":"R2","QTL_dataset":"QTD000171","gene_id":"ENSG2",
+             "p1_status":"BLOCKED_NO_VERIFIED_COHORT_MATCHED_LD"},
+            {"region_id":"R3","QTL_dataset":"QTD000434","gene_id":"ENSG3",
+             "p1_status":"BLOCKED_NO_VERIFIED_COHORT_MATCHED_LD"},
+        ]}
+        result=science.qtl_source_catalog(p1)
+        self.assertEqual(len(result["datasets"]),3)
+        ids={d["source_dataset_id"]:d for d in result["datasets"]}
+        self.assertEqual(ids["QTD000131"]["study_label"],"GTEx")
+        self.assertEqual(ids["QTD000131"]["sample_size"],387)
+        self.assertEqual(ids["QTD000171"]["sample_group"],"brain_cortex")
+        self.assertEqual(ids["QTD000434"]["sample_size"],560)
+        for row in ids.values():
+            self.assertFalse(row["verified_ancestry"])
+            self.assertEqual(row["verified_cohort_matched_ld_rows"],0)
+            self.assertEqual(row["source_genotype_ld_provenance"],"NOT_VERIFIED")
+
     def test_p3_no_coloc_without_independently_verified_fasta_and_inputs(self):
         p1={"rows":[{"region_id":"R1","QTL_dataset":"Q1","gene_id":"ENSG1"}]}
         p2={"groups":[{"region_id":"R1","QTL_dataset":"Q1","gene_id":"ENSG1",
