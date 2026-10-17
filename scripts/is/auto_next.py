@@ -77,9 +77,9 @@ def validate_output(operation, output):
         raise ValueError("Non-text audit result")
     if operation == "headers":
         rows = output.splitlines()
-        if any(row.startswith("MISSING\\t") for row in rows):
+        if any(row.startswith("MISSING\t") for row in rows):
             raise ValueError("Missing required header input")
-        if sum(row.startswith("FILE\\t") for row in rows) < 4:
+        if sum(row.startswith("FILE\t") for row in rows) < 4:
             raise ValueError("Incomplete required header inventory")
     elif operation == "inventory":
         matches = [line for line in output.splitlines()
