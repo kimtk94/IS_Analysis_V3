@@ -31,7 +31,7 @@ EAS5_VARIANTS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v
 EAS5_READINESS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1" / "IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv"
 EAS5_OVERLAP = AUDITS / "is_eas5_qtl_gwas_snp_ref37_20261011_v2" / "IS_EAS5_GENE_TISSUE_GWAS_SNP_OVERLAP_QC.tsv"
 
-AUDIT_SCHEMA_REV = "20261018-p3a-exploratory-input-screen-v5"
+AUDIT_SCHEMA_REV = "20261018-p3a-per-group-coverage-gates-v6"
 EXPECTED_READY = {
     "NOT_IN_EAS_30_GROUPS": 1356,
     "PUBLIC_NOMINAL_QTL_REGIONAL_PILOT_NOT_EXECUTED": 629,
@@ -523,6 +523,7 @@ def dispatch(op: str) -> dict:
                 "overlap_report":archive["overlap_report"],
                 "readiness":archive["readiness"],
                 "abf_screen":archive["abf_screen"],
+                "abf_gate_summary":archive["abf_gate_summary"],
                 "scientific_status":"ARCHIVED_SOURCE_FLAGS_AND_ABF_READINESS_ONLY",
             }
         else:
