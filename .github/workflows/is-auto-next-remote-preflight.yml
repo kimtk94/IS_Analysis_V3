@@ -2,6 +2,10 @@ name: IS AUTO_NEXT remote preflight
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/is-auto-next-preflight-trigger.txt'
 
 permissions:
   contents: read
