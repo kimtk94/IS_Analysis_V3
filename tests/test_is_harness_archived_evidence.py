@@ -64,6 +64,16 @@ class ArchivedEvidenceTests(unittest.TestCase):
             self.assertEqual(r["abf_screen"]["screened"],1)
             self.assertEqual(r["abf_screen"]["groups_with_source_flagged_stats"],1)
             self.assertEqual(r["abf_screen"]["coloc_abf_executed"],0)
+            group=r["abf_flagged_groups"][0]
+            self.assertEqual(group["fullcis_archived_rows"],2)
+            self.assertEqual(group["fullcis_unique_variant_strings"],2)
+            self.assertEqual(group["dual_fasta_source_unique_variant_strings"],1)
+            self.assertEqual(group["source_flagged_stat_rows"],1)
+            self.assertEqual(group["source_stat_row_fraction"],0.5)
+            self.assertFalse(group["coloc_abf_eligible"])
+            self.assertIn("QTL_GWAS_SAMPLE_SIZES_UNVERIFIED",group["blocking_reasons"])
+            self.assertEqual(r["abf_gate_summary"]["eligible_for_coloc_abf"],0)
+            self.assertEqual(r["abf_gate_summary"]["source_stat_rows_total"],1)
             self.assertIs(r["abf_flagged_groups"][0]["matched_qtl_ld_verified"],False)
             self.assertFalse(any("coloc_executed" in name for name in r))
 
