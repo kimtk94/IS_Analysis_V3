@@ -1,0 +1,62 @@
+name: IS AUTO_NEXT remote preflight
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-auto-next-preflight
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Prepare SSH identity
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > "$HOME/.ssh/server_key"
+          chmod 600 "$HOME/.ssh/server_key"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
+          ssh-keygen -y -f "$HOME/.ssh/server_key" >/dev/null
+      - name: Remote read-only audit
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 \
+            -o ForwardAgent=no -o IdentitiesOnly=yes \
+            -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" 'bash -s' <<'REMOTE' | tee preflight.log
+          echo "UTC=$(date -u +%FT%TZ)"
+          echo "HOST=$(hostname)"
+          echo "GIT_REV=$(git -C /srv/is-analysis/IS_Analysis_V3 rev-parse --short HEAD 2>&1)"
+          echo "CURRENT_BRANCH=$(git -C /srv/is-analysis/IS_Analysis_V3 branch --show-current 2>&1)"
+          echo "WORKER_PRESENT=$(test -f /srv/is-analysis/IS_Analysis_V3/scripts/is/github_issue_queue_worker.py && echo yes || echo no)"
+          echo "AUTO_NEXT_PRESENT=$(test -f /srv/is-analysis/IS_Analysis_V3/scripts/is/auto_next.py && echo yes || echo no)"
+          echo "USER_TIMERS:"
+          systemctl --user list-timers --all --no-pager 2>&1 | grep -Ei 'harness|queue|auto.next|is-' || true
+          echo "SYSTEM_TIMERS:"
+          systemctl list-timers --all --no-pager 2>&1 | grep -Ei 'harness|queue|auto.next|is-' || true
+          echo "RELATED_PROCESSES:"
+          pgrep -af '[g]ithub_issue_queue_worker|[a]uto_next.py|[h]arness_research_jobs' || true
+          echo "RELATED_USER_UNITS:"
+          systemctl --user list-units --type=service --all --no-pager 2>&1 | grep -Ei 'harness|queue|auto.next|is-' || true
+          echo "LOCK_DIR:"
+          stat -c '%a %U:%G %n' /srv/is-analysis/results/is/github_actions_runs 2>&1 || true
+          REMOTE
+      - name: Publish inspection log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-auto-next-preflight
+          path: preflight.log
+          if-no-files-found: ignore
+          retention-days: 7
