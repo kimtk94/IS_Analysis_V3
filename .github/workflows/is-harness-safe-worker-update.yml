@@ -72,6 +72,7 @@ jobs:
           flock -w 90 "$lock" bash -se <<'LOCKED'
           python3 -m py_compile .queue_worker.pending.py .research_jobs.pending.py .science_pipeline.pending.py .archived_evidence.pending.py
           chmod 600 .queue_worker.pending.py .research_jobs.pending.py .science_pipeline.pending.py .archived_evidence.pending.py
+          mv -f .archived_evidence.pending.py harness_archived_evidence.py
           mv -f .science_pipeline.pending.py harness_science_pipeline.py
           mv -f .research_jobs.pending.py harness_research_jobs.py
           mv -f .queue_worker.pending.py github_issue_queue_worker.py
