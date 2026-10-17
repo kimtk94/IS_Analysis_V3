@@ -6,6 +6,7 @@ on:
     paths:
       - "scripts/audit_thesis_server_manifest.py"
       - "scripts/audit_thesis_evidence_freeze.py"
+      - "scripts/plot_ckd_manuscript_fig3.py"
       - ".github/workflows/thesis-server-readonly-inventory.yml"
   workflow_dispatch:
 
@@ -145,8 +146,24 @@ jobs:
                     "EAS_DUAL_LD_UNRESOLVED", "EAS_DUAL_LD_UNRESOLVED" in flags,
                     "KOGES_LONGITUDINAL_VALIDATED",row["koges_longitudinal_validated"])
           PY
+      - name: Create real-source CKD Figure 3 (ephemeral runner, SHA pinned)
+        run: |
+          python3 -m pip install matplotlib==3.9.2
+          python3 scripts/plot_ckd_manuscript_fig3.py \
+            --input "$RUNNER_TEMP/thesis_input/ckd_9gene.tsv" \
+            --out "$RUNNER_TEMP/ckd_fig3" \
+            --sha256 32fa0475461b206c48295833acfc3075bfb24d89c322b5f9be554b1883a2f3d3
+          test -s "$RUNNER_TEMP/ckd_fig3/CKD_FIG3_EUR_ABF_VS_SUSIE.svg"
+          test -s "$RUNNER_TEMP/ckd_fig3/CKD_FIG3_EVIDENCE.tsv"
+      - name: Upload aggregate-only manuscript Figure 3
+        uses: actions/upload-artifact@v4
+        with:
+          name: CKD-FIG3-EUR-ABF-SUSIE-SHA32fa0475
+          path: ${{ runner.temp }}/ckd_fig3/
+          if-no-files-found: error
+          retention-days: 30
       - name: Securely delete temporary SSH credentials and private inventory
         if: always()
         run: |
           rm -f "$HOME/.ssh/thesis_readonly_key" "$RUNNER_TEMP/thesis_readonly_inventory.json"
-          rm -rf "$RUNNER_TEMP/thesis_input" "$RUNNER_TEMP/thesis_frozen"
+          rm -rf "$RUNNER_TEMP/thesis_input" "$RUNNER_TEMP/thesis_frozen" "$RUNNER_TEMP/ckd_fig3"
