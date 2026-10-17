@@ -1,0 +1,30 @@
+name: IS AUTO_NEXT safety tests
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/is/auto_next.py'
+      - 'scripts/is/github_issue_queue_worker.py'
+      - 'tests/test_is_shared_execution_lock.py'
+      - 'tests/test_is_auto_next.py'
+      - '.github/workflows/is-auto-next-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check
+        run: python -m py_compile scripts/is/auto_next.py scripts/is/github_issue_queue_worker.py tests/test_is_auto_next.py tests/test_is_shared_execution_lock.py
+      - name: Isolated unit tests
+        run: python -m unittest discover -s tests -p 'test_is_auto_next.py' -v
+      - name: Shared execution lock tests
+        run: python -m unittest discover -s tests -p 'test_is_shared_execution_lock.py' -v

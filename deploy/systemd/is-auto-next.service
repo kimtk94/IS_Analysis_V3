@@ -1,0 +1,12 @@
+[Unit]
+Description=IS AUTO_NEXT approved research audit (one step per activation)
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/srv/is-analysis/IS_Analysis_V3
+ExecStart=/usr/bin/python3 /srv/is-analysis/IS_Analysis_V3/scripts/is/auto_next.py --run
+TimeoutStartSec=300
+UMask=0077
+NoNewPrivileges=true
+# Staging template only: review deployed paths and permissions before enabling.
