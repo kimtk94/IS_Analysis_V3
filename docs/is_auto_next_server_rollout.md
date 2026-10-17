@@ -44,10 +44,7 @@ The same `github_issue_queue_worker.run_job()` now uses `fcntl.flock` on
 (overridable by `IS_HARNESS_EXECUTION_LOCK`). Because AUTO_NEXT imports the exact same
 function, both paths share the lock **only after deploying the same reviewed worker version**.
 
-This is a nonblocking guard, not a queue. A collision currently raises
-`SHARED_EXECUTION_LOCK_BUSY` and the Issue Worker can mark its claimed issue
-failed. Treat collisions as a deployment blocker until claim/retry semantics
-are implemented and verified. Do not enable an AUTO_NEXT timer yet.
+This is a nonblocking guard, not a queue. A collision raises `SHARED_EXECUTION_LOCK_BUSY`; the Issue Worker now tries to restore the queued label rather than mark a false failure. The claim/requeue race and retry behavior have not been verified against a live GitHub queue. Treat this as an activation blocker. Do not enable an AUTO_NEXT timer yet.
 
 Before activation, inspect active processes, check owner/writability of the
 shared-lock directory, confirm the same mount and lock path for both services,
