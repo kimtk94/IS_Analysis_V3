@@ -100,6 +100,8 @@ def audit(audits:Path):
     unique_variants=set()
     source_joint_variants=set()
     source_joint_gene_ids=set()
+    group_unique=collections.defaultdict(set)
+    group_dual_unique=collections.defaultdict(set)
     for row in rows(src,REQUIRED_ARCHIVE):
         qc["archived_rows"]+=1
         key=(row["region_id"],row["QTL_dataset"],row["gene_id"])
@@ -108,6 +110,7 @@ def audit(audits:Path):
         variant=row["mapped_genomic_variant_GRCh37"].strip()
         if variant:
             unique_variants.add(variant)
+            group_unique[key].add(variant)
         b=flag(row["BBJ_allele_exact_Fasta37"])
         e=flag(row["EAS_AIS_allele_exact_Fasta37"])
         if b is None or e is None:
@@ -126,7 +129,9 @@ def audit(audits:Path):
                 g["source_flags_missing_or_invalid_statistics"]+=1
             qc["both_archived_fasta_flag_rows"]+=1
             groups[key]["both_archived_fasta_flag_rows"]+=1
-            if variant:source_joint_variants.add(variant)
+            if variant:
+                source_joint_variants.add(variant)
+                group_dual_unique[key].add(variant)
             source_joint_gene_ids.add(row["gene_id"])
     qc["archived_gene_dataset_groups"]=len(groups)
     qc["archived_unique_variant_strings"]=len(unique_variants)
@@ -171,6 +176,23 @@ def audit(audits:Path):
                            ("qtl_ancestry_verified",qtl_ancestry)):
             flags[name+("_true" if value is True else "_false" if value is False else "_unknown")]+=1
         if abf:
+            total=groups[key]["archived_rows"]
+            valid=groups[key]["source_flags_and_valid_qtl_se_effect_p"]
+            unique=len(group_unique[key])
+            dual_unique=len(group_dual_unique[key])
+            reasons=[]
+            if total==0:reasons.append("NO_FULLCIS_ARCHIVE_ROWS")
+            if valid==0:reasons.append("NO_DUAL_FLAGGED_VALID_SUMMARY_STATS")
+            if reference is not True:reasons.append("SOURCE_REF_ASSERTION_UNVERIFIED")
+            if direction is not True:reasons.append("SOURCE_EFFECT_DIRECTION_UNVERIFIED")
+            # These are not inferred from nominal P-values or prior pipeline flags.
+            reasons += ["INDEPENDENT_ALLELE_REFERENCE_PENDING",
+                        "COMPLETE_CIS_WINDOW_COVERAGE_UNVERIFIED",
+                        "QTL_GWAS_SAMPLE_SIZES_UNVERIFIED",
+                        "CASE_CONTROL_FRACTION_UNVERIFIED",
+                        "GWAS_EFFECT_VARIANCE_UNVERIFIED",
+                        "TRAIT_TYPE_AND_PRIORS_UNVERIFIED",
+                        "SINGLE_SIGNAL_ASSUMPTION_UNVERIFIED"]
             source_candidates.append({
                 "region_id":key[0],"QTL_dataset":key[1],"gene_id":key[2],
                 "reference_asserted":reference,"effect_direction_asserted":direction,
@@ -178,14 +200,16 @@ def audit(audits:Path):
                 "ancestry_verified":qtl_ancestry,
                 "archive_fasta_flag_both_rows":groups[key]["both_archived_fasta_flag_rows"],
                 "overlap_reported_fasta_rows":overlap_by_group.get(key,{}).get("fasta_verified",0),
-                "fullcis_archived_rows":groups[key]["archived_rows"],
-                "source_flagged_stat_rows":groups[key]["source_flags_and_valid_qtl_se_effect_p"],
+                "fullcis_archived_rows":total,
+                "fullcis_unique_variant_strings":unique,
+                "dual_fasta_source_unique_variant_strings":dual_unique,
+                "source_flagged_stat_rows":valid,
                 "source_flagged_invalid_stat_rows":groups[key]["source_flags_missing_or_invalid_statistics"],
+                "source_stat_row_fraction":round(valid/total,6) if total else None,
+                "source_stat_screen":"HAS_VALID_SOURCE_STATS" if valid else "NO_VALID_SOURCE_STATS",
+                "coloc_abf_eligible":False,
                 "p3a_status":"EXPLORATORY_INPUT_SCREEN_ONLY",
-                "still_required":["complete_region_variant_coverage","independent_ref_alt_harmonization",
-                    "QTL_and_GWAS_sample_sizes","stroke_case_fraction","trait_type",
-                    "BBJ_EAS_effect_standard_errors_or_valid_alternate_inputs",
-                    "prior_sensitivity","single_causal_signal_assumption"],
+                "blocking_reasons":reasons,
                 "scientific_status":"ABF_FOLLOWUP_FLAG_ONLY_NOT_COLOC_VALIDATION"
             })
     return {
@@ -193,6 +217,14 @@ def audit(audits:Path):
        "archived":dict(qc),"overlap_report":dict(overlap_counter),
        "readiness":{**dict(review),**dict(flags),"abf_candidate_rows":len(source_candidates)},
        "abf_flagged_groups":source_candidates,
+       "abf_gate_summary":{
+           "eligible_for_coloc_abf":0,
+           "groups_with_source_stat_rows":sum(x["source_flagged_stat_rows"]>0 for x in source_candidates),
+           "groups_with_no_source_stat_rows":sum(x["source_flagged_stat_rows"]==0 for x in source_candidates),
+           "source_stat_rows_total":sum(x["source_flagged_stat_rows"] for x in source_candidates),
+           "source_stat_unique_variants_total_over_groups":sum(x["dual_fasta_source_unique_variant_strings"] for x in source_candidates),
+           "pending_independent_allele_and_sample_metadata":len(source_candidates),
+       },
        "abf_screen":{"groups_with_archived_rows":sum(x["fullcis_archived_rows"]>0 for x in source_candidates),
           "groups_with_source_flagged_stats":sum(x["source_flagged_stat_rows"]>0 for x in source_candidates),
           "groups_without_source_flagged_stats":sum(x["source_flagged_stat_rows"]==0 for x in source_candidates),
