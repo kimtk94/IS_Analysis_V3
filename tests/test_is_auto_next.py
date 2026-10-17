@@ -59,6 +59,19 @@ class AutoNextTests(unittest.TestCase):
                 self.assertEqual(module.execute(state, run=True)["status"], "BLOCKED_REVIEW_REQUIRED")
                 self.assertEqual(runner.call_count, 1)
 
+    def test_shared_lock_busy_defers_without_attempt_consumption(self):
+        with tempfile.TemporaryDirectory() as root:
+            state = pathlib.Path(root) / "state.json"
+            with patch.object(module, "run_job",
+                              side_effect=[RuntimeError("SHARED_EXECUTION_LOCK_BUSY"), "ok"]) as runner:
+                first = module.execute(state, run=True)
+                self.assertEqual(first["status"], "DEFERRED_LOCK_BUSY")
+                self.assertEqual(module.load(state)["tasks"], {})
+                second = module.execute(state, run=True)
+                self.assertEqual(second["status"], "PASS")
+                self.assertEqual(second["attempts"], 1)
+                self.assertEqual(runner.call_count, 2)
+
     def test_running_from_crash_never_repeats(self):
         with tempfile.TemporaryDirectory() as root:
             state = pathlib.Path(root) / "state.json"
