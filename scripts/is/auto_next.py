@@ -85,7 +85,7 @@ def execute(state_path, run=False):
             return {"status": "BLOCKED_NOT_ALLOWLISTED", "task": step["id"]}
         if not run:
             return {"status": "DRY_RUN", "next": step, "state_path": str(state_path)}
-        previous = state["tasks"].get(step["id"], {})
+        previous = dict(state["tasks"].get(step["id"], {}))
         record = {"status": "RUNNING", "operation": step["operation"],
                   "phase": step["phase"], "attempts": previous.get("attempts", 0) + 1,
                   "started_at": now(), "ended_at": None}
@@ -96,8 +96,23 @@ def execute(state_path, run=False):
             output = run_job(step["operation"])
             record["status"] = "PASS"  # technical execution only, not scientific validation
             record["output_excerpt"] = str(output)[-3000:]
+        except RuntimeError as exc:
+            if str(exc) == "SHARED_EXECUTION_LOCK_BUSY":
+                # A collision is not an audit attempt. Try again next invocation.
+                if previous:
+                    state["tasks"][step["id"]] = previous
+                else:
+                    state["tasks"].pop(step["id"], None)
+                state["history"].append({"task": step["id"], "status": "DEFERRED_LOCK_BUSY",
+                                         "observed_at": now()})
+                state["history"] = state["history"][-100:]
+                write_atomic(state_path, state)
+                return {"task": step["id"], "status": "DEFERRED_LOCK_BUSY",
+                        "next_action": "RETRY_NEXT_CYCLE"}
+            record["status"] = "REVIEW_REQUIRED"
+            record["error"] = f"{type(exc).__name__}: {exc}"[-1000:]
         except Exception as exc:
-            record["status"] = "REVIEW_REQUIRED"  # no automatic retry after uncertain execution
+            record["status"] = "REVIEW_REQUIRED"
             record["error"] = f"{type(exc).__name__}: {exc}"[-1000:]
         record["ended_at"] = now()
         record["duration_seconds"] = round(time.monotonic() - started, 3)
