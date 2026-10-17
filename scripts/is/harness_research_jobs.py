@@ -70,8 +70,11 @@ def input_metadata_signature() -> str:
     ]
     items = []
     for path in inputs:
-        stat = path.stat()
-        items.append([str(path), stat.st_size, stat.st_mtime_ns])
+        if path.is_file():
+            stat = path.stat()
+            items.append([str(path), stat.st_size, stat.st_mtime_ns])
+        else:
+            items.append([str(path), "MISSING"])
     for path in optional_inputs:
         if path.is_file():
             stat = path.stat()
