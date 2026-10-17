@@ -8,6 +8,7 @@ on:
       - "scripts/audit_thesis_evidence_freeze.py"
       - "scripts/plot_ckd_manuscript_fig3.py"
       - "scripts/plot_ckd_manuscript_fig2_fig4.py"
+      - "scripts/plot_ckd_manuscript_fig1.py"
       - ".github/workflows/thesis-server-readonly-inventory.yml"
   workflow_dispatch:
 
@@ -176,8 +177,21 @@ jobs:
           path: ${{ runner.temp }}/ckd_fig2_fig4/
           if-no-files-found: error
           retention-days: 30
+      - name: Create source-locked CKD Figure 1
+        run: |
+          python3 scripts/plot_ckd_manuscript_fig1.py \
+            --ckd "$RUNNER_TEMP/thesis_input/ckd_9gene.tsv" \
+            --out "$RUNNER_TEMP/ckd_fig1" \
+            --sha256 32fa0475461b206c48295833acfc3075bfb24d89c322b5f9be554b1883a2f3d3
+      - name: Upload CKD workflow Figure 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: CKD-FIG1-WORKFLOW-SHA32fa0475
+          path: ${{ runner.temp }}/ckd_fig1/
+          retention-days: 30
+          if-no-files-found: error
       - name: Securely delete temporary SSH credentials and private inventory
         if: always()
         run: |
           rm -f "$HOME/.ssh/thesis_readonly_key" "$RUNNER_TEMP/thesis_readonly_inventory.json"
-          rm -rf "$RUNNER_TEMP/thesis_input" "$RUNNER_TEMP/thesis_frozen" "$RUNNER_TEMP/ckd_fig3" "$RUNNER_TEMP/ckd_fig2_fig4"
+          rm -rf "$RUNNER_TEMP/thesis_input" "$RUNNER_TEMP/thesis_frozen" "$RUNNER_TEMP/ckd_fig3" "$RUNNER_TEMP/ckd_fig2_fig4" "$RUNNER_TEMP/ckd_fig1"
