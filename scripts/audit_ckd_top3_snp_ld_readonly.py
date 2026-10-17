@@ -38,7 +38,8 @@ def check(gene,stage2b,stage2c,lddir):
     if len(order)!=len(set(order)) or order!=[r["ref_id"] for r in M]:
         raise ValueError("LD variant ordering mismatch")
     if binary.stat().st_size!=4*len(M)**2:raise ValueError("LD binary dimensions invalid")
-    if set(by_m)!=set(by_b):raise ValueError("LD/SuSiE variant set mismatch")
+    ld_not_susie=len(set(by_m)-set(by_b))
+    susie_not_ld=len(set(by_b)-set(by_m))
     signs={x["effect_vs_ld_major_sign"] for x in M}
     if not signs.issubset({"1","-1","1.0","-1.0"}):raise ValueError("invalid signed LD orientation")
     mismatch=[]
@@ -46,6 +47,8 @@ def check(gene,stage2b,stage2c,lddir):
         k=x["snp"];a0=by_a.get(k);b0=by_b.get(k)
         if a0 is None:
             mismatch.append("ld_snp_absent_in_abf");continue
+        if b0 is None:
+            mismatch.append("ld_snp_absent_in_susie_input");continue
         if x["pos37"]!=a0["pos37"] or x["pos37"]!=b0["pos37"]:
             mismatch.append("position_mismatch")
         if x["effect_allele"].upper()!=a0["allele1_pqtl"].upper() or x["other_allele"].upper()!=a0["allele0_pqtl"].upper():
@@ -58,10 +61,12 @@ def check(gene,stage2b,stage2c,lddir):
             bad_diag+=abs(z-1)>0.001
             nonfinite+=not math.isfinite(z)
     issues=[]
+    if ld_not_susie or susie_not_ld:issues.append("LD_SUSIE_INPUT_SET_DIFFERENT")
     if mismatch:issues.append("ALLELE_OR_POSITION_MISMATCH")
     if bad_diag or nonfinite:issues.append("LD_DIAGONAL_INVALID")
     status.update({"status":"METADATA_PASS_REFERENCE_LD_ONLY" if not issues else "QC_FAIL",
       "stage2b_rows":len(A),"stage2c_rows":len(B),"ld_rows":len(M),
+      "ld_not_susie":ld_not_susie,"susie_not_ld":susie_not_ld,
       "abf_ld_shared_snps":len(set(by_a)&set(by_m)),
       "abf_only_snps":len(set(by_a)-set(by_m)),
       "allele_position_errors":len(mismatch),"ld_bad_diagonal":bad_diag,
