@@ -36,3 +36,21 @@ First migrate the existing refresh and AUTO_NEXT through a **shared execution lo
 - Confirm shared lock / one orchestrator across both controllers.
 - Record first real run start and finish, plus clean rollback.
 - Keep live trading, secrets, git merging, and privileged actions outside scope.
+
+## Shared job lock (PR #162 incremental implementation)
+
+The same `github_issue_queue_worker.run_job()` now uses `fcntl.flock` on
+`/srv/is-analysis/results/is/github_actions_runs/is_research_execution.lock`
+(overridable by `IS_HARNESS_EXECUTION_LOCK`). Because AUTO_NEXT imports the exact same
+function, both paths share the lock **only after deploying the same reviewed worker version**.
+
+This is a nonblocking guard, not a queue. A collision currently raises
+`SHARED_EXECUTION_LOCK_BUSY` and the Issue Worker can mark its claimed issue
+failed. Treat collisions as a deployment blocker until claim/retry semantics
+are implemented and verified. Do not enable an AUTO_NEXT timer yet.
+
+Before activation, inspect active processes, check owner/writability of the
+shared-lock directory, confirm the same mount and lock path for both services,
+run the 9 safety tests via GitHub Actions and on server, and validate the
+collision behavior using staging state. Neither the existing Worker service
+nor its GitHub cron is altered by this PR alone.
