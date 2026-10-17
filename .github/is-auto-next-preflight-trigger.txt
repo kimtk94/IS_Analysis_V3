@@ -1,0 +1,1 @@
+2026-10-18: operator requested steps 1-3; remote read-only audit only. No deployment or timer activation by this trigger.
