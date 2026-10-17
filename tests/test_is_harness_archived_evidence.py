@@ -32,7 +32,7 @@ class ArchivedEvidenceTests(unittest.TestCase):
                  "mapped_genomic_variant_GRCh37":"1:100:A:C",
                  "BBJ_allele_exact_Fasta37":"True","EAS_AIS_allele_exact_Fasta37":"True",
                  "QTL_p":"0.001","BBJ_p":"0.0001","EAS_AIS_p":"0.02",
-                 "QTL_beta_GRCh37_ALT":"0.3","BBJ_beta_ALT":"0.2","EAS_AIS_beta_ALT":"0.1"},
+                 "QTL_beta_GRCh37_ALT":"0.3","QTL_se":"0.04","BBJ_beta_ALT":"0.2","EAS_AIS_beta_ALT":"0.1"},
                 {"region_id":"R1","QTL_dataset":"Q1","gene_id":"ENSG1",
                  "mapped_genomic_variant_GRCh37":"1:101:A:G",
                  "BBJ_allele_exact_Fasta37":"False","EAS_AIS_allele_exact_Fasta37":"True"},
@@ -61,6 +61,9 @@ class ArchivedEvidenceTests(unittest.TestCase):
             self.assertEqual(r["archived"]["both_fasta_flag_unique_variant_strings"],1)
             self.assertEqual(r["overlap_report"]["reported_fasta_verified_rows_sum"],2)
             self.assertEqual(r["readiness"]["abf_candidate_rows"],1)
+            self.assertEqual(r["abf_screen"]["screened"],1)
+            self.assertEqual(r["abf_screen"]["groups_with_source_flagged_stats"],1)
+            self.assertEqual(r["abf_screen"]["coloc_abf_executed"],0)
             self.assertIs(r["abf_flagged_groups"][0]["matched_qtl_ld_verified"],False)
             self.assertFalse(any("coloc_executed" in name for name in r))
 
