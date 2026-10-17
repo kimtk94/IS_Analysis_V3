@@ -110,3 +110,14 @@ See [runbook](./THESIS_EVIDENCE_FREEZE_RUNBOOK_20261015.md), [audit](./RESEARCH_
 
 **현재 결론:** IS/CKD 기존 파일 확보와 데이터 구조 Freeze는 통과. 원문 기준 allele/LD/priors/신호 구조를 대조하는 **과학적 QC**, 최종 4개 Figure의 완성 및 지도교수 검토는 여전히 진행 대상이다.
 
+
+
+## 7. Figure 3 실제 서버 원본 재현 절차 (2026-10-17)
+
+- Reproducible producer: [plot_ckd_manuscript_fig3.py](../scripts/plot_ckd_manuscript_fig3.py), input file SHA256 `32fa0475461b206c48295833acfc3075bfb24d89c322b5f9be554b1883a2f3d3`.
+- Scientific inputs: `results/ckd/integrated_evidence/CKD_9GENE_EVIDENCE_MATRIX.tsv` with `eur_abf_h4`, `eur_susie_max_h4`, `eur_stage2_class`, `eur_comparison_status`.
+- **No extrapolation**: these two plotted columns reflect EUR and are not mixed with EAS dual-LD. Missing SuSiE PP.H4 is rendered **NA / unresolved**, never 0.
+- Source integrity: fail closed if original SHA differs, nine-gene set differs, PP.H4 is non-numeric/outside [0,1], or output folder contains existing files.
+- Outputs: `CKD_FIG3_EUR_ABF_VS_SUSIE.svg` and `CKD_FIG3_EVIDENCE.tsv`.
+- Synthetic CI: [CKD Figure 3 reproducibility](https://github.com/kimtk94/IS_Analysis_V3/actions/workflows/ckd-manuscript-fig3-ci.yml); actual data workflow: [Thesis server readonly inventory](https://github.com/kimtk94/IS_Analysis_V3/actions/workflows/thesis-server-readonly-inventory.yml). Runs do **not** publish patient data.
+- **Figure claim boundary**: ABF/SuSiE agreement = shared-signal statistical support conditional on priors, harmonization, LD suitability and credible-set convergence. Not experimental protein causality. Any incompatible source needs figure withdrawal rather than cosmetic relabeling.
