@@ -5,7 +5,7 @@ from pathlib import Path
 def render(gene_matrix,out,sha):
     if hashlib.sha256(gene_matrix.read_bytes()).hexdigest()!=sha:raise ValueError("CKD source checksum mismatch")
     with gene_matrix.open(newline="",encoding="utf-8-sig") as f:
-        rows=list(csv.DictReader(f,delimiter="\\t"))
+        rows=list(csv.DictReader(f,delimiter=chr(9)))
     candidates={"ACP1","CPVL","F12","GSTA1","GSTA3","HLA-E","INHBC","SDCCAG8","UMOD"}
     if len(rows)!=9 or {r.get("gene_symbol") for r in rows}!=candidates:raise ValueError("CKD nine-gene panel mismatch")
     if out.exists() and any(out.iterdir()):raise ValueError("Output already populated")
