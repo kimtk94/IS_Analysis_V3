@@ -55,14 +55,17 @@ def choose(state):
     statuses = state["tasks"]
     for step in STEPS:
         old = statuses.get(step["id"], {})
-        if old.get("status") in {"PASS", "REVIEW_REQUIRED", "RUNNING", "BLOCKED"}:
+        status = old.get("status")
+        if status == "PASS":
             continue
+        if status in {"REVIEW_REQUIRED", "RUNNING", "BLOCKED"}:
+            return step, "BLOCKED_" + status
         if any(statuses.get(dep, {}).get("status") != "PASS" for dep in step["requires"]):
-            continue
+            return step, "BLOCKED_DEPENDENCY"
         if old.get("attempts", 0) >= 2:
             return step, "BLOCKED_RETRY_LIMIT"
         return step, "READY"
-    return None, "NO_ELIGIBLE_TASK"
+    return None, "ALL_TASKS_COMPLETED"
 
 def execute(state_path, run=False):
     lock_path = state_path.with_suffix(".lock")
