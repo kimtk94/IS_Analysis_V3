@@ -20,6 +20,10 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
         run: |
+          if [ -z "$SSH_KEY" ] || [ -z "$SSH_KNOWN_HOSTS" ]; then
+            echo "::error::SSH_KEY or SSH_KNOWN_HOSTS is not configured"
+            exit 1
+          fi
           mkdir -p "$HOME/.ssh"
           chmod 700 "$HOME/.ssh"
           printf '%s\n' "$SSH_KEY" | tr -d '\r' > "$HOME/.ssh/server_key"
@@ -33,6 +37,10 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           set -o pipefail
+          if [ -z "$SSH_HOST" ] || [ -z "$SSH_USER" ]; then
+            echo "::error::SSH_HOST or SSH_USER is not configured"
+            exit 1
+          fi
           ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 \
             -o ForwardAgent=no -o IdentitiesOnly=yes \
             -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" 'bash -s' <<'REMOTE' | tee preflight.log
@@ -53,6 +61,13 @@ jobs:
           echo "LOCK_DIR:"
           stat -c '%a %U:%G %n' /srv/is-analysis/results/is/github_actions_runs 2>&1 || true
           REMOTE
+          if ! grep -q "WORKER_PRESENT=yes" preflight.log; then
+            echo "::error::Existing worker missing from expected checkout"
+            exit 1
+          fi
+          if ! grep -q "AUTO_NEXT_PRESENT=yes" preflight.log; then
+            echo "::warning::AUTO_NEXT is not yet deployed; activation gate remains closed"
+          fi
       - name: Publish inspection log
         if: always()
         uses: actions/upload-artifact@v4
