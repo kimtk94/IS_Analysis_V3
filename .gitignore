@@ -21,3 +21,11 @@ data/koges/
 data/KoGES/
 **/koges_raw/
 **/KoGES_raw/
+
+# Central engine rendered configs / site-specific paths
+projects/compiled/
+projects/ckd.json
+projects/ischemic_stroke.json
+projects/datasets.json
+
+/.venv-masteromics/
