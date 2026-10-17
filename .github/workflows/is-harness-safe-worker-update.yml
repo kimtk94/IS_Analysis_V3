@@ -7,8 +7,10 @@ on:
       - "scripts/is/github_issue_queue_worker.py"
       - "scripts/is/harness_research_jobs.py"
       - "scripts/is/harness_science_pipeline.py"
+      - "scripts/is/harness_archived_evidence.py"
       - "tests/test_is_harness_research_jobs.py"
       - "tests/test_is_harness_science_pipeline.py"
+      - "tests/test_is_harness_archived_evidence.py"
       - ".github/workflows/is-harness-safe-worker-update.yml"
   workflow_dispatch:
 
@@ -31,7 +33,7 @@ jobs:
           python-version: "3.11"
       - name: Validate allowlisted research scripts
         run: |
-          python3 -m py_compile scripts/is/github_issue_queue_worker.py scripts/is/harness_research_jobs.py scripts/is/harness_science_pipeline.py
+          python3 -m py_compile scripts/is/github_issue_queue_worker.py scripts/is/harness_research_jobs.py scripts/is/harness_science_pipeline.py scripts/is/harness_archived_evidence.py
           python3 -m unittest discover -s tests -p 'test_is_harness*.py' -v
       - name: Configure verified SSH identity
         env:
