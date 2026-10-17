@@ -45,7 +45,7 @@ class AutoNextTests(unittest.TestCase):
             state = pathlib.Path(root) / "state.json"
             with patch.object(module, "run_job", side_effect=lambda op: {
                 "inventory": "/srv/example/IS_EAS5_SIGNAL.tsv",
-                "headers": "FILE\\ta\\nFILE\\tb\\nFILE\\tc\\nFILE\\td",
+                "headers": "FILE\ta\nFILE\tb\nFILE\tc\nFILE\td",
             }.get(op, "ok")) as runner:
                 for idx, expected in enumerate(module.STEPS, 1):
                     result = module.execute(state, run=True)
@@ -86,10 +86,10 @@ class AutoNextTests(unittest.TestCase):
 
     def test_header_missing_rejected(self):
         with self.assertRaisesRegex(ValueError, "Missing required header"):
-            module.validate_output("headers", "FILE\\tx\\nMISSING\\tmissing.tsv")
+            module.validate_output("headers", "FILE\tx\nMISSING\tmissing.tsv")
         with self.assertRaisesRegex(ValueError, "Incomplete required header"):
-            module.validate_output("headers", "FILE\\ta")
-        self.assertTrue(module.validate_output("headers", "FILE\\ta\\nFILE\\tb\\nFILE\\tc\\nFILE\\td"))
+            module.validate_output("headers", "FILE\ta")
+        self.assertTrue(module.validate_output("headers", "FILE\ta\nFILE\tb\nFILE\tc\nFILE\td"))
 
     def test_running_from_crash_never_repeats(self):
         with tempfile.TemporaryDirectory() as root:
