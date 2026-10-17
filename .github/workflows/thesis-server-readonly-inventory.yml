@@ -7,6 +7,7 @@ on:
       - "scripts/audit_thesis_server_manifest.py"
       - "scripts/audit_thesis_evidence_freeze.py"
       - "scripts/plot_ckd_manuscript_fig3.py"
+      - "scripts/plot_ckd_manuscript_fig2_fig4.py"
       - ".github/workflows/thesis-server-readonly-inventory.yml"
   workflow_dispatch:
 
@@ -151,7 +152,7 @@ jobs:
           python3 -m pip install matplotlib==3.9.2
           python3 scripts/plot_ckd_manuscript_fig3.py \
             --input "$RUNNER_TEMP/thesis_input/ckd_9gene.tsv" \
-            --out "$RUNNER_TEMP/ckd_fig3" \
+            --out "$RUNNER_TEMP/ckd_fig3" "$RUNNER_TEMP/ckd_fig2_fig4" \
             --sha256 32fa0475461b206c48295833acfc3075bfb24d89c322b5f9be554b1883a2f3d3
           test -s "$RUNNER_TEMP/ckd_fig3/CKD_FIG3_EUR_ABF_VS_SUSIE.svg"
           test -s "$RUNNER_TEMP/ckd_fig3/CKD_FIG3_EVIDENCE.tsv"
@@ -160,6 +161,19 @@ jobs:
         with:
           name: CKD-FIG3-EUR-ABF-SUSIE-SHA32fa0475
           path: ${{ runner.temp }}/ckd_fig3/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Create real-source CKD Figures 2 and 4
+        run: |
+          python3 scripts/plot_ckd_manuscript_fig2_fig4.py \
+            --input "$RUNNER_TEMP/thesis_input/ckd_9gene.tsv" \
+            --out "$RUNNER_TEMP/ckd_fig2_fig4" \
+            --sha256 32fa0475461b206c48295833acfc3075bfb24d89c322b5f9be554b1883a2f3d3
+      - name: Upload aggregate-only manuscript Figures 2 and 4
+        uses: actions/upload-artifact@v4
+        with:
+          name: CKD-FIG2-FIG4-SHA32fa0475
+          path: ${{ runner.temp }}/ckd_fig2_fig4/
           if-no-files-found: error
           retention-days: 30
       - name: Securely delete temporary SSH credentials and private inventory
