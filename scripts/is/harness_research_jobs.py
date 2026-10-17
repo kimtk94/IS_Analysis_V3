@@ -510,15 +510,19 @@ def dispatch(op: str) -> dict:
         c = audit_candidates()
         p1 = audit_p1_ld_gates()
         science = perform_staged_science(e,c)
-        archive=perform_archived_fasta_abf_audit()
         m = manifest(e, c, p1)
-        m["archived_fasta_abf"]={
-            "schema":archive["schema"],
-            "archived":archive["archived"],
-            "overlap_report":archive["overlap_report"],
-            "readiness":archive["readiness"],
-            "scientific_status":"ARCHIVED_SOURCE_FLAGS_AND_ABF_READINESS_ONLY",
-        }
+        archived_module=Path(__file__).resolve().with_name("harness_archived_evidence.py")
+        if archived_module.is_file():
+            archive=perform_archived_fasta_abf_audit()
+            m["archived_fasta_abf"]={
+                "schema":archive["schema"],
+                "archived":archive["archived"],
+                "overlap_report":archive["overlap_report"],
+                "readiness":archive["readiness"],
+                "scientific_status":"ARCHIVED_SOURCE_FLAGS_AND_ABF_READINESS_ONLY",
+            }
+        else:
+            m["archived_fasta_abf"]={"scientific_status":"MODULE_NOT_INSTALLED_NOT_AUDITED"}
         m["science_pipeline"] = {
             "schema":science["schema"],
             "p1":science["p1"],
