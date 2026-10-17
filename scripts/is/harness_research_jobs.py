@@ -31,7 +31,7 @@ EAS5_VARIANTS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v
 EAS5_READINESS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1" / "IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv"
 EAS5_OVERLAP = AUDITS / "is_eas5_qtl_gwas_snp_ref37_20261011_v2" / "IS_EAS5_GENE_TISSUE_GWAS_SNP_OVERLAP_QC.tsv"
 
-AUDIT_SCHEMA_REV = "20261016-source-flag-aware-v3"
+AUDIT_SCHEMA_REV = "20261017-archived-abf-fasta-audit-v4"
 EXPECTED_READY = {
     "NOT_IN_EAS_30_GROUPS": 1356,
     "PUBLIC_NOMINAL_QTL_REGIONAL_PILOT_NOT_EXECUTED": 629,
@@ -60,7 +60,9 @@ REQUIRED_OVERLAP_COLUMNS = (
 
 def input_metadata_signature() -> str:
     """Fast change hint; metadata is not content proof. Hourly full hashing remains required."""
-    inputs = [EAS5_VARIANTS, EAS5_READINESS, EAS5_OVERLAP]
+    inputs = [EAS5_VARIANTS, EAS5_READINESS, EAS5_OVERLAP,
+        AUDITS / "is_eas5_98_egene_fullcis_gwas_overlap_20261011_v3_fastaanchored" /
+        "IS_EAS5_98_FDR_EGENE_FULLCIS_BBJ_EAS_MATCHED_VARIANTS.tsv.gz"]
     optional_inputs = [
         OUTPUT / "science_inputs" / "P1_APPROVED_QTL_LD.tsv",
         OUTPUT / "science_inputs" / "P2_APPROVED_GRCH37_REFERENCE.json",
@@ -79,6 +81,8 @@ def input_metadata_signature() -> str:
     # Changes to the science implementation must force an immediate new audit.
     stage_script = Path(__file__).resolve().with_name("harness_science_pipeline.py")
     items.append([str(stage_script), sha256_path(stage_script) if stage_script.is_file() else "MISSING"])
+    archived_script = Path(__file__).resolve().with_name("harness_archived_evidence.py")
+    items.append([str(archived_script),sha256_path(archived_script) if archived_script.is_file() else "MISSING"])
     raw = json.dumps({
         "frozen_commit": FROZEN_COMMIT,
         "schema_rev": AUDIT_SCHEMA_REV,
@@ -449,6 +453,18 @@ def manifest(eas5: dict, cand: dict, p1: dict | None = None, input_signature: st
     }
 
 
+def perform_archived_fasta_abf_audit():
+    script=Path(__file__).resolve().with_name("harness_archived_evidence.py")
+    if not script.is_file():raise RuntimeError("Archived FASTA audit module not installed")
+    spec=importlib.util.spec_from_file_location("is_archived_fasta_audit",script)
+    if not spec or not spec.loader:raise RuntimeError("Archived audit module not loadable")
+    module=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    result=module.audit(AUDITS)
+    atomic_json(OUTPUT/"science"/"archived_fasta_abf_audit.json",result)
+    return result
+
+
 def perform_staged_science(eas5, candidates):
     script=Path(__file__).resolve().with_name("harness_science_pipeline.py")
     if not script.is_file():
@@ -494,7 +510,15 @@ def dispatch(op: str) -> dict:
         c = audit_candidates()
         p1 = audit_p1_ld_gates()
         science = perform_staged_science(e,c)
+        archive=perform_archived_fasta_abf_audit()
         m = manifest(e, c, p1)
+        m["archived_fasta_abf"]={
+            "schema":archive["schema"],
+            "archived":archive["archived"],
+            "overlap_report":archive["overlap_report"],
+            "readiness":archive["readiness"],
+            "scientific_status":"ARCHIVED_SOURCE_FLAGS_AND_ABF_READINESS_ONLY",
+        }
         m["science_pipeline"] = {
             "schema":science["schema"],
             "p1":science["p1"],
