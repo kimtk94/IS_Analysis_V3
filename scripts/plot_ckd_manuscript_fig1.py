@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Descriptive CKD Figure 1: provenance-locked analysis workflow, no invented attrition."""
-import argparse,hashlib,json
+import argparse,csv,hashlib,json
 from pathlib import Path
-def render(gene_matrix,manifest,out,sha):
+def render(gene_matrix,out,sha):
     if hashlib.sha256(gene_matrix.read_bytes()).hexdigest()!=sha:raise ValueError("CKD source checksum mismatch")
-    m=json.loads(manifest.read_text())
-    if m.get("stable_gene_ids")!=2225 or m.get("gene_region_pairs")!=2425:raise ValueError("IS provenance mismatch")
+    with gene_matrix.open(newline="",encoding="utf-8-sig") as f:
+        rows=list(csv.DictReader(f,delimiter="\\t"))
+    candidates={"ACP1","CPVL","F12","GSTA1","GSTA3","HLA-E","INHBC","SDCCAG8","UMOD"}
+    if len(rows)!=9 or {r.get("gene_symbol") for r in rows}!=candidates:raise ValueError("CKD nine-gene panel mismatch")
     if out.exists() and any(out.iterdir()):raise ValueError("Output already populated")
     # Graph labels refer to analysis stages, NOT fabricated transition counts.
     import matplotlib
@@ -35,8 +37,8 @@ def render(gene_matrix,manifest,out,sha):
     ax.text(6,.25,"9 candidates = reported integrated analysis panel; NOT a counted flow from 1,936 proteins.",ha="center",fontsize=9)
     out.mkdir(parents=True,exist_ok=True)
     fig.savefig(out/"CKD_FIG1_ANALYSIS_WORKFLOW.svg",bbox_inches="tight");plt.close(fig)
-    (out/"CKD_FIG1_PROVENANCE.json").write_text(json.dumps({"ckd_sha256":sha,"is_manifest_sha256":hashlib.sha256(manifest.read_bytes()).hexdigest(),"reported_panel_n":9,"attrition_counts_asserted":False,"scientific_validation":False},indent=2))
+    (out/"CKD_FIG1_PROVENANCE.json").write_text(json.dumps({"ckd_sha256":sha,"reported_panel_n":9,"attrition_counts_asserted":False,"scientific_validation":False},indent=2))
     return {"figure":"CKD_FIG1_ANALYSIS_WORKFLOW.svg","reported_panel_n":9}
 if __name__=="__main__":
-    p=argparse.ArgumentParser();p.add_argument("--ckd",type=Path,required=True);p.add_argument("--is-manifest",type=Path,required=True);p.add_argument("--sha256",required=True);p.add_argument("--out",type=Path,required=True);a=p.parse_args()
-    print(render(a.ckd,a.is_manifest,a.out,a.sha256))
+    p=argparse.ArgumentParser();p.add_argument("--ckd",type=Path,required=True);p.add_argument("--sha256",required=True);p.add_argument("--out",type=Path,required=True);a=p.parse_args()
+    print(render(a.ckd,a.out,a.sha256))
