@@ -67,6 +67,28 @@ def choose(state):
         return step, "READY"
     return None, "ALL_TASKS_COMPLETED"
 
+def validate_output(operation, output):
+    """Minimal evidence checks; successful subprocess exit alone is insufficient.
+
+    This only confirms expected audit artifacts appear in output. It does not
+    establish scientific validity.
+    """
+    if not isinstance(output, str):
+        raise ValueError("Non-text audit result")
+    if operation == "headers":
+        rows = output.splitlines()
+        if any(row.startswith("MISSING\t") for row in rows):
+            raise ValueError("Missing required header input")
+        if sum(row.startswith("FILE\t") for row in rows) < 4:
+            raise ValueError("Incomplete required header inventory")
+    elif operation == "inventory":
+        matches = [line for line in output.splitlines()
+                   if line.strip().endswith(("IS_EAS5", ".tsv", ".tsv.gz", ".json"))]
+        if not matches:
+            raise ValueError("Empty EAS5 input inventory")
+    return True
+
+
 def execute(state_path, run=False):
     lock_path = state_path.with_suffix(".lock")
     lock_path.parent.mkdir(parents=True, exist_ok=True)
@@ -94,6 +116,7 @@ def execute(state_path, run=False):
         started = time.monotonic()
         try:
             output = run_job(step["operation"])
+            validate_output(step["operation"], output)
             record["status"] = "PASS"  # technical execution only, not scientific validation
             record["output_excerpt"] = str(output)[-3000:]
         except RuntimeError as exc:

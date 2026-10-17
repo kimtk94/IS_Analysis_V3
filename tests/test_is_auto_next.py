@@ -43,7 +43,10 @@ class AutoNextTests(unittest.TestCase):
     def test_one_step_per_invocation_and_finish(self):
         with tempfile.TemporaryDirectory() as root:
             state = pathlib.Path(root) / "state.json"
-            with patch.object(module, "run_job", return_value="ok") as runner:
+            with patch.object(module, "run_job", side_effect=lambda op: {
+                "inventory": "/srv/example/IS_EAS5_SIGNAL.tsv",
+                "headers": "FILE\ta\nFILE\tb\nFILE\tc\nFILE\td",
+            }.get(op, "ok")) as runner:
                 for idx, expected in enumerate(module.STEPS, 1):
                     result = module.execute(state, run=True)
                     self.assertEqual(result["status"], "PASS")
@@ -63,7 +66,7 @@ class AutoNextTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             state = pathlib.Path(root) / "state.json"
             with patch.object(module, "run_job",
-                              side_effect=[RuntimeError("SHARED_EXECUTION_LOCK_BUSY"), "ok"]) as runner:
+                              side_effect=[RuntimeError("SHARED_EXECUTION_LOCK_BUSY"), "/srv/example/IS_EAS5_SIGNAL.tsv"]) as runner:
                 first = module.execute(state, run=True)
                 self.assertEqual(first["status"], "DEFERRED_LOCK_BUSY")
                 self.assertEqual(module.load(state)["tasks"], {})
@@ -71,6 +74,22 @@ class AutoNextTests(unittest.TestCase):
                 self.assertEqual(second["status"], "PASS")
                 self.assertEqual(second["attempts"], 1)
                 self.assertEqual(runner.call_count, 2)
+
+    def test_missing_inputs_block_pipeline(self):
+        with tempfile.TemporaryDirectory() as root:
+            state = pathlib.Path(root) / "state.json"
+            with patch.object(module, "run_job", return_value="") as runner:
+                result = module.execute(state, run=True)
+                self.assertEqual(result["status"], "REVIEW_REQUIRED")
+                self.assertEqual(module.execute(state, run=True)["status"], "BLOCKED_REVIEW_REQUIRED")
+                self.assertEqual(runner.call_count, 1)
+
+    def test_header_missing_rejected(self):
+        with self.assertRaisesRegex(ValueError, "Missing required header"):
+            module.validate_output("headers", "FILE\tx\nMISSING\tmissing.tsv")
+        with self.assertRaisesRegex(ValueError, "Incomplete required header"):
+            module.validate_output("headers", "FILE\ta")
+        self.assertTrue(module.validate_output("headers", "FILE\ta\nFILE\tb\nFILE\tc\nFILE\td"))
 
     def test_running_from_crash_never_repeats(self):
         with tempfile.TemporaryDirectory() as root:
