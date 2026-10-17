@@ -4,7 +4,9 @@ on:
     branches: [research/thesis-evidence-freeze-20261015]
     paths:
       - 'scripts/plot_ckd_manuscript_fig3.py'
+      - 'scripts/plot_ckd_manuscript_fig2_fig4.py'
       - 'tests/test_ckd_manuscript_fig3.py'
+      - 'tests/test_ckd_manuscript_fig2_fig4.py'
       - '.github/workflows/ckd-manuscript-fig3-ci.yml'
   pull_request:
     paths:
@@ -24,6 +26,8 @@ jobs:
       - name: Install plotting dependency
         run: python -m pip install matplotlib==3.9.2
       - name: Compile
-        run: python -m py_compile scripts/plot_ckd_manuscript_fig3.py
+        run: python -m py_compile scripts/plot_ckd_manuscript_fig3.py scripts/plot_ckd_manuscript_fig2_fig4.py
       - name: Generate synthetic figure and verify evidence guards
-        run: python -m unittest discover -s tests -p 'test_ckd_manuscript_fig3.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_ckd_manuscript_fig3.py' -v
+          python -m unittest discover -s tests -p 'test_ckd_manuscript_fig2_fig4.py' -v
