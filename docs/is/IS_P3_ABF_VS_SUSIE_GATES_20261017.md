@@ -39,3 +39,19 @@ Before P3B execution, independently verify source cohort ancestry, matched signe
 New offline module `scripts/is/harness_archived_evidence.py` and tests `tests/test_is_harness_archived_evidence.py` provide the **read-only audit** for archived FASTA flags, unique SNP strings, actual source-row sums and ABF followup flags. CI passes; server deployment is **not yet verified**. Production `research-refresh` now marks `MODULE_NOT_INSTALLED_NOT_AUDITED` rather than fabricating new findings or crashing when the module is missing.
 
 Next acceptance gate: safely deploy that audit module with the existing controlled three-script installation, inspect its archive-derived QC totals, and only then design P3A restricted full-summary-statistics analysis for eligible loci.
+
+## 2026-10-18 archived FASTA/ABF module: actual full data acceptance
+
+The previously blocked module `scripts/is/harness_archived_evidence.py` is now included in the safe GitHub Actions installer, retaining existing SSH identity, locked atomic installation and original source-file immutability. The installation workflow completed SUCCESS. Server `research-refresh` Issue [#158](https://github.com/kimtk94/IS_Analysis_V3/issues/158) completed PASS in **55.523 s** and emitted `is-archived-fasta-abf-audit-v1` with integrity PASS.
+
+Observed archived source data (counts are NOT new independent FASTA verification):
+- 98 region-gene-QTL-dataset group rows; 321,538 archived gene-assay SNP observations.
+- 25,866 distinct variant strings.
+- 293,520 archived rows with BOTH BBJ and EAS reported FASTA exact-match flags true; 23,468 distinct variant strings and 66 distinct genes represented.
+- Overlap summary covers 393 groups and reports 423,051 BOTH GWAS exact-match rows and 376,334 dual nonpalindromic rows; those counts are sourced from archived/derived reports rather than fresh allele verification.
+- Of 393 readiness groups, `possible_single_signal_ABF_followup` is True in **36** and False in 357. The 36 are **P3A review candidates, not completed coloc analyses**.
+- Source-reported QTL ancestry and molecular-QTL matched LD remain unverified in all 393 reviewed groups. All 393 source readiness rows report GRCh37 REF/effect direction assertion flags true; this does not override independent FASTA and allele provenance requirements.
+
+Detailed server-local evidence JSON is stored in `/srv/is-analysis/results/is/github_actions_runs/evidence/science/archived_fasta_abf_audit.json`. Scientific gate decisions must use its `abf_flagged_groups` list and original source files, not only the aggregate 36 number.
+
+**Next gate:** review each of the 36 for full region-wide QTL/GWAS SNP coverage, independent genome build/REF-ALT harmonization, sample sizes, trait model (ischemic stroke case-control), case fractions, MAF/EAF semantics, single-signal assumptions and priors before any coloc.abf computation. Maintain `coloc_executed=0` until validated model output genuinely exists.
