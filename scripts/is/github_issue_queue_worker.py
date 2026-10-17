@@ -142,6 +142,25 @@ def record_heartbeat(now_utc, decision, path=None):
 
 
 def run_job(op):
+    """Serialize approved research jobs across the queue worker and AUTO_NEXT.
+
+    Both controllers must use this version of this module on the same host.
+    This does not coordinate with other independently invoked research jobs.
+    """
+    import fcntl
+    lock_path = pathlib.Path(os.environ.get(
+        "IS_HARNESS_EXECUTION_LOCK",
+        "/srv/is-analysis/results/is/github_actions_runs/is_research_execution.lock"))
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    with lock_path.open("a+") as handle:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeError("SHARED_EXECUTION_LOCK_BUSY") from exc
+        return _run_job_unlocked(op)
+
+
+def _run_job_unlocked(op):
     if op in {"eas5-audit", "candidate-2225-audit", "figure-manifest", "research-refresh"}:
         script=pathlib.Path(__file__).resolve().with_name("harness_research_jobs.py")
         if not script.is_file():
