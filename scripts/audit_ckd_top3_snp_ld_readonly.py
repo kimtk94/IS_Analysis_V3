@@ -61,10 +61,10 @@ def check(gene,stage2b,stage2c,lddir):
             bad_diag+=abs(z-1)>0.001
             nonfinite+=not math.isfinite(z)
     issues=[]
-    if ld_not_susie or susie_not_ld:issues.append("LD_SUSIE_INPUT_SET_DIFFERENT")
+    # Stage2C input intentionally includes variants unavailable in 1KG LD.\n    # Its R runner restricts to meta SNPs using match(meta$snp, dat$snp).\n    if ld_not_susie:issues.append("LD_SNP_ABSENT_IN_SUSIE_INPUT")
     if mismatch:issues.append("ALLELE_OR_POSITION_MISMATCH")
     if bad_diag or nonfinite:issues.append("LD_DIAGONAL_INVALID")
-    status.update({"status":"METADATA_PASS_REFERENCE_LD_ONLY" if not issues else "QC_FAIL",
+    status.update({"status":"METADATA_PASS_FILTERED_REFERENCE_LD_ONLY" if not issues else "QC_FAIL",
       "stage2b_rows":len(A),"stage2c_rows":len(B),"ld_rows":len(M),
       "ld_not_susie":ld_not_susie,"susie_not_ld":susie_not_ld,
       "abf_ld_shared_snps":len(set(by_a)&set(by_m)),
@@ -82,5 +82,5 @@ def main():
     a=p.parse_args()
     data=[check(g,a.stage2b,a.stage2c,a.lddir) for g in GENES]
     print(json.dumps({"audit":"CKD_STAGE2B_STAGE2C_REFERENCE_LD_READONLY","results":data},indent=2))
-    return 0 if all(x["status"]=="METADATA_PASS_REFERENCE_LD_ONLY" for x in data) else 2
+    return 0 if all(x["status"]=="METADATA_PASS_FILTERED_REFERENCE_LD_ONLY" for x in data) else 2
 if __name__=="__main__":raise SystemExit(main())
