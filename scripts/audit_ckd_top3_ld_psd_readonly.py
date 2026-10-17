@@ -8,7 +8,7 @@ identify an LD numerical issue but cannot establish SuSiE nonconvergence cause.
 import argparse,csv,json,hashlib,math
 from pathlib import Path
 import numpy as np
-from scipy.sparse.linalg import eigsh,ArpackNoConvergence
+from scipy.linalg import eigh
 GENES=("SDCCAG8","INHBC","UMOD")
 def check(root,g):
     m=root/(g+".ld.meta.tsv");b=root/(g+".ld.bin")
@@ -23,10 +23,10 @@ def check(root,g):
     if not np.all(np.isin(signs,[-1.,1.])):raise ValueError(g+" invalid signs")
     # Congruence by diagonal +/-1 preserves the entire eigenspectrum.
     A=np.asarray(raw,dtype=np.float64)
-    try:
-        eigen,vec=eigsh(A,k=1,which="SA",tol=1e-6,maxiter=30000,return_eigenvectors=True)
-    except ArpackNoConvergence as e:
-        return {"gene":g,"status":"EIGEN_SOLVER_NONCONVERGENCE","n":n,"partial_eigenvalues":len(e.eigenvalues) if e.eigenvalues is not None else 0}
+    # Direct symmetric LAPACK solver avoids ARPACK stagnation near repeated zero eigenvalues.
+    # Only the smallest eigenpair is requested; this is an exact dense subset solve.
+    eigen,vec=eigh(A,subset_by_index=(0,0),driver="evr",check_finite=False,
+                   overwrite_a=False)
     eigenvalue=float(eigen[0]);v=vec[:,0]
     residual=float(np.linalg.norm(A@v-eigenvalue*v))
     diagerr=float(np.max(np.abs(np.diag(A)-1.0)))
