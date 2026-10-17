@@ -9,6 +9,7 @@ from __future__ import annotations
 import collections
 import csv
 import gzip
+import math
 from pathlib import Path
 
 ARCHIVED_RELATIVE=(
@@ -31,6 +32,7 @@ REQUIRED_ARCHIVE={
  "BBJ_allele_exact_Fasta37","EAS_AIS_allele_exact_Fasta37",
  "QTL_p","BBJ_p","EAS_AIS_p","QTL_beta_GRCh37_ALT",
  "BBJ_beta_ALT","EAS_AIS_beta_ALT",
+ "QTL_se",
 }
 REQUIRED_OVERLAP={
  "region_id","QTL_dataset","gene_id",
@@ -59,6 +61,22 @@ def nonnegative(v):
     except (ValueError,TypeError,OverflowError):
         return None
 
+def valid_p(value):
+    try:
+        p=float(value)
+        return math.isfinite(p) and 0<=p<=1
+    except (ValueError,TypeError):return False
+
+def valid_effect(value):
+    try:return math.isfinite(float(value))
+    except (ValueError,TypeError):return False
+
+def valid_se(value):
+    try:
+        v=float(value)
+        return math.isfinite(v) and v>0
+    except (ValueError,TypeError):return False
+
 def rows(path:Path,required:set[str]):
     if not path.is_file():raise FileNotFoundError(str(path))
     op=gzip.open if path.suffix==".gz" else open
@@ -86,6 +104,7 @@ def audit(audits:Path):
         qc["archived_rows"]+=1
         key=(row["region_id"],row["QTL_dataset"],row["gene_id"])
         groups[key]["archived_rows"]+=1
+        g=groups[key]
         variant=row["mapped_genomic_variant_GRCh37"].strip()
         if variant:
             unique_variants.add(variant)
@@ -97,6 +116,14 @@ def audit(audits:Path):
         if b:qc["bbj_archived_fasta_flag_rows"]+=1
         if e:qc["eas_archived_fasta_flag_rows"]+=1
         if b and e:
+            g["both_fasta_source_flags"]+=1
+            if (valid_p(row["QTL_p"]) and valid_p(row["BBJ_p"]) and
+                valid_p(row["EAS_AIS_p"]) and valid_effect(row["QTL_beta_GRCh37_ALT"]) and
+                valid_effect(row["BBJ_beta_ALT"]) and valid_effect(row["EAS_AIS_beta_ALT"]) and
+                valid_se(row["QTL_se"])):
+                g["source_flags_and_valid_qtl_se_effect_p"]+=1
+            else:
+                g["source_flags_missing_or_invalid_statistics"]+=1
             qc["both_archived_fasta_flag_rows"]+=1
             groups[key]["both_archived_fasta_flag_rows"]+=1
             if variant:source_joint_variants.add(variant)
@@ -151,6 +178,14 @@ def audit(audits:Path):
                 "ancestry_verified":qtl_ancestry,
                 "archive_fasta_flag_both_rows":groups[key]["both_archived_fasta_flag_rows"],
                 "overlap_reported_fasta_rows":overlap_by_group.get(key,{}).get("fasta_verified",0),
+                "fullcis_archived_rows":groups[key]["archived_rows"],
+                "source_flagged_stat_rows":groups[key]["source_flags_and_valid_qtl_se_effect_p"],
+                "source_flagged_invalid_stat_rows":groups[key]["source_flags_missing_or_invalid_statistics"],
+                "p3a_status":"EXPLORATORY_INPUT_SCREEN_ONLY",
+                "still_required":["complete_region_variant_coverage","independent_ref_alt_harmonization",
+                    "QTL_and_GWAS_sample_sizes","stroke_case_fraction","trait_type",
+                    "BBJ_EAS_effect_standard_errors_or_valid_alternate_inputs",
+                    "prior_sensitivity","single_causal_signal_assumption"],
                 "scientific_status":"ABF_FOLLOWUP_FLAG_ONLY_NOT_COLOC_VALIDATION"
             })
     return {
@@ -158,6 +193,10 @@ def audit(audits:Path):
        "archived":dict(qc),"overlap_report":dict(overlap_counter),
        "readiness":{**dict(review),**dict(flags),"abf_candidate_rows":len(source_candidates)},
        "abf_flagged_groups":source_candidates,
+       "abf_screen":{"groups_with_archived_rows":sum(x["fullcis_archived_rows"]>0 for x in source_candidates),
+          "groups_with_source_flagged_stats":sum(x["source_flagged_stat_rows"]>0 for x in source_candidates),
+          "groups_without_source_flagged_stats":sum(x["source_flagged_stat_rows"]==0 for x in source_candidates),
+          "screened":len(source_candidates),"coloc_abf_executed":0},
        "limitations":[
          "Archived FASTA flags and reported SNP overlap counts are not newly revalidated against a reference FASTA.",
          "Rows and unique variant strings have different denominators.",
