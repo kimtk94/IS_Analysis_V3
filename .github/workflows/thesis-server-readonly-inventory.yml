@@ -152,7 +152,7 @@ jobs:
           python3 -m pip install matplotlib==3.9.2
           python3 scripts/plot_ckd_manuscript_fig3.py \
             --input "$RUNNER_TEMP/thesis_input/ckd_9gene.tsv" \
-            --out "$RUNNER_TEMP/ckd_fig3" "$RUNNER_TEMP/ckd_fig2_fig4" \
+            --out "$RUNNER_TEMP/ckd_fig3" \
             --sha256 32fa0475461b206c48295833acfc3075bfb24d89c322b5f9be554b1883a2f3d3
           test -s "$RUNNER_TEMP/ckd_fig3/CKD_FIG3_EUR_ABF_VS_SUSIE.svg"
           test -s "$RUNNER_TEMP/ckd_fig3/CKD_FIG3_EVIDENCE.tsv"
@@ -180,4 +180,4 @@ jobs:
         if: always()
         run: |
           rm -f "$HOME/.ssh/thesis_readonly_key" "$RUNNER_TEMP/thesis_readonly_inventory.json"
-          rm -rf "$RUNNER_TEMP/thesis_input" "$RUNNER_TEMP/thesis_frozen" "$RUNNER_TEMP/ckd_fig3"
+          rm -rf "$RUNNER_TEMP/thesis_input" "$RUNNER_TEMP/thesis_frozen" "$RUNNER_TEMP/ckd_fig3" "$RUNNER_TEMP/ckd_fig2_fig4"
