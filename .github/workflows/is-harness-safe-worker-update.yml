@@ -63,6 +63,7 @@ jobs:
           scp "${SSH_ARGS[@]}" scripts/is/github_issue_queue_worker.py "$TARGET:is-harness/.queue_worker.pending.py"
           scp "${SSH_ARGS[@]}" scripts/is/harness_research_jobs.py "$TARGET:is-harness/.research_jobs.pending.py"
           scp "${SSH_ARGS[@]}" scripts/is/harness_science_pipeline.py "$TARGET:is-harness/.science_pipeline.pending.py"
+          scp "${SSH_ARGS[@]}" scripts/is/harness_archived_evidence.py "$TARGET:is-harness/.archived_evidence.pending.py"
           ssh "${SSH_ARGS[@]}" "$TARGET" 'bash -se' <<'REMOTE'
           set -euo pipefail
           cd "$HOME/is-harness"
