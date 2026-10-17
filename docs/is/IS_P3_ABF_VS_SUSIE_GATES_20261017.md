@@ -55,3 +55,15 @@ Observed archived source data (counts are NOT new independent FASTA verification
 Detailed server-local evidence JSON is stored in `/srv/is-analysis/results/is/github_actions_runs/evidence/science/archived_fasta_abf_audit.json`. Scientific gate decisions must use its `abf_flagged_groups` list and original source files, not only the aggregate 36 number.
 
 **Next gate:** review each of the 36 for full region-wide QTL/GWAS SNP coverage, independent genome build/REF-ALT harmonization, sample sizes, trait model (ischemic stroke case-control), case fractions, MAF/EAF semantics, single-signal assumptions and priors before any coloc.abf computation. Maintain `coloc_executed=0` until validated model output genuinely exists.
+
+## 2026-10-18 follow-up: P3A per-group full-cis coverage and blocking audit
+
+Acceptance [Issue #166](https://github.com/kimtk94/IS_Analysis_V3/issues/166), research-refresh **PASS**, duration **57.361s**, using `harness_archived_evidence.py` revision `55aa8828`.
+
+- 36 source-flagged possible single-signal ABF follow-up groups evaluated.
+- 25 groups have at least one archived row passing **both source FASTA flags** and basic QTL/BBJ/EAS effect, p-value, and QTL SE numeric validity; 11 do not.
+- Across those 36 groups, **68,612 archived rows** passed that limited source-level filter. Sum of per-group distinct source dual-flagged variant strings also 68,612; this is **not** a pooled unique SNP count across regions/genes.
+- 36/36 still lack independently audited allele/FASTA provenance, complete region variant coverage, GWAS effect variance, sample-size/case fraction and trait/prior assumptions required for `coloc.abf`. The gating engine deliberately records `eligible_for_coloc_abf=0`, `coloc_abf_executed=0` and retains each region/gene/QTL identifier in the server-local `science/archived_fasta_abf_audit.json`.
+- The 68,612 count is not proof of independently harmonized alleles or causal genes. Never turn source FASTA flags into unreviewed eligibility.
+
+**Next research deliverable:** for the 25 source-stat-positive groups, identify archived columns and separate authoritative GWAS/QTL summary statistics enabling trait-consistent effect variances and full cis-window coverage; record QTL sample sizes (catalog metadata are study-level hints, not necessarily per-gene sample sizes), BBJ and EAS-AIS sample sizes and case fractions, explicit effect-allele orientation, reference FASTA provenance and sensitivity priors. P3A should only be executed once all relevant per-group gates pass. Multisignal P3B stays separately LD-gated.
