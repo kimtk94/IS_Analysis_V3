@@ -265,15 +265,22 @@ def main():
                     status="PASS"
                 except Exception as e:
                     result=str(e)
-                    status="FAIL"
+                    status="RETRY" if "SHARED_EXECUTION_LOCK_BUSY" in result else "FAIL"
                 ended_at=dt.datetime.now(dt.timezone.utc)
                 end_iso=ended_at.isoformat()
                 duration_s=(ended_at-started_at).total_seconds()
                 comment=f"IS HARNESS {status} | operation={op} | started_at={start_iso} | ended_at={end_iso} | duration_seconds={duration_s:.3f} | UTC={end_iso}\n\n```text\n{result[:12000]}\n```"
                 api("POST",f"/issues/{num}/comments",token,{"body":comment})
-                try: api("DELETE",f"/issues/{num}/labels/is-harness-running",token)
-                except urllib.error.HTTPError: pass
-                api("POST",f"/issues/{num}/labels",token,{"labels":["is-harness-done" if status=="PASS" else "is-harness-failed"]})
+                if status=="RETRY":
+                    # Requeue only when the existing shared lock is currently busy.
+                    # Other failures remain explicit failures for operator review.
+                    api("POST",f"/issues/{num}/labels",token,{"labels":["is-harness-queued"]})
+                    try: api("DELETE",f"/issues/{num}/labels/is-harness-running",token)
+                    except urllib.error.HTTPError: pass
+                else:
+                    try: api("DELETE",f"/issues/{num}/labels/is-harness-running",token)
+                    except urllib.error.HTTPError: pass
+                    api("POST",f"/issues/{num}/labels",token,{"labels":["is-harness-done" if status=="PASS" else "is-harness-failed"]})
                 print(f"issue #{num}: {status}",flush=True)
         except Exception as e:
             print("queue poll error:",type(e).__name__,str(e)[:300],flush=True)
