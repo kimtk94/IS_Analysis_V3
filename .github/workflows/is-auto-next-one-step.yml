@@ -1,0 +1,50 @@
+name: IS AUTO_NEXT bounded one-step executor
+on:
+  push:
+    branches: [main]
+    paths: ['.github/research-queue/is-auto-next-step.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: is-auto-next-one-step
+  cancel-in-progress: false
+jobs:
+  one-step:
+    runs-on: ubuntu-latest
+    environment: is-research-readonly
+    timeout-minutes: 12
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate strictly bounded request
+        if: github.event_name == 'push'
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          obj=json.loads(Path('.github/research-queue/is-auto-next-step.json').read_text())
+          if obj!={"schema_version":1,"job":"is-auto-next-one-step","non_live_only":True,"max_steps":1,"approval":"IS_RESEARCH_ONLY"}:
+              raise SystemExit("UNAUTHORIZED_AUTO_NEXT_REQUEST")
+          print("AUTO_NEXT_REQUEST=PASS")
+          PY
+      - name: Configure SSH
+        run: |
+          for name in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            if [[ -z "${!name:-}" ]]; then exit 1; fi
+          done
+          mkdir -p "$HOME/.ssh"; chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > "$HOME/.ssh/server_key"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/server_key" "$HOME/.ssh/known_hosts"
+          ssh-keygen -yf "$HOME/.ssh/server_key" >/dev/null
+      - name: Execute one allowlisted bounded research step
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 -o IdentitiesOnly=yes -o ForwardAgent=no -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" 'cd "$HOME/is-harness" && python3 auto_next.py --run'
+      - name: Remove SSH key
+        if: always()
+        run: rm -f "$HOME/.ssh/server_key"
