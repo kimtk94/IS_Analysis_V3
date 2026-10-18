@@ -10,6 +10,9 @@ import collections
 import csv
 import gzip
 import math
+import hashlib
+import json
+import re
 from pathlib import Path
 
 ARCHIVED_RELATIVE=(
@@ -26,6 +29,18 @@ OVERLAP_RELATIVE=(
 )
 TRUE={"true","1","yes"}
 FALSE={"false","0","no","na","none",""}
+# The registry is optional and server-local. Paths cannot be supplied from GitHub
+# Issues or untrusted external comments.
+GWAS_REGISTRY_RELATIVE="github_actions_runs/evidence/science_inputs/P3A_APPROVED_GWAS_SOURCES.tsv"
+GWAS_ALLOWED_ROOT=Path("/srv/is-analysis")
+GWAS_REGISTRY_COLUMNS={
+    "source","accession","file_path","file_sha256","genome_build",
+    "trait_type","n_cases","n_controls","reference_url",
+    "independent_match_status","matched_variant_count",
+    "reviewed_by","reviewed_at",
+}
+GWAS_SOURCES={"BBJ","EAS_AIS"}
+HEX64=re.compile(r"^[a-f0-9]{64}$")
 MAX_ROWS=2_000_000
 REQUIRED_ARCHIVE={
  "region_id","QTL_dataset","gene_id","mapped_genomic_variant_GRCh37",
@@ -77,6 +92,82 @@ def valid_se(value):
         return math.isfinite(v) and v>0
     except (ValueError,TypeError):return False
 
+def audit_approved_gwas_registry(audits:Path, *, allowed_root:Path=GWAS_ALLOWED_ROOT):
+    """Fail-closed external GWAS identity audit; never adopts sample sizes
+    without independent matched-variant verification and actual file digest."""
+    path=audits.parent/GWAS_REGISTRY_RELATIVE
+    result={"schema":"is-p3a-gwas-source-identity-v1",
+            "registry_status":"MISSING_APPROVED_REGISTRY",
+            "accepted_sources":[],
+            "blocked_sources":{},
+            "required_sources":sorted(GWAS_SOURCES),
+            "scientific_status":"NO_GWAS_METADATA_ADOPTED"}
+    if not path.is_file():
+        return result
+    if path.is_symlink() or path.stat().st_size>1_000_000:
+        raise ValueError("Invalid approved source registry")
+    with path.open(encoding="utf-8-sig",newline="") as stream:
+        reader=csv.DictReader(stream,delimiter="\\t")
+        if not reader.fieldnames or not GWAS_REGISTRY_COLUMNS.issubset(reader.fieldnames):
+            raise ValueError("Approved GWAS registry required fields missing")
+        records=list(reader)
+    if len(records)>20 or any(None in r or None in r.values() for r in records):
+        raise ValueError("Malformed GWAS source registry")
+    seen=set()
+    result["registry_status"]="REVIEW_REQUIRED"
+    for record in records:
+        source=record["source"]
+        if source not in GWAS_SOURCES or source in seen:
+            raise ValueError("Duplicate or unknown GWAS source")
+        seen.add(source)
+        reasons=[]
+        if not record["accession"].strip() or not record["reference_url"].startswith("https://"):
+            reasons.append("SOURCE_ACCESSION_PROVENANCE_MISSING")
+        if record["genome_build"]!="GRCh37" or record["trait_type"]!="cc":
+            reasons.append("UNVERIFIED_BUILD_OR_TRAIT_TYPE")
+        try:
+            cases=int(record["n_cases"])
+            controls=int(record["n_controls"])
+            if cases<1 or controls<1:
+                raise ValueError()
+        except ValueError:
+            reasons.append("MISSING_VALID_CASE_CONTROL_COUNTS")
+            cases=controls=0
+        if record["independent_match_status"]!="VERIFIED" or not record["reviewed_by"] or not record["reviewed_at"]:
+            reasons.append("INDEPENDENT_SOURCE_MATCH_NOT_APPROVED")
+        try:
+            match_count=int(record["matched_variant_count"])
+            if match_count<20:
+                reasons.append("INSUFFICIENT_INDEPENDENT_VARIANT_MATCHES")
+        except ValueError:
+            reasons.append("MISSING_MATCH_COUNT")
+        source_path=Path(record["file_path"])
+        safe=False
+        try:
+            if source_path.is_absolute() and not source_path.is_symlink() and source_path.is_file():
+                safe=source_path.resolve().is_relative_to(allowed_root.resolve())
+        except OSError:
+            safe=False
+        if not safe or not HEX64.fullmatch(record["file_sha256"]):
+            reasons.append("MISSING_SAFE_FILE_AND_SHA256")
+        else:
+            h=hashlib.sha256()
+            with source_path.open("rb") as handle:
+                for chunk in iter(lambda:handle.read(1024*1024),b""):
+                    h.update(chunk)
+            if h.hexdigest()!=record["file_sha256"]:
+                reasons.append("GWAS_SOURCE_FILE_DIGEST_MISMATCH")
+        if reasons:
+            result["blocked_sources"][source]=sorted(set(reasons))
+            continue
+        # A reviewed register is still not a replacement for retained per-variant
+        # comparison evidence. Do NOT treat the registry alone as source proof.
+        result["blocked_sources"][source]=["MATCH_EVIDENCE_NOT_REPRODUCED_BY_THIS_AUDIT"]
+    for missing in sorted(GWAS_SOURCES-seen):
+        result["blocked_sources"][missing]=["NO_SOURCE_RECORD"]
+    return result
+
+
 def source_header_inventory(path:Path):
     """Report presence of declared source fields without claiming metadata validity."""
     opener=gzip.open if path.suffix==".gz" else open
@@ -119,6 +210,7 @@ def audit(audits:Path):
     ready=audits/READY_RELATIVE
     overlap=audits/OVERLAP_RELATIVE
     header_audit=source_header_inventory(src)
+    gwas_source=audit_approved_gwas_registry(audits)
     qc=collections.Counter()
     groups=collections.defaultdict(collections.Counter)
     unique_variants=set()
@@ -239,6 +331,7 @@ def audit(audits:Path):
     return {
        "schema":"is-archived-fasta-abf-audit-v1","integrity":"PASS",
        "p3a_source_header_audit":header_audit,
+       "p3a_gwas_source_identity":gwas_source,
        "archived":dict(qc),"overlap_report":dict(overlap_counter),
        "readiness":{**dict(review),**dict(flags),"abf_candidate_rows":len(source_candidates)},
        "abf_flagged_groups":source_candidates,
