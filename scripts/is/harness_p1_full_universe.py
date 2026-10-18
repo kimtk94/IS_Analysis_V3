@@ -80,9 +80,24 @@ def main():
   except Exception as exc:
    print("P1_SOURCE_COMPARISON_ERROR="+type(exc).__name__+": "+str(exc),flush=True)
  signatures={tuple(item[1][n] for n in NAMES) for item in valid}
- if len(valid)!=len(candidates) or len(signatures)!=1:
-  raise ValueError("P1_SOURCE_ROOT_CONFLICT candidates="+str(len(candidates))+" valid="+str(len(valid))+" distinct_hash_sets="+str(len(signatures)))
- src=sorted((item[0] for item in valid),key=lambda p:(len(p.parts),str(p)))[0]
+ PINNED_NAME="is_existing_2225_evidence_matrix_646replayed_20261011_v2"
+ PINNED_HASHES={
+  NAMES[0]:"497ebe916921d73b7fb7119d172205aed6ed28273dfcaee628c45df28a677965",
+  NAMES[1]:"e3037b7362173947489dc1906d137be2614021f1d09b30c858a65a04dce6438d",
+  NAMES[2]:"49b06217faff3dab65ae1011613f89ef3ba566aeacc673e8e6720701a4167d7b"}
+ if len(valid)!=len(candidates):
+  raise ValueError("P1_SOURCE_ROOT_INVALID_CANDIDATE")
+ pinned=[v for v in valid if v[0].name==PINNED_NAME and v[1]==PINNED_HASHES]
+ if len(signatures)==1:
+  src=sorted((item[0] for item in valid),key=lambda p:(len(p.parts),str(p)))[0]
+ elif len(pinned)==1 and len(valid)==2:
+  other=next(v for v in valid if v is not pinned[0])
+  if other[0].name!="is_existing_2225_evidence_matrix_20261011_v1":
+   raise ValueError("P1_UNEXPECTED_SECONDARY_SOURCE")
+  src=pinned[0][0]
+  print("P1_SOURCE_POLICY=EXPLICIT_SHA256_PINNED_V2_WITH_PRESERVED_V1",flush=True)
+ else:
+  raise ValueError("P1_SOURCE_ROOT_CONFLICT candidates="+str(len(candidates))+" distinct_hash_sets="+str(len(signatures)))
  files={n:src/n for n in NAMES}
  sha={n:digest(p) for n,p in files.items()}
  print("P1_EQUIVALENT_SOURCE_COPIES="+str(len(valid)),flush=True)
