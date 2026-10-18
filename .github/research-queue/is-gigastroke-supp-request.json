@@ -2,5 +2,5 @@
   "schema_version": 1,
   "job": "gigastroke-supp-cohort-audit",
   "non_live_only": true,
-  "retry_note": "official_publisher_fallback_v2"
+  "retry_note": "eas_sheet_extraction_v3"
 }
