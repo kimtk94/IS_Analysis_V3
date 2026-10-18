@@ -8,6 +8,7 @@ on:
       - 'scripts/audit_ckd_top3_ld_frequency_screen.py'
       - 'scripts/audit_ckd_top3_maf_outliers.py'
       - 'scripts/audit_ckd_original_source_readiness.py'
+      - 'scripts/audit_ckd_original_pqtl_four_variants.py'
       - '.github/workflows/ckd-top3-snp-ld-audit.yml'
   workflow_dispatch:
 permissions:
