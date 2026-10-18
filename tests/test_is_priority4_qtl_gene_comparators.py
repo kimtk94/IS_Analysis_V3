@@ -1,6 +1,8 @@
 import csv,tempfile,unittest
 from pathlib import Path
-from scripts.is.audit_is_priority4_qtl_gene_comparators import GENES,CUTOFF
+from importlib import import_module
+_m = import_module("scripts.is.audit_is_priority4_qtl_gene_comparators")
+GENES,CUTOFF = _m.GENES,_m.CUTOFF
 class TestPriority4ComparatorContracts(unittest.TestCase):
  def test_expected_genes_and_cutoff(self):
   self.assertEqual(set(GENES),{"CALHM2","NEURL","FGF5","C4orf22"})
