@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "job": "is-p1-readonly-summary",
+  "source_run_id": 39124908298,
+  "non_live_only": true
+}
