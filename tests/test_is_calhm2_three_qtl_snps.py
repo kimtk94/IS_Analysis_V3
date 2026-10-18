@@ -1,6 +1,8 @@
 import csv,tempfile,unittest
 from pathlib import Path
-from scripts.is.audit_is_calhm2_three_qtl_snps import create,FIELDS,POPS,LEADS
+from importlib import import_module
+_m = import_module("scripts.is.audit_is_calhm2_three_qtl_snps")
+create,FIELDS,POPS,LEADS = _m.create,_m.FIELDS,_m.POPS,_m.LEADS
 class TestCALHM2ThreeQTL(unittest.TestCase):
  def test_exact_three_and_lead_tagging(self):
   with tempfile.TemporaryDirectory() as t:
