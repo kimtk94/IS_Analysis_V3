@@ -77,6 +77,29 @@ def valid_se(value):
         return math.isfinite(v) and v>0
     except (ValueError,TypeError):return False
 
+def source_header_inventory(path:Path):
+    """Report presence of declared source fields without claiming metadata validity."""
+    opener=gzip.open if path.suffix==".gz" else open
+    with opener(path,"rt",encoding="utf-8-sig",newline="") as stream:
+        fields=next(csv.reader([stream.readline()],delimiter="\t"))
+    present=set(fields)
+    expected={
+        "qtl_beta_and_se":["QTL_beta_GRCh37_ALT","QTL_se"],
+        "bbj_beta_and_p":["BBJ_beta_ALT","BBJ_p"],
+        "eas_beta_and_p":["EAS_AIS_beta_ALT","EAS_AIS_p"],
+        "bbj_effect_se":["BBJ_se","BBJ_SE","BBJ_beta_se"],
+        "eas_effect_se":["EAS_AIS_se","EAS_AIS_SE","EAS_AIS_beta_se"],
+        "bbj_sample_size":["BBJ_N","BBJ_n","BBJ_sample_size"],
+        "eas_sample_size":["EAS_AIS_N","EAS_AIS_n","EAS_AIS_sample_size"],
+        "stroke_case_fraction":["BBJ_case_fraction","EAS_AIS_case_fraction","case_fraction"],
+        "genomic_variant":["mapped_genomic_variant_GRCh37"],
+    }
+    return {"source":"ARCHIVED_FASTA_QTL_GWAS_FULLCIS",
+            "field_presence":{k:all(x in present for x in v) if k.endswith("_and_se") or k.endswith("_and_p") else any(x in present for x in v) for k,v in expected.items()},
+            "field_count":len(fields),
+            "qualification":"Header audit only; missing sample metadata must not be inferred."}
+
+
 def rows(path:Path,required:set[str]):
     if not path.is_file():raise FileNotFoundError(str(path))
     op=gzip.open if path.suffix==".gz" else open
@@ -95,6 +118,7 @@ def audit(audits:Path):
     src=audits/ARCHIVED_RELATIVE
     ready=audits/READY_RELATIVE
     overlap=audits/OVERLAP_RELATIVE
+    header_audit=source_header_inventory(src)
     qc=collections.Counter()
     groups=collections.defaultdict(collections.Counter)
     unique_variants=set()
@@ -214,6 +238,7 @@ def audit(audits:Path):
             })
     return {
        "schema":"is-archived-fasta-abf-audit-v1","integrity":"PASS",
+       "p3a_source_header_audit":header_audit,
        "archived":dict(qc),"overlap_report":dict(overlap_counter),
        "readiness":{**dict(review),**dict(flags),"abf_candidate_rows":len(source_candidates)},
        "abf_flagged_groups":source_candidates,
