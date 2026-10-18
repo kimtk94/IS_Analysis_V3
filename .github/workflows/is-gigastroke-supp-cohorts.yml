@@ -17,7 +17,7 @@ jobs:
           import json
           from pathlib import Path
           x=json.loads(Path('.github/research-queue/is-gigastroke-supp-request.json').read_text())
-          assert x=={"schema_version":1,"job":"gigastroke-supp-cohort-audit","non_live_only":True,"retry_note":"official_publisher_fallback_v2"}
+          assert x=={"schema_version":1,"job":"gigastroke-supp-cohort-audit","non_live_only":True,"retry_note":"eas_sheet_extraction_v3"}
           print("SUPP_REQUEST_VALIDATED=PASS")
           PY
       - name: Prepare workbook reader
