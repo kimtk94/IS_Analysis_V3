@@ -16,11 +16,12 @@ concurrency:
 jobs:
   ssh-p0:
     runs-on: ubuntu-latest
+    environment: is-research-readonly
     timeout-minutes: 45
     env:
       SSH_HOST: ${{ secrets.SSH_HOST }}
       SSH_USER: ${{ secrets.SSH_USER }}
-      SSH_KEY: ${{ secrets.SSH_KEY }}
+      SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
       MODE: ${{ inputs.mode }}
     steps:
