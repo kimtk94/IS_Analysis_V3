@@ -1,1 +1,1 @@
-2026-10-18 second requested attempt: run remote preflight only. No deployment, secrets output, or timer activation.
+2026-10-18 remote preflight after PR 167 merge; reporting to GitHub Issue. Read-only, do not deploy or enable timers.
