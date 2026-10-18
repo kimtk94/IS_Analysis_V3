@@ -4,7 +4,7 @@ on:
     branches: [research/thesis-evidence-freeze-20261015]
     paths:
       - 'scripts/audit_ckd_umod_ld_z_neighborhood.py'
-      - '.github/workflows/ckd-outlier-z-diagnostics.yml'
+      - '.github/workflows/ckd-umod-ld-z-neighborhood.yml'
   workflow_dispatch:
 permissions:
   contents: read
