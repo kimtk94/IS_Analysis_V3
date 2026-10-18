@@ -1,0 +1,33 @@
+name: IS Public BBJ GWAS Source Discovery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/is/discover_public_bbj_is_gwas.py"
+      - ".github/workflows/is-public-bbj-discovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover-public-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Discover direct BBJ ischemic stroke 2021 URL
+        run: |
+          python3 -m py_compile scripts/is/discover_public_bbj_is_gwas.py
+          python3 scripts/is/discover_public_bbj_is_gwas.py --json-path evidence/BBJ_PUBLIC_LINK_DISCOVERY.json
+      - name: Upload small source-discovery record
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-public-bbj-download-discovery
+          path: evidence/BBJ_PUBLIC_LINK_DISCOVERY.json
+          if-no-files-found: error
+          retention-days: 30
