@@ -1,6 +1,8 @@
 import csv,tempfile,unittest
 from pathlib import Path
-from scripts.is.audit_is_calhm2_three_qtl_snps import create,FIELDS,POPS,LEADS
+from importlib import import_module
+_m = import_module("scripts.is.audit_is_calhm2_three_qtl_snps")
+create,FIELDS,POPS,LEADS = _m.create,_m.FIELDS,_m.POPS,_m.LEADS
 class TestCALHM2ThreeQTL(unittest.TestCase):
  def test_exact_three_and_lead_tagging(self):
   with tempfile.TemporaryDirectory() as t:
@@ -22,7 +24,7 @@ class TestCALHM2ThreeQTL(unittest.TestCase):
      for lead in LEADS:
       for i in range(3):
        w.writerow(dict(population=pop,lead=lead,variant_b37=f"10:{105400000+i}:A:G",
-        signed_r=".95" if lead=="BBJ" else=".1",r2=".9025" if lead=="BBJ" else=".01",
+        signed_r=(".95" if lead=="BBJ" else ".1"),r2=(".9025" if lead=="BBJ" else ".01"),
         r2_ge_0p8=str(lead=="BBJ")))
    result=create(ev,ld,out)
    self.assertEqual(len(result),3)
