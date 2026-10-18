@@ -106,6 +106,12 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_pqtl_archive_locations.py
+      - name: Compare original UKB-PPP archive records for four variants
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_original_pqtl_four_variants.py
       - name: Remove identity
         if: always()
         run: rm -f ~/.ssh/ckd_audit
