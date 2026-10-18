@@ -32,6 +32,46 @@ def main():
  for directory,hashes,valid in candidates:
   print("P1_CANDIDATE="+json.dumps(dict(path=str(directory),sha256=hashes,valid_manifest=valid),sort_keys=True),flush=True)
  valid=[item for item in candidates if item[2]]
+ if len(valid)==2 and len(valid)==len(candidates):
+  from collections import Counter
+  a,b=valid[0][0],valid[1][0]
+  def tsv_profile(path,key):
+   with path.open(newline="") as stream:
+    rd=csv.DictReader(stream,delimiter="\t")
+    columns=rd.fieldnames or []
+    if key not in columns:raise ValueError("MISSING_ID_COLUMN "+key)
+    counts=Counter()
+    rows={}
+    for row in rd:
+     ident=row[key]
+     counts[ident]+=1
+     rows.setdefault(ident,[]).append(row)
+    return columns,counts,rows
+  try:
+   for name,key in [(NAMES[0],"gene_id_stable"),(NAMES[1],"gene_id_stable")]:
+    ca,na,ra=tsv_profile(a/name,key)
+    cb,nb,rb=tsv_profile(b/name,key)
+    shared=ra.keys() & rb.keys()
+    changed=sum(ra[k]!=rb[k] for k in shared)
+    summary=dict(file=name,left=str(a),right=str(b),
+      left_rows=sum(na.values()),right_rows=sum(nb.values()),
+      left_unique_ids=len(ra),right_unique_ids=len(rb),
+      only_left_ids=len(ra.keys()-rb.keys()),only_right_ids=len(rb.keys()-ra.keys()),
+      changed_shared_ids=changed,left_duplicate_ids=sum(v>1 for v in na.values()),
+      right_duplicate_ids=sum(v>1 for v in nb.values()),
+      column_schema_equal=(ca==cb),
+      common_changed_columns=sorted({col for k in shared for r1,r2 in zip(ra[k],rb[k])
+        for col in set(r1)&set(r2) if r1[col]!=r2[col]})[:60])
+    print("P1_SOURCE_DIFF="+json.dumps(summary,sort_keys=True),flush=True)
+   ma=json.loads((a/NAMES[2]).read_text())
+   mb=json.loads((b/NAMES[2]).read_text())
+   print("P1_MANIFEST_DIFF="+json.dumps(dict(
+    only_left_keys=sorted(ma.keys()-mb.keys()),
+    only_right_keys=sorted(mb.keys()-ma.keys()),
+    changed_shared_keys=sorted(k for k in ma.keys()&mb.keys() if ma[k]!=mb[k])
+   ),sort_keys=True),flush=True)
+  except Exception as exc:
+   print("P1_SOURCE_COMPARISON_ERROR="+type(exc).__name__+": "+str(exc),flush=True)
  signatures={tuple(item[1][n] for n in NAMES) for item in valid}
  if len(valid)!=len(candidates) or len(signatures)!=1:
   raise ValueError("P1_SOURCE_ROOT_CONFLICT candidates="+str(len(candidates))+" valid="+str(len(valid))+" distinct_hash_sets="+str(len(signatures)))
