@@ -55,6 +55,9 @@ def source():
             parts=urlparse(url)
             if parts.scheme!="https" or parts.hostname not in {"humandbs.dbcls.jp","pheweb.jp","www.pheweb.jp"}:
                 continue
+            # Select Sakaue 2021 BBJ source GWAS only, never independent fine-mapping ZIP.
+            if not parts.path.endswith("/hum0197.v3.BBJ.IS.v1.zip"):
+                continue
             matches.append({"study":"Sakaue2021_BBJ_IS","phenotype":"Ischemic stroke",
                             "n_cases":22664,"n_controls":152022,"url":url})
     return matches
