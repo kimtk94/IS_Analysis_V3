@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - '.github/is-auto-next-preflight-trigger.txt'
+      - '.github/workflows/is-auto-next-remote-preflight.yml'
 
 permissions:
   contents: read
@@ -23,7 +24,7 @@ jobs:
       - name: Prepare SSH identity
         id: ssh_identity
         env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
         run: |
           missing=0
