@@ -1,0 +1,62 @@
+name: IS P1 Results Read-only Summary
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/research-queue/is-p1-summary-request.json'
+permissions:
+  contents: read
+concurrency:
+  group: is-p1-results-summary
+  cancel-in-progress: false
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    environment: is-research-readonly
+    timeout-minutes: 20
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate summary task
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path(".github/research-queue/is-p1-summary-request.json").read_text())
+          if x!={"schema_version":1,"job":"is-p1-readonly-summary","source_run_id":39124908298,"non_live_only":True}:
+              raise SystemExit("UNAPPROVED_SUMMARY_REQUEST")
+          print("P1_SUMMARY_REQUEST=PASS")
+          PY
+      - name: Prepare SSH
+        shell: bash
+        run: |
+          for name in SSH_HOST SSH_USER SSH_KEY SSH_KNOWN_HOSTS; do
+            if [[ -z "${!name:-}" ]]; then exit 1; fi
+          done
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > "$HOME/.ssh/server_key"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/server_key" "$HOME/.ssh/known_hosts"
+          ssh-keygen -yf "$HOME/.ssh/server_key" >/dev/null || exit 1
+      - name: Read-only summary over SSH
+        shell: bash
+        run: |
+          OPTS="-o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 -o IdentitiesOnly=yes -o ForwardAgent=no -i $HOME/.ssh/server_key"
+          TMP=$(ssh $OPTS "$SSH_USER@$SSH_HOST" 'mktemp -d /tmp/is-p1-summary.XXXXXXXX') || exit 1
+          [[ "$TMP" == /tmp/is-p1-summary.* ]] || exit 1
+          echo "REMOTE_TMP=$TMP" >> "$GITHUB_ENV"
+          scp $OPTS scripts/is/report_p1_results.py "$SSH_USER@$SSH_HOST:$TMP/report_p1_results.py" || exit 1
+          ssh $OPTS "$SSH_USER@$SSH_HOST" "python3 '$TMP/report_p1_results.py'"
+      - name: Cleanup
+        if: always()
+        shell: bash
+        run: |
+          if [[ "$REMOTE_TMP" == /tmp/is-p1-summary.* ]]; then
+            ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 -o IdentitiesOnly=yes -o ForwardAgent=no -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" "rm -f '$REMOTE_TMP/report_p1_results.py'; rmdir '$REMOTE_TMP'" || true
+          fi
