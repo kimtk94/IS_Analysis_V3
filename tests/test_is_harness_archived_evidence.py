@@ -85,6 +85,41 @@ class ArchivedEvidenceTests(unittest.TestCase):
             self.assertIs(r["abf_flagged_groups"][0]["matched_qtl_ld_verified"],False)
             self.assertFalse(any("coloc_executed" in name for name in r))
 
+    def test_official_gwas_source_identity_fails_closed_without_independent_match(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=pathlib.Path(directory)
+            audits=root/"audits"
+            audits.mkdir()
+            absent=mod.audit_approved_gwas_registry(audits,allowed_root=root)
+            self.assertEqual(absent["registry_status"],"MISSING_APPROVED_REGISTRY")
+            self.assertEqual(absent["accepted_sources"],[])
+            registry=root/mod.GWAS_REGISTRY_RELATIVE
+            registry.parent.mkdir(parents=True)
+            official=root/"official.tsv"
+            official.write_text("variant\\tbeta\\tp\\n1:100:A:C\\t0.1\\t0.02\\n")
+            import hashlib
+            record={key:"" for key in mod.GWAS_REGISTRY_COLUMNS}
+            record.update({
+                "source":"BBJ","accession":"bbj-example",
+                "file_path":str(official),
+                "file_sha256":hashlib.sha256(official.read_bytes()).hexdigest(),
+                "genome_build":"GRCh37","trait_type":"cc",
+                "n_cases":"17671","n_controls":"192383",
+                "reference_url":"https://example.org/source",
+                "independent_match_status":"VERIFIED",
+                "matched_variant_count":"100",
+                "reviewed_by":"reviewer","reviewed_at":"2026-10-18",
+            })
+            write_tsv(registry,sorted(mod.GWAS_REGISTRY_COLUMNS),[record])
+            result=mod.audit_approved_gwas_registry(audits,allowed_root=root)
+            self.assertEqual(result["accepted_sources"],[])
+            self.assertIn("MATCH_EVIDENCE_NOT_REPRODUCED_BY_THIS_AUDIT",result["blocked_sources"]["BBJ"])
+            self.assertEqual(result["blocked_sources"]["EAS_AIS"],["NO_SOURCE_RECORD"])
+            record["file_sha256"]="0"*64
+            write_tsv(registry,sorted(mod.GWAS_REGISTRY_COLUMNS),[record])
+            result=mod.audit_approved_gwas_registry(audits,allowed_root=root)
+            self.assertIn("GWAS_SOURCE_FILE_DIGEST_MISMATCH",result["blocked_sources"]["BBJ"])
+
     def test_false_string_and_unrecognized_flags_are_not_truthy(self):
         self.assertIs(mod.flag("False"),False)
         self.assertIs(mod.flag("True"),True)
