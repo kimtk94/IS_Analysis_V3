@@ -2,7 +2,9 @@ import csv
 import tempfile
 import unittest
 from pathlib import Path
-from scripts.is.build_is_priority4_evidence_scorecard import integrate,GENES,EXPECTED,LOCUS
+from importlib import import_module
+_m = import_module("scripts.is.build_is_priority4_evidence_scorecard")
+integrate,GENES,EXPECTED,LOCUS = _m.integrate,_m.GENES,_m.EXPECTED,_m.LOCUS
 
 class TestEvidenceScorecard(unittest.TestCase):
     def make_comparison(self,p):
