@@ -25,6 +25,8 @@ for gene,archive,chrom,targets in SPEC:
     result.setdefault("diagnostic_columns",names[:20])
     result.setdefault("sample_format",[])
     sample_count=0
+    result["nearest"]={k:{"distance":10**15} for k in targets}
+    result["coordinate_diagnostic"]={"rows_checked":0,"genpos_idpos_different":0}
     for line in txt:
      values=line.split()
      if len(values)<len(names):continue
@@ -34,7 +36,18 @@ for gene,archive,chrom,targets in SPEC:
       sample_count+=1
      pos=row.get("GENPOS","")
      rid=row.get("ID","")
-     if not (pos in targets.values() or rid in targets):continue
+     parts=rid.split(":")
+     idpos=parts[1] if len(parts)>1 else ""
+     if pos.isdigit() and idpos.isdigit():
+      result["coordinate_diagnostic"]["rows_checked"]+=1
+      result["coordinate_diagnostic"]["genpos_idpos_different"]+=int(pos!=idpos)
+      for target,tp in targets.items():
+       delta=min(abs(int(pos)-int(tp)),abs(int(idpos)-int(tp)))
+       if delta<result["nearest"][target]["distance"]:
+        result["nearest"][target]={"distance":delta,"GENPOS":pos,"ID":rid,"A1FREQ":row.get("A1FREQ"),"INFO":row.get("INFO")}
+     if idpos in targets.values():
+      pass
+     if not (pos in targets.values() or rid in targets or idpos in targets.values()):continue
      result["records"].append({k:row.get(k) for k in ("CHROM","GENPOS","ID","ALLELE0","ALLELE1","A1FREQ","INFO","BETA","SE","N","TEST")})
  results.append(result)
 print(json.dumps({"audit":"ORIGINAL_UKBPPP_ARCHIVE_TARGETED_VARIANT_LOOKUP","results":results},indent=2))
