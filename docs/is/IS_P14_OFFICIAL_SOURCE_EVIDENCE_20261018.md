@@ -41,3 +41,22 @@ Status: **DOCUMENTARY EVIDENCE FOUND; INDEPENDENT REPLICATION NOT ESTABLISHED**
 5. Only after independent data provenance is affirmed: allele harmonization (strand/palindromic AF), effect direction, overlap and appropriate region-level colocalization.
 
 No causal claims. No changes to raw data or LIVE config.
+
+
+## 2026-10-18 addendum — direct evidence from GIGASTROKE original full text
+
+Original primary paper: https://pmc.ncbi.nlm.nih.gov/articles/PMC9524349/
+
+- GIGASTROKE explicitly defines **internal across-ancestry discovery-sample follow-up** versus **external replication**. The latter totals 89,084 stroke cases (85,546 AIS) and 1,013,843 controls; 10.1% of stroke cases in the external follow-up are East Asian. This is NOT the case/control N of EAS AIS discovery GWAS.
+- BBJ is explicitly named as an East Asian **iPGS predictive evaluation** cohort: 1,470 prevalent AIS cases and 40,459 controls; the iPGS model derivation set is 577 cases / 9,232 controls. These are predictive-model sample counts, NOT confirmed GIGASTROKE EAS AIS discovery N.
+- Independent BBJ2 first/second-cohort context: https://pmc.ncbi.nlm.nih.gov/articles/PMC11451717/ describes BBJ1 PRS derivation and independent BBJ2 evaluation at 1,470 cases / 40,459 controls. Independence of BBJ2 from BBJ1 in this PRS task does **not** establish independence of every BBJ discovery GWAS release from GIGASTROKE.
+- The paper's associated supplementary data include a downloadable 56-table XLSX, and its Methods point to study-specific recruitment for exact discovery and replication cohorts. It must be crosswalked to the **actual GIGASTROKE EAS AIS summary-statistics accession** and the exact BBJ IS release before the cohort-independence gate can be marked PASS.
+- GIGASTROKE independent external follow-up is reported for stroke associations; it should not be reinterpreted as independent replication of our specific QTL/gene-level mediation claims.
+
+## Frozen conservative gate interpretation
+
+- P1.4 cohort overlap: **PENDING_DATASET_SPECIFIC_CROSSWALK**, not automatically FAIL because BBJ appears in a predictive risk score assessment.
+- EAS AIS discovery study N: **PENDING_SUPPLEMENTARY_TABLE_EXTRACTION**.
+- BBJ 2021 IS release overlap with GIGASTROKE: **PENDING_COHORT_AND_RELEASE_CROSSWALK**.
+- QTD000161 study-specific N / donor LD: **PENDING_PRIMARY_QTL_METADATA**.
+- Multisignal coloc: **BLOCKED_QTL_STUDY_LD_AND_N**.
