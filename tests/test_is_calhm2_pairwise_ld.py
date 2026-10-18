@@ -4,14 +4,15 @@ import unittest
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from scripts.is.audit_is_calhm2_pairwise_ld import build
+from importlib import import_module
+build = import_module("scripts.is.audit_is_calhm2_pairwise_ld").build
 
 class TestCALHM2PairwiseLD(unittest.TestCase):
     def make_inputs(self,root):
         qtl=root/"qtl.tsv"
         geno=root/"geno.raw"
         panel=root/"population.tsv"
-        keys=["10:105410001:A:G","10:105410002:C:T","10:105410003:G:A"]
+        keys=["10:105410001:A:G","10:105410002:C:T","10:105459834:T:C"]
         with qtl.open("w",newline="") as f:
             fields=["locus","symbol","SNP_GRCh37",
                 "BBJ_exact_Fasta37","GIGA_EAS_AIS_exact_Fasta37",
@@ -38,16 +39,16 @@ class TestCALHM2PairwiseLD(unittest.TestCase):
             "10:105599770:T:G_G":b,
             keys[0]+"_G":a,
             keys[1]+"_T":a,
-            keys[2]+"_G":2-c})
+            "UNUSED_SYNTHETIC_C_C":c})
         frame.to_csv(geno,sep="\t",index=False)
         return qtl,geno,panel
     def test_outputs_and_reference_bounds(self):
         with tempfile.TemporaryDirectory() as t:
             root=Path(t);q,g,p=self.make_inputs(root)
             result=build(q,g,p,root/"out")
-            self.assertEqual(len(result),30) # 5 variants choose 2 x 3 populations
+            self.assertEqual(len(result),18) # 4 unique variants choose 2 x 3 populations
             pairs=[r for r in result if r["population"]=="JPT104"]
-            self.assertEqual(len(pairs),10)
+            self.assertEqual(len(pairs),6)
             self.assertTrue(all(r["n"]==104 for r in pairs))
             self.assertTrue(all(0<=r["r2"]<=1.000001 for r in result))
             self.assertTrue((root/"out"/"CALHM2_PAIRWISE_LD_MANIFEST.json").exists())
