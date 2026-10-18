@@ -17,13 +17,28 @@ def main():
  for root,dirs,files in os.walk(ROOT):
   dirs[:]=sorted(x for x in dirs if not x.startswith(".") and not Path(root,x).is_symlink())
   if all(n in files for n in NAMES):hits.append(Path(root))
-  if len(hits)>1:break
- if len(hits)!=1:raise ValueError("P1_SOURCE_ROOT_UNRESOLVED count="+str(len(hits)))
- src=hits[0]
+ if not hits:raise ValueError("P1_SOURCE_ROOT_UNRESOLVED count=0")
+ candidates=[]
+ for directory in hits:
+  paths={n:directory/n for n in NAMES}
+  try:
+   m=json.loads(paths[NAMES[2]].read_text())
+   hashes={n:digest(p) for n,p in paths.items()}
+   valid=(m.get("stable_gene_ids")==2225 and m.get("gene_region_pairs")==2425)
+   candidates.append((directory,hashes,valid))
+  except (OSError,ValueError) as exc:
+   print("P1_CANDIDATE_INVALID="+str(directory)+" "+str(type(exc).__name__),flush=True)
+   candidates.append((directory,None,False))
+ for directory,hashes,valid in candidates:
+  print("P1_CANDIDATE="+json.dumps(dict(path=str(directory),sha256=hashes,valid_manifest=valid),sort_keys=True),flush=True)
+ valid=[item for item in candidates if item[2]]
+ signatures={tuple(item[1][n] for n in NAMES) for item in valid}
+ if len(valid)!=len(candidates) or len(signatures)!=1:
+  raise ValueError("P1_SOURCE_ROOT_CONFLICT candidates="+str(len(candidates))+" valid="+str(len(valid))+" distinct_hash_sets="+str(len(signatures)))
+ src=sorted((item[0] for item in valid),key=lambda p:(len(p.parts),str(p)))[0]
  files={n:src/n for n in NAMES}
- m=json.loads(files[NAMES[2]].read_text())
- if m.get("stable_gene_ids")!=2225 or m.get("gene_region_pairs")!=2425:raise ValueError("P1_CARDINALITY_FAIL")
  sha={n:digest(p) for n,p in files.items()}
+ print("P1_EQUIVALENT_SOURCE_COPIES="+str(len(valid)),flush=True)
  print("SSH_AUTH=PASS",flush=True)
  print("P1_SOURCE_ROOT="+str(src),flush=True)
  print("P1_SHA256="+json.dumps(sha,sort_keys=True),flush=True)
