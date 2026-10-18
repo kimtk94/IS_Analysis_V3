@@ -19,6 +19,7 @@ concurrency:
 jobs:
   inspect:
     runs-on: ubuntu-latest
+    environment: is-research-readonly
     timeout-minutes: 10
     steps:
       - name: Prepare SSH identity
