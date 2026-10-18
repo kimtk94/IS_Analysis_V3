@@ -26,9 +26,20 @@ def main():
  refs=[(label,urllib.parse.urljoin(ARTICLE,href)) for label,href in parser.items if ("supplementary tables" in label.lower() and ("xlsx" in href.lower() or "supp" in href.lower() or "bin/" in href.lower()))]
  print("SUPP_CANDIDATE_LINKS="+json.dumps(refs[:12]),flush=True)
  if not refs:raise RuntimeError("NO_SUPPLEMENTAL_TABLE_LINK")
- chosen=refs[-1][1]
- data,final=get(chosen)
- if not zipfile.is_zipfile(BytesIO(data)):raise RuntimeError("SOURCE_NOT_VALID_XLSX_ZIP")
+ fallbacks=[refs[-1][1],"https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-022-05165-3/MediaObjects/41586_2022_5165_MOESM4_ESM.xlsx"]
+ attempts=[]
+ data=final=None
+ for url in fallbacks:
+  try:
+   chunk,resolved=get(url)
+   if zipfile.is_zipfile(BytesIO(chunk)):
+    data,final=chunk,resolved
+    break
+   attempts.append({"url":url,"resolved":resolved,"length":len(chunk),"prefix":repr(chunk[:100])})
+  except Exception as e: attempts.append({"url":url,"error":repr(e)})
+ if data is None:
+  print("SUPP_DOWNLOAD_ATTEMPTS="+json.dumps(attempts),flush=True)
+  raise RuntimeError("NO_VALID_OFFICIAL_XLSX")
  book=load_workbook(BytesIO(data),read_only=True,data_only=True)
  names=book.sheetnames
  print("SUPP_XLSX_PROVENANCE="+json.dumps({"url":final,"sha256":hashlib.sha256(data).hexdigest(),"size":len(data),"sheet_count":len(names),"sheets":names[:60]}),flush=True)
