@@ -47,11 +47,15 @@ def main():
   if not re.search(r"(^|\\D)(1|2)(\\D|$)",sn) and not re.search("table\\s*[12]\\b",sn,re.I):continue
   ws=book[sn];values=list(ws.iter_rows(max_row=400,max_col=45,values_only=True))
   hits=[]
+  current_ancestry=""
   for idx,row in enumerate(values,1):
-   parts=[str(x)[:250] for x in row if x is not None]
-   if re.search(r"\\b(bbj|biobank japan|japan|east asian|discovery|replication)\\b"," ".join(parts),re.I):
-    hits.append({"row":idx,"cells":parts[:18]})
-  print("SUPP_TABLE_EXTRACT="+json.dumps({"sheet":sn,"dimensions":[ws.max_row,ws.max_column],"header_rows":[[str(x)[:180] if x is not None else "" for x in row[:18]] for row in values[:8]],"keyword_hits":hits[:75]},ensure_ascii=False),flush=True)
+   if idx>4 and row[0] is not None and str(row[0]).strip() in ("EUR","EAS","AFR","SAS","HIS","AMR"):
+    current_ancestry=str(row[0]).strip()
+   study=str(row[1]).strip() if len(row)>1 and row[1] is not None else ""
+   if idx<=4 or not study:continue
+   if current_ancestry=="EAS" or any(term in study.casefold() for term in ("bbj","biobank japan","japan","tohoku")):
+    hits.append({"row":idx,"ancestry":current_ancestry,"study":study,"cells":[str(x)[:200] if x is not None else "" for x in row[:23]]})
+  print("SUPP_TABLE_EXTRACT="+json.dumps({"sheet":sn,"dimensions":[ws.max_row,ws.max_column],"header_rows":[[str(x)[:180] if x is not None else "" for x in row[:18]] for row in values[:8]],"eas_and_japan_rows":hits[:100]},ensure_ascii=False),flush=True)
  print("SUPP_EVIDENCE_AUDIT=COMPLETE_DESCRIPTIVE_ONLY",flush=True)
 if __name__=="__main__":
  try:main()
