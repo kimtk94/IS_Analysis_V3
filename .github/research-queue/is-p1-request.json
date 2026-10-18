@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "job": "is-p1-full-universe",
+  "mode": "run",
+  "source_version": "646replayed_20261011_v2",
+  "non_live_only": true,
+  "authorized": true
+}
