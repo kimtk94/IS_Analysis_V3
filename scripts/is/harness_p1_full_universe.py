@@ -52,7 +52,10 @@ def main():
     ca,na,ra=tsv_profile(a/name,key)
     cb,nb,rb=tsv_profile(b/name,key)
     shared=ra.keys() & rb.keys()
-    changed=sum(ra[k]!=rb[k] for k in shared)
+    shared_cols=sorted(set(ca)&set(cb))
+    def comparable(rows):
+     return sorted(tuple((col,row.get(col,"")) for col in shared_cols) for row in rows)
+    changed=sum(comparable(ra[k])!=comparable(rb[k]) for k in shared)
     summary=dict(file=name,left=str(a),right=str(b),
       left_rows=sum(na.values()),right_rows=sum(nb.values()),
       left_unique_ids=len(ra),right_unique_ids=len(rb),
@@ -60,8 +63,12 @@ def main():
       changed_shared_ids=changed,left_duplicate_ids=sum(v>1 for v in na.values()),
       right_duplicate_ids=sum(v>1 for v in nb.values()),
       column_schema_equal=(ca==cb),
-      common_changed_columns=sorted({col for k in shared for r1,r2 in zip(ra[k],rb[k])
-        for col in set(r1)&set(r2) if r1[col]!=r2[col]})[:60])
+      only_left_columns=sorted(set(ca)-set(cb)),
+      only_right_columns=sorted(set(cb)-set(ca)),
+      changed_shared_ids_on_common_columns=changed,
+      common_changed_columns=sorted({col for col in shared_cols if any(
+        sorted(row.get(col,"") for row in ra[k]) != sorted(row.get(col,"") for row in rb[k])
+        for k in shared)})[:60])
     print("P1_SOURCE_DIFF="+json.dumps(summary,sort_keys=True),flush=True)
    ma=json.loads((a/NAMES[2]).read_text())
    mb=json.loads((b/NAMES[2]).read_text())
