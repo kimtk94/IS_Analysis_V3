@@ -31,7 +31,7 @@ EAS5_VARIANTS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v
 EAS5_READINESS = AUDITS / "is_eas5_qtl_gwas_official_alt_harmonization_20261011_v1" / "IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv"
 EAS5_OVERLAP = AUDITS / "is_eas5_qtl_gwas_snp_ref37_20261011_v2" / "IS_EAS5_GENE_TISSUE_GWAS_SNP_OVERLAP_QC.tsv"
 
-AUDIT_SCHEMA_REV = "20261018-p3a-sample-metadata-gates-v7"
+AUDIT_SCHEMA_REV = "20261018-p3a-official-gwas-provenance-v8"
 EXPECTED_READY = {
     "NOT_IN_EAS_30_GROUPS": 1356,
     "PUBLIC_NOMINAL_QTL_REGIONAL_PILOT_NOT_EXECUTED": 629,
@@ -67,6 +67,7 @@ def input_metadata_signature() -> str:
         OUTPUT / "science_inputs" / "P1_APPROVED_QTL_LD.tsv",
         OUTPUT / "science_inputs" / "P2_APPROVED_GRCH37_REFERENCE.json",
         OUTPUT / "science_inputs" / "P3_APPROVED_COLOC_INPUTS.tsv",
+        OUTPUT / "science_inputs" / "P3A_APPROVED_GWAS_SOURCES.tsv",
     ]
     items = []
     for path in inputs:
@@ -525,6 +526,7 @@ def dispatch(op: str) -> dict:
                 "abf_screen":archive["abf_screen"],
                 "abf_gate_summary":archive["abf_gate_summary"],
                 "p3a_source_header_audit":archive["p3a_source_header_audit"],
+                "p3a_gwas_source_identity":archive["p3a_gwas_source_identity"],
                 "scientific_status":"ARCHIVED_SOURCE_FLAGS_AND_ABF_READINESS_ONLY",
             }
         else:
