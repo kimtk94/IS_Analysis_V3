@@ -1,0 +1,26 @@
+name: IS GIGASTROKE Supplementary Cohort Crosswalk
+on:
+  push:
+    branches: [main]
+    paths: ['.github/research-queue/is-gigastroke-supp-request.json']
+permissions:
+  contents: read
+jobs:
+  public-supplement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate read-only request
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('.github/research-queue/is-gigastroke-supp-request.json').read_text())
+          assert x=={"schema_version":1,"job":"gigastroke-supp-cohort-audit","non_live_only":True}
+          print("SUPP_REQUEST_VALIDATED=PASS")
+          PY
+      - name: Prepare workbook reader
+        run: python3 -m pip install --disable-pip-version-check openpyxl==3.1.5
+      - name: Retrieve public source and inspect cohort tables
+        run: python3 scripts/is/audit_gigastroke_supplement_cohorts.py
