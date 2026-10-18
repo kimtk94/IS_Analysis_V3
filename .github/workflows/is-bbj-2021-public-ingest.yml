@@ -1,0 +1,109 @@
+name: IS BBJ 2021 Public GWAS Safe Ingest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/is-bbj-2021-public-ingest.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-bbj-2021-public-gwas-ingest
+  cancel-in-progress: false
+
+jobs:
+  guarded-public-download:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    environment: is-research-readonly
+    steps:
+      - name: Configure existing verified SSH identity
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for name in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then echo "::error::Missing secret $name"; exit 1; fi
+          done
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/is_gwas_ingest_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/is_gwas_ingest_key ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/is_gwas_ingest_key >/dev/null
+      - name: Download only BBJ Sakaue 2021 IS into isolated research source directory
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          set -euo pipefail
+          SSH_ARGS=(-o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i "$HOME/.ssh/is_gwas_ingest_key")
+          ssh "${SSH_ARGS[@]}" "${SSH_USER}@${SSH_HOST}" 'bash -se' <<'REMOTE'
+          set -euo pipefail
+          url='https://humandbs.dbcls.jp/files/hum0197/hum0197.v3.BBJ.IS.v1.zip'
+          root='/srv/is-analysis/results/is/external_gwas_raw/bbj_sakaue2021'
+          name='hum0197.v3.BBJ.IS.v1.zip'
+          expected=1611973884
+          umask 077
+          mkdir -p "$root"
+          cd "$root"
+          lock="$root/.download.lock"
+          flock -w 60 "$lock" bash -se <<'LOCK'
+          set -euo pipefail
+          url='https://humandbs.dbcls.jp/files/hum0197/hum0197.v3.BBJ.IS.v1.zip'
+          name='hum0197.v3.BBJ.IS.v1.zip'
+          expected=1611973884
+          if [ -f "$name" ]; then
+            [ "$(stat -c %s "$name")" = "$expected" ] || { echo 'EXISTING_FILE_SIZE_MISMATCH'; exit 1; }
+            echo 'ALREADY_DOWNLOADED_AND_SIZE_MATCHED'
+          else
+            free=$(df -PB1 . | awk 'NR==2 {print $4}')
+            echo "DISK_FREE_BYTES=$free"
+            if [ "$free" -lt 5000000000 ]; then
+              echo 'BLOCKED_INSUFFICIENT_DISK_SPACE'
+              exit 1
+            fi
+            curl --fail --location --show-error --silent \
+              --retry 3 --connect-timeout 30 --max-time 2700 \
+              --max-filesize "$expected" \
+              "$url" -o "$name.pending"
+            actual=$(stat -c %s "$name.pending")
+            [ "$actual" = "$expected" ] || { echo "DOWNLOAD_SIZE_MISMATCH=$actual"; exit 1; }
+            mv -f "$name.pending" "$name"
+          fi
+          python3 - <<'PY'
+          import hashlib,json,zipfile
+          from pathlib import Path
+          p=Path('hum0197.v3.BBJ.IS.v1.zip')
+          if not zipfile.is_zipfile(p):
+              raise ValueError("PUBLIC_SOURCE_NOT_ZIP")
+          with zipfile.ZipFile(p) as z:
+              members=[{"name":i.filename,"compressed":i.compress_size,"uncompressed":i.file_size}
+                       for i in z.infolist()]
+          digest=hashlib.sha256()
+          with p.open('rb') as stream:
+              for chunk in iter(lambda:stream.read(1048576),b''):
+                  digest.update(chunk)
+          data={"schema":"is-bbj-2021-public-source-ingest-v1",
+                "url":"https://humandbs.dbcls.jp/files/hum0197/hum0197.v3.BBJ.IS.v1.zip",
+                "bytes":p.stat().st_size,"sha256":digest.hexdigest(),
+                "zip_members":members,
+                "download_integrity":"ZIP_CENTRAL_DIRECTORY_VALID",
+                "independent_source_match":"NOT_PERFORMED",
+                "sample_size_adopted":False,"coloc_executed":False}
+          Path('public_zip_manifest.json').write_text(json.dumps(data,indent=2)+"\n")
+          print("BBJ_PUBLIC_ZIP_INGEST_PASS",json.dumps(
+              {"bytes":data["bytes"],"sha256":data["sha256"],
+               "zip_members":len(members),"source_identity":"NOT_VERIFIED"}))
+          PY
+          LOCK
+          REMOTE
+      - name: Remove SSH identity
+        if: always()
+        run: rm -f ~/.ssh/is_gwas_ingest_key
