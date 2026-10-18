@@ -94,6 +94,12 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_four_outlier_analysis_ready.py
+      - name: Inventory full source candidates
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_primary_sources_inventory.py
       - name: Remove identity
         if: always()
         run: rm -f ~/.ssh/ckd_audit
