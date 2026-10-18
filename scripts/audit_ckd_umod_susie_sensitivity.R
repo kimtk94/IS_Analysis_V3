@@ -30,7 +30,7 @@ for (drop in c(FALSE,TRUE)) {
  keep <- if(drop) setdiff(selected,target) else selected
  z <- dat$beta_outcome_aligned[keep]/dat$se_outcome[keep]
  N <- round(median(dat$n_outcome[keep]))
- fit <- tryCatch(susie_rss(z=z,R=ld[keep,keep,drop=FALSE],n=N,L=3,max_iter=30,
+ fit <- tryCatch(susie_rss(z=z,R=ld[keep,keep,drop=FALSE],n=N,L=3,max_iter=100,
   estimate_residual_variance=FALSE,refine=FALSE,verbose=FALSE),error=function(e)e)
  if (inherits(fit,"error")) {
   cat("UMOD_SENSITIVITY_RESULT arm=",if(drop)"EXCLUDED" else "INCLUDED",
