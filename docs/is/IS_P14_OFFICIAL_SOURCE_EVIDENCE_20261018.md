@@ -60,3 +60,27 @@ Original primary paper: https://pmc.ncbi.nlm.nih.gov/articles/PMC9524349/
 - BBJ 2021 IS release overlap with GIGASTROKE: **PENDING_COHORT_AND_RELEASE_CROSSWALK**.
 - QTD000161 study-specific N / donor LD: **PENDING_PRIMARY_QTL_METADATA**.
 - Multisignal coloc: **BLOCKED_QTL_STUDY_LD_AND_N**.
+
+
+## 2026-10-18 direct supplemental workbook verification — BBJ in GIGASTROKE EAS discovery
+
+**Official source file**: https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-022-05165-3/MediaObjects/41586_2022_5165_MOESM4_ESM.xlsx
+
+- SHA256: `7c688f864c73ec2e9624bde9f53ac48a9880a6a08e59f5e1266690e243618ba4`
+- Reproducible extractor: `scripts/is/audit_gigastroke_supplement_cohorts.py`
+- Successful Actions run: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/39126549153
+- `Suppl.Table1`, spreadsheet row **62**, ancestry EAS, study `BIOBANK_JAPAN*`:
+  - Incident & prevalent combined: **AS = 17,651; AIS = 17,651; CES = 758; SVS = 4,915; LAS = 1,331; controls = 159,610**.
+  - The row is under the original discovery study sample section, distinct from the separate follow-up section.
+- `Suppl.Table2`, spreadsheet row **78**, study `BIOBANK_JAPAN_1`:
+  - genotyping Illumina HumanOmniExpressExome / HumanOmniExpress + HumanExome; imputation reference BBJ1k+1KGp3v5; REGENIE v2.0.2, approximate Firth logistic regression.
+  - Rows 79 and 80 list `BIOBANK_JAPAN_1r (for PGS)` and `BIOBANK_JAPAN_2 (for PGS)` **separately**. PGS datasets are not interchangeable with GWAS discovery data.
+
+**Updated interpretation**:
+1. **CONFIRMED: a BBJ cohort participated in GIGASTROKE EAS discovery**. Therefore a naïve analysis of BBJ discovery GWAS vs GIGASTROKE EAS discovery GWAS must NOT be labelled independent replication.
+2. **UNRESOLVED: identity and participant overlap** between the exact BBJ 2021 IS release under study and the GIGASTROKE BBJ1 17,651/159,610 cohort. A same-named biobank does not by itself prove that all individuals overlap, and absence of matched sample IDs prevents quantifying overlap.
+3. `BBJ_vs_GIGASTROKE_EAS` becomes `NONINDEPENDENT_COMPARISON_RISK_BBJ_PRESENT_IN_META` for independent-replication gating (conservative), rather than generic `PENDING`. **Do not use this comparison as independent replication evidence.**
+4. Preserve descriptive allele-aligned effect-direction analyses; note their status as internally overlapping-source comparisons, not external validation.
+5. Replication route: use GIGASTROKE EAS **leave-BBJ-out** meta-analysis with documented exclusion, or independent externally sampled EAS stroke GWAS, after exact cohort provenance is verified.
+
+This supersedes earlier uncertainty in this document about whether BBJ contributes to the GIGASTROKE discovery meta-analysis. It does **not** establish full case-control overlap with the specific BBJ 2021 release or the QTL coloc assumptions.
