@@ -9,7 +9,7 @@ found=[];total=0;columns=[]
 with gzip.open(path,"rt",errors="replace") as f:
  columns=re.split(r"\\s+",f.readline().strip())
  for line in f:
-  parts=re.split(r"\\s+",line.strip())
+  if not any(rs in line for rs in target) and not any(pos in line for pos in positions):\n   total+=1\n   continue\n  parts=re.split(r"\\s+",line.strip())
   if len(parts)!=len(columns):continue
   total+=1
   values=dict(zip(columns,parts))
