@@ -6,6 +6,7 @@ on:
       - 'scripts/audit_ckd_top3_snp_ld_readonly.py'
       - 'scripts/audit_ckd_top3_effect_orientation.py'
       - 'scripts/audit_ckd_top3_ld_frequency_screen.py'
+      - 'scripts/audit_ckd_top3_maf_outliers.py'
       - '.github/workflows/ckd-top3-snp-ld-audit.yml'
   workflow_dispatch:
 permissions:
@@ -63,6 +64,15 @@ jobs:
             -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" \
             'python3 - --stage2c /srv/is-analysis/results/ckd/stage2c_susie/susie_input --lddir /srv/is-analysis/data/ckd/stage2c_ld/ld' \
             < scripts/audit_ckd_top3_ld_frequency_screen.py
+      - name: Identify the four high-MAF-discordance SNPs
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" \
+            'python3 - --input /srv/is-analysis/results/ckd/stage2c_susie/susie_input --lddir /srv/is-analysis/data/ckd/stage2c_ld/ld' \
+            < scripts/audit_ckd_top3_maf_outliers.py
       - name: Remove identity
         if: always()
         run: rm -f ~/.ssh/ckd_audit
