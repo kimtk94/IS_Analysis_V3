@@ -88,6 +88,12 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_source_headers.py
+      - name: Lookup four SNPs in analysis-ready GWAS and ST16
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_four_outlier_analysis_ready.py
       - name: Remove identity
         if: always()
         run: rm -f ~/.ssh/ckd_audit
