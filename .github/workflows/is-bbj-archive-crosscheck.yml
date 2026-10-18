@@ -1,0 +1,63 @@
+name: IS BBJ 2021 Official-vs-EAS5 Read-only Comparison
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/is/compare_bbj_2021_zip_to_eas5.py"
+      - "tests/test_is_compare_bbj_2021_zip_to_eas5.py"
+      - ".github/workflows/is-bbj-archive-crosscheck.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-bbj-archive-crosscheck
+  cancel-in-progress: false
+
+jobs:
+  official-source-screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: is-research-readonly
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test offline ZIP stream and signed-effect direction
+        run: |
+          python3 -m py_compile scripts/is/compare_bbj_2021_zip_to_eas5.py
+          python3 -m unittest discover -s tests -p 'test_is_compare_bbj_2021_zip_to_eas5.py' -v
+      - name: Configure verified research SSH identity
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for n in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            [ -n "${!n:-}" ] || { echo "::error::Missing identity"; exit 1; }
+          done
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/bbj_compare_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/bbj_compare_key ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/bbj_compare_key >/dev/null
+      - name: Independently compare public BBJ 2021 vs archived EAS5 GWAS SNP values
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -o ServerAliveInterval=30 -o ServerAliveCountMax=10 \
+            -i "$HOME/.ssh/bbj_compare_key" "${SSH_USER}@${SSH_HOST}" \
+            'python3 - --archive /srv/is-analysis/results/is/audits/is_eas5_98_egene_fullcis_gwas_overlap_20261011_v3_fastaanchored/IS_EAS5_98_FDR_EGENE_FULLCIS_BBJ_EAS_MATCHED_VARIANTS.tsv.gz --zip /srv/is-analysis/results/is/external_gwas_raw/bbj_sakaue2021/hum0197.v3.BBJ.IS.v1.zip' \
+            < scripts/is/compare_bbj_2021_zip_to_eas5.py
+      - name: Remove SSH identity
+        if: always()
+        run: rm -f ~/.ssh/bbj_compare_key
