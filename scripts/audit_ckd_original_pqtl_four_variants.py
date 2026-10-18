@@ -22,10 +22,16 @@ for gene,archive,chrom,targets in SPEC:
    if handle is None:continue
    with gzip.GzipFile(fileobj=handle,mode="rb") as gz, io.TextIOWrapper(gz,encoding="utf-8",errors="replace") as txt:
     names=txt.readline().split()
+    result.setdefault("diagnostic_columns",names[:20])
+    result.setdefault("sample_format",[])
+    sample_count=0
     for line in txt:
      values=line.split()
      if len(values)<len(names):continue
      row=dict(zip(names,values))
+     if sample_count<2:
+      result["sample_format"].append({"field_count":len(values),"first_chrom":row.get("CHROM"),"first_genpos":row.get("GENPOS"),"first_id_pattern":str(row.get("ID",""))[:12]})
+      sample_count+=1
      pos=row.get("GENPOS","")
      rid=row.get("ID","")
      if not (pos in targets.values() or rid in targets):continue
