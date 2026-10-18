@@ -67,6 +67,11 @@ jobs:
           echo "CURRENT_BRANCH=$(git -C /srv/is-analysis/IS_Analysis_V3 branch --show-current 2>&1)"
           echo "WORKER_PRESENT=$(test -f /srv/is-analysis/IS_Analysis_V3/scripts/is/github_issue_queue_worker.py && echo yes || echo no)"
           echo "AUTO_NEXT_PRESENT=$(test -f /srv/is-analysis/IS_Analysis_V3/scripts/is/auto_next.py && echo yes || echo no)"
+          echo "INSTALLED_WORKER_PRESENT=$(test -f "$HOME/is-harness/github_issue_queue_worker.py" && echo yes || echo no)"
+          echo "INSTALLED_RESEARCH_JOBS_PRESENT=$(test -f "$HOME/is-harness/harness_research_jobs.py" && echo yes || echo no)"
+          echo "INSTALLED_AUTO_NEXT_PRESENT=$(test -f "$HOME/is-harness/auto_next.py" && echo yes || echo no)"
+          echo "USER_QUEUE_SERVICE=$(systemctl --user is-active is-harness-queue.service 2>/dev/null || true)"
+          echo "USER_QUEUE_TIMER=$(systemctl --user is-enabled is-harness-queue.timer 2>/dev/null || true)"
           echo "USER_TIMERS:"
           systemctl --user list-timers --all --no-pager 2>&1 | grep -Ei 'harness|queue|auto.next|is-' || true
           echo "SYSTEM_TIMERS:"
@@ -78,11 +83,11 @@ jobs:
           echo "LOCK_DIR:"
           stat -c '%a %U:%G %n' /srv/is-analysis/results/is/github_actions_runs 2>&1 || true
           REMOTE
-          if ! grep -q "WORKER_PRESENT=yes" preflight.log; then
-            echo "::error::Existing worker missing from expected checkout"
+          if ! grep -q "INSTALLED_WORKER_PRESENT=yes" preflight.log && ! grep -q "WORKER_PRESENT=yes" preflight.log; then
+            echo "::error::Worker missing from both deployed home and checkout"
             exit 1
           fi
-          if ! grep -q "AUTO_NEXT_PRESENT=yes" preflight.log; then
+          if ! grep -q "INSTALLED_AUTO_NEXT_PRESENT=yes" preflight.log && ! grep -q "AUTO_NEXT_PRESENT=yes" preflight.log; then
             echo "::warning::AUTO_NEXT is not yet deployed; activation gate remains closed"
           fi
       - name: Publish inspection log
