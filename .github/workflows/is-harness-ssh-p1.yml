@@ -26,7 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
+      - uses: actions/checkout@v4
+        with:
           ref: research/is-broad-discovery-20261009
+          path: p1-research
       - name: Configure SSH
         shell: bash
         run: |
@@ -46,8 +50,8 @@ jobs:
           TMP=$(ssh $OPTS "$SSH_USER@$SSH_HOST" 'mktemp -d /tmp/is-harness-p1.XXXXXXXX') || exit 1
           [[ "$TMP" == /tmp/is-harness-p1.* ]] || exit 1
           echo "REMOTE_TMP=$TMP" >> "$GITHUB_ENV"
-          scp $OPTS scripts/is/harness_p1_full_universe.py scripts/is/audit_existing_2225_evidence_priority_queue.py "$SSH_USER@$SSH_HOST:$TMP/" || exit 1
-          echo "SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          scp $OPTS scripts/is/harness_p1_full_universe.py p1-research/scripts/is/audit_existing_2225_evidence_priority_queue.py "$SSH_USER@$SSH_HOST:$TMP/" || exit 1
+          echo "SOURCE_COMMIT=$(git -C p1-research rev-parse HEAD)" >> "$GITHUB_ENV"
       - name: Run P1 gate
         shell: bash
         env:
