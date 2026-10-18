@@ -21,12 +21,16 @@ stopifnot(max(abs(ld-t(ld)))<1e-5)
 target <- match("rs11860566",dat$snp)
 stopifnot(!is.na(target))
 cat("UMOD_SENSITIVITY_INPUT n=",n," target_row=",target,"\n")
+# Predeclare a fixed signal-enriched subset shared by both arms.
+absz <- abs(dat$beta_outcome_aligned/dat$se_outcome)
+selected <- sort(unique(c(target,head(order(absz,decreasing=TRUE),180L))))
+cat("UMOD_SENSITIVITY_SUBSET n=",length(selected)," selection=top_180_abs_egfr_z_plus_outlier; exploratory_only=TRUE\n")
 # Fit eGFR summary statistics in memory with identical fit parameters both arms.
 for (drop in c(FALSE,TRUE)) {
- keep <- if(drop) setdiff(seq_len(n),target) else seq_len(n)
+ keep <- if(drop) setdiff(selected,target) else selected
  z <- dat$beta_outcome_aligned[keep]/dat$se_outcome[keep]
  N <- round(median(dat$n_outcome[keep]))
- fit <- tryCatch(susie_rss(z=z,R=ld[keep,keep,drop=FALSE],n=N,L=10,max_iter=100,
+ fit <- tryCatch(susie_rss(z=z,R=ld[keep,keep,drop=FALSE],n=N,L=3,max_iter=30,
   estimate_residual_variance=FALSE,refine=FALSE,verbose=FALSE),error=function(e)e)
  if (inherits(fit,"error")) {
   cat("UMOD_SENSITIVITY_RESULT arm=",if(drop)"EXCLUDED" else "INCLUDED",
