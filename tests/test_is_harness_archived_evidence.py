@@ -62,6 +62,14 @@ class ArchivedEvidenceTests(unittest.TestCase):
             self.assertEqual(r["overlap_report"]["reported_fasta_verified_rows_sum"],2)
             self.assertEqual(r["readiness"]["abf_candidate_rows"],1)
             self.assertEqual(r["abf_screen"]["screened"],1)
+            fields=r["p3a_source_header_audit"]["field_presence"]
+            self.assertTrue(fields["qtl_beta_and_se"])
+            self.assertTrue(fields["bbj_beta_and_p"])
+            self.assertTrue(fields["eas_beta_and_p"])
+            self.assertFalse(fields["bbj_effect_se"])
+            self.assertFalse(fields["eas_effect_se"])
+            self.assertFalse(fields["bbj_sample_size"])
+            self.assertFalse(fields["stroke_case_fraction"])
             self.assertEqual(r["abf_screen"]["groups_with_source_flagged_stats"],1)
             self.assertEqual(r["abf_screen"]["coloc_abf_executed"],0)
             group=r["abf_flagged_groups"][0]
