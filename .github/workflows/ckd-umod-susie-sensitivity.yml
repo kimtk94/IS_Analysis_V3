@@ -1,0 +1,36 @@
+name: CKD UMOD SuSiE Sensitivity Read-only
+on:
+  push:
+    branches: [research/thesis-evidence-freeze-20261015]
+    paths:
+      - 'scripts/audit_ckd_umod_susie_sensitivity.R'
+      - '.github/workflows/ckd-umod-susie-sensitivity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: is-research-readonly
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare read-only SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/ckd_audit
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/ckd_audit ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/ckd_audit >/dev/null
+      - name: Compare UMOD SuSiE with and without rs11860566
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=12 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'R_LIBS_USER=/srv/is-analysis/.Rlib Rscript -' < scripts/audit_ckd_umod_susie_sensitivity.R
+      - if: always()
+        run: rm -f ~/.ssh/ckd_audit
