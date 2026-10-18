@@ -21,8 +21,11 @@ for gene,archive,chrom,targets in SPEC:
    handle=tf.extractfile(m)
    if handle is None:continue
    with gzip.GzipFile(fileobj=handle,mode="rb") as gz, io.TextIOWrapper(gz,encoding="utf-8",errors="replace") as txt:
-    reader=csv.DictReader(txt,delimiter=" ",skipinitialspace=True)
-    for row in reader:
+    names=txt.readline().split()
+    for line in txt:
+     values=line.split()
+     if len(values)<len(names):continue
+     row=dict(zip(names,values))
      pos=row.get("GENPOS","")
      rid=row.get("ID","")
      if not (pos in targets.values() or rid in targets):continue
