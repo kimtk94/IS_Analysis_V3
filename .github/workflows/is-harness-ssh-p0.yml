@@ -25,6 +25,8 @@ jobs:
       MODE: ${{ inputs.mode }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: research/is-broad-discovery-20261009
       - name: Check credentials are configured (without revealing values)
         shell: bash
         run: |
@@ -61,7 +63,7 @@ jobs:
           set -euo pipefail
           SSH=(ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ForwardAgent=no -i "$HOME/.ssh/server_key")
           SCP=(scp -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ForwardAgent=no -i "$HOME/.ssh/server_key")
-          echo "STAGING_SCRIPTS_FROM_COMMIT=$GITHUB_SHA"
+          echo "STAGING_SCRIPTS_FROM_COMMIT=$(git rev-parse HEAD)"
           REMOTE_TMP=$("${SSH[@]}" "$SSH_USER@$SSH_HOST" 'mktemp -d /tmp/is-harness-p0.XXXXXXXX')
           [[ "$REMOTE_TMP" == /tmp/is-harness-p0.* ]] || exit 1
           echo "REMOTE_TMP=$REMOTE_TMP" >> "$GITHUB_ENV"
