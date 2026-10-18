@@ -1,0 +1,71 @@
+name: IS BBJ 2021 GWAS Column Schema Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/is-bbj-public-schema-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-public-gwas-columns:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    environment: is-research-readonly
+    steps:
+      - name: Configure verified SSH identity
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for n in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            [ -n "${!n:-}" ] || { echo "::error::Missing identity"; exit 1; }
+          done
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/bbj_schema_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/bbj_schema_key ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/bbj_schema_key >/dev/null
+      - name: Read original GWAS member header (no extraction or data mutation)
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -i "$HOME/.ssh/bbj_schema_key" \
+            "${SSH_USER}@${SSH_HOST}" 'python3 -' <<'PY'
+          import gzip,io,json,zipfile
+          from pathlib import Path
+          file=Path('/srv/is-analysis/results/is/external_gwas_raw/bbj_sakaue2021/hum0197.v3.BBJ.IS.v1.zip')
+          if not file.is_file():raise FileNotFoundError(file)
+          with zipfile.ZipFile(file) as z:
+              reports=[]
+              for member in z.namelist():
+                  if not member.endswith('.txt.gz'):continue
+                  with z.open(member) as stream:
+                      with gzip.GzipFile(fileobj=stream) as decompressed:
+                          with io.TextIOWrapper(decompressed,encoding='utf-8-sig',errors='replace') as txt:
+                              header=txt.readline(16384).strip()
+                              example=txt.readline(16384).strip()
+                  sep='\t' if '\t' in header else 'WHITESPACE'
+                  columns=header.split('\t') if sep=='\t' else header.split()
+                  reports.append({'member':member,'separator':sep,'columns':columns,
+                                  'example_field_count':len(example.split('\t') if sep=='\t' else example.split()),
+                                  'first_row_shape_only':True})
+          print('BBJ_OFFICIAL_COLUMNS_JSON='+json.dumps({
+              'schema':'is-bbj-gwas-columns-v1','reports':reports,
+              'raw_zip_has_been_extracted':False,'source_identity_verified':False,
+              'case_fraction_adopted':False,'coloc_executed':False
+          }))
+          PY
+      - name: Remove SSH identity
+        if: always()
+        run: rm -f ~/.ssh/bbj_schema_key
