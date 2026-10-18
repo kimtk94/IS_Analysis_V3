@@ -24,6 +24,26 @@ jobs:
         run: |
           python3 -m py_compile scripts/is/discover_public_bbj_is_gwas.py
           python3 scripts/is/discover_public_bbj_is_gwas.py --json-path evidence/BBJ_PUBLIC_LINK_DISCOVERY.json
+      - name: Probe official BBJ ZIP response headers without downloading
+        run: |
+          python3 - <<'PY'
+          import json
+          import urllib.request
+          from pathlib import Path
+          data=json.loads(Path("evidence/BBJ_PUBLIC_LINK_DISCOVERY.json").read_text())
+          if not data["matches"]:
+              print("BBJ_ZIP_PROBE_SKIPPED: no official source link")
+          else:
+              u=data["matches"][0]["url"]
+              try:
+                  request=urllib.request.Request(u,method="HEAD",headers={"User-Agent":"IS-Research-GWAS-Provenance/1.0"})
+                  with urllib.request.urlopen(request,timeout=45) as response:
+                      print("BBJ_ZIP_HEAD_STATUS",response.status)
+                      print("BBJ_ZIP_HEAD_TYPE",response.headers.get("Content-Type"))
+                      print("BBJ_ZIP_HEAD_BYTES",response.headers.get("Content-Length"))
+              except Exception as ex:
+                  print("BBJ_ZIP_HEAD_UNAVAILABLE",type(ex).__name__,str(ex)[:180])
+          PY
       - name: Upload small source-discovery record
         uses: actions/upload-artifact@v4
         with:
