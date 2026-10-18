@@ -1,0 +1,111 @@
+name: IS Harness SSH P0 (manual, non-LIVE)
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'probe: SSH and source inspection only; run: create NEW P0 outputs'
+        type: choice
+        required: true
+        default: probe
+        options: [probe, run]
+permissions:
+  contents: read
+concurrency:
+  group: is-harness-ssh-p0
+  cancel-in-progress: false
+jobs:
+  ssh-p0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+      MODE: ${{ inputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check credentials are configured (without revealing values)
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in SSH_HOST SSH_USER SSH_KEY SSH_KNOWN_HOSTS; do
+            if [[ -z "${!name:-}" ]]; then echo "::error::Missing required GitHub Actions secret: $name"; exit 1; fi
+          done
+          mkdir -p "$HOME/.ssh"; chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > "$HOME/.ssh/server_key"
+          chmod 600 "$HOME/.ssh/server_key"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
+          ssh-keygen -yf "$HOME/.ssh/server_key" >/dev/null || { echo "::error::SSH_KEY is not a readable private key"; exit 1; }
+      - name: SSH connection and input availability (read-only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 -o IdentitiesOnly=yes -o ForwardAgent=no \
+            -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          echo "SSH_AUTH=PASS"
+          test -d /srv/is-analysis/results/is/audits
+          test -f /srv/is-analysis/results/is/audits/is_priority4_fullcis_bbj_giga_snp_exact_20261011_v1/IS_PRIORITY4_FULLCIS_EBI_BBJ_GIGASTROKE_SNP_EVIDENCE.tsv
+          test -f /srv/is-analysis/results/is/audits/is_chr10_two_lead_ld_tags_20261011_v1/IS_CHR10_EAS_JPT_TWO_LEAD_PER_SNP_LD.tsv
+          test -f /srv/is-analysis/results/is/audits/is_priority4_eur503_eas504_conditional_20261011_v1/BBJ_IS_L002.EAS504.fullcis.raw
+          test -f /srv/is-analysis/data/is/ld_reference/1kg_eas_grch37/integrated_call_samples_v3.20130502.ALL.panel
+          python3 -c 'import pandas,numpy;print("PYTHON_DEPENDENCIES=PASS")'
+          echo "SOURCE_INPUTS=PASS"
+          REMOTE
+      - name: Stage versioned P0 scripts into isolated temp folder
+        if: inputs.mode == 'run'
+        shell: bash
+        run: |
+          set -euo pipefail
+          SSH=(ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ForwardAgent=no -i "$HOME/.ssh/server_key")
+          SCP=(scp -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ForwardAgent=no -i "$HOME/.ssh/server_key")
+          echo "STAGING_SCRIPTS_FROM_COMMIT=$GITHUB_SHA"
+          REMOTE_TMP=$("${SSH[@]}" "$SSH_USER@$SSH_HOST" 'mktemp -d /tmp/is-harness-p0.XXXXXXXX')
+          [[ "$REMOTE_TMP" == /tmp/is-harness-p0.* ]] || exit 1
+          echo "REMOTE_TMP=$REMOTE_TMP" >> "$GITHUB_ENV"
+          for path in audit_is_calhm2_three_qtl_snps.py audit_is_calhm2_pairwise_ld.py audit_is_priority4_qtl_gene_comparators.py build_is_priority4_evidence_scorecard.py; do
+            "${SCP[@]}" "scripts/is/$path" "$SSH_USER@$SSH_HOST:$REMOTE_TMP/$path"
+          done
+      - name: Execute four P0 audit stages (new directory per run)
+        if: inputs.mode == 'run'
+        shell: bash
+        env:
+          RUN_ID: ${{ github.run_id }}
+          ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ForwardAgent=no \
+            -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" \
+            "bash -s -- '$REMOTE_TMP' '$RUN_ID' '$ATTEMPT'" <<'REMOTE'
+          set -euo pipefail
+          tmp="$1"; run="$2"; attempt="$3"
+          [[ "$tmp" == /tmp/is-harness-p0.* && "$run" =~ ^[0-9]+$ && "$attempt" =~ ^[0-9]+$ ]] || exit 2
+          base=/srv/is-analysis/results/is/audits
+          tag="gh_${run}_attempt_${attempt}"
+          evidence="$base/is_priority4_fullcis_bbj_giga_snp_exact_20261011_v1/IS_PRIORITY4_FULLCIS_EBI_BBJ_GIGASTROKE_SNP_EVIDENCE.tsv"
+          ld="$base/is_chr10_two_lead_ld_tags_20261011_v1/IS_CHR10_EAS_JPT_TWO_LEAD_PER_SNP_LD.tsv"
+          genotype="$base/is_priority4_eur503_eas504_conditional_20261011_v1/BBJ_IS_L002.EAS504.fullcis.raw"
+          panel=/srv/is-analysis/data/is/ld_reference/1kg_eas_grch37/integrated_call_samples_v3.20130502.ALL.panel
+          p01="$base/is_calhm2_three_qtl_snp_ledger_$tag"
+          p02="$base/is_calhm2_pairwise_ld_$tag"
+          p03="$base/is_priority4_qtl_gene_comparison_$tag"
+          p04="$base/is_priority4_evidence_scorecard_$tag"
+          echo "P0_SOURCE_COMMIT_VERIFIED_BY_ACTION_RUNNER"
+          python3 "$tmp/audit_is_calhm2_three_qtl_snps.py" --evidence "$evidence" --ld "$ld" --out "$p01"
+          python3 "$tmp/audit_is_calhm2_pairwise_ld.py" --evidence "$evidence" --genotypes "$genotype" --panel "$panel" --out "$p02"
+          python3 "$tmp/audit_is_priority4_qtl_gene_comparators.py" --source "$evidence" --out "$p03"
+          python3 "$tmp/build_is_priority4_evidence_scorecard.py" --comparison "$p03/IS_QTL_GENE_COMPARATOR_SUMMARY.tsv" --ledger "$p01/CALHM2_THREE_QTL_SNP_LEDGER.tsv" --pairwise "$p02/CALHM2_THREE_SNP_PAIRWISE_LD.tsv" --out "$p04"
+          echo "P0_AUDIT_STATUS=COMPLETE"
+          echo "P0_SCORECARD=$p04/IS_PRIORITY4_INTEGRATED_EVIDENCE_SCORECARD.tsv"
+          REMOTE
+      - name: Cleanup isolated temporary scripts
+        if: always() && inputs.mode == 'run'
+        shell: bash
+        run: |
+          if [[ "${REMOTE_TMP:-}" == /tmp/is-harness-p0.* ]]; then
+            ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 -o IdentitiesOnly=yes -o ForwardAgent=no \
+              -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" \
+              "rm -f '$REMOTE_TMP/audit_is_calhm2_three_qtl_snps.py' '$REMOTE_TMP/audit_is_calhm2_pairwise_ld.py' '$REMOTE_TMP/audit_is_priority4_qtl_gene_comparators.py' '$REMOTE_TMP/build_is_priority4_evidence_scorecard.py'; rmdir '$REMOTE_TMP'" || true
+          fi
