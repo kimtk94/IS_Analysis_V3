@@ -34,7 +34,7 @@ def main():
  valid=[item for item in candidates if item[2]]
  if len(valid)==2 and len(valid)==len(candidates):
   from collections import Counter
-  a,b=valid[0][0],valid[1][0]
+  left_root,right_root=valid[0][0],valid[1][0]
   def tsv_profile(path,key):
    with path.open(newline="") as stream:
     rd=csv.DictReader(stream,delimiter="\t")
@@ -49,14 +49,14 @@ def main():
     return columns,counts,rows
   try:
    for name,key in [(NAMES[0],"gene_id_stable"),(NAMES[1],"gene_id_stable")]:
-    ca,na,ra=tsv_profile(a/name,key)
-    cb,nb,rb=tsv_profile(b/name,key)
+    ca,na,ra=tsv_profile(left_root/name,key)
+    cb,nb,rb=tsv_profile(right_root/name,key)
     shared=ra.keys() & rb.keys()
     shared_cols=sorted(set(ca)&set(cb))
     def comparable(rows):
      return sorted(tuple((col,row.get(col,"")) for col in shared_cols) for row in rows)
     changed=sum(comparable(ra[k])!=comparable(rb[k]) for k in shared)
-    summary=dict(file=name,left=str(a),right=str(b),
+    summary=dict(file=name,left=str(left_root),right=str(right_root),
       left_rows=sum(na.values()),right_rows=sum(nb.values()),
       left_unique_ids=len(ra),right_unique_ids=len(rb),
       only_left_ids=len(ra.keys()-rb.keys()),only_right_ids=len(rb.keys()-ra.keys()),
@@ -70,8 +70,8 @@ def main():
         sorted(row.get(col,"") for row in ra[k]) != sorted(row.get(col,"") for row in rb[k])
         for k in shared)})[:60])
     print("P1_SOURCE_DIFF="+json.dumps(summary,sort_keys=True),flush=True)
-   ma=json.loads((a/NAMES[2]).read_text())
-   mb=json.loads((b/NAMES[2]).read_text())
+   ma=json.loads((left_root/NAMES[2]).read_text())
+   mb=json.loads((right_root/NAMES[2]).read_text())
    print("P1_MANIFEST_DIFF="+json.dumps(dict(
     only_left_keys=sorted(ma.keys()-mb.keys()),
     only_right_keys=sorted(mb.keys()-ma.keys()),
