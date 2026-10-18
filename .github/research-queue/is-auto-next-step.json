@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "job": "is-auto-next-one-step",
+  "non_live_only": true,
+  "max_steps": 1,
+  "approval": "IS_RESEARCH_ONLY"
+}
