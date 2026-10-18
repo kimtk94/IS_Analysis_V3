@@ -4,6 +4,7 @@ on:
     branches: [research/thesis-evidence-freeze-20261015]
     paths:
       - 'scripts/audit_ckd_top3_snp_ld_readonly.py'
+      - 'scripts/audit_ckd_top3_effect_orientation.py'
       - '.github/workflows/ckd-top3-snp-ld-audit.yml'
   workflow_dispatch:
 permissions:
@@ -43,6 +44,15 @@ jobs:
             -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" \
             'python3 - --stage2b /srv/is-analysis/results/ckd/stage2b_coloc/coloc_input --stage2c /srv/is-analysis/results/ckd/stage2c_susie/susie_input --lddir /srv/is-analysis/data/ckd/stage2c_ld/ld' \
             < scripts/audit_ckd_top3_snp_ld_readonly.py
+      - name: Recheck aligned summary betas and LD effect-allele sign derivation
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" \
+            'python3 - --stage2b /srv/is-analysis/results/ckd/stage2b_coloc/coloc_input --stage2c /srv/is-analysis/results/ckd/stage2c_susie/susie_input --lddir /srv/is-analysis/data/ckd/stage2c_ld/ld' \
+            < scripts/audit_ckd_top3_effect_orientation.py
       - name: Remove identity
         if: always()
         run: rm -f ~/.ssh/ckd_audit
