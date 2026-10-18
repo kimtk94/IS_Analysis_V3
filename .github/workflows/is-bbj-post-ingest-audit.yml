@@ -1,0 +1,74 @@
+name: IS BBJ Public GWAS Post-Ingest Audit
+
+on:
+  workflow_run:
+    workflows: ["IS BBJ 2021 Public GWAS Safe Ingest"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-archive-check:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: is-research-readonly
+    steps:
+      - name: Set up pinned SSH identity
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for key in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            [ -n "${!key:-}" ] || { echo "::error::Missing required SSH identity"; exit 1; }
+          done
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/is_archive_audit_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/is_archive_audit_key ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/is_archive_audit_key >/dev/null
+      - name: Read-only audit of downloaded archive members
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -i "$HOME/.ssh/is_archive_audit_key" \
+            "${SSH_USER}@${SSH_HOST}" 'python3 -' <<'PY'
+          import json,zipfile
+          from pathlib import Path
+          root=Path("/srv/is-analysis/results/is/external_gwas_raw/bbj_sakaue2021")
+          zip_path=root/"hum0197.v3.BBJ.IS.v1.zip"
+          manifest=root/"public_zip_manifest.json"
+          if not zip_path.is_file() or not manifest.is_file():
+              print("BBJ_POST_INGEST_PENDING: source or manifest not present")
+              raise SystemExit(2)
+          m=json.loads(manifest.read_text())
+          if m.get("bytes")!=1611973884 or not m.get("sha256"):
+              print("BBJ_POST_INGEST_UNVERIFIED_MANIFEST")
+              raise SystemExit(3)
+          with zipfile.ZipFile(zip_path) as archive:
+              members=[{"name":i.filename,"compressed":i.compress_size,
+                        "uncompressed":i.file_size}
+                       for i in archive.infolist() if not i.is_dir()]
+          if len(members)>250:
+              raise ValueError("Too many ZIP members")
+          print("BBJ_POST_INGEST_SOURCE_INVENTORY="+json.dumps({
+              "schema":"is-bbj-2021-post-ingest-v1",
+              "zip_member_count":len(members),
+              "members":members,"file_sha256":m["sha256"],
+              "sample_size_adopted":False,
+              "original_BBJ_source_identity_verified":False,
+              "coloc_executed":False
+          },ensure_ascii=False))
+          PY
+      - name: Remove SSH identity
+        if: always()
+        run: rm -f ~/.ssh/is_archive_audit_key
