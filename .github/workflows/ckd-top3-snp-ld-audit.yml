@@ -82,6 +82,12 @@ jobs:
           ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
             -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" \
             'python3 -' < scripts/audit_ckd_original_source_readiness.py
+      - name: Check CKD source headers
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_source_headers.py
       - name: Remove identity
         if: always()
         run: rm -f ~/.ssh/ckd_audit
