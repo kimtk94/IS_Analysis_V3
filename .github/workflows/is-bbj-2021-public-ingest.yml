@@ -69,10 +69,31 @@ jobs:
               echo 'BLOCKED_INSUFFICIENT_DISK_SPACE'
               exit 1
             fi
-            curl --fail --location --show-error --silent \
-              --retry 3 --connect-timeout 30 --max-time 2700 \
-              --max-filesize "$expected" \
-              "$url" -o "$name.pending"
+            # Preserve the incomplete .pending file on network interruption.
+            # -C - demands byte-range resume; curl errors rather than silently
+            # restarting a partial transfer if the origin lacks Range support.
+            if [ -f "$name.pending" ]; then
+              current=$(stat -c %s "$name.pending")
+              echo "BBJ_PARTIAL_BYTES=$current"
+              [ "$current" -le "$expected" ] || { echo 'PARTIAL_EXCEEDS_EXPECTED_SIZE'; exit 1; }
+            fi
+            for attempt in 1 2 3 4; do
+              echo "BBJ_DOWNLOAD_ATTEMPT=$attempt"
+              if curl --fail --location --show-error --silent \
+                --continue-at - --retry 5 --retry-all-errors --retry-delay 10 \
+                --connect-timeout 30 --max-time 2700 \
+                --max-filesize "$expected" \
+                "$url" -o "$name.pending"; then
+                actual=$(stat -c %s "$name.pending")
+                echo "BBJ_TRANSFER_BYTES=$actual"
+                if [ "$actual" -eq "$expected" ]; then break; fi
+              fi
+              current=$(stat -c %s "$name.pending" 2>/dev/null || echo 0)
+              echo "BBJ_INCOMPLETE_BYTES=$current"
+              [ "$current" -le "$expected" ] || { echo 'BAD_DOWNLOAD_LENGTH'; exit 1; }
+              if [ "$attempt" -eq 4 ]; then echo 'BBJ_DOWNLOAD_INCOMPLETE'; exit 1; fi
+              sleep 10
+            done
             actual=$(stat -c %s "$name.pending")
             [ "$actual" = "$expected" ] || { echo "DOWNLOAD_SIZE_MISMATCH=$actual"; exit 1; }
             mv -f "$name.pending" "$name"
