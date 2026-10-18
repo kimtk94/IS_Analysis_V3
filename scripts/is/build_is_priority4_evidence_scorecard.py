@@ -48,12 +48,12 @@ def integrate(comparison,ledger,pairwise,out):
     npairs=None;cluster=None
     if existence["P02_CALHM2_pairwise_LD"]:
         pairs=read(sources["P02_CALHM2_pairwise_LD"])
-        if len(pairs)!=30:raise ValueError("P02 3 populations x 10 pairs expected")
+        if len(pairs)!=18:raise ValueError("P02 3 populations x 6 unique-variant pairs expected")
         population={"EAS504":0,"JPT104":0,"otherEAS400":0}
         for r in pairs:
             if r["population"] not in population:raise ValueError("Unknown population")
             population[r["population"]]+=1
-        if any(n!=10 for n in population.values()):raise ValueError("Invalid pair matrix")
+        if any(n!=6 for n in population.values()):raise ValueError("Invalid pair matrix")
         npairs=len(pairs)
         if nledger is not None:
             snps={r["SNP_GRCh37"] for r in variants}
@@ -74,7 +74,7 @@ def integrate(comparison,ledger,pairwise,out):
             triple_nominal_GWAS_overlap=int(r["triple_QTD_BBJ_GIGA_threshold"]),
             P03_status="VERIFIED_INPUT_PRESENT",
             P01_status=("VERIFIED_INPUT_PRESENT" if nledger==3 else "NOT_EXECUTED_OR_MISSING") if gene=="CALHM2" else "NOT_APPLICABLE",
-            P02_status=("VERIFIED_INPUT_PRESENT" if npairs==30 else "NOT_EXECUTED_OR_MISSING") if gene=="CALHM2" else "NOT_APPLICABLE",
+            P02_status=("VERIFIED_INPUT_PRESENT" if npairs==18 else "NOT_EXECUTED_OR_MISSING") if gene=="CALHM2" else "NOT_APPLICABLE",
             EAS_three_QTL_SNPs_one_high_LD_cluster=(str(cluster["EAS504"]) if cluster is not None and gene=="CALHM2" else "NOT_EVALUATED"),
             JPT_three_QTL_SNPs_one_high_LD_cluster=(str(cluster["JPT104"]) if cluster is not None and gene=="CALHM2" else "NOT_EVALUATED"),
             evidence_level="DESCRIPTIVE_QTL_GWAS_PUBLIC_REFERENCE_ONLY",
