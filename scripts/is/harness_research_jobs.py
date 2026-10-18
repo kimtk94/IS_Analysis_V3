@@ -481,6 +481,37 @@ def perform_staged_science(eas5, candidates):
     return module.advance(EAS5_VARIANTS,EAS5_READINESS,candidates["p4_detail"],output=OUTPUT)
 
 
+def p1_completed_snapshot() -> dict:
+    """Merge independently audited P1 evidence into the existing 5-minute manifest."""
+    folder = AUDITS / "is_p1_full_universe_gh_39124908298_attempt_1"
+    provenance_file = folder / "P1_GITHUB_RUN_PROVENANCE.json"
+    if not provenance_file.is_file():
+        return {"status":"P1_RUN_MISSING","independent_replication":"NOT_ESTABLISHED"}
+    provenance=json.loads(provenance_file.read_text())
+    if provenance.get("status")!="P1_COMPLETE_NONCAUSAL":
+        raise ValueError("P1 status unexpected")
+    outputs=provenance.get("output_hashes",{})
+    required={"IS_2225_NONCAUSAL_WORKFLOW_PRIORITY.tsv",
+              "IS_TOP40_NON_G0022_EXISTING_DATA_QUEUE.tsv",
+              "IS_2225_WORKFLOW_PRIORITY_MANIFEST.json"}
+    if not required.issubset(outputs):
+        raise ValueError("P1 missing output hash")
+    for name in sorted(required):
+        fp=folder/name
+        if not fp.is_file() or sha256_path(fp)!=outputs[name]:
+            raise ValueError("P1 output content changed")
+    summary=json.loads((folder/"IS_2225_WORKFLOW_PRIORITY_MANIFEST.json").read_text())
+    if summary.get("total_source_unique_genes")!=2225 or summary.get("total_source_gene_region_pairs")!=2425:
+        raise ValueError("P1 2225/2425 drift")
+    return {"status":"P1_COMPLETE_NONCAUSAL","source_run":39124908298,
+            "genes":2225,"gene_region_pairs":2425,"tier_counts":summary.get("tier_counts"),
+            "top40_count":len(summary.get("TOP40_non_G0022_workflow_genes",[])),
+            "independent_replication":"NOT_ESTABLISHED",
+            "gwas_source_overlap":"BBJ_PRESENT_IN_GIGASTROKE_EAS_DISCOVERY",
+            "causal_gene_status":"NOT_ESTABLISHED",
+            "manifest_sha256":sha256_path(folder/"IS_2225_WORKFLOW_PRIORITY_MANIFEST.json")}
+
+
 def dispatch(op: str) -> dict:
     if op == "eas5-audit":
         e = audit_eas5()
@@ -531,6 +562,7 @@ def dispatch(op: str) -> dict:
             }
         else:
             m["archived_fasta_abf"]={"scientific_status":"MODULE_NOT_INSTALLED_NOT_AUDITED"}
+        m["p1_full_universe"] = p1_completed_snapshot()
         m["science_pipeline"] = {
             "schema":science["schema"],
             "p1":science["p1"],
