@@ -24,7 +24,7 @@ class TestCALHM2ThreeQTL(unittest.TestCase):
      for lead in LEADS:
       for i in range(3):
        w.writerow(dict(population=pop,lead=lead,variant_b37=f"10:{105400000+i}:A:G",
-        signed_r=".95" if lead=="BBJ" else=".1",r2=".9025" if lead=="BBJ" else=".01",
+        signed_r=(".95" if lead=="BBJ" else ".1"),r2=(".9025" if lead=="BBJ" else ".01"),
         r2_ge_0p8=str(lead=="BBJ")))
    result=create(ev,ld,out)
    self.assertEqual(len(result),3)
