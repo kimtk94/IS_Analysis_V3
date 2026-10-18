@@ -1,1 +1,1 @@
-2026-10-18 remote preflight after PR 167 merge; reporting to GitHub Issue. Read-only, do not deploy or enable timers.
+2026-10-18 diagnostic remote preflight trigger: check individual SSH secret presence only; read-only; no deployment.
