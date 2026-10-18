@@ -107,7 +107,7 @@ def audit_approved_gwas_registry(audits:Path, *, allowed_root:Path=GWAS_ALLOWED_
     if path.is_symlink() or path.stat().st_size>1_000_000:
         raise ValueError("Invalid approved source registry")
     with path.open(encoding="utf-8-sig",newline="") as stream:
-        reader=csv.DictReader(stream,delimiter="\\t")
+        reader=csv.DictReader(stream,delimiter="\t")
         if not reader.fieldnames or not GWAS_REGISTRY_COLUMNS.issubset(reader.fieldnames):
             raise ValueError("Approved GWAS registry required fields missing")
         records=list(reader)
