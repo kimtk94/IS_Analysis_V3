@@ -61,9 +61,12 @@ def build(evidence,genotypes,panel,out):
         raise FileExistsError("Output path exists; use a new immutable version")
     qtl=load_qtl(evidence)
     keys=sorted(qtl,key=lambda k:int(k.split(":")[1]))
-    all_keys=list(LEADS)+keys
-    if len(set(all_keys))!=len(all_keys):
-        raise ValueError("Lead overlaps target key; review before running")
+    # The BBJ lead is itself one of the three observed CALHM2 QTL SNPs.
+    # A variant must occur once in the pairwise genotype matrix.
+    overlaps=sorted(set(LEADS)&set(keys))
+    all_keys=list(dict.fromkeys((*LEADS,*keys)))
+    if len(all_keys)!=4 or len(overlaps)!=1:
+        raise ValueError(f"Unexpected lead/QTL overlap: unique={len(all_keys)}, overlap={overlaps}")
     samples,dosages=oriented_dosage(genotypes,all_keys)
     pop=pd.read_csv(panel,sep="\t")
     if pop["sample"].duplicated().any():
@@ -96,6 +99,9 @@ def build(evidence,genotypes,panel,out):
     manifest={"state":"REFERENCE_PAIRWISE_LD_ONLY",
       "source_evidence":str(evidence),"genotype_source":str(genotypes),
       "population_panel":str(panel),"qtl_snp_keys":keys,
+      "lead_qtl_overlapping_keys":overlaps,
+      "unique_variant_count":len(all_keys),
+      "expected_pairs_per_population":6,
       "populations":{p:int(sum(m)) for p,m in select.items()},
       "source_genotypes_unmodified":True,"not_credible_set":True,
       "not_causal_colocalization":True}
