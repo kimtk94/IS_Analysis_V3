@@ -26,8 +26,16 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
         run: |
-          if [ -z "$SSH_KEY" ] || [ -z "$SSH_KNOWN_HOSTS" ]; then
-            echo "::error::SSH_KEY or SSH_KNOWN_HOSTS is not configured"
+          missing=0
+          if [ -z "$SSH_KEY" ]; then
+            echo "::error::Missing GitHub Actions secret SSH_KEY"
+            missing=1
+          fi
+          if [ -z "$SSH_KNOWN_HOSTS" ]; then
+            echo "::error::Missing GitHub Actions secret SSH_KNOWN_HOSTS"
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
             exit 1
           fi
           mkdir -p "$HOME/.ssh"
