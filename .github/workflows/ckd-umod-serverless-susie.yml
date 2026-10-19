@@ -1,0 +1,45 @@
+name: CKD UMOD Serverless SuSiE
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/thesis-evidence-freeze-20261015]
+    paths:
+      - '.github/workflows/ckd-umod-serverless-susie.yml'
+      - 'scripts/ckd_umod_serverless_susie.R'
+      - 'scripts/ckd_umod_serverless_gate.py'
+permissions:
+  contents: read
+jobs:
+  real-data-susie:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify actual UMOD dataset and declare blocker
+        run: |
+          python3 scripts/ckd_umod_serverless_gate.py
+          if ! test -s input/ckd/umod/UMOD.ld.bin || ! test -s input/ckd/umod/UMOD.tsv.gz || ! test -s input/ckd/umod/UMOD.ld.meta.tsv || ! test -s input/ckd/umod/UMOD.ld.vars; then
+            echo "::error::BLOCKED_MISSING_PRIMARY_DATA: UMOD source and LD bundle are absent. No scientific computation ran."
+            echo "### BLOCKED_MISSING_PRIMARY_DATA" >> "$GITHUB_STEP_SUMMARY"
+            echo "Original UMOD LD and Stage2C input data are not staged on this runner. This is not an analytical failure or a scientific PASS." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::susieR
+      - name: Run exploratory UMOD shrinkage on verified real input
+        run: |
+          set -o pipefail
+          Rscript scripts/ckd_umod_serverless_susie.R | tee umod_shrinkage.log
+          echo "### UMOD exploratory SuSiE run completed" >> "$GITHUB_STEP_SUMMARY"
+          echo "Check the diagnostic log and convergence results; CI completion does not mean convergence." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: umod-serverless-diagnostic-log
+          path: umod_shrinkage.log
+          if-no-files-found: ignore
