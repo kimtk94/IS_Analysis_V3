@@ -44,12 +44,49 @@ jobs:
           printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
           chmod 600 "$HOME/.ssh/server_key" "$HOME/.ssh/known_hosts"
           ssh-keygen -yf "$HOME/.ssh/server_key" >/dev/null
-      - name: Execute one allowlisted bounded research step
+      - name: SSH connectivity gate (no scientific work)
+        id: connectivity
+        shell: bash
         run: |
-          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 -o IdentitiesOnly=yes -o ForwardAgent=no -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" 'cd "$HOME/is-harness" && python3 auto_next.py --run'
-      - name: Confirm idempotent completion state
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 -o ConnectionAttempts=1 -o IdentitiesOnly=yes -o ForwardAgent=no -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" 'printf "IS_HARNESS_SSH_OK\\n"' > ssh-probe.log 2>&1; then
+              grep -q 'IS_HARNESS_SSH_OK' ssh-probe.log
+              echo "reachable=true" >> "$GITHUB_OUTPUT"
+              echo "AUTO_NEXT_CONNECTIVITY=PASS"
+              exit 0
+            fi
+            echo "AUTO_NEXT_CONNECTIVITY_RETRY=$attempt"
+            if [ "$attempt" -lt 3 ]; then sleep 5; fi
+          done
+          echo "reachable=false" >> "$GITHUB_OUTPUT"
+          echo "::warning::AUTO_NEXT_INFRA_BLOCKED_SSH; state and science results unchanged"
+      - name: Run at most one next task if reachable
+        if: steps.connectivity.outputs.reachable == 'true'
+        shell: bash
         run: |
-          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 -o IdentitiesOnly=yes -o ForwardAgent=no -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" 'cd "$HOME/is-harness" && python3 auto_next.py'
+          set -euo pipefail
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=12 -o IdentitiesOnly=yes -o ForwardAgent=no -i "$HOME/.ssh/server_key" "$SSH_USER@$SSH_HOST" 'cd "$HOME/is-harness" && python3 - <<"PY"
+          import json,subprocess,sys
+          def call(*args):
+              p=subprocess.run([sys.executable,"auto_next.py",*args],capture_output=True,text=True,timeout=280)
+              if p.returncode:raise SystemExit(p.stderr[-1000:] or ("AUTO_NEXT_CODE_EXIT="+str(p.returncode)))
+              return json.loads(p.stdout)
+          before=call()
+          print("AUTO_NEXT_PREVIEW="+json.dumps(before,sort_keys=True),flush=True)
+          if before.get("status")=="DRY_RUN":
+              result=call("--run")
+              print("AUTO_NEXT_EXECUTION="+json.dumps({k:v for k,v in result.items() if k!="output_excerpt"},sort_keys=True),flush=True)
+              if result.get("status") not in ("PASS","DEFERRED_LOCK_BUSY"):
+                  raise SystemExit("AUTO_NEXT_REVIEW_REQUIRED")
+          else:
+              print("AUTO_NEXT_NO_RUN_REASON="+str(before.get("status")),flush=True)
+          after=call()
+          print("AUTO_NEXT_AFTER_STATUS="+str(after.get("status")),flush=True)
+          PY'
+      - name: Record infrastructure blocker
+        if: steps.connectivity.outputs.reachable == 'false'
+        run: echo 'AUTO_NEXT_INFRA_BLOCKED_SSH; no task was attempted, scientific state not changed'
       - name: Remove SSH key
         if: always()
         run: rm -f "$HOME/.ssh/server_key"
