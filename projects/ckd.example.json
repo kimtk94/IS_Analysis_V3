@@ -1,0 +1,495 @@
+{
+  "project": "ckd",
+  "output_root": "/srv/is-analysis/results/masteromics/ckd",
+  "advanced_mr": true,
+  "regional_analysis": true,
+  "units": [
+    {
+      "id": "ACP1_EUR",
+      "gene": "ACP1",
+      "exposure": "UKBPPP_ACP1_EUR",
+      "outcome": "EGFR_EUR",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/ACP1.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/ACP1.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/ACP1.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/ACP1.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "ACP1_EAS",
+      "gene": "ACP1",
+      "exposure": "UKBPPP_ACP1_EUR",
+      "outcome": "EGFR_EAS",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/ACP1.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/ACP1.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EAS/ACP1.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EAS/ACP1.variants.tsv",
+        "ancestry": "EAS",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "CPVL_EUR",
+      "gene": "CPVL",
+      "exposure": "UKBPPP_CPVL_EUR",
+      "outcome": "EGFR_EUR",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/CPVL.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/CPVL.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/CPVL.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/CPVL.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "CPVL_EAS",
+      "gene": "CPVL",
+      "exposure": "UKBPPP_CPVL_EUR",
+      "outcome": "EGFR_EAS",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/CPVL.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/CPVL.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EAS/CPVL.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EAS/CPVL.variants.tsv",
+        "ancestry": "EAS",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "F12_EUR",
+      "gene": "F12",
+      "exposure": "UKBPPP_F12_EUR",
+      "outcome": "EGFR_EUR",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/F12.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/F12.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/F12.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/F12.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "F12_EAS",
+      "gene": "F12",
+      "exposure": "UKBPPP_F12_EUR",
+      "outcome": "EGFR_EAS",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/F12.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/F12.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EAS/F12.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EAS/F12.variants.tsv",
+        "ancestry": "EAS",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "GSTA1_EUR",
+      "gene": "GSTA1",
+      "exposure": "UKBPPP_GSTA1_EUR",
+      "outcome": "EGFR_EUR",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/GSTA1.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/GSTA1.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/GSTA1.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/GSTA1.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "GSTA1_EAS",
+      "gene": "GSTA1",
+      "exposure": "UKBPPP_GSTA1_EUR",
+      "outcome": "EGFR_EAS",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/GSTA1.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/GSTA1.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EAS/GSTA1.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EAS/GSTA1.variants.tsv",
+        "ancestry": "EAS",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "GSTA3_EUR",
+      "gene": "GSTA3",
+      "exposure": "UKBPPP_GSTA3_EUR",
+      "outcome": "EGFR_EUR",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/GSTA3.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/GSTA3.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/GSTA3.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/GSTA3.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "GSTA3_EAS",
+      "gene": "GSTA3",
+      "exposure": "UKBPPP_GSTA3_EUR",
+      "outcome": "EGFR_EAS",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/GSTA3.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/GSTA3.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EAS/GSTA3.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EAS/GSTA3.variants.tsv",
+        "ancestry": "EAS",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "HLA_E_EUR",
+      "gene": "HLA-E",
+      "exposure": "UKBPPP_HLA_E_EUR",
+      "outcome": "EGFR_EUR",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/HLA_E.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/HLA_E.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/HLA_E.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/HLA_E.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "HLA_E_EAS",
+      "gene": "HLA-E",
+      "exposure": "UKBPPP_HLA_E_EUR",
+      "outcome": "EGFR_EAS",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/HLA_E.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/HLA_E.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EAS/HLA_E.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EAS/HLA_E.variants.tsv",
+        "ancestry": "EAS",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "INHBC_EUR",
+      "gene": "INHBC",
+      "exposure": "UKBPPP_INHBC_EUR",
+      "outcome": "EGFR_EUR",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/INHBC.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/INHBC.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/INHBC.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/INHBC.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "INHBC_EAS",
+      "gene": "INHBC",
+      "exposure": "UKBPPP_INHBC_EUR",
+      "outcome": "EGFR_EAS",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/INHBC.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/INHBC.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EAS/INHBC.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EAS/INHBC.variants.tsv",
+        "ancestry": "EAS",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "SDCCAG8_EUR",
+      "gene": "SDCCAG8",
+      "exposure": "UKBPPP_SDCCAG8_EUR",
+      "outcome": "EGFR_EUR",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/SDCCAG8.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/SDCCAG8.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/SDCCAG8.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/SDCCAG8.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "SDCCAG8_EAS",
+      "gene": "SDCCAG8",
+      "exposure": "UKBPPP_SDCCAG8_EUR",
+      "outcome": "EGFR_EAS",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/SDCCAG8.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/SDCCAG8.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EAS/SDCCAG8.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EAS/SDCCAG8.variants.tsv",
+        "ancestry": "EAS",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "UMOD_EUR",
+      "gene": "UMOD",
+      "exposure": "UKBPPP_UMOD_EUR",
+      "outcome": "EGFR_EUR",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/UMOD.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/UMOD.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/UMOD.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/UMOD.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      }
+    },
+    {
+      "id": "UMOD_EAS",
+      "gene": "UMOD",
+      "exposure": "UKBPPP_UMOD_EUR",
+      "outcome": "EGFR_EAS",
+      "build": "GRCh38",
+      "chr": "REPLACE_CHROMOSOME",
+      "start": null,
+      "end": null,
+      "p_threshold": 5e-08,
+      "f_threshold": 10,
+      "clump_r2": 0.001,
+      "min_regional_snps": 100,
+      "min_overlap_fraction": 0.5,
+      "exposure_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EUR/UMOD.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EUR/UMOD.variants.tsv",
+        "ancestry": "EUR",
+        "build": "GRCh38"
+      },
+      "outcome_ld": {
+        "matrix": "/srv/is-analysis/datasets/ld/EAS/UMOD.signed.tsv",
+        "variants": "/srv/is-analysis/datasets/ld/EAS/UMOD.variants.tsv",
+        "ancestry": "EAS",
+        "build": "GRCh38"
+      }
+    }
+  ],
+  "annotation": "/srv/is-analysis/datasets/annotation/kidney.tsv"
+}
