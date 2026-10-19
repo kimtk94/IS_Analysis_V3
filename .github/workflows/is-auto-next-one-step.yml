@@ -1,7 +1,5 @@
 name: IS AUTO_NEXT bounded one-step executor
 on:
-  schedule:
-    - cron: '7,22,37,52 * * * *'
   push:
     branches: [main]
     paths: ['.github/research-queue/is-auto-next-step.json', '.github/workflows/is-auto-next-one-step.yml']

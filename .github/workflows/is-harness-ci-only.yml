@@ -1,0 +1,34 @@
+name: IS Harness CI-only fallback
+on:
+  schedule:
+    - cron: '13 */6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/is-harness-ci-only.yml'
+      - 'scripts/is/harness_ci_only.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: is-harness-ci-only
+  cancel-in-progress: false
+jobs:
+  public-code-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run CI-only bounded harness
+        run: python3 scripts/is/harness_ci_only.py
+      - name: Upload audit status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-harness-ci-only-status
+          path: ci_harness_status.json
+          if-no-files-found: ignore
+          retention-days: 14
