@@ -1,0 +1,35 @@
+name: IS Harness CI Public GWAS Provenance
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/is/harness_ci_public_sources.py'
+      - '.github/workflows/is-harness-ci-public-sources.yml'
+  schedule:
+    - cron: '43 3 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: is-ci-public-gwas-provenance
+  cancel-in-progress: false
+jobs:
+  public-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 -m pip install --disable-pip-version-check openpyxl==3.1.5
+      - name: Audit publisher supplement and BBJ public source link
+        run: python3 scripts/is/harness_ci_public_sources.py
+      - name: Save provenance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-ci-public-gwas-provenance
+          path: ci_public_gwas_evidence.json
+          if-no-files-found: ignore
+          retention-days: 30
