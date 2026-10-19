@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  issues: write
 concurrency:
   group: is-auto-next-one-step
   cancel-in-progress: false
@@ -87,6 +88,53 @@ jobs:
       - name: Record infrastructure blocker
         if: steps.connectivity.outputs.reachable == 'false'
         run: echo 'AUTO_NEXT_INFRA_BLOCKED_SSH; no task was attempted, scientific state not changed'
+      - name: Record connectivity incident without duplicate issues
+        if: steps.connectivity.outputs.reachable == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner, repo = context.repo.repo;
+            const marker = '[IS AUTO_NEXT] SSH connectivity blocked';
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', per_page: 100
+            });
+            const found = existing.find(i => !i.pull_request && i.title === marker);
+            if (found) {
+              core.notice('Existing infrastructure incident #' + found.number);
+              return;
+            }
+            const issue = await github.rest.issues.create({
+              owner, repo, title: marker,
+              body: [
+                'AUTO_NEXT connectivity gate exhausted 3 SSH attempts.',
+                'This is an infrastructure problem, **not** a failed research result.',
+                'No research task was attempted; existing AUTO_NEXT state remains intact.',
+                'Latest workflow: ' + context.serverUrl + '/' + owner + '/' + repo + '/actions/runs/' + context.runId,
+                '',
+                'Close only after a later run records AUTO_NEXT_CONNECTIVITY=PASS.'
+              ].join('\\n')
+            });
+            core.notice('Created infrastructure issue #' + issue.data.number);
+      - name: Close resolved connectivity incident
+        if: steps.connectivity.outputs.reachable == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner, repo = context.repo.repo;
+            const marker = '[IS AUTO_NEXT] SSH connectivity blocked';
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', per_page: 100
+            });
+            for (const item of existing.filter(i => !i.pull_request && i.title === marker)) {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: item.number,
+                body: 'Connectivity restored in Actions run ' + context.runId +
+                  '. Scientific tasks remain separately verified.'
+              });
+              await github.rest.issues.update({
+                owner, repo, issue_number: item.number, state: 'closed'
+              });
+            }
       - name: Remove SSH key
         if: always()
         run: rm -f "$HOME/.ssh/server_key"
