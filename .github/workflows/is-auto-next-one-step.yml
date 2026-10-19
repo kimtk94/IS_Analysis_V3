@@ -4,7 +4,7 @@ on:
     - cron: '7,22,37,52 * * * *'
   push:
     branches: [main]
-    paths: ['.github/research-queue/is-auto-next-step.json']
+    paths: ['.github/research-queue/is-auto-next-step.json', '.github/workflows/is-auto-next-one-step.yml']
   workflow_dispatch:
 permissions:
   contents: read
