@@ -1,0 +1,183 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import gzip
+import zipfile
+import csv
+import json
+import os
+import sys
+
+ROOT = Path(os.environ.get("IS_ANALYSIS_ROOT", "/srv/is-analysis"))
+DATA = ROOT / "data/metabolic_resilience/stage2_gwas"
+OUT = ROOT / "results/metabolic_resilience/stage3_confirmatory_mr"
+AUDIT = ROOT / "results/metabolic_resilience/stage3_full_pgwas/audit"
+OUT.mkdir(parents=True, exist_ok=True)
+AUDIT.mkdir(parents=True, exist_ok=True)
+
+TRAITS = [
+    {"trait":"HDL","domain":"lipid","type":"quant","build":"GRCh37",
+     "patterns":["without_UKB_HDL_INV_EUR_HRC_1KGP3_others_ALL.meta.singlevar.results.gz"],
+     "favorable":"POSITIVE","sample_overlap_class":"UKB_EXCLUDED",
+     "sample_overlap_note":"GLGC without UKB."},
+    {"trait":"TG","domain":"lipid","type":"quant","build":"GRCh37",
+     "patterns":["without_UKB_logTG_EUR_HRC_1KGP3_others_ALL.meta.singlevar.results.gz","*logTG*.gz","*TG*without*UKB*.gz","*triglycer*.gz"],
+     "favorable":"NEGATIVE","sample_overlap_class":"UKB_EXCLUDED",
+     "sample_overlap_note":"GLGC without UKB."},
+    {"trait":"SBP","domain":"bp","type":"quant","build":"RSID_PREFERRED",
+     "patterns":["GCST90310294.tsv.gz","*GCST90310294*"],"favorable":"NEGATIVE",
+     "sample_overlap_class":"REVIEW","sample_overlap_note":"Record contributing cohorts before manuscript lock."},
+    {"trait":"DBP","domain":"bp","type":"quant","build":"RSID_PREFERRED",
+     "patterns":["GCST90310295.tsv.gz","*GCST90310295*"],"favorable":"NEGATIVE",
+     "sample_overlap_class":"REVIEW","sample_overlap_note":"Record contributing cohorts before manuscript lock."},
+    {"trait":"BMI","domain":"adiposity","type":"quant","build":"GRCh37",
+     "patterns":["bmi.giant-ukbb.meta-analysis.combined.23May2018.txt.gz","*BMI*2018*.gz","*BMI*.sumstats*.gz","*BMI*.gz"],"favorable":"NEGATIVE",
+     "sample_overlap_class":"UKB_INCLUDED_SCREENING",
+     "sample_overlap_note":"High-density GIANT+UKB adiposity GWAS; interpret as confirmatory sensitivity with overlap caveat."},
+    {"trait":"WHR","domain":"adiposity","type":"quant","build":"GRCh37",
+     "patterns":["whradjbmi.giant-ukbb.meta-analysis.combined.23May2018.txt.gz","*WHRadjBMI*2018*.gz","*WHRadjBMI*.gz","*WHR*2018*.gz","*WHR*.gz"],"favorable":"NEGATIVE",
+     "sample_overlap_class":"UKB_INCLUDED_SCREENING",
+     "sample_overlap_note":"High-density GIANT+UKB adiposity GWAS; interpret as confirmatory sensitivity with overlap caveat."},
+    {"trait":"FG","domain":"glycemia","type":"quant","build":"GRCh37",
+     "patterns":["*GCST90002232*"],"favorable":"NEGATIVE",
+     "sample_overlap_class":"REVIEW","sample_overlap_note":"MAGIC overlap with UKB must be documented."},
+    {"trait":"HBA1C","domain":"glycemia","type":"quant","build":"GRCh37",
+     "patterns":["*GCST90002244*"],"favorable":"NEGATIVE",
+     "sample_overlap_class":"REVIEW","sample_overlap_note":"MAGIC overlap with UKB must be documented."},
+    {"trait":"T2D","domain":"disease_validation","type":"cc","build":"GRCh37",
+     "patterns":["Mahajan2018b_T2D_noUKBB_EUR.zip","*T2D*noUKBB*.zip","*T2D-noUKBB*"],
+     "favorable":"NEGATIVE","sample_overlap_class":"UKB_EXCLUDED",
+     "sample_overlap_note":"DIAGRAM Mahajan 2018b European no-UKBB disease-validation endpoint."},
+]
+
+ALIASES = {
+    "chr":["CHR","CHROM","chrom","chr","Chromosome","chromosome","#CHROM"],
+    "pos":["POS","POS_b37","BP","pos","position","Position","base_pair_location","GENPOS"],
+    "rsid":["SNP","rsid","RSID","rsID","rs_id","MarkerName","variant_id","ID"],
+    "ea":["EA","effect_allele","Effect_allele","Tested_Allele","A1","ALLELE1","ALT","effectAllele"],
+    "oa":["NEA","other_allele","Other_allele","Other_Allele","A2","ALLELE0","REF","otherAllele"],
+    "beta":["BETA","beta","Beta","Effect","effect","EFFECT_SIZE","effect_size","b","estimate","Estimate"],
+    "or":["OR","or","OddsRatio","odds_ratio"],
+    "se":["SE","se","StdErr","stderr","standard_error"],
+    "p":["P","p","Pvalue","P_VALUE","p_value","P-value"],
+    "eaf":["EAF","eaf","A1FREQ","AF","effect_allele_frequency","Freq_Tested_Allele","POOLED_ALT_AF","Freq1"],
+    "n":["N","n","N_total","TotalN","samplesize","sample_size"],
+}
+
+def candidates_for(patterns):
+    out=[]
+    for pat in patterns:
+        out.extend(DATA.rglob(pat))
+    return list({str(p.resolve()):p for p in out if p.is_file()}.values())
+
+def read_header(path):
+    member=""
+    if path.suffix.lower()==".zip":
+        with zipfile.ZipFile(path) as z:
+            members=[n for n in z.namelist() if not n.endswith("/")]
+            preferred=[n for n in members if "T2D-noUKBB" in n or n.endswith(".txt")]
+            if not preferred:
+                return "","","ZIP_NO_MEMBER"
+            member=preferred[0]
+            with z.open(member) as raw:
+                for b in raw:
+                    s=b.decode("utf-8",errors="replace").strip()
+                    if s and not s.startswith("##"):
+                        return s,member,"PASS"
+        return "",member,"HEADER_NOT_FOUND"
+    opener=gzip.open if str(path).endswith(".gz") else open
+    with opener(path,"rt",encoding="utf-8",errors="replace") as f:
+        for line in f:
+            s=line.strip()
+            if s and not s.startswith("##"):
+                return s,member,"PASS"
+    return "",member,"HEADER_NOT_FOUND"
+
+def split_header(s):
+    return s.lstrip("#").split("\t") if "\t" in s else s.lstrip("#").split()
+
+def detect(cols):
+    lower={c.lower():c for c in cols}
+    out={}
+    for key,aliases in ALIASES.items():
+        hit=""
+        for a in aliases:
+            if a in cols:
+                hit=a; break
+            if a.lower() in lower:
+                hit=lower[a.lower()]; break
+        out[key]=hit
+    return out
+
+rows=[]
+for spec in TRAITS:
+    cand=candidates_for(spec["patterns"])
+    exact_names={x for x in spec["patterns"] if "*" not in x and "?" not in x}
+    cand.sort(key=lambda p:(0 if p.name in exact_names else 1,len(str(p)),str(p)))
+    selected=cand[0] if cand else None
+
+    if selected is None:
+        rows.append({**spec,"path":"","member":"","n_candidate_files":0,"header":"",
+                     "status":"FAIL_NOT_FOUND",**{f"col_{k}":"" for k in ALIASES}})
+        continue
+
+    header,member,hstatus=read_header(selected)
+    cols=split_header(header) if header else []
+    mapping=detect(cols)
+
+    reasons=[]
+    if hstatus!="PASS":
+        reasons.append(hstatus)
+    if not mapping["se"]:
+        reasons.append("MISSING_SE")
+    if not mapping["beta"] and not mapping["or"]:
+        reasons.append("MISSING_BETA_OR_OR")
+    if not mapping["ea"] or not mapping["oa"]:
+        reasons.append("MISSING_ALLELES")
+    if spec["build"]=="RSID_PREFERRED":
+        if not mapping["rsid"]:
+            reasons.append("MISSING_RSID_FOR_RSID_PREFERRED")
+    elif not mapping["rsid"] and not (mapping["chr"] and mapping["pos"]):
+        reasons.append("MISSING_VARIANT_KEY")
+
+    status="PASS" if not reasons else "REVIEW_SCHEMA"
+
+    # Do not silently accept the low-coverage 2015 GIANT adiposity files
+    # as the intended high-density 2018 GIANT+UKB confirmatory-sensitivity resource.
+    if spec["trait"] in {"BMI","WHR"} and selected is not None and "2015" in selected.name:
+        status="REVIEW_WRONG_ADIPOSITY_RESOURCE"
+        reasons.append("2015_LOW_COVERAGE_RESOURCE_NOT_CONFIRMATORY_TARGET")
+    if len(cand)>1 and selected.name not in exact_names:
+        status="REVIEW_MULTIPLE_CANDIDATES"
+        reasons.append(f"MULTIPLE_CANDIDATES={len(cand)}")
+
+    row={**spec,"path":str(selected),"member":member,"n_candidate_files":len(cand),
+         "header":header,"review_reason":";".join(reasons),"status":status}
+    for k,v in mapping.items():
+        row[f"col_{k}"]=v
+    rows.append(row)
+
+registry=OUT/"STAGE3D0_OUTCOME_REGISTRY.tsv"
+fields=[
+    "trait","domain","type","build","favorable","sample_overlap_class","sample_overlap_note",
+    "path","member","n_candidate_files","col_chr","col_pos","col_rsid","col_ea","col_oa",
+    "col_beta","col_or","col_se","col_p","col_eaf","col_n","header","review_reason","status"
+]
+with registry.open("w",encoding="utf-8",newline="") as f:
+    wr=csv.DictWriter(f,fieldnames=fields,delimiter="\t",lineterminator="\n",extrasaction="ignore")
+    wr.writeheader(); wr.writerows(rows)
+
+summary={
+    "traits":len(rows),
+    "pass":sum(r["status"]=="PASS" for r in rows),
+    "review":sum(r["status"].startswith("REVIEW") for r in rows),
+    "fail":sum(r["status"].startswith("FAIL") for r in rows),
+    "all_pass":all(r["status"]=="PASS" for r in rows),
+    "registry":str(registry),
+    "rule":"Stage3-D execution is blocked until every intended outcome registry row is PASS."
+}
+(AUDIT/"STAGE3D0_OUTCOME_REGISTRY.json").write_text(json.dumps(summary,indent=2)+"\n",encoding="utf-8")
+print(json.dumps(summary,indent=2))
+for r in rows:
+    print(r["trait"],r["status"],r.get("review_reason",""),r["path"])
+
+sys.exit(0 if summary["all_pass"] else 2)
