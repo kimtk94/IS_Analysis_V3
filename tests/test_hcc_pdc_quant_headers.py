@@ -26,7 +26,7 @@ class TestPDCQuantHeaders(unittest.TestCase):
         self.assertTrue(o["header_complete_within_range"])
         self.assertEqual(o["header_delimiter_tabs"],3)
         self.assertNotIn("Patient123",str(o))
-        self.assertEqual(o["first_25_columns_matching_biological_field_names"],["Protein ID","Gene Symbol"])
+        self.assertEqual(o["header_biological_field_categories"],["gene","protein","symbol"])
 
     def test_signed_url_kept_in_memory_only(self):
         name=PDC_FILES["PDC000198"][0]
@@ -39,6 +39,15 @@ class TestPDCQuantHeaders(unittest.TestCase):
         self.assertEqual(file["file_name"],name)
         self.assertTrue(link.startswith("https://"))
         self.assertEqual(READ_LIMIT,32768)
+
+    def test_signed_url_as_dict(self):
+        name=PDC_FILES["PDC000198"][0]
+        with patch("probe_pdc_quant_headers.request_graphql",return_value={
+            "filesPerStudy":[{"file_name":name,"signedUrl":{"url":"https://pdcdatastore.s3.amazonaws.com/secret?Signature=abc"}}]
+        }):
+            _,link=get_file_link("PDC000198",name)
+        self.assertTrue(link.startswith("https://"))
+
 
 if __name__=="__main__":
     unittest.main()
