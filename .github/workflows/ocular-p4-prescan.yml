@@ -1,0 +1,32 @@
+name: Ocular P4 Full-Cohort Barcode Preflight
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p4_prescan.py'
+      - '.github/workflows/ocular-p4-prescan.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and check all 18 metadata barcode joins
+        run: |
+          python -m py_compile scripts/ocular/ocular_p4_prescan.py
+          python scripts/ocular/ocular_p4_prescan.py --output ocular-p4-prescan.json
+      - name: Upload aggregate-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p4-prescan
+          path: ocular-p4-prescan.json
+          retention-days: 30
+          if-no-files-found: warn
