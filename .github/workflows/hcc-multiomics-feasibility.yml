@@ -54,6 +54,8 @@ jobs:
         run: python scripts/hcc/probe_pdc_quant_api_schema.py --out results/hcc/feasibility/pdc_quant_api_schema.json
       - name: Probe HCCDB25 alternate Gao RNA data portal
         run: python scripts/hcc/probe_hccdb25_access.py --out results/hcc/feasibility/hccdb25_access.json
+      - name: Inspect HCCDB25 public frontend download-route hints
+        run: python scripts/hcc/probe_hccdb25_assets.py --out results/hcc/feasibility/hccdb25_frontend_routes.json
       - name: Upload HCC audit artifacts
         if: always()
         uses: actions/upload-artifact@v4
