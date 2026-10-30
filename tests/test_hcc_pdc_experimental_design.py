@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"scripts"/"hcc"))
-from probe_pdc_experimental_design import flatten_design,unique_design_counts,load_design,TMT,normalized_header_fingerprint,reconstruct_from_biospecimen_runs,disambiguate_tmt_run_slots
+from probe_pdc_experimental_design import flatten_design,unique_design_counts,load_design,TMT,normalized_header_fingerprint,reconstruct_from_biospecimen_runs,disambiguate_tmt_run_slots,channel_reference_audit
 
 class TestTMTDesign(unittest.TestCase):
     def test_assignments_and_reference_are_not_independent_patients(self):
@@ -60,6 +60,20 @@ class TestTMTDesign(unittest.TestCase):
     def test_no_quantitative_tmt_run_is_not_verified(self):
         with self.assertRaises(ValueError):
             reconstruct_from_biospecimen_runs([{"samples":[]}])
+
+
+    def test_common_reference_channel_is_candidate_only(self):
+        cases=[{"samples":[{"sample_type":"Not Reported","aliquots":[
+          {"aliquot_id":"POOL","aliquot_run_metadata":[
+            {"experiment_number":str(i),"label":"TMT_126","analyte":"Proteome"} for i in range(1,34)]}]},
+          {"sample_type":"Primary Tumor","aliquots":[
+           {"aliquot_id":"T1","aliquot_run_metadata":[
+             {"experiment_number":"1","label":"TMT_127N","analyte":"Proteome"}]}]}]}]
+        res=channel_reference_audit(cases)
+        self.assertEqual(res["Proteome"]["candidate_common_reference_labels"],["tmt_126"])
+        self.assertFalse(res["Proteome"]["reference_verified_by_paper"])
+        self.assertFalse(res["Proteome"]["rna_matrix_join_verified"])
+        self.assertNotIn("POOL",str(res))
 
     def test_public_api_bad_response_rejected(self):
         with patch("probe_pdc_experimental_design.request_graphql",return_value={"studyExperimentalDesign":[]}):
