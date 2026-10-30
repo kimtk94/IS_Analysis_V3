@@ -26,7 +26,8 @@ PDC_FILES = {
 }
 READ_LIMIT = 32768
 ALLOWED_HOSTS = ("pdcdatastore.s3.amazonaws.com", "pdc.cancer.gov",
-                 "pdc-cancer-gov.s3.amazonaws.com")
+                 "pdc-cancer-gov.s3.amazonaws.com",
+                 "d3iwtkuvwz4jtf.cloudfront.net")
 
 
 def check_download_host(url):
