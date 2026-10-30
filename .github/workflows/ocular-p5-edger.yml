@@ -1,9 +1,5 @@
 name: Ocular P5 Paired edgeR Differential Expression
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5_edger.R'
-      - '.github/workflows/ocular-p5-edger.yml'
   workflow_dispatch:
 
 permissions:
