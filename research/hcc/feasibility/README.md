@@ -91,6 +91,12 @@ Sources: [official PDC public API](https://pdc.cancer.gov/pdc/publicapi-document
 - [HCCDB v2.0](https://academic.oup.com/gpb/article/22/1/qzae011/7600437) archives Gao OEP000321 transcriptome as **HCCDB25**, corroborated by independent studies. It offers a plausible alternate legal processed-RNA source. In actual CI, `http://lifeome.net:809/` served **HTTP 206, HTML 6,305 bytes**, and `http://lifeome.net/database/hccdb2` the same shell. HTTPS routes failed (connection/SSL). The HTML did **not** contain literal HCCDB25/OEP000321 or a verified matrix file URL; downloading a full RNA matrix and joining patient IDs is still outstanding.
 - Source-sensitive note: publication data-availability statements alone cannot establish current public download availability or patient/sample ID fidelity. **Current research decision: V02 BLOCKED**, not FAIL, due to unverified data access / mapping.
 
+## Stage-8 HCCDB25 public frontend route inventory (2026-10-30)
+
+A **focused** [GitHub Actions #41066051263](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41066051263) successfully tested the bounded public frontend probe (3 unit tests PASS), avoiding a full GEO/PDC rerun. HCCDB HTTP portal at `http://lifeome.net:809/` returned 6,305 bytes of HTML and referenced **6 public JavaScript assets**. Five were inspected. The small `/static/js/app.3f5b30f0.js` bundle contained the SPA route literals `/download` and `/repository`, with additional UI strings "Download" and "Repository".
+
+**Interpretation:** these are client-side navigation routes, **not** demonstrated HTTP download endpoints or verified HCCDB25 RNA sample files. The route audit could not yet recover an expression matrix URL, a gene×sample matrix or matched case IDs. V02 remains BLOCKED. To proceed, navigate documented HCCDB25 public repository route through an authorized browser/workflow or obtain an official exported HCCDB25 expression matrix and sample manifest; alternatively request a direct access link from the data custodian. Never guess a dataset download URL from a route name.
+
 ## Criteria (pilot engineering thresholds, NOT universally accepted clinical criteria)
 - At least one observed, documented **patient/specimen-level RNA↔protein join with N≥30** (paper abstract is insufficient).
 - At least two verified etiology categories **each N≥10 within those joined data**. Need inspect overlap and confounders (stage, treatment, batch, platform).
