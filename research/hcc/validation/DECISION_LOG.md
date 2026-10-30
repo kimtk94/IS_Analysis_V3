@@ -56,3 +56,11 @@ Study-governance PR is independent from the ongoing code/data-feasibility PR #25
 - **Alternate RNA source:** Gao `OEP000321` is archived as **HCCDB25** in HCCDB v2.0, documented by HCCDB and independent publications. Public `http://lifeome.net:809/` responded HTTP 206, **6,305 bytes of generic HTML**, with no HCCDB25 literal accession or verified matrix file URL. HTTPS routes failed (SSL or connection).
 - Data access decision: PDC native matrix **UNVERIFIED**, HCCDB25 processed RNA file **UNVERIFIED**, V02 **BLOCKED**. Do not label timeout as absent data, HTML as an expression matrix, or the paper's 159 individuals as verified RNA–protein patient pairs.
 - Follow-up order: inspect HCCDB front-end public script manifests / documented download API, probe PDC portal GCT availability, then verify same biological patient/biopsy ID across *actual quantitative values*. Avoid recurring high-load `quantDataMatrix` calls on every PR push; manually trigger bounded calls only when needed.
+
+## 2026-10-30 — D-011: HCCDB25 frontend route discovered, no RNA file verified
+
+- Evidence: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41066051263 (focused public endpoint CI; 3 tests PASS).
+- HCCDB v2.0 public site has **six referenced JS assets** in its main HTML shell (HTTP 206, 6,305 bytes). Of five inspected, the small `/static/js/app.3f5b30f0.js` has `/download` and `/repository` literals; they are **client-side navigation paths**, not confirmed quantitative RNA download URLs.
+- No direct HCCDB25 sample-by-gene expression file, sample metadata, or RNA→PDC case join was recovered. Literature provenance HCCDB25=Gao OEP000321 is maintained as a source relationship, not a verified current binary/file transfer.
+- **Decision:** V02 BLOCKED. Next: authorized HCCDB25 repository navigation or official export; if access remains blocked, request source data according to original publication/institution policy and invoke independent-cohort RQ4 only when cross-omics pairing is truly impossible.
+- Engineering adjustment: PDC `quantDataMatrix` heavy/time-out-prone probes are manual-only in the standard CI; focused HCCDB25 route workflow allows quick low-risk verification.
