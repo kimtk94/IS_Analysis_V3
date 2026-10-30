@@ -38,8 +38,8 @@ def context_windows(js):
                 "offset_in_public_bundle":match.start(),
                 "nearby_chunk_names":static_chunks,
                 "nearby_structure_tokens":module_tokens,
-                "context_has_module_loader":bool(re.search(r"(?:\\.e\\(|\\.bind\\(|import\\(|webpackChunkName)",segment)),
-                "context_has_direct_data_file_extension":bool(re.search(r"\\.(?:csv|tsv|xlsx|rds|gz|gct)\\b",segment,re.I)),
+                "context_has_module_loader":bool(re.search(r"(?:\.e\(|\.bind\(|import\(|webpackChunkName)",segment)),
+                "context_has_direct_data_file_extension":bool(re.search(r"\.(?:csv|tsv|xlsx|rds|gz|gct)\b",segment,re.I)),
                 "context_has_api_url_literal":bool(re.search(r"['\"]https?://[^'\"]+/api/",segment)),
             })
             if len(out)>=MAX_WINDOWS:
