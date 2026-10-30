@@ -110,6 +110,24 @@ class CloudTests(unittest.TestCase):
         self.assertFalse(result["tumor_normal_pairing_verified"])
         self.assertNotIn("Patient007",str(result))
 
+    def test_full_numeric_coverage_excludes_invalid_and_annotation(self):
+        buf=io.BytesIO()
+        ws=(b'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'
+            b'<row r="3"><c r="A3" t="s"><v>0</v></c><c r="D3"><v>1.5</v></c><c r="E3"><v>2.5</v></c></row>'
+            b'<row r="4"><c r="D4"><v>-5</v></c><c r="E4" t="e"><v>#N/A</v></c></row>'
+            b'<row r="5"><c r="D5"><v>NaN</v></c><c r="E5"><v>0</v></c></row>'
+            b'</sheetData></worksheet>')
+        with zipfile.ZipFile(buf,"w") as z:
+            z.writestr("xl/worksheets/sheet2.xml",ws)
+        with zipfile.ZipFile(io.BytesIO(buf.getvalue())) as z:
+            out=m.protein_numeric_coverage(z,"xl/worksheets/sheet2.xml",2)
+        self.assertEqual(out["number_of_protein_feature_rows"],3)
+        self.assertEqual(out["actual_finite_numeric_expression_cells"],4)
+        self.assertEqual(out["total_possible_expression_cells"],6)
+        self.assertAlmostEqual(out["numeric_fraction"],4/6,places=5)
+        self.assertFalse(out["patient_ids_or_numeric_values_logged"])
+        self.assertFalse(out["rna_protein_join_confirmed"])
+
     def test_metadata_http404_is_hold_not_missing_science(self):
         import urllib.error
         def missing(*args,**kwargs):raise urllib.error.HTTPError("https://pmc-oa-opendata.s3.amazonaws.com/",404,"not found",None,None)
