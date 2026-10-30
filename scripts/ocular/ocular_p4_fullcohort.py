@@ -161,7 +161,7 @@ def evaluate(output,confidence=0.75,min_cells=30):
         result["gene_detected_in_at_least_10_donors_each_arm"]=int(np.count_nonzero(
             (np.count_nonzero(filtered["no-dex"],axis=1)>=10)
             &(np.count_nonzero(filtered["dex"],axis=1)>=10)))
-        result["status"]="GO_59DONOR_FULL_RAW_PSEUDOBULK_QC" if n_kept==57 else "GO_FULL_RAW_PSEUDOBULK_QC"
+        result["status"]="GO_57DONOR_FULL_RAW_PSEUDOBULK_QC" if n_kept==57 else "GO_FULL_RAW_PSEUDOBULK_QC"
         result["restrictions"]=["No clinical steroid-induced IOP phenotype",
                                 "No DE testing or independent replication has been performed",
                                 "Individual donor count matrices must not be committed to Git"]
@@ -185,7 +185,7 @@ def main():
     print("P4_FULL_RESULT",evidence["status"],
           "paired",evidence.get("metadata_paired_donors_after_actual_barcode_join"),
           "error",evidence.get("error"),flush=True)
-    if evidence["status"] not in ("GO_59DONOR_FULL_RAW_PSEUDOBULK_QC",
+    if evidence["status"] not in ("GO_57DONOR_FULL_RAW_PSEUDOBULK_QC",
                                   "GO_FULL_RAW_PSEUDOBULK_QC"):
         raise SystemExit(2)
 
