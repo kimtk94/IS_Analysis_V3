@@ -6,10 +6,12 @@ on:
       - 'scripts/hcc/probe_pmc2026_cloud_proteomics.py'
       - 'scripts/hcc/probe_xing2023_clinical_id_join.py'
       - 'scripts/hcc/probe_xing2023_clinical_layout.py'
+      - 'scripts/hcc/probe_xing2023_clinical_completeness.py'
       - 'tests/test_hcc_2023_proteome_supplement.py'
       - 'tests/test_hcc_pmc2026_cloud_proteomics.py'
       - 'tests/test_hcc_xing2023_clinical_id_join.py'
       - 'tests/test_hcc_xing2023_clinical_layout.py'
+      - 'tests/test_hcc_xing2023_clinical_completeness.py'
       - '.github/workflows/hcc-2023-external-proteome.yml'
   workflow_dispatch:
 permissions:
@@ -43,6 +45,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_hcc_xing2023_clinical_layout.py' -v
       - name: Compare within-workbook and external clinical sheet layouts
         run: python scripts/hcc/probe_xing2023_clinical_layout.py --out results/hcc/feasibility/xing2023_clinical_layout_audit.json
+      - name: Test conservative clinical completeness against synthetic 152 pairs
+        run: python -m unittest discover -s tests -p 'test_hcc_xing2023_clinical_completeness.py' -v
+      - name: Audit 152 matched clinical rows and per-column missingness
+        run: python scripts/hcc/probe_xing2023_clinical_completeness.py --out results/hcc/feasibility/xing2023_clinical_completeness.json
       - name: Upload public supplement audit
         uses: actions/upload-artifact@v4
         with:
@@ -54,4 +60,5 @@ jobs:
             results/hcc/feasibility/pmc2026_cloud_mmc7_rna_de.json
             results/hcc/feasibility/xing2023_proteome_clinical_id_overlap.json
             results/hcc/feasibility/xing2023_clinical_layout_audit.json
+            results/hcc/feasibility/xing2023_clinical_completeness.json
           if-no-files-found: error
