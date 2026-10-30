@@ -246,6 +246,49 @@ def disambiguate_tmt_run_slots(cases):
         "warning":"A unique slot assignment still does not prove which quantitative TSV column belongs to this aliquot."
     }
 
+def channel_reference_audit(cases):
+    """Aggregate TMT channels by analyte and biospecimen tissue class."""
+    type_by_channel=collections.defaultdict(lambda:collections.defaultdict(lambda:collections.defaultdict(set)))
+    rows=collections.Counter()
+    for case in cases:
+        for sample in case.get("samples") or []:
+            kind=sample.get("sample_type") or "Not Reported"
+            for aliquot in sample.get("aliquots") or []:
+                aid=aliquot.get("aliquot_id") or aliquot.get("aliquot_submitter_id")
+                if not aid: continue
+                for item in aliquot.get("aliquot_run_metadata") or []:
+                    if not isinstance(item,dict): continue
+                    analyte=item.get("analyte")
+                    label=str(item.get("label") or "").lower()
+                    exp=item.get("experiment_number")
+                    if not analyte or label not in TMT or exp is None: continue
+                    analyte=str(analyte)
+                    type_by_channel[analyte][label][kind].add((str(exp),str(aid)))
+                    rows[(analyte,label,kind)]+=1
+    summary={}
+    for analyte, channels in sorted(type_by_channel.items()):
+        channel_summaries={}
+        candidate_labels=[]
+        for channel, groups in sorted(channels.items()):
+            entry={
+                kind:{
+                    "run_rows":rows[(analyte,channel,kind)],
+                    "distinct_experiments":len({e for e,_ in identifiers}),
+                    "distinct_aliquots":len({a for _,a in identifiers})
+                } for kind,identifiers in sorted(groups.items())
+            }
+            channel_summaries[channel]=entry
+            if (entry.get("Not Reported",{}).get("distinct_experiments")==33
+                and sum(z["run_rows"] for typ,z in entry.items() if typ!="Not Reported")==0):
+                candidate_labels.append(channel)
+        summary[analyte]={
+            "per_channel_tissue_distribution":channel_summaries,
+            "candidate_common_reference_labels":candidate_labels,
+            "reference_verified_by_paper":False,
+            "rna_matrix_join_verified":False,
+        }
+    return summary
+
 def audit():
     o={}
     for study in STUDIES:
@@ -256,6 +299,7 @@ def audit():
             design,provenance=reconstruct_from_biospecimen_runs(bios)
             result["run_metadata_reconstruction"]=provenance
             result["slot_disambiguation"] = disambiguate_tmt_run_slots(bios)
+            result["reference_channel_audit"] = channel_reference_audit(bios)
             result["design"]=unique_design_counts(design,links)
             result["status"]="PDC_BIOSPECIMEN_RUN_METADATA_RECONSTRUCTED"
             try:result["matrix_header_fingerprint"]=normalized_header_fingerprint(study,design)
