@@ -11,6 +11,7 @@ are persisted. Public 2023 HCC supplementary mmc3.xlsx remains only a
 candidate until a validated OOXML workbook is actually downloaded.
 """
 import argparse
+import collections
 import datetime as dt
 import hashlib
 import io
@@ -59,10 +60,21 @@ def parse_article_metadata(data):
     if not isinstance(raw,list):raise ValueError("media_urls type invalid")
     candidate_urls=[]
     xlsx_filenames=[]
+    entry_shapes=collections.Counter()
+    link_hosts=collections.Counter()
+    public_suffixes=collections.Counter()
+    dictionary_fields=set()
     for entry in raw:
+        entry_shapes[type(entry).__name__]+=1
         if isinstance(entry,str):url=entry
-        elif isinstance(entry,dict):url=entry.get("url") or entry.get("s3_url") or ""
+        elif isinstance(entry,dict):
+            dictionary_fields.update(str(x)[:60] for x in entry.keys())
+            url=entry.get("url") or entry.get("s3_url") or entry.get("media_url") or ""
         else:continue
+        link_hosts[urllib.parse.urlsplit(url).hostname or "NO_HOST"]+=1
+        suffix=urllib.parse.unquote(urllib.parse.urlsplit(url).path).lower().rsplit(".",1)
+        if len(suffix)==2 and len(suffix[-1])<=12:
+            public_suffixes[suffix[-1]]+=1
         if not official(url):continue
         filename=urllib.parse.unquote(urllib.parse.urlsplit(url).path).rsplit("/",1)[-1]
         if re.fullmatch(r"[a-zA-Z0-9_.-]{1,120}\.xlsx", filename, re.I):
@@ -74,6 +86,10 @@ def parse_article_metadata(data):
         "open_access":meta.get("is_pmc_openaccess"),
         "article_version":meta.get("version"),
         "media_url_count":len(raw),
+        "media_entry_type_counts":dict(entry_shapes),
+        "media_entry_public_keys":sorted(dictionary_fields),
+        "media_url_host_counts":dict(link_hosts),
+        "media_file_extension_counts":dict(public_suffixes),
         "official_xlsx_media_filenames":sorted(set(xlsx_filenames)),
         "matching_file_count":len(candidate_urls),
         "candidate_urls_in_memory":candidate_urls,
