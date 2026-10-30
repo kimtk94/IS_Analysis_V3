@@ -9,6 +9,7 @@ import collections
 import datetime as dt
 import json
 import pathlib
+import re
 
 ALLOWED = {"NOT_STARTED", "PARTIAL", "PASS", "BLOCKED", "FAIL"}
 EXPECTED = [f"V{i:02d}" for i in range(16)]
@@ -43,13 +44,25 @@ def validate(reg):
             if any(not x.get("path") or not x.get("source_sha256") or
                    not x.get("code_sha") or not x.get("checked_at") for x in audit):
                 raise ValueError(f"{cid}: PASS requires path, source SHA256, code SHA and timestamp")
-            if cid == "V02" and not (
+            for a in audit:
+                path = pathlib.PurePosixPath(a["path"])
+                if path.is_absolute() or ".." in path.parts or path.parts[:2] != ("results", "hcc"):
+                    raise ValueError(f"{cid}: analysis artifact path must be within results/hcc")
+                if not re.fullmatch(r"[0-9a-fA-F]{64}", a["source_sha256"]):
+                    raise ValueError(f"{cid}: source_sha256 must be 64 hex chars")
+                if not re.fullmatch(r"[0-9a-fA-F]{40}", a["code_sha"]):
+                    raise ValueError(f"{cid}: code_sha must be a full commit SHA")
+                if not re.fullmatch(r"\d{4}-\d{2}-\d{2}(?:T[^ ]+)?", a["checked_at"]):
+                    raise ValueError(f"{cid}: checked_at must include an ISO date")
+            if cid in ("V02", "V04", "V10") and not (
                 isinstance(row.get("independent_patient_n"), int)
+                and not isinstance(row["independent_patient_n"], bool)
                 and row["independent_patient_n"] > 0
             ):
-                raise ValueError("V02: paired matrix PASS requires independent patient N")
+                raise ValueError(f"{cid}: PASS requires distinct biological patient N")
             if cid in ("V12", "V13") and not (
                 isinstance(row.get("independent_event_n"), int)
+                and not isinstance(row["independent_event_n"], bool)
                 and row["independent_event_n"] > 0
             ):
                 raise ValueError(f"{cid}: clinical PASS needs verified events")
@@ -64,17 +77,21 @@ def summarize(reg):
     validate(reg)
     counts = collections.Counter(x["status"] for x in reg["checkpoints"])
     blockers = [x for x in reg["checkpoints"] if x["status"] in ("BLOCKED", "PARTIAL")]
+    indexed = {x["id"]: x for x in reg["checkpoints"]}
+    biological_keys = ("V00", "V01", "V02", "V03", "V04", "V05",
+                       "V06", "V07", "V08", "V09", "V14", "V15")
+    biological_ready = all(indexed[key]["status"] == "PASS" for key in biological_keys)
+    cell_ready = biological_ready and indexed["V10"]["status"] == "PASS"
+    clinical_ready = biological_ready and all(
+        indexed[key]["status"] == "PASS" for key in ("V12", "V13")
+    )
     return {"created_at": reg["created_at"], "evaluated_at_utc":
             dt.datetime.now(dt.timezone.utc).isoformat(),
             "counts": {key: counts[key] for key in sorted(ALLOWED)},
-            "primary_claim_allowed": all(
-                next(x for x in reg["checkpoints"] if x["id"] == key)["status"] == "PASS"
-                for key in ("V02", "V03", "V04", "V05", "V07", "V08", "V09")
-            ),
-            "clinical_claim_allowed": all(
-                next(x for x in reg["checkpoints"] if x["id"] == key)["status"] == "PASS"
-                for key in ("V12", "V13")
-            ),
+            "primary_claim_allowed": biological_ready,
+            "cellular_claim_eligible_for_review": cell_ready,
+            "clinical_claim_allowed": clinical_ready,
+            "claim_semantics": "ALL_PASS only means eligible for scientific claim review; no p-value, novelty, causal or clinical usefulness is inferred automatically",
             "unresolved": [{"id": x["id"], "title": x["title"],
                             "status": x["status"], "priority": x["priority"],
                             "next_action": x["next_action"]} for x in blockers]
@@ -85,10 +102,10 @@ def to_markdown(result):
     lines = ["# HCC 연구 검증 체크포인트 상태", "",
              f"- Generated UTC: {result['evaluated_at_utc']}",
              "- **Note:** This is a guardrail report, NOT a molecular result.",
-             "- Matched cross-etiology biology claim: " +
-             ("ALLOWED (all gates passed)" if result["primary_claim_allowed"] else "NOT YET ALLOWED"),
-             "- Independent clinical prognosis claim: " +
-             ("ALLOWED (all gates passed)" if result["clinical_claim_allowed"] else "NOT YET ALLOWED"),
+             "- Biological claim eligible for human scientific review: " +
+             ("ELIGIBLE (manual effect/novelty review required)" if result["primary_claim_allowed"] else "NOT ELIGIBLE"),
+             "- Independent clinical prognosis eligible for scientific review: " +
+             ("ELIGIBLE (manual utility review required)" if result["clinical_claim_allowed"] else "NOT ELIGIBLE"),
              "", "## Current gate distribution", ""]
     lines.extend(f"- {k}: {v}" for k, v in result["counts"].items())
     lines += ["", "## Next unresolved checkpoints", ""]
