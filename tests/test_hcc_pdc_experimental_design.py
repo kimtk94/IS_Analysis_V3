@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"scripts"/"hcc"))
-from probe_pdc_experimental_design import flatten_design,unique_design_counts,load_design,TMT,normalized_header_fingerprint,reconstruct_from_biospecimen_runs
+from probe_pdc_experimental_design import flatten_design,unique_design_counts,load_design,TMT,normalized_header_fingerprint,reconstruct_from_biospecimen_runs,disambiguate_tmt_run_slots
 
 class TestTMTDesign(unittest.TestCase):
     def test_assignments_and_reference_are_not_independent_patients(self):
@@ -44,6 +44,18 @@ class TestTMTDesign(unittest.TestCase):
         self.assertEqual(summary["run_metadata_rows_with_valid_tmt_labels"],2)
         self.assertEqual(len(flatten_design(rows)),2)
         self.assertNotIn("AL-1",str(summary))
+
+
+    def test_fraction_replicate_resolves_ambiguous_aliquot_channel(self):
+        cases=[{"samples":[{"aliquots":[
+            {"aliquot_id":"A1","aliquot_run_metadata":[{"experiment_number":"E1","label":"tmt_126","fraction":"1","replicate_number":"1"}]},
+            {"aliquot_id":"A2","aliquot_run_metadata":[{"experiment_number":"E1","label":"tmt_126","fraction":"2","replicate_number":"2"}]}
+        ]}]}]
+        result=disambiguate_tmt_run_slots(cases)
+        self.assertEqual(result["grouping_sensitivity"]["experiment_label"]["multi_aliquot_slots"],1)
+        self.assertEqual(result["grouping_sensitivity"]["experiment_fraction_label"]["multi_aliquot_slots"],0)
+        self.assertEqual(result["grouping_sensitivity"]["experiment_replicate_label"]["single_aliquot_slots"],2)
+        self.assertNotIn("A1",str(result))
 
     def test_no_quantitative_tmt_run_is_not_verified(self):
         with self.assertRaises(ValueError):
