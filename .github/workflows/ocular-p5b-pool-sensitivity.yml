@@ -1,9 +1,5 @@
 name: Ocular P5b Nine-Pool Robustness and MDS
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5b_pool_sensitivity.R'
-      - '.github/workflows/ocular-p5b-pool-sensitivity.yml'
   workflow_dispatch:
 
 permissions:
