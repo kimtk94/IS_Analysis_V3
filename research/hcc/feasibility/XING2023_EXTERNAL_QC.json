@@ -59,8 +59,23 @@
     "data_rows_considered_from_excel_row4": 160,
     "sample_numeric_patient_key_overlap_best_column": 2,
     "prefixed_patient_code_overlap_best_column": 0,
-    "protein_clinical_patient_join_status": "UNVERIFIED",
-    "note": "Incidental numeric matches are not accepted as patient identity."
+    "protein_clinical_patient_join_status": "STRUCTURAL_SAMPLE_LABEL_LINK_REVIEW_REQUIRED",
+    "note": "Earlier numeric and prefixed-code searches missed sample-key T/N suffixes. Official mmc2 detailed worksheet contains exact T/N keys matching all 152 mmc3 protein header pairs on 152 distinct clinical rows, no duplicate T/N labels; source column A=T, B=N. Excel row 3 contains one of these records and must not be discarded as a header. This is a sample-label-to-clinical-row structural join, not confirmed clinical variable definitions, outcomes, or RNA-protein join.",
+    "structural_sample_key_audit": {
+      "protein_header_tn_pairs": 152,
+      "clinical_sheet_source": "mmc2.xlsx: worksheet ordinal 3",
+      "matched_distinct_clinical_rows": 152,
+      "same_row_one_to_one_tn_pairs": 152,
+      "first_matched_excel_row": 3,
+      "t_sample_label_column": "A",
+      "n_sample_label_column": "B",
+      "duplicated_t_or_n_labels": 0,
+      "matched_rows_with_other_populated_fields": 152,
+      "identity_key_mapping": "PASS_STRUCTURE",
+      "clinical_covariate_codebook": "NOT_REVIEWED",
+      "patient_level_clinical_link_claim": "HOLD_PENDING_SOURCE_DEFINITION",
+      "rna_protein_matched_quant_values": "BLOCKED"
+    }
   },
   "transcriptome_source": {
     "file": "mmc7.xlsx",
@@ -74,7 +89,8 @@
     "protein_numeric_completeness": "PASS",
     "protein_tumor_normal_header_pairs": "PARTIAL",
     "clinical_patient_id_join": "HOLD",
-    "rna_protein_matched_matrix_join_V02": "BLOCKED"
+    "rna_protein_matched_matrix_join_V02": "BLOCKED",
+    "clinical_sample_label_structural_join": "PASS_STRUCTURE"
   },
   "evidence_runs": {
     "original_xlsx": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41075092093",
@@ -82,7 +98,9 @@
     "protein_numeric_coverage": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41075928463",
     "clinical_and_rna_supplements": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41076489020",
     "clinical_key_join": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41076963271",
-    "prefixed_id_probe": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41077195020"
+    "prefixed_id_probe": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41077195020",
+    "clinical_layout_orientation": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41091026280",
+    "clinical_same_row_integrity": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41091622662"
   },
   "restrictions": [
     "Do not upload original copyrighted xlsx to public GitHub",
