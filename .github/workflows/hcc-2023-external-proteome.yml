@@ -27,6 +27,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_hcc_pmc2026_cloud_proteomics.py' -v
       - name: Probe official 2026 PMC Cloud supplement media
         run: python scripts/hcc/probe_pmc2026_cloud_proteomics.py --out results/hcc/feasibility/pmc2026_cloud_mmc3_audit.json
+      - name: Verify 2023 HCC clinical supplement S1 (mmc2)
+        run: python scripts/hcc/probe_pmc2026_cloud_proteomics.py --target mmc2.xlsx --out results/hcc/feasibility/pmc2026_cloud_mmc2_clinical.json
+      - name: Verify 2023 HCC RNA differential supplement S6 (mmc7)
+        run: python scripts/hcc/probe_pmc2026_cloud_proteomics.py --target mmc7.xlsx --out results/hcc/feasibility/pmc2026_cloud_mmc7_rna_de.json
       - name: Upload public supplement audit
         uses: actions/upload-artifact@v4
         with:
@@ -34,4 +38,6 @@ jobs:
           path: |
             results/hcc/feasibility/2023_152patient_proteome_mmc3_manifest.json
             results/hcc/feasibility/pmc2026_cloud_mmc3_audit.json
+            results/hcc/feasibility/pmc2026_cloud_mmc2_clinical.json
+            results/hcc/feasibility/pmc2026_cloud_mmc7_rna_de.json
           if-no-files-found: error
