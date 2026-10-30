@@ -51,6 +51,22 @@ class CloudTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             m.resolve_cloud_uri("s3://untrusted-bucket/PMC10783603.1/mmc3.xlsx")
 
+    def test_requested_mmc2_and_mmc7_not_substituted_with_mmc3(self):
+        data={"pmcid":m.PMCID,"doi":m.DOI,"media_urls":[
+             "s3://pmc-oa-opendata/PMC10783603.1/mmc2.xlsx",
+             "s3://pmc-oa-opendata/PMC10783603.1/mmc3.xlsx",
+             "s3://pmc-oa-opendata/PMC10783603.1/mmc7.xlsx"]}
+        with patch.object(m,"TARGET","mmc2.xlsx"):
+            c=m.parse_article_metadata(json.dumps(data).encode())["candidate_urls_in_memory"]
+            self.assertEqual(len(c),1)
+            self.assertTrue(c[0].endswith("/mmc2.xlsx"))
+        with patch.object(m,"TARGET","mmc7.xlsx"):
+            c=m.parse_article_metadata(json.dumps(data).encode())["candidate_urls_in_memory"]
+            self.assertEqual(len(c),1)
+            self.assertTrue(c[0].endswith("/mmc7.xlsx"))
+        with patch.object(m,"TARGET","nonexistent.xlsx"):
+            self.assertEqual(m.parse_article_metadata(json.dumps(data).encode())["matching_file_count"],0)
+
     def test_wrong_pmc_is_rejected(self):
         with self.assertRaises(ValueError):
             m.parse_article_metadata(b'{"pmcid":"PMC12345","media_urls":[]}')
