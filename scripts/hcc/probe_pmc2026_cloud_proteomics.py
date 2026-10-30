@@ -15,6 +15,8 @@ import collections
 import datetime as dt
 import hashlib
 import io
+import math
+import statistics
 import json
 import pathlib
 import re
@@ -225,6 +227,65 @@ def sample_header_audit(z,sheet_path,expected_sample_columns=304):
     out["interpretation"]="Heuristic T/N label grouping; requires author metadata/manual verification before scientific PASS."
     return out
 
+def _excel_column_number(ref):
+    letters=re.match(r"^[A-Z]+",ref.upper())
+    if not letters:return 0
+    n=0
+    for ch in letters.group():
+        n=n*26+ord(ch)-64
+    return n
+
+def protein_numeric_coverage(z,part,expected_sample_columns=304):
+    """Process actual numeric protein values, emit only aggregated coverage."""
+    observed_sample_counts=[0]*expected_sample_columns
+    features=[]
+    row_count=0
+    with z.open(part) as stream:
+        for _,row in ET.iterparse(stream,events=("end",)):
+            if row.tag!=NS+"row":continue
+            row_num=int(row.get("r") or "0")
+            if row_num<=2:
+                row.clear()
+                continue
+            count=0
+            for cell in row.findall(NS+"c"):
+                idx=_excel_column_number(cell.get("r",""))
+                if not 4<=idx<4+expected_sample_columns:continue
+                if cell.get("t") in ("s","str","inlineStr","e","b"):continue
+                v=cell.find(NS+"v")
+                if v is None or v.text is None:continue
+                try:
+                    x=float(v.text)
+                except ValueError:continue
+                if not math.isfinite(x):continue
+                count+=1
+                observed_sample_counts[idx-4]+=1
+            features.append(count)
+            row_count+=1
+            row.clear()
+    if not row_count:raise ValueError("No protein feature rows")
+    values=sum(features)
+    available=row_count*expected_sample_columns
+    ordered=sorted(observed_sample_counts)
+    return {
+        "status":"NUMERIC_VALUE_COVERAGE_AUDITED",
+        "number_of_protein_feature_rows":row_count,
+        "assayed_sample_columns":expected_sample_columns,
+        "total_possible_expression_cells":available,
+        "actual_finite_numeric_expression_cells":values,
+        "numeric_fraction":round(values/available,6),
+        "sample_valid_protein_count_min":min(ordered),
+        "sample_valid_protein_count_median":statistics.median(ordered),
+        "sample_valid_protein_count_p10":ordered[(len(ordered)-1)//10],
+        "sample_valid_protein_count_max":max(ordered),
+        "protein_feature_valid_sample_count_median":statistics.median(features),
+        "protein_features_with_at_least_152_samples":sum(x>=152 for x in features),
+        "protein_features_with_all_304_samples":sum(x==expected_sample_columns for x in features),
+        "patient_ids_or_numeric_values_logged":False,
+        "rna_protein_join_confirmed":False,
+        "note":"Quantification completeness in one protein-only cohort; clinical matching and RNA values remain unverified."
+    }
+
 def xlsx_only_manifest(raw):
     if not zipfile.is_zipfile(io.BytesIO(raw)):
         raise ValueError("not XLSX")
@@ -246,6 +307,10 @@ def xlsx_only_manifest(raw):
                 "uncompressed_xml_bytes":info.file_size,
                 **sheet_shape(z,part)
             })
+        coverage={"status":"UNVERIFIED"}
+        if len(xml_parts)>=2 and len(names)>=2 and "6512 proteins" in names[1]:
+            try:coverage=protein_numeric_coverage(z,xml_parts[1])
+            except Exception as exc:coverage={"status":"UNVERIFIED","error_type":type(exc).__name__}
         patient_header={"status":"UNVERIFIED"}
         selected=[part for idx,part in enumerate(xml_parts) if idx<len(names) and "6512 proteins" in names[idx]]
         if len(selected)==1:
@@ -257,6 +322,7 @@ def xlsx_only_manifest(raw):
         return {"xlsx_verified":True,"sheet_count":len(names),"sheet_names":names,
                 "worksheet_structures":profiles,
                 "protein_sample_header_audit":patient_header,
+                "protein_numeric_coverage":coverage,
                 "patient_expression_values_or_raw_ids_logged":False}
 
 
