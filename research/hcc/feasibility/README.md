@@ -28,6 +28,16 @@
 
 Evidence of a patient-level proteotranscriptomic intersection and independent recurrence cohort remains **UNVERIFIED**.
 
+## Stage-2 actual public Ng/Gao sample metadata (2026-10-30)
+
+Public-source audit [Actions #41053421959](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053421959) fetched the official Ng Supplementary Data 1 XLSX (SHA-256 `edf1d2afd3baaedd56edee8536c16f10e4a62cb6cdac929863a062671ee73d25`). The sample-level metadata **confirmed** 122 tumor biopsies / 114 distinct patients; 51 biopsies / **49 patients** are flagged RNAseq + proteome + phosphoproteome `Y` (51 samples are NOT 51 patients). The file alone does not provide or establish a cross-matrix quantitative sample join, so the hard gate stays HOLD.
+
+Among the 49 distinct patients with all three modality flags: ALD only 13; HCV only 11; NAFLD only 7; HBV only 4; HCV+ALD 7; ALD+HBV 3; ALD+NAFLD 2; no known liver disease 2. Mixed etiologies and patient multiplicity require prespecified treatment and adequate power.
+
+Public PDC GraphQL [Actions #41053276768](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053276768) verified **PDC000198 and PDC000199**, each reporting `cases_count=171`, `aliquots_count=331`. These are repository counts, **not** evidence of 171 Gao paper cases (the Cell publication reports 159 paired patients), nor a matched proteotranscriptomic patient N. PDC processed quantitative matrix versus BioSino OEP000321 RNA join remains open.
+
+**Next unlock**: obtain legally usable *processed expression matrices* with compatible patient/specimen IDs (Ng public supplement/PRIDE or authorized EGA; Gao public PDC and BioSino). Confirm batch, tissue status, unique patient count, feature/gene mapping, then only promote `verified_pair_n`. The candidate ALD-only versus HCV-only comparison is exploratory, not a powered inference.
+
 ## Criteria (pilot engineering thresholds, NOT universally accepted clinical criteria)
 - At least one observed, documented **patient/specimen-level RNA↔protein join with N≥30** (paper abstract is insufficient).
 - At least two verified etiology categories **each N≥10 within those joined data**. Need inspect overlap and confounders (stage, treatment, batch, platform).
