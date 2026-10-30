@@ -59,6 +59,8 @@ jobs:
         run: python scripts/hcc/probe_hccdb25_assets.py --out results/hcc/feasibility/hccdb25_frontend_routes.json
       - name: Verify public 2023 external 152-patient proteomic supplement
         run: python scripts/hcc/probe_2023_hcc_proteome_supplement.py --out results/hcc/feasibility/2023_152patient_proteome_mmc3_manifest.json
+      - name: Verify 2026 PMC Cloud direct HCC proteomic supplement manifest
+        run: python scripts/hcc/probe_pmc2026_cloud_proteomics.py --out results/hcc/feasibility/pmc2026_cloud_mmc3_audit.json
       - name: Upload HCC audit artifacts
         if: always()
         uses: actions/upload-artifact@v4
