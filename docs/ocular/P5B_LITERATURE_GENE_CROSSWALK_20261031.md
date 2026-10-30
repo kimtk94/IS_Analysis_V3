@@ -21,6 +21,17 @@ The 2026 Singh et al. multiomic [preprint (PMCID PMC13015409)](https://pmc.ncbi.
 
 **Five confirmed examples concordant in signed direction (5/5)**. They are *literature-based positive controls* and not proof of novel target discovery or blinded cohort replication. All 5 were explicitly named in the source paper. These numbers should not be described as exact fold-change concordance because the datasets/model differ.
 
+## Older external DEX RNA-seq/qPCR comparison (2022)
+An independent 2022 study of short- and long-term DEX exposure in cultured primary human TM ([full text, PMC9117214](https://pmc.ncbi.nlm.nih.gov/articles/PMC9117214/)) reports Table 2 RNA-seq and qPCR effects for named genes. These are *not* the same experimental dose/time/donor/cell-state setup, so only signed directions are cross-comparable:
+
+| Gene | Our 57-donor BeamA DEX log2FC (48h) | Earlier 2022 RNA-seq 16h | Earlier 2022 RNA-seq 7d | Interpretation |
+|---|---:|---:|---:|---|
+| **PTK2B** | **+3.14596** | +2.34 | +1.8 | **Already reported** in TM DEX RNAseq and tested by qPCR; do not present as novel discovery |
+| FKBP5 | +3.98401 | +2.91 | +4.47 | Known glucocorticoid positive control |
+| ZBTB16 | +7.51328 | +7.70 | +6.47 | Known high-effect DEX response |
+
+PTK2B is among our highest-ranked FDR genes, but the direct 2022 evidence substantially reduces novelty of its **expression increase**; any claim of new regulatory mechanism requires a separate experimental or genotype-dependent result. The 2022 paper also identifies FST, MMP1, PDPN, RGCC, SERPINB2, VEGFC; those are literature comparison candidates only, not automatically replicated without checking our table.
+
 ## Additional independent data
 Mehrotra et al., IOVS 2026 ([PMID 41636427](https://pubmed.ncbi.nlm.nih.gov/41636427/)) already found FKBP5, FAM107A and ECM/adhesion DEX effects; 46 ENA runs of PRJNA1243143 do not mean 46 donors, and accession-level titles do not reliably encode treatment/time/strain. External exact directional RNAseq validation remains **HOLD** until sample-specific metadata are reconciled.
 
