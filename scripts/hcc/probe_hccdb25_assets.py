@@ -60,12 +60,12 @@ def summarize_script_text(data):
     motifs=("hccdb25","repository","download","expression","/api/","axios","fetch(",
             "buke","bulk","datasource","dataset")
     candidates=[]
-    for token in re.findall(r'["\\x27]([/a-zA-Z0-9_.:$\\{\\}-]{3,120})["\\x27]',txt):
+    for token in re.findall(r'["\x27]([/a-zA-Z0-9_.:$\{\}-]{3,120})["\x27]',txt):
         if ("download" in token.lower() or "repository" in token.lower()) and (
            token.startswith("/") or token.lower().startswith(("download","repository"))):
             candidates.append(token[:100])
     return {"token_count":{s:len(re.findall(re.escape(s),txt,re.I)) for s in motifs},
-            "candidate_api_route_count":len(set(re.findall(r'["\\x27](/(?:api|download|data)/[a-zA-Z0-9/_-]{3,100})["\\x27]',txt))),
+            "candidate_api_route_count":len(set(re.findall(r'["\x27](/(?:api|download|data)/[a-zA-Z0-9/_-]{3,100})["\x27]',txt))),
             "public_route_literals_candidates":list(dict.fromkeys(candidates))[:20],
             "does_not_verify_download":True}
 
