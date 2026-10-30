@@ -63,6 +63,24 @@ class CloudTests(unittest.TestCase):
         self.assertEqual(r["sheet_count"],1)
         self.assertFalse(r["patient_expression_values_or_raw_ids_logged"])
 
+    def test_anonymous_sheet_numeric_structure_only(self):
+        buf=io.BytesIO()
+        wb=b'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheets><sheet name="1. 6512 proteins" sheetId="1"/></sheets></workbook>'
+        ws=(b'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            b'<dimension ref="A1:E3"/><sheetData>'
+            b'<row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c></row>'
+            b'<row r="2"><c r="A2" t="s"><v>2</v></c><c r="B2"><v>1.5</v></c><c r="C2"><v>2.5</v></c></row>'
+            b'</sheetData></worksheet>')
+        with zipfile.ZipFile(buf,"w") as z:
+            z.writestr("xl/workbook.xml",wb)
+            z.writestr("xl/worksheets/sheet1.xml",ws)
+        profile=m.xlsx_only_manifest(buf.getvalue())
+        self.assertEqual(profile["sheet_count"],1)
+        d=profile["worksheet_structures"][0]
+        self.assertEqual(d["dimension_ref"],"A1:E3")
+        self.assertEqual(d["row_summaries"][1]["numeric_cells"],2)
+        self.assertTrue(profile["patient_expression_values_or_raw_ids_logged"] is False)
+
     def test_metadata_http404_is_hold_not_missing_science(self):
         import urllib.error
         def missing(*args,**kwargs):raise urllib.error.HTTPError("https://pmc-oa-opendata.s3.amazonaws.com/",404,"not found",None,None)
