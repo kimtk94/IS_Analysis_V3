@@ -1,0 +1,93 @@
+{
+  "schema_version": "hcc-external-xing2023-evidence-v1",
+  "checked_date": "2026-10-30",
+  "study": {
+    "doi": "10.1016/j.xcrm.2023.101315",
+    "pmcid": "PMC10783603",
+    "official_metadata": "https://pmc-oa-opendata.s3.amazonaws.com/metadata/PMC10783603.1.json",
+    "source_toc": "https://pmc.ncbi.nlm.nih.gov/articles/10783603/",
+    "official_license": "CC BY-NC-ND",
+    "paper_reported": {
+      "patients_recruited": 160,
+      "passed_proteome_qc": 152,
+      "phosphoproteomics": 132,
+      "rna_seq": 57,
+      "wes": 58
+    }
+  },
+  "validated_files": [
+    {
+      "file": "mmc3.xlsx",
+      "bytes": 16978396,
+      "sha256": "7da732a933eba7a84936b8033d37564fd27125e29d059f9d7e306cf456965e17",
+      "sheet_count": 5,
+      "source_download": "VERIFIED_OOXML"
+    },
+    {
+      "file": "mmc2.xlsx",
+      "bytes": 50781,
+      "sha256": "38e409ee57eae5621176bfd6a5538c1ff94751725f550f5472997b4cca08826b",
+      "sheet_count": 4,
+      "source_download": "VERIFIED_OOXML"
+    },
+    {
+      "file": "mmc7.xlsx",
+      "bytes": 226184,
+      "sha256": "b62d3bc84fa6cbe11abb47dbb05011bb0346e5d034e4e28fce0285d4e953f9e8",
+      "sheet_count": 3,
+      "source_download": "VERIFIED_OOXML"
+    }
+  ],
+  "observed_protein_matrix": {
+    "feature_rows": 6512,
+    "sample_columns": 304,
+    "header_labeled_tumor_normal_pairs": 152,
+    "total_possible_cells": 1979648,
+    "finite_numeric_cells": 1311220,
+    "finite_numeric_fraction": 0.66235,
+    "sample_quantified_proteins_min": 2951,
+    "sample_quantified_proteins_median": 4349,
+    "sample_quantified_proteins_max": 5459,
+    "proteins_with_finite_values_at_least_152_samples": 4383,
+    "proteins_finite_in_all_304_samples": 1102,
+    "note": "Tumor/Normal pair IDs parsed from sample header names in memory; patient clinical join not verified."
+  },
+  "clinical_source": {
+    "file": "mmc2.xlsx",
+    "detailed_sheet": "2. Detialed Clinicopathological",
+    "detailed_sheet_dimension": "A1:AG163",
+    "data_rows_considered_from_excel_row4": 160,
+    "sample_numeric_patient_key_overlap_best_column": 2,
+    "prefixed_patient_code_overlap_best_column": 0,
+    "protein_clinical_patient_join_status": "UNVERIFIED",
+    "note": "Incidental numeric matches are not accepted as patient identity."
+  },
+  "transcriptome_source": {
+    "file": "mmc7.xlsx",
+    "rna_sheet": "1. RNA-seq",
+    "rna_sheet_dimension": "A1:G1643",
+    "is_patient_by_gene_rna_quant_matrix_verified": false,
+    "note": "RNA differential expression table, not an independently matched patient-level RNA expression matrix."
+  },
+  "gate_results": {
+    "external_protein_quant_file": "PASS",
+    "protein_numeric_completeness": "PASS",
+    "protein_tumor_normal_header_pairs": "PARTIAL",
+    "clinical_patient_id_join": "HOLD",
+    "rna_protein_matched_matrix_join_V02": "BLOCKED"
+  },
+  "evidence_runs": {
+    "original_xlsx": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41075092093",
+    "protein_sample_ids": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41075680502",
+    "protein_numeric_coverage": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41075928463",
+    "clinical_and_rna_supplements": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41076489020",
+    "clinical_key_join": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41076963271",
+    "prefixed_id_probe": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41077195020"
+  },
+  "restrictions": [
+    "Do not upload original copyrighted xlsx to public GitHub",
+    "Do not log raw case/clinical identifiers",
+    "Do not infer RNA/protein paired n=57 from RNA assay n=57",
+    "Paper's published subtype external validation is not novel thesis evidence"
+  ]
+}
