@@ -58,12 +58,97 @@ def _cell_value(cell, shared):
     return value or ""
 
 
+def _normalized_label(s):
+    return re.sub(r"[^a-z0-9]+", "", str(s).lower())
+
+
+def _column_index(col):
+    ix = 0
+    for ch in col:
+        ix = ix * 26 + (ord(ch) - ord("A") + 1)
+    return ix - 1
+
+
+def _as_table_rows(rows, shared):
+    """Build a sparse XLSX sheet with A1/cell reference alignment."""
+    result = []
+    for row in rows:
+        values = {}
+        for fallback, cell in enumerate(row.findall(NS + "c")):
+            m = re.match(r"([A-Z]+)", cell.attrib.get("r", ""))
+            idx = _column_index(m.group(1)) if m else fallback
+            if idx < 500:
+                values[idx] = _cell_value(cell, shared)
+        result.append(values)
+    return result
+
+
+def _metadata_pair_summary(rows):
+    """Summarize SAME-BIOPSY flags, not expression-matrix validation."""
+    header_row = None
+    mapping = {}
+    for i, row in enumerate(rows[:6]):
+        names = {_normalized_label(v): col for col, v in row.items() if v}
+        if {"tumorbiopsyid", "patientid", "rnaseq", "proteomics"}.issubset(names):
+            header_row = i
+            mapping = names
+            break
+    if header_row is None:
+        return {"status": "HEADER_NOT_FOUND", "matrix_join_verified": False}
+    keys = ("rnaseq", "proteomics", "phosphoproteomics")
+    hist = {key: {} for key in keys}
+    true_values = {"yes", "y", "true", "1", "x", "available"}
+    false_values = {"no", "n", "false", "0", "na", "n/a", "-", ""}
+    tumor_rows = 0
+    patients = set()
+    tumors = set()
+    flagged = []
+    unknown_flags = {}
+    for row in rows[header_row + 1:]:
+        tumor = row.get(mapping["tumorbiopsyid"], "").strip()
+        patient = row.get(mapping["patientid"], "").strip()
+        if not tumor:
+            continue
+        tumor_rows += 1
+        tumors.add(tumor)
+        if patient:
+            patients.add(patient)
+        statuses = {}
+        for key in keys:
+            v = row.get(mapping[key], "").strip() if key in mapping else ""
+            hist[key][v] = hist[key].get(v, 0) + 1
+            if v.lower() in true_values:
+                statuses[key] = True
+            elif v.lower() in false_values:
+                statuses[key] = False
+            else:
+                statuses[key] = None
+                unknown_flags[key] = unknown_flags.get(key, 0) + 1
+        if statuses.get("rnaseq") is True and statuses.get("proteomics") is True:
+            flagged.append((tumor, patient, statuses.get("phosphoproteomics")))
+    pair_patients = {p for _, p, _ in flagged if p}
+    return {
+        "status": "PUBLIC_SAMPLE_METADATA_INSPECTED",
+        "tumor_rows_with_biopsy_id": tumor_rows,
+        "unique_tumor_biopsy_ids": len(tumors),
+        "unique_patient_ids": len(patients),
+        "rna_and_proteome_yes_biopsy_rows": len(flagged),
+        "rna_and_proteome_yes_unique_patient_ids": len(pair_patients),
+        "rna_and_proteome_and_phosphoproteome_yes_biopsy_rows":
+            sum(1 for _, _, value in flagged if value is True),
+        "modality_flag_value_counts": hist,
+        "uninterpreted_modality_flag_rows": unknown_flags,
+        "matrix_join_verified": False,
+        "note": "Patient & biopsy identifiers came from a PUBLIC sample sheet and were only counted in memory. No expression/protein matrices joined.",
+    }
+
+
 def inspect_xlsx(data):
-    """Inspect only sheet dimensions + first 10 nonempty rows. Never print values from sample rows."""
+    """Public cohort metadata only, no patient/sample identifiers in outputs."""
     if not zipfile.is_zipfile(io.BytesIO(data)):
         raise ValueError("download not an XLSX ZIP workbook")
     with zipfile.ZipFile(io.BytesIO(data)) as book:
-        sheets = [n for n in book.namelist() if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", n)]
+        sheets = [n for n in book.namelist() if re.fullmatch(r"xl/worksheets/sheet\\d+\\.xml", n)]
         if not sheets:
             raise ValueError("no xlsx worksheets")
         def safe_read(name):
@@ -79,28 +164,19 @@ def inspect_xlsx(data):
         summary = []
         for name in sheets[:20]:
             root = ET.fromstring(safe_read(name))
-            rows = root.findall(".//" + NS + "sheetData/" + NS + "row")
-            preview = []
-            for row in rows[:10]:
-                cells = row.findall(NS + "c")
-                preview.append([_cell_value(c, shared) for c in cells[:50]])
-            probable_headers = []
-            for row in preview[:4]:
-                # Only field names; suppress values that resemble patient or sample IDs.
-                keep = [v for v in row if any(x in v.lower() for x in (
-                    "patient", "sample", "etiolog", "viral", "alcohol", "hbv", "hcv",
-                    "proteom", "transcript", "rna", "seq", "clinical", "stage",
-                    "biopsy", "mutation", "tissue", "tumor", "id", "status",
-                    "library", "bclc")) and len(v) < 85 and "@" not in v]
-                if keep:
-                    probable_headers = keep[:30]
-                    break
-            summary.append({"sheet": name, "rows_in_xml": len(rows),
-                            "first_rows_width": [len(v) for v in preview],
-                            "candidate_column_labels": probable_headers,
-                            "file_level_pair_count": None})
-        return {"sheets": summary, "worksheet_count": len(sheets),
-                "interpretation": "XLSX sheet discovery only. No RNA/protein sample identity join or patient N verified."}
+            xmlrows = root.findall(".//" + NS + "sheetData/" + NS + "row")
+            rows = _as_table_rows(xmlrows, shared)
+            colnames = [v for v in rows[0].values() if v] if rows else []
+            summary.append({
+                "sheet": name, "rows_in_xml": len(rows),
+                "header_labels": colnames[:80],
+                "modality_sample_metadata": _metadata_pair_summary(rows),
+                "expression_matrix_verified": False,
+            })
+        return {
+            "sheets": summary, "worksheet_count": len(sheets),
+            "interpretation": "Public sample metadata only. Counts of modality flags are NOT matched RNA/protein expression matrices.",
+        }
 
 
 def probe_ng():
