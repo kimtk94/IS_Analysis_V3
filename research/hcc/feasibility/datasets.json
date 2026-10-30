@@ -307,7 +307,14 @@
         "reported_subtypes": 3,
         "matched_patient_count_recomputed_in_this_repo": null,
         "status": "PUBLISHED_LITERATURE_ONLY_NOT_OUR_MATRIX_JOIN",
-        "novelty_warning": "Prior 158-patient RNA-protein integrated clustering is not a new thesis result."
+        "novelty_warning": "Prior 158-patient RNA-protein integrated clustering is not a new thesis result.",
+        "published_sample_id_filter": {
+          "initial_eligible_paired_cases": 158,
+          "excluded_unmatched_tumor_samples": 2,
+          "final_rna_protein_integrative_cluster_tumors": 156,
+          "source": "https://academic.oup.com/bib/article/24/2/bbac601/7025463",
+          "observed_in_this_repo": false
+        }
       }
     },
     {
