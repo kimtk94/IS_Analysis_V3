@@ -1,0 +1,32 @@
+name: Ocular P5e Cell-State Selection Bias Diagnostic
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p5e_cellstate_bias.py'
+      - '.github/workflows/ocular-p5e-cellstate-bias.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  selection-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inspect all single-cell annotation and pairing rates
+        run: |
+          python -m py_compile scripts/ocular/ocular_p1_integrity.py scripts/ocular/ocular_p5e_cellstate_bias.py
+          python scripts/ocular/ocular_p5e_cellstate_bias.py --output ocular-p5e-selection.json
+      - name: Upload anonymous aggregate QC
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5e-selection
+          path: ocular-p5e-selection.json
+          retention-days: 30
+          if-no-files-found: warn
