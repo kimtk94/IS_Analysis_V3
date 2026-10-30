@@ -49,6 +49,16 @@ CI evidence: [Actions #41054812247](https://github.com/kimtk94/IS_Analysis_V3/ac
 
 **Decision stays HOLD** for quantitative RNA×Protein pairing and independent clinical endpoint validation. Do not promote `verified_pair_n` in the JSON registry until a reviewed non-sensitive patient/biopsy join summary exists.
 
+## Stage-4 actual public PDC quantitative schema (2026-10-30)
+
+- [GitHub Actions #41056348071](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41056348071) confirmed HTTP **206 Range** retrieval of up to 32 KiB from each of four public PDC files, without downloading the full matrices or persisting PDC signed URLs. The **Proteome TMT11** TSV is **128,690,348 bytes / 667 header columns**, the **Phosphosite TMT11** TSV **110,179,920 bytes / 334 columns**. Their second data rows have matching column widths. Both files have a confirmed public quantitative TSV structure; this is NOT a proof of full quantitative matrix integrity.
+- The corresponding **Proteome.sample.txt** and **Phosphoproteome.sample.txt** files (6,931 and 7,328 bytes) were retrieved and parsed; both comprise **33 data rows and 15 columns**.
+- [GitHub Actions #41056621082](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41056621082) screened metadata fields against matrix header names. **Zero literal normalized identifier matches** were found. This does NOT imply no mapping: TMT isobaric label experiments use multiplex plex/channel to sample/aliquot mappings.
+- **PDC official guidance**: `*.tmt11.tsv` columns represent relative log ratios (Log ratio vs Unshared Log ratio); do not treat as absolute protein abundance. `*.sample.txt` is analytical-run context; `aliquot_submitter_id` must be mapped to `case_submitter_id` using PDC Biospecimens and Study Run Metadata. See https://pdc.cancer.gov/pdc-docs/data-analysis-guides and https://pdc.cancer.gov/pdc/faq/Files_Download.
+- **Next unlock**: parse PDC study-run plex/channel metadata, resolve aliquot/case mapping without persisting patient identifiers publicly, and independently verify BioSino RNA processed expression/sample keys. Only then compare matched quantitative protein and RNA values.
+
+**Gates unchanged:** full quantitative matrix/data join = HOLD; paired RNA/protein patient count = UNVERIFIED; recurrence validation = HOLD. Successful CI validates data access and schema, not biological associations.
+
 ## Criteria (pilot engineering thresholds, NOT universally accepted clinical criteria)
 - At least one observed, documented **patient/specimen-level RNA↔protein join with N≥30** (paper abstract is insufficient).
 - At least two verified etiology categories **each N≥10 within those joined data**. Need inspect overlap and confounders (stage, treatment, batch, platform).
