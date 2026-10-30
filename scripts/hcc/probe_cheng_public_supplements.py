@@ -71,7 +71,7 @@ def xlsx_manifest(data):
         parts=z.namelist()
         if "xl/workbook.xml" not in parts:
             raise ValueError("missing workbook.xml")
-        if len(z.getinfo("xl/workbook.xml").file_size)>XML_CAP:
+        if z.getinfo("xl/workbook.xml").file_size>XML_CAP:
             raise ValueError("oversize workbook xml")
         wb=ET.fromstring(z.read("xl/workbook.xml"))
         sheets=[]
