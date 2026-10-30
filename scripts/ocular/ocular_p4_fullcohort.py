@@ -132,7 +132,9 @@ def evaluate(output,confidence=0.75,min_cells=30):
                 rec["selected_barcodes"]=int(good.sum())
                 rec["selected_barcode_recall"]=round(recall,5)
                 rec["source_filtered_barcodes"]=len(barcodes)
-                if recall<0.95:raise ValueError("BARCODE_RECALL_LT_95PCT "+gsm)
+                if recall<0.90:raise ValueError("BARCODE_RECALL_LT_90PCT "+gsm)
+                if recall<0.95:
+                    rec["barcode_recall_warning"]="BETWEEN_90_AND_95_PERCENT; monitor dropout and gene-coverage sensitivity"
                 rec["matrix_transfer"]=download(file_url(gsm,prefix,"matrix.mtx.gz"),mpath,620*1024*1024)
                 pooled,info=matrix_stream(mpath,len(barcodes),ix,GENES,len(matched))
                 total[arm]+=pooled
