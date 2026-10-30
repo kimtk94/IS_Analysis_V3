@@ -18,6 +18,16 @@
 8. **GSE238264**: 7 processed spatial samples **after neoadjuvant cabozantinib/nivolumab**; not a treatment-naive external recurrence cohort. https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE238264
 9. **PXD050969**: iProX proteome/lipidome/metabolome atlas; public raw matrix access and matching to RNA are unverified. https://proteomecentral.proteomexchange.org/cgi/GetDataset?ID=PXD050969
 
+## Empirical public-metadata probe (2026-10-30)
+[GitHub Actions #41052039696](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41052039696) successfully fetched **two small public GEO supplements** and passed **10 regression tests**.
+
+- `GSE14520_Extra_Supplement.txt.gz`: **488 sample rows** (247 Tumor, 239 Non-Tumor, 2 Normal); `Recurr status` and `Recurr months` each populated on **242 rows**. Raw status values `1=136`, `0=106`, and median recorded recurrence months **30.4**. Do not label these as 136 events or 242 unique patients until codebook / patient/sample joins are checked.
+- `GSE149614_HCC.metadata.updated.txt.gz`: **71,915 cell metadata rows**, **21 unique sample labels**, **10 unique patient labels**.
+- `HBV viral status` in GSE14520 is categorical (`CC`, `AVR-CC`, `N`, `.`), **not automatically a clean HBV+ vs HBV− coding**.
+- Raw EGA genomic files were **not downloaded**. Source details are preserved as non-sensitive aggregates in `datasets.json`.
+
+Evidence of a patient-level proteotranscriptomic intersection and independent recurrence cohort remains **UNVERIFIED**.
+
 ## Criteria (pilot engineering thresholds, NOT universally accepted clinical criteria)
 - At least one observed, documented **patient/specimen-level RNA↔protein join with N≥30** (paper abstract is insufficient).
 - At least two verified etiology categories **each N≥10 within those joined data**. Need inspect overlap and confounders (stage, treatment, batch, platform).
