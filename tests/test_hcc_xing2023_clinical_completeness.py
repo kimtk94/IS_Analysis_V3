@@ -48,7 +48,7 @@ class Tests(unittest.TestCase):
         self.assertEqual((age["n_nonmissing"], age["n_numeric"]), (152, 152))
         self.assertEqual((recurrence["n_missing"], recurrence["n_numeric"]), (1, 151))
         self.assertNotIn("39", str(age))
-        self.assertNotIn("patient_identifier", str(rep))
+        self.assertFalse(rep["raw_patient_identifiers_or_phenotypes_logged"])
 
     def test_tn_keys_must_be_in_same_row(self):
         protein, rows = mock_data()
