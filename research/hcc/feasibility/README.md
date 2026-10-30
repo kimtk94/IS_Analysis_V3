@@ -135,3 +135,14 @@ GitHub Actions: `hcc-multiomics-feasibility.yml` on PR / branch main change / ma
 4. Only after stage 1–3, design low-cost RNA/protein pathway concordance pilot; scRNA/spatial are contextual validation, not artificially patient-matched modalities.
 
 Repository registry: `research/hcc/feasibility/datasets.json`.
+
+## Stage-12 Xing 2023 clinical completeness / candidate RFS-OS schema (2026-10-31)
+
+**Executed GitHub CI:** [source-matched column completeness #41092590299](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092590299), [candidate event/duration QC #41092972318](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092972318). All steps and synthetic regression tests passed.
+
+- Verified the official PMC Cloud mmc2.xlsx and mmc3.xlsx SHA256. Exactly **152 distinct proteome T/N sample header pairs** correspond to **152 unique same-row T/N sample labels** in mmc2 Table S1 detailed clinicopathological worksheet. **31 non-ID clinical columns (C:AG)** were audited. Patient IDs, row-level clinical attributes and complete XLSX workbooks were not published.
+- Header-based values present among matched rows (denominator 152): Age 152, Sex 152, AFP 152 (143 numeric), HBV-associated H 143, HCV-associated M 138, MVI 152, tumor size 152, TNM V/W 152 and BCLC X 152. Presence does not certify coding or valid category levels.
+- Candidate RFS-status/duration **AC/AE:** 152 numeric pairs, observed codes 0=26 and 1=126, all positive durations, median uninterpreted duration 7.1333. Candidate survival **AF/AG:** 152 pairs, observed codes 0=82 and 1=70, all positive durations, median uninterpreted duration 30.4833. Neither code direction nor time unit/time zero/censoring has been verified; **these are NOT proven recurrence/death event counts**.
+- **Gates:** V02 BLOCKED (no RNA expression-by-patient matrix join); V12 PARTIAL (endpoint codebook missing); V13 BLOCKED (no independent locked survival score or external validation). No survival model has been fit.
+- Scripts: scripts/hcc/probe_xing2023_clinical_layout.py and scripts/hcc/probe_xing2023_clinical_completeness.py. Tests: tests/test_hcc_xing2023_clinical_layout.py and tests/test_hcc_xing2023_clinical_completeness.py. Artifact: xing2023_clinical_completeness.json. Evidence registry: research/hcc/feasibility/XING2023_EXTERNAL_QC.json.
+- **Next:** verify Table S1 source codebook; then calculate genuine event N and complete-case adjustment variables without publishing patient records. Independently procure lawful RNA gene-by-sample values for V02.
