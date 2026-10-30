@@ -16,6 +16,7 @@ import hashlib
 import io
 import json
 import pathlib
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -57,18 +58,23 @@ def parse_article_metadata(data):
     raw=meta.get("media_urls") or []
     if not isinstance(raw,list):raise ValueError("media_urls type invalid")
     candidate_urls=[]
+    xlsx_filenames=[]
     for entry in raw:
         if isinstance(entry,str):url=entry
         elif isinstance(entry,dict):url=entry.get("url") or entry.get("s3_url") or ""
         else:continue
-        # URLs may include NCBI md5 query parameter; retain in memory, never report.
-        if official(url) and urllib.parse.unquote(urllib.parse.urlsplit(url).path).lower().endswith("/"+TARGET):
+        if not official(url):continue
+        filename=urllib.parse.unquote(urllib.parse.urlsplit(url).path).rsplit("/",1)[-1]
+        if re.fullmatch(r"[a-zA-Z0-9_.-]{1,120}\.xlsx", filename, re.I):
+            xlsx_filenames.append(filename)
+        if re.search(r"(?:^|[-_.])mmc3\.xlsx$",filename,re.I):
             candidate_urls.append(url)
     return {
         "license_code":str(meta.get("license_code") or "UNKNOWN")[:32],
         "open_access":meta.get("is_pmc_openaccess"),
         "article_version":meta.get("version"),
         "media_url_count":len(raw),
+        "official_xlsx_media_filenames":sorted(set(xlsx_filenames)),
         "matching_file_count":len(candidate_urls),
         "candidate_urls_in_memory":candidate_urls,
     }
