@@ -38,6 +38,17 @@ Public PDC GraphQL [Actions #41053276768](https://github.com/kimtk94/IS_Analysis
 
 **Next unlock**: obtain legally usable *processed expression matrices* with compatible patient/specimen IDs (Ng public supplement/PRIDE or authorized EGA; Gao public PDC and BioSino). Confirm batch, tissue status, unique patient count, feature/gene mapping, then only promote `verified_pair_n`. The candidate ALD-only versus HCV-only comparison is exploratory, not a powered inference.
 
+## Stage-3 quantitative file location (2026-10-30)
+
+CI evidence: [Actions #41054812247](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41054812247), 17 regression tests PASS; public file-metadata audit available as Actions artifact. This stage **did not** access gene×patient expression values or join RNA/protein matrices.
+
+- **Ng**: Four publisher-hosted XLSX workbooks (Supplementary Data 2, 13, 14 and Source Data) fetched and inspected for sheet shapes. They may contain analytic summaries; sheet dimensions alone do not establish an expression matrix. PRIDE PXD025705/PXD025836 first 100 file records each fetched; three `P-PROT_HCC_SET{1,2,3}_DDA_Progenesis_Mascot_SQ_Results.xlsx` found in **PXD025836** file list. Do not assume these are complete gene-by-patient quantitative matrices.
+- **Gao**: PDC GraphQL total file counts: **PDC000198=6,347** (including 8 Protein Assembly/Text files); **PDC000199=3,896** (including 9 Protein Assembly/Text files). Most are spectra/PSMs; counts do not measure usable individuals. RNA expression from BioSino has not been paired to these files.
+- **Next targeted inventory**: enumerate PDC Protein Assembly filenames and the remaining PRIDE result/other files; classify results as (1) quantitative gene×sample, (2) peptide/protein identification, (3) instrument raw, (4) secondary figure/table, then compare sample identifiers with the existing Ng 49-patient measured subset.
+- `scripts/hcc/probe_quant_candidates.py` contains the next candidate-filename inventory utility **but has not been executed by CI**; its output must not be treated as findings.
+
+**Decision stays HOLD** for quantitative RNA×Protein pairing and independent clinical endpoint validation. Do not promote `verified_pair_n` in the JSON registry until a reviewed non-sensitive patient/biopsy join summary exists.
+
 ## Criteria (pilot engineering thresholds, NOT universally accepted clinical criteria)
 - At least one observed, documented **patient/specimen-level RNA↔protein join with N≥30** (paper abstract is insufficient).
 - At least two verified etiology categories **each N≥10 within those joined data**. Need inspect overlap and confounders (stage, treatment, batch, platform).
