@@ -98,8 +98,11 @@ def audit_clinical_row_identity_layout(protein_headers, rows):
     rows_same_tn_key = 0
     rows_with_other_populated_fields = 0
     total_data_rows = 0
+    early_row_match_ordinals = []
     for rownum, fields in rows:
-        if rownum <= 3:
+        # Do not assume row 3 is a header: only key-pattern evidence determines
+        # whether an early record is a possible clinical sample row.
+        if rownum <= 2:
             continue
         total_data_rows += 1
         labels = []
@@ -121,6 +124,8 @@ def audit_clinical_row_identity_layout(protein_headers, rows):
         if not labels:
             continue
         matched_data_rows += 1
+        if rownum <= 3:
+            early_row_match_ordinals.append(rownum)
         keys = {key for key, _ in labels}
         if len(keys) == 1:
             rows_one_key += 1
@@ -135,7 +140,8 @@ def audit_clinical_row_identity_layout(protein_headers, rows):
         for k in pair_keys
     )
     return {
-        "clinical_data_rows_scanned": total_data_rows,
+        "clinical_candidate_rows_scanned_from_excel_row3": total_data_rows,
+        "early_row_match_ordinals": sorted(set(early_row_match_ordinals)),
         "rows_with_protein_matching_labels": matched_data_rows,
         "rows_having_exactly_one_protein_patient_key": rows_one_key,
         "rows_with_same_key_tumor_and_normal_labels": rows_same_tn_key,
