@@ -1,9 +1,5 @@
 name: Ocular P1 Paired Count Matrix Integrity
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p1_integrity.py'
-      - '.github/workflows/ocular-p1-matrix-integrity.yml'
   workflow_dispatch:
 
 permissions:
