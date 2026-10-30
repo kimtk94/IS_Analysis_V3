@@ -13,7 +13,7 @@ on:
     paths:
       - 'research/hcc/feasibility/**'
       - 'scripts/hcc/**'
-      - 'tests/test_hcc_feasibility.py'
+      - 'tests/test_hcc_*.py'
       - '.github/workflows/hcc-multiomics-feasibility.yml'
 
 permissions:
