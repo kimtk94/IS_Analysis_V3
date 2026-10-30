@@ -30,6 +30,15 @@ class CloudTests(unittest.TestCase):
         w=m.parse_article_metadata(json.dumps({"pmcid":m.PMCID,"media_urls":[]}).encode())
         self.assertEqual(w["matching_file_count"],0)
 
+    def test_official_pubmed_filename_with_mmc3_suffix(self):
+        meta={"pmcid":m.PMCID,"doi":m.DOI,"version":1,
+              "media_urls":["https://pmc-oa-opendata.s3.amazonaws.com/PMC10783603.1/1-s2.0-S2666379123013154-mmc3.xlsx?md5=abc",
+                            "https://pmc-oa-opendata.s3.amazonaws.com/PMC10783603.1/1-s2.0-S2666379123013154-mmc2.xlsx?md5=def"]}
+        result=m.parse_article_metadata(json.dumps(meta).encode())
+        self.assertEqual(result["matching_file_count"],1)
+        self.assertIn("1-s2.0-S2666379123013154-mmc3.xlsx",result["official_xlsx_media_filenames"])
+        self.assertNotIn("md5=",str({k:v for k,v in result.items() if k!="candidate_urls_in_memory"}))
+
     def test_wrong_pmc_is_rejected(self):
         with self.assertRaises(ValueError):
             m.parse_article_metadata(b'{"pmcid":"PMC12345","media_urls":[]}')
