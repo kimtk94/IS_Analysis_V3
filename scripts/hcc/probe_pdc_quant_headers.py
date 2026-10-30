@@ -66,12 +66,22 @@ def get_file_link(study, filename):
     q=('{filesPerStudy(pdc_study_id:"'+study+'" file_name:'+safe_filename+
        ' offset:0 limit:10){file_id file_name file_size file_format data_category signedUrl{url}}}')
     data=request_graphql(q).get("filesPerStudy") or []
-    selected=[f for f in data if f.get("file_name")==filename]
+    if isinstance(data, dict):
+        data = data.get("files", []) if "files" in data else [data]
+    if not isinstance(data, list):
+        raise ValueError("Unexpected filesPerStudy structure")
+    selected=[f for f in data if isinstance(f, dict) and f.get("file_name")==filename]
     if len(selected)!=1:
         raise ValueError(f"expected one exact file, got {len(selected)}")
     rec=selected[0]
     signed=rec.get("signedUrl") or []
-    link=next((x.get("url") for x in signed if x.get("url")),None)
+    if isinstance(signed, dict):
+        signed=[signed]
+    elif isinstance(signed, str):
+        signed=[{"url":signed}]
+    if not isinstance(signed, list):
+        raise ValueError("Unexpected signedUrl structure")
+    link=next((x.get("url") for x in signed if isinstance(x, dict) and x.get("url")),None)
     return rec,link
 
 
