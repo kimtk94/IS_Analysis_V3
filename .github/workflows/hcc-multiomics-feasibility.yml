@@ -46,6 +46,10 @@ jobs:
         run: python scripts/hcc/probe_pdc_sample_mapping.py --output results/hcc/feasibility/pdc_sample_mapping.json
       - name: Audit public PDC case sample aliquot lineage
         run: python scripts/hcc/probe_pdc_biospecimen_lineage.py --output results/hcc/feasibility/pdc_biospecimen_lineage.json
+      - name: Audit public PDC TMT experimental design
+        run: python scripts/hcc/probe_pdc_experimental_design.py --out results/hcc/feasibility/pdc_experimental_design.json
+      - name: Probe NODE OEP000321 public RNA landing access
+        run: python scripts/hcc/probe_node_oep000321.py --out results/hcc/feasibility/node_oep000321_access.json
       - name: Upload HCC audit artifacts
         if: always()
         uses: actions/upload-artifact@v4
