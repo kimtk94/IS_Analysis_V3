@@ -6,7 +6,7 @@ on:
     paths:
       - 'research/hcc/feasibility/**'
       - 'scripts/hcc/**'
-      - 'tests/test_hcc_feasibility.py'
+      - 'tests/test_hcc_*.py'
       - '.github/workflows/hcc-multiomics-feasibility.yml'
   push:
     branches: [main]
@@ -29,9 +29,11 @@ jobs:
         with:
           python-version: '3.11'
       - name: Run HCC registry guardrail tests
-        run: python -m unittest discover -s tests -p 'test_hcc_feasibility.py' -v
+        run: python -m unittest discover -s tests -p 'test_hcc_*.py' -v
       - name: Generate evidence-ranked HCC feasibility report
         run: python scripts/hcc/feasibility_audit.py --out-dir results/hcc/feasibility
+      - name: Probe two small GEO public supplement schemas
+        run: python scripts/hcc/probe_public_metadata.py --output results/hcc/feasibility/geo_metadata_probe.json
       - name: Upload HCC audit artifacts
         if: always()
         uses: actions/upload-artifact@v4
