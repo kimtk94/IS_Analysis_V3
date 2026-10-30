@@ -30,6 +30,11 @@ class LineageTests(unittest.TestCase):
         self.assertEqual(r["sample_types"]["Primary Tumor"]["unique_cases"],2)
         self.assertEqual(r["sample_types"]["Solid Tissue Normal"]["unique_cases"],1)
         self.assertNotIn("PAT-1",str(r))
+        self.assertEqual(r["cases_with_tumor_and_normal_sample"],1)
+        self.assertEqual(r["cases_without_aliquot"],0)
+        self.assertEqual(r["run_metadata_records"],1)
+        self.assertEqual(r["distinct_experiment_label_pairs"],0)
+
 
     def test_paginated_structure_and_counts(self):
         with patch.object(module,"request_graphql",
