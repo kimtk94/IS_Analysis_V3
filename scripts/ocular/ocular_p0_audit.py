@@ -76,7 +76,7 @@ def metadata_summary(blob,name):
          'treatment_col':cond_field,'treatment_counts':treatment_values,
          'unique_donors_per_treatment':{k:len(v) for k,v in by_cond.items()}}
     if cond_field:
-        def is_dex(x):return bool(re.search(r'dex|^1$|^yes$|^true
+        def is_dex(x):return bool(re.search(r'dex|^1$|^yes$|^true$',x,re.I)) and not bool(re.search(r'no[-_ ]?dex|non[-_ ]?dex|without',x,re.I))
         def is_control(x):return bool(re.search(r'ctrl|vehicle|control|false|^0$|no|untreated',x,re.I))
         d=set().union(*(v for k,v in by_cond.items() if is_dex(k))) if by_cond else set()
         c=set().union(*(v for k,v in by_cond.items() if is_control(k))) if by_cond else set()
