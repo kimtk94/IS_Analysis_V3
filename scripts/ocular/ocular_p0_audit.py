@@ -90,7 +90,7 @@ def probe_gzip(blob,name):
     with gzip.open(io.BytesIO(blob),'rt',encoding='utf8',errors='replace') as f:
         first=f.readline().rstrip('\n');second=f.readline().rstrip('\n')
     n=len(first.split('\t'))
-    if n<2:raise ValueError('INVALID_TABLE')
+    if n<2 and 'barcodes.tsv' not in name.lower():raise ValueError('INVALID_TABLE')
     if 'narrowpeak' in name.lower():
         fields=first.split('\t');assert len(fields)>=6
         int(fields[1]);int(fields[2])
@@ -173,7 +173,7 @@ def mendeley():
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--out',required=True);a=ap.parse_args()
     datasets=[
-      geo('GSE313736',[r'cell_metadata.*\.gz$',r'donor_metadata.*\.gz$',r'\.dmx\.best\.gz$',r'_barcodes\.tsv\.gz$']),
+      geo('GSE313736',[r'cell_metadata.*\.gz$',r'donor_metadata.*\.gz$']),
       geo('GSE301517',[r'Control_vs_Dex_Gene_CPM_.*\.gz$']),
       geo('GSE301516',[r'ATAC_(Control|Dex)\.narrowPeak\.gz$']),
       mendeley(),
