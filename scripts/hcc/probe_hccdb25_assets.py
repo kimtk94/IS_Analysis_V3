@@ -18,7 +18,7 @@ import urllib.request
 ROOT="http://lifeome.net:809/"
 HTML_CAP=64*1024
 JS_CAP=700*1024
-MAX_ASSETS=12
+MAX_ASSETS=5
 
 class Scripts(HTMLParser):
     def __init__(self):
@@ -38,7 +38,7 @@ def safe_url(path):
     return url if parsed.hostname=="lifeome.net" and parsed.scheme in ("http","https") and parsed.port in (80,809,None) else None
 
 
-def small_get(url,cap,timeout=10):
+def small_get(url,cap,timeout=6):
     req=urllib.request.Request(url,headers={"User-Agent":"HCCDB25-Public-Asset-Probe/1.0",
                                             "Accept":"text/html,application/javascript,*/*",
                                             "Range":f"bytes=0-{cap-1}"})
