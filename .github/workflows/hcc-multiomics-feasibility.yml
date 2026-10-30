@@ -1,0 +1,41 @@
+name: HCC Multi-omics Feasibility Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'research/hcc/feasibility/**'
+      - 'scripts/hcc/**'
+      - 'tests/test_hcc_feasibility.py'
+      - '.github/workflows/hcc-multiomics-feasibility.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/hcc/feasibility/**'
+      - 'scripts/hcc/**'
+      - 'tests/test_hcc_feasibility.py'
+      - '.github/workflows/hcc-multiomics-feasibility.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run HCC registry guardrail tests
+        run: python -m unittest discover -s tests -p 'test_hcc_feasibility.py' -v
+      - name: Generate evidence-ranked HCC feasibility report
+        run: python scripts/hcc/feasibility_audit.py --out-dir results/hcc/feasibility
+      - name: Upload HCC audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-feasibility-audit
+          path: results/hcc/feasibility/
+          if-no-files-found: warn
