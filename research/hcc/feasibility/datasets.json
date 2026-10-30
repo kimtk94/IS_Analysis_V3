@@ -32,7 +32,42 @@
       "verified_recurrence_events": 0,
       "verified_external_recurrence_events": 0,
       "evidence_artifact": "",
-      "next_action": "Check article Source Data and supplementary patient/sample IDs against PRIDE protein matrices; request EGA RNA access if needed. Do not treat paper counts as downloadable pairs."
+      "next_action": "Check article Source Data and supplementary patient/sample IDs against PRIDE protein matrices; request EGA RNA access if needed. Do not treat paper counts as downloadable pairs.",
+      "observed_public_metadata": {
+        "checked_at_utc": "2026-10-30T12:11:03Z",
+        "evidence_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053421959",
+        "source_url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-022-29960-8/MediaObjects/41467_2022_29960_MOESM4_ESM.xlsx",
+        "source_file": "41467_2022_29960_MOESM4_ESM.xlsx",
+        "sha256": "edf1d2afd3baaedd56edee8536c16f10e4a62cb6cdac929863a062671ee73d25",
+        "tumor_biopsy_rows": 122,
+        "unique_tumor_biopsy_ids": 122,
+        "unique_patient_ids_in_full_biopsy_metadata": 114,
+        "rna_sequenced_biopsies_flag_y": 122,
+        "proteome_biopsies_flag_y": 51,
+        "phosphoproteome_biopsies_flag_y": 51,
+        "rna_protein_phosphoprotein_same_biopsy_flag_y": 51,
+        "rna_protein_phosphoprotein_unique_patients_with_flag_y": 49,
+        "paired_subset_exact_etiology_unique_patient_counts": {
+          "HCV_only": 11,
+          "ALD_only": 13,
+          "NAFLD_only": 7,
+          "HBV_only": 4,
+          "HCV_and_ALD": 7,
+          "ALD_and_HBV": 3,
+          "ALD_and_NAFLD": 2,
+          "no_liver_disease": 2
+        },
+        "paired_subset_bclc_biopsy_counts": {
+          "0": 1,
+          "A": 27,
+          "B": 14,
+          "C": 7,
+          "D": 2
+        },
+        "evidence_level": "SAMPLE_METADATA_MODALITY_FLAGS_CONFIRMED",
+        "expression_matrix_sample_join_verified": false,
+        "key_limitation": "Published metadata flags/ID join only. Raw RNA EGA-controlled. Actual RNA/proteome expression matrices not both obtained or harmonized; prognosis is OS-focused and recurrence not validated."
+      }
     },
     {
       "id": "GAO2019",
@@ -55,7 +90,19 @@
       "verified_recurrence_events": 0,
       "verified_external_recurrence_events": 0,
       "evidence_artifact": "",
-      "next_action": "Download processed matrices and metadata separately, check common patient and specimen identifiers; HBV-only reference is not a nonviral validation cohort."
+      "next_action": "Download processed matrices and metadata separately, check common patient and specimen identifiers; HBV-only reference is not a nonviral validation cohort.",
+      "observed_public_metadata": {
+        "checked_at_utc": "2026-10-30T12:09:52Z",
+        "evidence_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053276768",
+        "source_url": "https://pdc.cancer.gov/graphql",
+        "pdc_proteome_id": "PDC000198",
+        "pdc_phosphoproteome_id": "PDC000199",
+        "pdc_cases_count_each_study": 171,
+        "pdc_aliquots_count_each_study": 331,
+        "evidence_level": "PUBLIC_PDC_STUDY_RECORD_VERIFIED",
+        "expression_matrix_sample_join_verified": false,
+        "key_limitation": "PDC case count 171 is repository metadata and NOT necessarily the 159 tumor patients reported in Gao Cell paper. Distinct tumor cases, aliquot-to-patient map, processed quantitative protein matrices, and BioSino RNA cohort join remain unverified."
+      }
     },
     {
       "id": "TCGA-LIHC",
