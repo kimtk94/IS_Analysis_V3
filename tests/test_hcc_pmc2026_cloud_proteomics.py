@@ -39,6 +39,18 @@ class CloudTests(unittest.TestCase):
         self.assertIn("1-s2.0-S2666379123013154-mmc3.xlsx",result["official_xlsx_media_filenames"])
         self.assertNotIn("md5=",str({k:v for k,v in result.items() if k!="candidate_urls_in_memory"}))
 
+    def test_official_s3_uri_converts_to_approved_https(self):
+        s3="s3://pmc-oa-opendata/PMC10783603.1/1-s2.0-S2666379123013154-mmc3.xlsx?md5=beef"
+        expected="https://pmc-oa-opendata.s3.amazonaws.com/PMC10783603.1/1-s2.0-S2666379123013154-mmc3.xlsx"
+        self.assertEqual(m.resolve_cloud_uri(s3),expected)
+        meta={"pmcid":m.PMCID,"doi":m.DOI,"version":1,"media_urls":[s3]}
+        x=m.parse_article_metadata(json.dumps(meta).encode())
+        self.assertEqual(x["matching_file_count"],1)
+        self.assertEqual(x["candidate_urls_in_memory"],[expected])
+        self.assertIn("xlsx",x["media_file_extension_counts"]) if "media_file_extension_counts" in x else None
+        with self.assertRaises(ValueError):
+            m.resolve_cloud_uri("s3://untrusted-bucket/PMC10783603.1/mmc3.xlsx")
+
     def test_wrong_pmc_is_rejected(self):
         with self.assertRaises(ValueError):
             m.parse_article_metadata(b'{"pmcid":"PMC12345","media_urls":[]}')
