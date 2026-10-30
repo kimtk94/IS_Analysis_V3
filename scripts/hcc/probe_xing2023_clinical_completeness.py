@@ -99,6 +99,57 @@ def strict_rows(protein_headers, rows):
         raise ValueError("matched row has no clinical variables")
     return found
 
+
+def candidate_endpoint_qc(matched, event_col, duration_col):
+    """Test numeric binary event coding and nonnegative follow-up plausibility.
+
+    The event=1 direction and duration unit MUST come from the paper codebook;
+    observed 0/1 counts are unlabelled codes, not validated recurrence events.
+    """
+    import math
+    import statistics
+    events = []
+    durations = []
+    counts = collections.Counter()
+    paired_complete = 0
+    for row in matched.values():
+        e_raw = row.get(event_col, "")
+        t_raw = row.get(duration_col, "")
+        e_good = not classify_missing(e_raw) and finite_numeric(e_raw)
+        t_good = not classify_missing(t_raw) and finite_numeric(t_raw)
+        if e_good:
+            e = float(e_raw)
+            counts["code_zero" if e == 0 else "code_one" if e == 1 else "code_other"] += 1
+            events.append(e)
+        if t_good:
+            durations.append(float(t_raw))
+        if e_good and t_good:
+            paired_complete += 1
+    binary = bool(events) and set(events).issubset({0.0, 1.0})
+    return {
+        "event_column_ordinal": event_col,
+        "duration_column_ordinal": duration_col,
+        "matched_pairs": len(matched),
+        "both_event_and_duration_numeric": paired_complete,
+        "event_numeric_n": len(events),
+        "event_observed_code_0_n": counts["code_zero"],
+        "event_observed_code_1_n": counts["code_one"],
+        "event_other_numeric_code_n": counts["code_other"],
+        "event_code_set_is_binary": binary,
+        "duration_numeric_n": len(durations),
+        "duration_positive_n": sum(x > 0 for x in durations),
+        "duration_zero_n": sum(x == 0 for x in durations),
+        "duration_negative_n": sum(x < 0 for x in durations),
+        "duration_min_uninterpreted": min(durations) if durations else None,
+        "duration_median_uninterpreted": statistics.median(durations) if durations else None,
+        "duration_max_uninterpreted": max(durations) if durations else None,
+        "source_event_1_meaning_confirmed": False,
+        "duration_unit_confirmed": False,
+        "time_origin_and_censoring_confirmed": False,
+        "actual_recurrence_events_claimed": False,
+        "survival_model_eligible": False
+    }
+
 def inspect_availability(protein_headers, clinical_rows):
     layout = audit_clinical_row_identity_layout(protein_headers, clinical_rows)
     if not layout["structure_consistent_for_all_protein_pairs"]:
@@ -140,6 +191,10 @@ def inspect_availability(protein_headers, clinical_rows):
         "variables": metrics,
         "recognized_families": sorted({k for m in metrics for k in m["detected_header_families"]}),
         "endpoint_event_counts": None,
+        "exploratory_endpoint_pair_qc": {
+            "candidate_rfs_columns_29_31": candidate_endpoint_qc(matched, 29, 31),
+            "candidate_survival_columns_32_33": candidate_endpoint_qc(matched, 32, 33),
+        },
         "recurrence_or_OS_model_ready": False,
         "etiology_group_counts": None,
         "etiology_interaction_ready": False,
