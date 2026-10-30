@@ -235,6 +235,28 @@
         },
         "V02_RNA_PROTEIN_QUANTITATIVE_JOIN_VERIFIED": false,
         "research_implication": "Analyte stratification resolves false TMT channel collisions; public processed BioSino RNA matrix direct file location and quantitative header-to-case join remain missing."
+      },
+      "pdc_quant_api_hccdb25_access": {
+        "checked_on": "2026-10-30",
+        "evidence_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41064173332",
+        "pdc_quantDataMatrix_documented": "https://pdc.cancer.gov/pdc/publicapi-documentation",
+        "pdc_studies_timeout": [
+          "PDC000198",
+          "PDC000199"
+        ],
+        "pdc_gene_aliquot_matrix_fetched": false,
+        "hccdb25_original_accession": "OEP000321",
+        "hccdb25_dataset_source": "https://academic.oup.com/gpb/article/22/1/qzae011/7600437",
+        "hccdb25_http_portal_access": {
+          "url": "http://lifeome.net:809/",
+          "http_status": 206,
+          "received_html_bytes": 6305,
+          "hccdb25_documented_in_html": false
+        },
+        "hccdb25_https_connection_available": false,
+        "rna_processed_matrix_file_url_verified": false,
+        "pdc_rna_protein_patient_join_verified": false,
+        "interpretation": "Published HCCDB25 archive route confirmed from literature, while public HTTP portal serves HTML shell; no expression file or aliquot join obtained."
       }
     },
     {
