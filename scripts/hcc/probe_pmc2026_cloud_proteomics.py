@@ -39,6 +39,20 @@ def official(url):
             and p.path.startswith(("/metadata/"+PMCID+".","/"+PMCID+"."))
             and not p.username and not p.password)
 
+def resolve_cloud_uri(raw):
+    """Translate NCBI-issued s3:// bucket URIs to documented anonymous HTTPS."""
+    p=urllib.parse.urlsplit(raw)
+    if p.scheme=="s3" and p.hostname=="pmc-oa-opendata":
+        if not p.path.startswith("/"+PMCID+".") or "/../" in p.path:
+            raise ValueError("unapproved S3 media key")
+        # md5 is publisher object provenance, not a required S3 GET parameter.
+        value=BASE+p.path.lstrip("/")
+        if not official(value):raise ValueError("cloud key not in allowed PMC prefix")
+        return value
+    if official(raw):
+        return raw
+    raise ValueError("media URL not within official PMC Cloud")
+
 def bounded(url,cap,timeout=12):
     if not official(url):raise ValueError("non-official cloud URL")
     req=urllib.request.Request(url,headers={
@@ -75,12 +89,13 @@ def parse_article_metadata(data):
         suffix=urllib.parse.unquote(urllib.parse.urlsplit(url).path).lower().rsplit(".",1)
         if len(suffix)==2 and len(suffix[-1])<=12:
             public_suffixes[suffix[-1]]+=1
-        if not official(url):continue
+        try:resolved=resolve_cloud_uri(url)
+        except ValueError:continue
         filename=urllib.parse.unquote(urllib.parse.urlsplit(url).path).rsplit("/",1)[-1]
         if re.fullmatch(r"[a-zA-Z0-9_.-]{1,120}\.xlsx", filename, re.I):
             xlsx_filenames.append(filename)
         if re.search(r"(?:^|[-_.])mmc3\.xlsx$",filename,re.I):
-            candidate_urls.append(url)
+            candidate_urls.append(resolved)
     return {
         "license_code":str(meta.get("license_code") or "UNKNOWN")[:32],
         "open_access":meta.get("is_pmc_openaccess"),
