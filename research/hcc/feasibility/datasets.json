@@ -192,6 +192,49 @@
         "matrix_header_to_case_sample_aliquot_full_alias_matches": 0,
         "V02_matrix_rna_protein_patient_join_verified": false,
         "interpretation": "Verified PDC biospecimen lineage and multiplex experimental metadata, NOT per-aliquot quantitative matrix assignment or RNA expression join. 160 biospecimen-matched tumor-normal case IDs vs 159 final paper patients requires exclusion/QC adjudication."
+      },
+      "pdc_tmt_analyte_channel_observed": {
+        "checked_on": "2026-10-30",
+        "evidence_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41062185538",
+        "source": "https://pdc.cancer.gov/graphql",
+        "per_study_run_records": 726,
+        "distinct_experiment_numbers": 33,
+        "distinct_aliquots_from_run_metadata": 331,
+        "naive_experiment_label_slots": 363,
+        "naive_slots_ambiguous_multiple_aliquots": 330,
+        "fraction_adjusted_slots": 660,
+        "fraction_adjusted_ambiguous_slots": 60,
+        "replicate_number_missing_records": 726,
+        "analyte_categories": {
+          "Proteome": {
+            "run_records": 363,
+            "distinct_aliquots": 331,
+            "experiment_label_slots": 363,
+            "ambiguous_slots": 0
+          },
+          "Phosphoproteome": {
+            "run_records": 363,
+            "distinct_aliquots": 331,
+            "experiment_label_slots": 363,
+            "ambiguous_slots": 0
+          }
+        },
+        "quantitative_file_header_fingerprint": {
+          "proteome_all_columns": 667,
+          "log_ratio_cols": 330,
+          "unshared_log_ratio_cols": 330,
+          "phosphosite_all_columns": 334,
+          "phosphosite_log_ratio_cols": 330,
+          "verified_column_to_case_id_count": 0
+        },
+        "access_node_oep000321": {
+          "http_status": 200,
+          "response_html_bytes": 906,
+          "html_has_project_accession": false,
+          "public_processed_expression_matrix_download_verified": false
+        },
+        "V02_RNA_PROTEIN_QUANTITATIVE_JOIN_VERIFIED": false,
+        "research_implication": "Analyte stratification resolves false TMT channel collisions; public processed BioSino RNA matrix direct file location and quantitative header-to-case join remain missing."
       }
     },
     {
