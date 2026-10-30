@@ -33,7 +33,7 @@ def get_cases(study):
             + '){total casesSamplesAliquots {case_id case_submitter_id'
             + ' samples {sample_id sample_submitter_id sample_type'
             + ' aliquots {aliquot_id aliquot_submitter_id'
-            + ' aliquot_run_metadata {label experiment_number alias}}}}}}'
+            + ' aliquot_run_metadata {label experiment_number alias fraction replicate_number analyte}}}}}}'
         )
         data = request_graphql(query).get("paginatedCasesSamplesAliquots") or {}
         if isinstance(data, list):
