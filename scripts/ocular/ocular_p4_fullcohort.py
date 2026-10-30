@@ -68,7 +68,7 @@ def collect_metadata(path, cutoff):
     return data,all_libraries,donor_pools
 
 
-def evaluate(output,confidence=0.75,min_cells=30):
+def evaluate(output,confidence=0.75,min_cells=30, export_dir=None):
     result={"dataset":"GSE313736","study_scope":"in-vitro human trabecular meshwork DEX response, not clinical IOP",
             "stage":"P4_full_cohort_raw_UMI_pseudobulk",
             "run_utc":datetime.now(timezone.utc).isoformat(),
@@ -163,6 +163,41 @@ def evaluate(output,confidence=0.75,min_cells=30):
         result["gene_detected_in_at_least_10_donors_each_arm"]=int(np.count_nonzero(
             (np.count_nonzero(filtered["no-dex"],axis=1)>=10)
             &(np.count_nonzero(filtered["dex"],axis=1)>=10)))
+        if export_dir is not None:
+            # Sensitive donor-level raw pseudobulk counts may only be written
+            # to a transient runner directory, NEVER as an uploaded artifact.
+            import gzip
+            import csv
+            dest=Path(export_dir)
+            dest.mkdir(parents=True,exist_ok=True)
+            pairs=[d for d,flag in zip(matched,eligible_mask) if flag]
+            sample_labels=[]
+            sample_rows=[]
+            for i, donor in enumerate(pairs):
+                for arm,treatment in (("no-dex","Vehicle"),("dex","DEX")):
+                    label=f"p{i+1:03d}_{treatment}"
+                    sample_labels.append(label)
+                    sample_rows.append((label,f"p{i+1:03d}",treatment,
+                                        sorted(donor_pools[donor])[0],
+                                        int(joined[arm][eligible_mask][i])))
+            with (dest/"samples.tsv").open("w",newline="") as h:
+                writer=csv.writer(h,delimiter="\t")
+                writer.writerow(["sample_id","pair_id","treatment","pool","selected_cells"])
+                writer.writerows(sample_rows)
+            # Interleave treatment within each pair to make design accounting explicit.
+            stacked=np.empty((GENES,2*len(pairs)),dtype=np.int64)
+            stacked[:,0::2]=filtered["no-dex"]
+            stacked[:,1::2]=filtered["dex"]
+            # Last library features already passed identical gene-order hashes.
+            gene_ids=[x.split("\t")[0] for x in features]
+            with gzip.open(dest/"paired_raw_counts.tsv.gz","wt",compresslevel=3,newline="") as h:
+                writer=csv.writer(h,delimiter="\t")
+                writer.writerow(["gene_id"]+sample_labels)
+                for gene,row in zip(gene_ids,stacked):
+                    writer.writerow([gene]+[int(v) for v in row])
+            result["runner_only_counts_exported"]=True
+            result["runner_only_counts_columns"]=len(sample_labels)
+            result["runner_only_counts_gene_rows"]=len(gene_ids)
         result["status"]="GO_57DONOR_FULL_RAW_PSEUDOBULK_QC" if n_kept==57 else "GO_FULL_RAW_PSEUDOBULK_QC"
         result["restrictions"]=["No clinical steroid-induced IOP phenotype",
                                 "No DE testing or independent replication has been performed",
@@ -175,10 +210,11 @@ def main():
     ap.add_argument("--output",required=True)
     ap.add_argument("--score",type=float,default=0.75)
     ap.add_argument("--min-cells",type=int,default=30)
+    ap.add_argument("--internal-export-dir",default=None,help="Runner-local confidential donor-paired count outputs; NEVER upload")
     args=ap.parse_args()
     evidence={"status":"HOLD","run_utc":datetime.now(timezone.utc).isoformat()}
     try:
-        evidence=evaluate(args.output,args.score,args.min_cells)
+        evidence=evaluate(args.output,args.score,args.min_cells,args.internal_export_dir)
     except Exception as e:
         evidence.update(status="HOLD_FULL_PSEUDOBULK",
                         error=type(e).__name__+": "+str(e)[:220])
