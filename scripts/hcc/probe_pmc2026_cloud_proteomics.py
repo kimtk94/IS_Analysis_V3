@@ -110,6 +110,36 @@ def parse_article_metadata(data):
         "candidate_urls_in_memory":candidate_urls,
     }
 
+def sheet_shape(z,part,first_rows=8):
+    """Bounded first rows and dimensionality; no cell contents are exported."""
+    row_summaries=[]
+    dimension=None
+    try:
+        with z.open(part) as stream:
+            for event,elem in ET.iterparse(stream,events=("end",)):
+                if elem.tag==NS+"dimension":
+                    dimension=elem.get("ref")
+                if elem.tag==NS+"row":
+                    cells=elem.findall(NS+"c")
+                    nc=sum(1 for c in cells if c.find(NS+"v") is not None)
+                    numeric=sum(1 for c in cells if c.get("t") not in ("s","str","inlineStr","b","e") and c.find(NS+"v") is not None)
+                    row_summaries.append({"number_of_cells":len(cells),
+                                          "numeric_cells":numeric,
+                                          "nonempty_value_elements":nc})
+                    elem.clear()
+                    if len(row_summaries)>=first_rows:break
+                elif elem.tag not in (NS+"c",NS+"v",NS+"is",NS+"t"):
+                    # Avoid excessive XML memory while keeping child cell data.
+                    if elem.tag!=NS+"worksheet":elem.clear()
+    except Exception as exc:
+        return {"status":"UNVERIFIED","error_type":type(exc).__name__}
+    # Dimension may not appear in all producer XML. A row prefix is not all rows.
+    return {"status":"FIRST_ROWS_SCANNED","dimension_ref":dimension,
+            "rows_inspected":len(row_summaries),
+            "first_row_width":row_summaries[0]["number_of_cells"] if row_summaries else None,
+            "row_summaries":row_summaries,
+            "header_identifiers_and_expression_values_logged":False}
+
 def xlsx_only_manifest(raw):
     if not zipfile.is_zipfile(io.BytesIO(raw)):
         raise ValueError("not XLSX")
@@ -119,8 +149,22 @@ def xlsx_only_manifest(raw):
         t=ET.fromstring(z.read("xl/workbook.xml"))
         sh=t.find(NS+"sheets")
         names=[s.get("name") for s in sh] if sh is not None else []
+        xml_parts=sorted(
+            (k for k in z.namelist() if re.fullmatch(r"xl/worksheets/sheet\d+\.xml",k)),
+            key=lambda k:int(re.search(r"sheet(\d+)",k).group(1)))
+        profiles=[]
+        for i,part in enumerate(xml_parts):
+            info=z.getinfo(part)
+            profiles.append({
+                "sheet_index":i+1,
+                "sheet_title":names[i] if i<len(names) else "UNKNOWN",
+                "uncompressed_xml_bytes":info.file_size,
+                **sheet_shape(z,part)
+            })
         return {"xlsx_verified":True,"sheet_count":len(names),"sheet_names":names,
+                "worksheet_structures":profiles,
                 "patient_expression_values_or_raw_ids_logged":False}
+
 
 def audit():
     r={"pmcid":PMCID,"doi":DOI,
