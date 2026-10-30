@@ -126,7 +126,9 @@
 
 This Drive document is a readable summary; the canonical evidence status and fail-safe claim eligibility logic are in the GitHub checkpoint registry and CI. Both governance PR #252 and molecular feasibility PR #251 remain draft until reviewed and merged. If the copies differ, do not silently overwrite either; reconcile with a dated DECISION_LOG entry.
 
-## 9. L08 — 158 paired Gao RNA–Protein prior art and verified TMT control-candidate
+## 9. L08 — 158 eligible / 156 integrative-cluster Gao RNA–Protein prior art
+
+**Correction to published denominator:** in Cheng Methods, the authors selected **158 paired** HBV-HCC cases for eligible multi-omics analysis, but **excluded two unmatched RNA/Protein samples** before integrated clustering, which used **156 tumor samples**. This 158→156 ID-match exclusion is an explicit, high-value V02 reproduction control; do not assume 158 integrated clusters. [Publisher methodology](https://academic.oup.com/bib/article/24/2/bbac601/7025463).
 
 **Paper:** Cheng Z. et al., *Briefings in Bioinformatics* 2023, https://doi.org/10.1093/bib/bbac601.
 
