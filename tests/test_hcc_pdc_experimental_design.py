@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"scripts"/"hcc"))
-from probe_pdc_experimental_design import flatten_design,unique_design_counts,load_design,TMT,normalized_header_fingerprint
+from probe_pdc_experimental_design import flatten_design,unique_design_counts,load_design,TMT,normalized_header_fingerprint,reconstruct_from_biospecimen_runs
 
 class TestTMTDesign(unittest.TestCase):
     def test_assignments_and_reference_are_not_independent_patients(self):
@@ -32,6 +32,22 @@ class TestTMTDesign(unittest.TestCase):
         r=unique_design_counts(rows,links)
         self.assertEqual(r["ambiguous_channel_slots_multi_aliquot"],1)
         self.assertEqual(r["duplicate_channel_assignments"],1)
+
+
+    def test_reconstructs_run_metadata_with_known_label(self):
+        records=[{"samples":[{"aliquots":[{"aliquot_id":"AL-1",
+            "aliquot_run_metadata":[{"experiment_number":"E1","label":"TMT_126","alias":"P1"}]},
+            {"aliquot_id":"AL-2","aliquot_run_metadata":[{"experiment_number":"E1",
+                "label":"TMT_127N","alias":"P1"}]}]}]}]
+        rows,summary=reconstruct_from_biospecimen_runs(records)
+        self.assertEqual(summary["distinct_experiment_numbers"],1)
+        self.assertEqual(summary["run_metadata_rows_with_valid_tmt_labels"],2)
+        self.assertEqual(len(flatten_design(rows)),2)
+        self.assertNotIn("AL-1",str(summary))
+
+    def test_no_quantitative_tmt_run_is_not_verified(self):
+        with self.assertRaises(ValueError):
+            reconstruct_from_biospecimen_runs([{"samples":[]}])
 
     def test_public_api_bad_response_rejected(self):
         with patch("probe_pdc_experimental_design.request_graphql",return_value={"studyExperimentalDesign":[]}):
