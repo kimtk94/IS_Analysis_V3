@@ -116,6 +116,8 @@ def probe():
                 if not link:
                     result["status"]="FILE_METADATA_ONLY_NO_SIGNED_LINK"
                 else:
+                    # Safe hostname only, never retain URL path/query/signature.
+                    result["signed_url_hostname"]=urllib.parse.urlsplit(link).hostname
                     payload,http,partial=bounded_prefix(link)
                     result["status"]="BOUNDED_TSV_PREFIX_FETCHED"
                     result["http_status"]=http
