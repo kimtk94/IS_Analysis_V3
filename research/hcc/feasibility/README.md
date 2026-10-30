@@ -83,6 +83,14 @@ CI evidence: [Actions #41054812247](https://github.com/kimtk94/IS_Analysis_V3/ac
 
 Sources: [official PDC public API](https://pdc.cancer.gov/pdc/publicapi-documentation) and [PDC TMT relative quantification FAQ](https://pdc.cancer.gov/pdc/faq/Files_Download); [NODE OEP000321](https://www.biosino.org/node/project/detail/OEP000321).
 
+## Stage-7 PDC native gene×aliquot matrix API / Gao RNA archive fallback (2026-10-30)
+
+**Evidence:** [GitHub Actions #41064173332](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41064173332), **49 local tests PASS; biological access is separately assessed**.
+
+- [Official NCI PDC `quantDataMatrix` endpoint](https://pdc.cancer.gov/pdc/publicapi-documentation) documents direct gene×aliquot normalized relative quantitation (requested `data_type=log2_ratio`); this is preferred to reconstructing a protein-to-case join by guessing TMT column header formats. However, PDC000198 and PDC000199 **both timed out** after 25 seconds in the actual CI. No matrix response payload or sample identifier intersection was obtained. A future run should try PDC direct GCT/download portal, smaller queries if documented, or a separately staged bounded fetch; do not interpret 504/timeout as a missing dataset.
+- [HCCDB v2.0](https://academic.oup.com/gpb/article/22/1/qzae011/7600437) archives Gao OEP000321 transcriptome as **HCCDB25**, corroborated by independent studies. It offers a plausible alternate legal processed-RNA source. In actual CI, `http://lifeome.net:809/` served **HTTP 206, HTML 6,305 bytes**, and `http://lifeome.net/database/hccdb2` the same shell. HTTPS routes failed (connection/SSL). The HTML did **not** contain literal HCCDB25/OEP000321 or a verified matrix file URL; downloading a full RNA matrix and joining patient IDs is still outstanding.
+- Source-sensitive note: publication data-availability statements alone cannot establish current public download availability or patient/sample ID fidelity. **Current research decision: V02 BLOCKED**, not FAIL, due to unverified data access / mapping.
+
 ## Criteria (pilot engineering thresholds, NOT universally accepted clinical criteria)
 - At least one observed, documented **patient/specimen-level RNA↔protein join with N≥30** (paper abstract is insufficient).
 - At least two verified etiology categories **each N≥10 within those joined data**. Need inspect overlap and confounders (stage, treatment, batch, platform).
