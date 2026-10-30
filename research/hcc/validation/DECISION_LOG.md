@@ -30,3 +30,12 @@ Study-governance PR is independent from the ongoing code/data-feasibility PR #25
 - To mark any gate PASS, record explicit reviewer approval and reproducible analysis artifact path under `results/hcc/`, SHA256 of source (64 hex), exact code commit (40 hex), and checked date. V02/V04/V10 additionally require independent patient N; V12/V13 require verified event N.
 - The static evidence checker validates *format and declared evidence*, **not** remote artifact contents, statistical effects, new discovery, or prospective clinical usefulness. A scientific reviewer still needs to inspect outputs. Even every workflow gate being PASS only makes a claim eligible for review.
 - The user-facing handoff document resides with the original feasibility audit; the Markdown protocol and machine-readable status remain canonical in GitHub. Existing conclusions: molecular and clinical findings unproven.
+
+## 2026-10-30 — D-008: PDC tumor-normal lineage and 11-plex analysis, RNA–Protein gate still BLOCKED
+
+- Evidence: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41059030994 and code on feasibility PR #251.
+- Public PDC `paginatedCasesSamplesAliquots` on PDC000198 (Proteome) and PDC000199 (Phosphoproteome) yielded an identical set of **171 case, 331 sample, 331 aliquot identifiers** in both studies. Output saves only aggregates, not case/aliquot identifiers.
+- Per study: **165 Primary Tumor samples, 165 Solid Tissue Normal samples, 1 Not Reported sample**. Distinct cases with **both tumor and normal: 160**; 5 tumor-only, 5 normal-only, 1 unclassified case. Publication's 159 paired analysis subjects should not be replaced with 160 without adjudicating inclusion/QC exclusions.
+- Experimental metadata includes **33 TMT experiment numbers × 11 labels = 363 unique channel slots**, with 726 run metadata records; not 363 patients or 726 quantification observations. Header 667 (Protein) / 334 (Phosphosite) columns cannot be joined by direct full case/sample/aliquot string matching (0 matches).
+- Scientific implication: this resolves which PDC cases are linked at the biospecimen layer, not the quantitative-matrix value layer, and **does not contain a BioSino RNA expression join**. This strengthens V01's source-level evidence but leaves **V02 BLOCKED**, all biological/clinical primary claims ineligible.
+- Next required test: aliquot-to-(experiment, label) uniqueness and bridge/reference channels; replicate vs biological sample distinction; quantitative TSV header parsing; BioSino OEP000321 RNA gene-by-sample mapping and compatible patient keys.
