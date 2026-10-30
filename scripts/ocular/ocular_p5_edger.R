@@ -101,8 +101,13 @@ tryCatch({
               sep="\t",row.names=FALSE,quote=FALSE)
   # Diagnostic figures: do not label donors. These are not clinical biomarkers.
   png(file.path(out_dir,"p5_MDS_aggregate.png"),width=1100,height=850,res=145)
-  plotMDS(d,col=ifelse(meta$treatment=="DEX","firebrick","steelblue"),pch=16,
-          labels=rep("",nrow(meta)))
+  # Blank labels suppress plotting in some edgeR/limma versions, so draw
+  # anonymous points explicitly from MDS coordinates (never donor labels).
+  mds <- plotMDS(d,plot=FALSE)
+  plot(mds$x,mds$y,pch=16,cex=.7,
+       col=ifelse(meta$treatment=="DEX","firebrick","steelblue"),
+       xlab="MDS dimension 1",ylab="MDS dimension 2",
+       main="BeamA donor-paired 10x pseudobulk: anonymous samples")
   legend("topright",legend=c("Vehicle","DEX"),
          col=c("steelblue","firebrick"),pch=16,bty="n")
   dev.off()
