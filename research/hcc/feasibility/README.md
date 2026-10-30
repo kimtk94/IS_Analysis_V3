@@ -70,6 +70,19 @@ CI evidence: [Actions #41054812247](https://github.com/kimtk94/IS_Analysis_V3/ac
 - **V02 remains BLOCKED**: this work has not verified which exact quantitative columns correspond to patient cases, the full protein matrix values, or *any* matched public RNA gene-by-sample values.
 - **Next:** inspect standardized `(experiment_number, TMT label) → aliquot` mapping for uniqueness and reference/pool channels, then determine quantitative header-to-plex naming, reconcile paper N=159, and locate BioSino OEP000321 public processed RNA expression matrix or document access limitation.
 
+## Stage-6 Gao TMT analyte mapping vs NODE RNA access (2026-10-30)
+
+**Executed evidence:** [CI #41062185538](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41062185538), 42 offline tests PASS. Earlier direct `studyExperimentalDesign` requests timed out; the final audit instead used working PDC `paginatedCasesSamplesAliquots` data, including `aliquot_run_metadata` with label, experiment, fraction, replicate and analyte fields. The public response was aggregated in memory without committing patient or aliquot IDs.
+
+- **Across each PDC study**, there are 726 run-metadata rows, 33 experiment numbers, 363 `experiment×channel` slots; 330 slots contain two distinct aliquots when **analyte is omitted**. This is **not** 330 duplicate patient measurements.
+- The apparent collision is explained by **two analyte classes**: `Proteome` and `Phosphoproteome`, **363 run records, 363 experiment/channel slots, 331 unique aliquots, and 0 same-slot multi-aliquot conflicts per analyte**. One must include analyte when mapping TMT channels.
+- Fraction grouping alone reduces 330 collisions to 60; replicate field is **missing on all 726 records** and cannot disambiguate.
+- Protein quantification table header: **667 columns**, including **330 Log Ratio and 330 Unshared Log Ratio** fields. Phosphosite header: **334 columns**, with **330 Log Ratio** fields. The extra metadata fields and quantitative column naming/clinical-alignment rules must still be audited.
+- **Critical not yet achieved:** full protein quantitative column → aliquot/case identity join remains unverified; **RNA matrix is not downloaded**. The public NODE `OEP000321` page returned HTTP 200 but only a 906-byte HTML shell that **did not contain the accession or a processed RNA matrix download URL**. A webpage loading does not grant dataset access. Secondary literature reports use of an RSEM / upper-quartile-normalized processed RNA matrix, suggesting investigation of NODE's documented download workflow or legal source-article supplement, but is not direct file evidence.
+- **Research decision:** public PDC multiplex lineage analysis **PARTIAL/PASS for metadata mapping only**, RNA–Protein quantitative paired **V02 remains BLOCKED**. Do not imply n=159, 160, 165, 171 or 330 paired RNA–Protein cases until an actual in-data transcript/protein matrix join and tissue/time mapping is demonstrated.
+
+Sources: [official PDC public API](https://pdc.cancer.gov/pdc/publicapi-documentation) and [PDC TMT relative quantification FAQ](https://pdc.cancer.gov/pdc/faq/Files_Download); [NODE OEP000321](https://www.biosino.org/node/project/detail/OEP000321).
+
 ## Criteria (pilot engineering thresholds, NOT universally accepted clinical criteria)
 - At least one observed, documented **patient/specimen-level RNA↔protein join with N≥30** (paper abstract is insufficient).
 - At least two verified etiology categories **each N≥10 within those joined data**. Need inspect overlap and confounders (stage, treatment, batch, platform).
