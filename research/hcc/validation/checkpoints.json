@@ -1,0 +1,425 @@
+{
+  "schema_version": "hcc-validation-1.0",
+  "created_at": "2026-10-30",
+  "protocol": "research/hcc/validation/HCC_VALIDATION_MASTER.md",
+  "current_claim_level": "PUBLIC_METADATA_FEASIBILITY_ONLY",
+  "allowed_statuses": [
+    "NOT_STARTED",
+    "PARTIAL",
+    "BLOCKED",
+    "PASS",
+    "FAIL"
+  ],
+  "status_semantics": {
+    "NOT_STARTED": "No check attempted",
+    "PARTIAL": "Some inspected evidence, not sufficient to pass",
+    "BLOCKED": "Prerequisite (access, matrix, endpoint or power) missing",
+    "PASS": "Direct primary-source evidence and independent verification support gate",
+    "FAIL": "Well-posed, sufficiently powered validation test failed (not a low power null)"
+  },
+  "promotion_policy": {
+    "allow_pass_without_evidence": false,
+    "requires_analysis_evidence": true,
+    "requires_reviewer_approval": true,
+    "require_patient_n_for_paired_claim": true,
+    "ci_green_is_biological_pass": false,
+    "study_paper_pvalues_are_not_new_results": true
+  },
+  "research_routes": {
+    "A": "replicated matched RNA/protein interaction plus cellular origin",
+    "B": "robust null/boundary with precise CI",
+    "C": "internal-only effect, no generalization",
+    "D": "inconclusive wide CI",
+    "E": "unpaired pathway triangulation fallback",
+    "F": "descriptive cell origin",
+    "G": "biological analysis only, no recurrence",
+    "H": "association but no incremental clinical value",
+    "I": "novelty insufficient",
+    "J": "externally validated biology-guided clinical value"
+  },
+  "references": [
+    {
+      "id": "L01",
+      "title": "Jiang Nature 2019",
+      "url": "https://doi.org/10.1038/s41586-019-0987-8",
+      "benchmark": "HBV proteomic subtypes SOAT1/cholesterol"
+    },
+    {
+      "id": "L02",
+      "title": "Gao Cell 2019",
+      "url": "https://doi.org/10.1016/j.cell.2019.08.052",
+      "benchmark": "HBV 159 paired patients, protein RNA context and PYCR2/ADH1A"
+    },
+    {
+      "id": "L03",
+      "title": "Ng Nat Commun 2022",
+      "url": "https://doi.org/10.1038/s41467-022-29960-8",
+      "benchmark": "Cross etiology 114 patients 122 tumors, 51 proteome biopsies"
+    },
+    {
+      "id": "L04",
+      "title": "Lu HCC single-cell atlas",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE149614",
+      "benchmark": "71,915 cells, 21 samples, 10 patients"
+    },
+    {
+      "id": "L05",
+      "title": "TCGA clinical data resource",
+      "url": "https://doi.org/10.1016/j.cell.2018.02.052",
+      "benchmark": "OS/DSS/DFI/PFI endpoint distinction"
+    },
+    {
+      "id": "L06",
+      "title": "TRIPOD+AI & PROBAST+AI",
+      "url": "https://doi.org/10.1136/bmj-2023-078378",
+      "benchmark": "Clinical prediction reporting and risk of bias"
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "V00",
+      "title": "공개 출처·이용권·정보보안",
+      "stage": "acquisition",
+      "status": "PARTIAL",
+      "priority": "P0",
+      "pass_criteria": "DOI/accessions, public or controlled licence, data access ledger",
+      "paper_refs": [
+        "L02",
+        "L03"
+      ],
+      "observation": "Public cohort sources known; access rights to every quantitative matrix not confirmed",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41054812247",
+          "level": "preliminary_public_metadata"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Gather actual sample/patient-level quantitative evidence; do not promote from metadata alone"
+    },
+    {
+      "id": "V01",
+      "title": "파일 무결성·정량 스키마",
+      "stage": "acquisition",
+      "status": "PARTIAL",
+      "priority": "P0",
+      "pass_criteria": "actual file schema, SHA256, assay, units, organism, gene identifiers, case roles",
+      "paper_refs": [
+        "L02",
+        "L03"
+      ],
+      "observation": "Ng metadata XLSX and PDC/PRIDE file listings inspected; quantitative matrix checks incomplete",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41055576655",
+          "level": "preliminary_public_metadata"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Gather actual sample/patient-level quantitative evidence; do not promote from metadata alone"
+    },
+    {
+      "id": "V02",
+      "title": "동일 조직 RNA–Protein 정량 매칭",
+      "stage": "pairedomics",
+      "status": "BLOCKED",
+      "priority": "P0",
+      "pass_criteria": "non-sensitive patient/biopsy RNA and protein matrix join counts with source hashes",
+      "paper_refs": [
+        "L02",
+        "L03"
+      ],
+      "observation": "Ng 51 biopsies / 49 people have metadata assay Y flags; no expression matrix join",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053421959",
+          "level": "preliminary_public_metadata"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Resolve missing access/valid matrix or switch research route"
+    },
+    {
+      "id": "V03",
+      "title": "RNA·Protein QC/정규화",
+      "stage": "pairedomics",
+      "status": "NOT_STARTED",
+      "priority": "P0",
+      "pass_criteria": "QC report on actual quantitative matrices, identifier harmonization, missingness/batch",
+      "paper_refs": [
+        "L01",
+        "L02",
+        "L03"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V04",
+      "title": "환자 단위 병인 분류",
+      "stage": "etiology",
+      "status": "PARTIAL",
+      "priority": "P0",
+      "pass_criteria": "single/mixed category patient counts and missingness after quantitative join",
+      "paper_refs": [
+        "L03"
+      ],
+      "observation": "Ng modality-positive patients: ALD13 HCV11 NAFLD7 HBV4 single etiology, mixed groups separately",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053421959",
+          "level": "preliminary_public_metadata"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Gather actual sample/patient-level quantitative evidence; do not promote from metadata alone"
+    },
+    {
+      "id": "V05",
+      "title": "병기·치료·batch 교란",
+      "stage": "etiology",
+      "status": "NOT_STARTED",
+      "priority": "P1",
+      "pass_criteria": "stage and treatment balance, interaction adjustability, cohort platform confounding",
+      "paper_refs": [
+        "L03"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V06",
+      "title": "원논문 양성 대조군 재현",
+      "stage": "benchmark",
+      "status": "NOT_STARTED",
+      "priority": "P1",
+      "pass_criteria": "measured-feature positive control effect sizes, CIs and discrepancies",
+      "paper_refs": [
+        "L01",
+        "L02",
+        "L03"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V07",
+      "title": "RNA–Protein concordance",
+      "stage": "mechanism",
+      "status": "NOT_STARTED",
+      "priority": "P1",
+      "pass_criteria": "patient-level mapped gene/protein association + uncertainty + FDR",
+      "paper_refs": [
+        "L02",
+        "L03"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V08",
+      "title": "병인×Pathway interaction",
+      "stage": "mechanism",
+      "status": "NOT_STARTED",
+      "priority": "P1",
+      "pass_criteria": "prelocked interaction coefficient+CI and multiple test family",
+      "paper_refs": [
+        "L03"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V09",
+      "title": "독립 Proteome 재현",
+      "stage": "replication",
+      "status": "NOT_STARTED",
+      "priority": "P1",
+      "pass_criteria": "independent patient cohort, direction/size/CI/heterogeneity",
+      "paper_refs": [
+        "L01",
+        "L02"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V10",
+      "title": "scRNA 세포기원·pseudobulk",
+      "stage": "cellorigin",
+      "status": "NOT_STARTED",
+      "priority": "P2",
+      "pass_criteria": "GSE149614 patient-level pseudobulk, cell/site QC, sensitivity",
+      "paper_refs": [
+        "L04"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V11",
+      "title": "Spatial 독립검증",
+      "stage": "cellorigin",
+      "status": "NOT_STARTED",
+      "priority": "P2",
+      "pass_criteria": "comparable tissue, independent patients, spatial vs mixture effects",
+      "paper_refs": [
+        "L04"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V12",
+      "title": "재발/OS endpoint 적합성",
+      "stage": "clinical",
+      "status": "PARTIAL",
+      "priority": "P1",
+      "pass_criteria": "codebook, time zero, unique patient N, true recurrence events, censoring, therapy",
+      "paper_refs": [
+        "L05"
+      ],
+      "observation": "GSE14520 raw recurrence columns 242 nonempty rows; codebook and unique patients unverified",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41052039696",
+          "level": "preliminary_public_metadata"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Gather actual sample/patient-level quantitative evidence; do not promote from metadata alone"
+    },
+    {
+      "id": "V13",
+      "title": "임상모델 독립 외부 검증",
+      "stage": "clinical",
+      "status": "BLOCKED",
+      "priority": "P2",
+      "pass_criteria": "locked score, independent external cohort, clinical baseline, C-index delta CI and calibration",
+      "paper_refs": [
+        "L05",
+        "L06"
+      ],
+      "observation": "External recurrence event cohort and score unavailable",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Resolve missing access/valid matrix or switch research route"
+    },
+    {
+      "id": "V14",
+      "title": "강건성·음성 대조군",
+      "stage": "robustness",
+      "status": "NOT_STARTED",
+      "priority": "P2",
+      "pass_criteria": "batch/site sensitivity, alternate normalization, neg controls, permutation",
+      "paper_refs": [
+        "L03",
+        "L06"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V15",
+      "title": "재현성·리포팅",
+      "stage": "reporting",
+      "status": "PARTIAL",
+      "priority": "P0",
+      "pass_criteria": "commit SHA, source hash, tests, figures and claim/evidence register",
+      "paper_refs": [
+        "L06"
+      ],
+      "observation": "Feasibility GitHub Actions and artifacts exist; biological findings unavailable",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/pull/251",
+          "level": "preliminary_public_metadata"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Gather actual sample/patient-level quantitative evidence; do not promote from metadata alone"
+    }
+  ]
+}
