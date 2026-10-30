@@ -1,0 +1,37 @@
+# Ocular P5b pre-registered novelty and reproducibility crosswalk — 2026-10-31
+
+## Why the novelty bar is high
+The GSE313736 public cultured human TM single-cell eQTL/DEX deposition already reported 74 starting donors and 316,799 total singlets, DEX upregulated 63 and downregulated 17 genes at an abstract-defined high-fold-change threshold. Our reproducible *downloadable final* cell metadata has 59 donors (57 BeamA primary test eligible). Original gene list has **not been verified** from an individual supplementary table; similar total counts alone do not establish exact overlap.
+
+The 2026 Singh et al. multiomic [preprint (PMCID PMC13015409)](https://pmc.ncbi.nlm.nih.gov/articles/PMC13015409/) (**not yet peer reviewed** in the cited PMC version) used 3 independently derived primary human TM strains and RNA+ATAC+chromatin/HiC; found **3,423 dex DEGs**, 1,527 higher and 1,894 lower, and 78 IOP/POAG prioritized genes after GWAS/chromatin linking. These are **different technologies, doses/criteria/biological donor counts** from our 57-donor BeamA single-cell pseudobulk, so the raw DEG counts 3,423 and 13,717 cannot be compared as if they used the same analysis universe.
+
+## Exact named gene crosswalk: our P5 primary edgeR vs the Singh preprint text
+**Source of our values:** [GitHub Actions P5 corrected primary](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41074586446) [aggregate gene-level table artifact](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41074586446/artifacts/12987425927) `p5_all_gene_results.tsv.gz`. Positive log2FC is induced by DEX.
+
+| Gene | Our log2FC | Our BH-FDR | Earlier study's explicitly described TM DEX pattern | Match? | Novelty verdict |
+|---|---:|---:|---|---|---|
+| HIPK2 | +2.740051 | 8.731e-54 | +1.7 log2FC; gained super-enhancer at promoter/TSS | YES | **Known** DEX/chromatin candidate |
+| FKBP5 | +3.984015 | 3.066e-47 | Increased expression, gained H3K27ac/lost H3K27me3 | YES | **Known** DEX positive control |
+| ZBTB16 | +7.513283 | 4.060e-44 | Increased expression; B-to-A compartment and new enhancers | YES | **Known** DEX/chromatin response |
+| ATP10A | +1.352570 | 1.147e-25 | Increased expression and enhanced regulatory-region activity | YES | **Known** DEX/POAG locus example |
+| EDIL3 | -0.713442 | 3.845e-17 | -0.61 log2FC and super-enhancer loss | YES | **Known** negative-control direction |
+| CEBPD | +0.185847 | 1.559e-5 | Listed as a regulatory/topology example; clear numerical expression direction not established from cited text | NOT SCORED | No novelty claim |
+| JUN | -0.114965 | 0.1410 | Regulatory/topology example; clear numerical expression direction not established | NOT SCORED | No novelty claim |
+| ALOX15B | Not in 16,050 tested genes | N/A | Increased expression/eRNA; do not call absence a discordant DE result | NOT ASSESSABLE | Not tested after filtering |
+
+**Five confirmed examples concordant in signed direction (5/5)**. They are *literature-based positive controls* and not proof of novel target discovery or blinded cohort replication. All 5 were explicitly named in the source paper. These numbers should not be described as exact fold-change concordance because the datasets/model differ.
+
+## Additional independent data
+Mehrotra et al., IOVS 2026 ([PMID 41636427](https://pubmed.ncbi.nlm.nih.gov/41636427/)) already found FKBP5, FAM107A and ECM/adhesion DEX effects; 46 ENA runs of PRJNA1243143 do not mean 46 donors, and accession-level titles do not reliably encode treatment/time/strain. External exact directional RNAseq validation remains **HOLD** until sample-specific metadata are reconciled.
+
+## Analysis gates to avoid overclaim
+- Formal 9-pool leave-one-pool-out secondary edgeR refits and corrected anonymous MDS are being executed in `.github/workflows/ocular-p5b-pool-sensitivity.yml`. Robust primary and non-robust sensitivity fits must be labeled as different inferential procedures; rely mainly on effect-size/direction stability, not direct FDR count equivalence.
+- High discovery fraction **13,717 / 16,050 = 85.46%** warrants technical batch confounding evaluation; DEX and vehicle are distinct 10x libraries in each pool, which donor blocking cannot independently identify.
+- Original GSE313736 full gene-set match still pending. The preprint already describes HIPK2, ZBTB16, FKBP5, EDIL3, ATP10A at mechanistic depth, so reporting them as a *novel* main claim is a **STOP**.
+- Potential novelty can instead involve **quantitatively validated between-donor steroid-response heterogeneity**, cell-state sensitivity, and independent clinical genotype/outcome-backed mechanism, if data allow. Experimental confirmation remains missing.
+- This is *in-vitro* DEX exposure, **not** clinical steroid-induced delta-IOP/side-effect prediction.
+
+Sources:
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC13015409/ (Singh et al., 2026 preprint, Fig. 2–3)
+- https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE313736 (GEO)
+- https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41074586446 (actual P5 result)
