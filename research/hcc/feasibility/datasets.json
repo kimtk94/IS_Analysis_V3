@@ -257,6 +257,21 @@
         "rna_processed_matrix_file_url_verified": false,
         "pdc_rna_protein_patient_join_verified": false,
         "interpretation": "Published HCCDB25 archive route confirmed from literature, while public HTTP portal serves HTML shell; no expression file or aliquot join obtained."
+      },
+      "hccdb25_public_frontend": {
+        "checked_on": "2026-10-30",
+        "evidence_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41066051263",
+        "source": "http://lifeome.net:809/",
+        "public_javascript_assets_listed": 6,
+        "assets_prefix_inspected": 5,
+        "frontend_route_literals": [
+          "/download",
+          "/repository"
+        ],
+        "public_app_module_path": "/static/js/app.3f5b30f0.js",
+        "hccdb25_matrix_download_endpoint_verified": false,
+        "actual_hccdb25_expression_download_verified": false,
+        "note": "JS route literals describe SPA frontend navigation, not verified RNA expression file URLs or API methods. HCCDB25 remains only a literature-grounded alternate source."
       }
     },
     {
