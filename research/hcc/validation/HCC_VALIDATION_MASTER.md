@@ -125,3 +125,14 @@
 **Google Drive living copy (internal reference):** https://docs.google.com/document/d/1Ipk7kS6ukGYqwgwhSWHICs42EBqpu3eRFd82mBOkaAE/edit
 
 This Drive document is a readable summary; the canonical evidence status and fail-safe claim eligibility logic are in the GitHub checkpoint registry and CI. Both governance PR #252 and molecular feasibility PR #251 remain draft until reviewed and merged. If the copies differ, do not silently overwrite either; reconcile with a dated DECISION_LOG entry.
+
+## 9. L08 — 158 paired Gao RNA–Protein prior art and verified TMT control-candidate
+
+**Paper:** Cheng Z. et al., *Briefings in Bioinformatics* 2023, https://doi.org/10.1093/bib/bbac601.
+
+- Already analyzed **158 paired HBV-HCC** after excluding specimens with incomplete omics; RNA: Gao/BioSino `OEP000321` **UQ_FPKM**, proteins and phosphosites from original Gao supplements. Differential analysis converts FPKM→TPM, `log2(TPM+1)`, limma/BH; manuscript reports **408 concordant RNA–protein dysregulated genes (224 up, 184 down)** and **three integrated proteotranscriptomic clusters** with external subtype validation. This is prior art, NOT a discovery from the present pipeline. Include as a strict V06 positive-control and V15 novelty-failure sentinel.
+- Four distinct sample-count concepts: Gao original paper 159 patients; PDC 171 repository Case IDs; PDC biospecimen metadata 160 cases carrying both tumor and normal; Cheng 158 *published assay-eligible pairs*. **No current RNA/protein quantitative patient join has been independently verified** in this repository.
+- A separate 2024 study reports OEP000321 HCCDB25 analyses with 158 eligible tumor cases, but that RNA dataset's sample manifest/download is not yet verified here.
+- Public PDC multiplex metadata audit: `TMT_126` contains the **same one aliqout** across 33 experiments per analyte (Proteome and Phosphoproteome) while the remaining 330 per analyte reporter-channel assignments consist of 165 tumors and 165 adjacent normals. **This is a candidate common pooled control**; author methods and quantitative file column identity remain to be checked. A repeated control is not a new biological patient. Link: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41068016825 (56 tests PASS).
+- RNA public front-end: published HCCDB portal route `http://lifeome.net:809/#/repository?type=buke`; observed SPA source `/repository` and `/download` components. Direct RNA matrix URL not yet verified. Focused code/route audit https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41068016603 (SUCCESS).
+- **Claim consequence:** the proposed HCC thesis cannot claim 408-gene combined dysregulation, three Gao RNA–protein clusters, or a 158-patient integration as novel findings. These are *validation benchmarks*. RQ1 novelty requires cross-etiology generalization and independent cohort/cell-type evidence.
