@@ -44,6 +44,8 @@ jobs:
         run: python scripts/hcc/probe_pdc_quant_headers.py --output results/hcc/feasibility/pdc_quant_headers.json
       - name: Screen PDC quantitative headers against public sample metadata
         run: python scripts/hcc/probe_pdc_sample_mapping.py --output results/hcc/feasibility/pdc_sample_mapping.json
+      - name: Audit public PDC case sample aliquot lineage
+        run: python scripts/hcc/probe_pdc_biospecimen_lineage.py --output results/hcc/feasibility/pdc_biospecimen_lineage.json
       - name: Upload HCC audit artifacts
         if: always()
         uses: actions/upload-artifact@v4
