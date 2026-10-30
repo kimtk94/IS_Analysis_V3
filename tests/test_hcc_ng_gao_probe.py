@@ -7,7 +7,7 @@ import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts" / "hcc"))
-from probe_ng_gao_public import inspect_xlsx, NG_URLS, PDC_QUERY
+from probe_ng_gao_public import inspect_xlsx, _metadata_pair_summary, NG_URLS, PDC_QUERY
 
 
 def make_xlsx(rows):
@@ -29,8 +29,23 @@ class HCCPublicPairedProbeTests(unittest.TestCase):
         result = inspect_xlsx(data)
         self.assertEqual(result["worksheet_count"], 1)
         self.assertEqual(result["sheets"][0]["rows_in_xml"], 2)
-        self.assertEqual(result["sheets"][0]["candidate_column_labels"], ["patient ID", "RNA", "Proteome"])
-        self.assertIsNone(result["sheets"][0]["file_level_pair_count"])
+        self.assertEqual(result["sheets"][0]["header_labels"], ["patient ID", "RNA", "Proteome"])
+        self.assertFalse(result["sheets"][0]["expression_matrix_verified"])
+
+    def test_metadata_pairing_counts_biopsies_and_unique_patients(self):
+        rows = [
+            {0:"tumor_biopsyID",1:"Patient_ID",2:"RNAseq",3:"Proteomics",4:"Phosphoproteomics"},
+            {0:"T01",1:"P01",2:"Yes",3:"Yes",4:"Yes"},
+            {0:"T02",1:"P01",2:"Yes",3:"Yes",4:"Yes"},
+            {0:"T03",1:"P02",2:"Yes",3:"No",4:"No"},
+            {0:"T04",1:"P03",2:"Yes",3:"Yes",4:"No"},
+        ]
+        result = _metadata_pair_summary(rows)
+        self.assertEqual(result["rna_and_proteome_yes_biopsy_rows"], 3)
+        self.assertEqual(result["rna_and_proteome_yes_unique_patient_ids"], 2)
+        self.assertEqual(result["rna_and_proteome_and_phosphoproteome_yes_biopsy_rows"], 2)
+        self.assertFalse(result["matrix_join_verified"])
+        self.assertNotIn("P01", str(result))
 
     def test_non_xlsx_fails_closed(self):
         with self.assertRaises(ValueError):
