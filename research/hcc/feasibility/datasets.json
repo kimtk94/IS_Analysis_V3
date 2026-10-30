@@ -135,6 +135,31 @@
         "pdc_phosphoproteome_total_files": 3896,
         "pdc_phosphoproteome_protein_assembly_text_files": 9,
         "warning": "PDC file counts include raw, processed, identification, and metadata; not matched biological patients. The 8/9 Protein Assembly files have not yet been inspected for quantitative matrices."
+      },
+      "public_quant_schema_audit": {
+        "checked_on": "2026-10-30",
+        "ci_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41056621082",
+        "pdc_quant_prefix_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41056348071",
+        "proteome_tmt_file": "Zhou_Liver_Cancer_Proteome.tmt11.tsv",
+        "proteome_tmt_file_bytes": 128690348,
+        "proteome_tmt_columns": 667,
+        "proteome_metadata_file": "Zhou_Liver_Cancer_Proteome.sample.txt",
+        "proteome_metadata_rows": 33,
+        "proteome_metadata_columns": 15,
+        "phosphosite_tmt_file": "Zhou_Liver_Cancer_Phosphoproteome.phosphosite.tmt11.tsv",
+        "phosphosite_tmt_file_bytes": 110179920,
+        "phosphosite_tmt_columns": 334,
+        "phosphoproteome_metadata_file": "Zhou_Liver_Cancer_Phosphoproteome.sample.txt",
+        "phosphoproteome_metadata_rows": 33,
+        "phosphoproteome_metadata_columns": 15,
+        "download_probe": "HTTP 206 Range prefix returned real header and second TSV row",
+        "direct_normalized_metadata_value_to_quant_header_matches": 0,
+        "next_join_key": "TMT plex + channel -> aliquot_submitter_id -> case_submitter_id via PDC Biospecimen / Study Run Metadata",
+        "quantitative_table_schema_verified": true,
+        "full_matrix_downloaded": false,
+        "sample_id_join_verified": false,
+        "rna_protein_patient_join_verified": false,
+        "note": "These quant TSVs are relative TMT measurements, not absolute protein concentrations. 0 literal header matches is not a proof of no specimen matching."
       }
     },
     {
