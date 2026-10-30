@@ -44,7 +44,7 @@ def soft_samples(raw):
 def conditions(samples,acc):
     donor=defaultdict(set); count=defaultdict(int); per=[]
     for s in samples:
-        text=s['title']+' '+' '.join(s['desc'])
+        text=s['title']
         low=text.lower()
         cond='DEX' if re.search(r'\b(dexamethasone|dex[-_a-z]*)\b',low) else ('CTRL' if re.search(r'\b(vehicle|control|untreated)\b',low) else 'OTHER')
         if acc=='GSE313736': ids=set(re.findall(r'\bHTMC[- ]?(\d+)\b',' '.join(s['desc']),re.I))
@@ -52,6 +52,39 @@ def conditions(samples,acc):
         donor[cond].update(ids);count[cond]+=1
         per.append({'gsm':s['gsm'],'condition':cond,'donor_count_in_sample_description':len(ids),'title':s['title']})
     return {'gsm_total':len(samples),'samples_by_condition':dict(count),'distinct_donors_by_condition':{k:len(v) for k,v in donor.items()},'donor_overlap_ctrl_dex':len(donor['CTRL']&donor['DEX']),'donor_overlap_is_not_cell_level_demultiplexing':True,'sample_preview':per[:5]}
+def metadata_summary(blob,name):
+    """Only aggregate donor statistics. Never publish donor identifiers or genotypes."""
+    import csv
+    with gzip.open(io.BytesIO(blob),'rt',encoding='utf8',errors='replace') as handle:
+        reader=csv.DictReader(handle,delimiter='\t')
+        cols=reader.fieldnames or []
+        id_field=next((c for c in ['donor_id_demuxlet','donor_id','sampleid'] if c in cols),None)
+        cond_field=next((c for c in ['DEX Treatment','dex_treatment','treatment','Treatment'] if c in cols),None)
+        count=0; ids=set(); by_cond=defaultdict(set); sample_rows=defaultdict(int); missing=0
+        for r in reader:
+            count+=1
+            key=(r.get(id_field) or '').strip() if id_field else ''
+            cond=(r.get(cond_field) or '').strip() if cond_field else ''
+            sample_rows[cond]+=1
+            if key and key.lower() not in ('na','nan','none','.','unassigned','doublet'):
+                ids.add(key);by_cond[cond].add(key)
+            else:missing+=1
+            if count>=500000:break
+    treatment_values=dict(sorted(sample_rows.items(),key=lambda x:-x[1])[:12])
+    out={'rows_checked':count,'columns':cols,'donor_id_col':id_field,
+         'donor_unique_count':len(ids),'missing_or_invalid_donor_rows':missing,
+         'treatment_col':cond_field,'treatment_counts':treatment_values,
+         'unique_donors_per_treatment':{k:len(v) for k,v in by_cond.items()}}
+    if cond_field:
+        def is_dex(x):return bool(re.search(r'dex|treated|true|^1$|yes',x,re.I))
+        def is_control(x):return bool(re.search(r'ctrl|vehicle|control|false|^0$|no|untreated',x,re.I))
+        d=set().union(*(v for k,v in by_cond.items() if is_dex(k))) if by_cond else set()
+        c=set().union(*(v for k,v in by_cond.items() if is_control(k))) if by_cond else set()
+        out['donor_overlap_dex_control_validated_metadata']=len(d & c)
+        out['donor_count_dex']=len(d);out['donor_count_control']=len(c)
+        if not d or not c:out['warning']='TREATMENT_VALUES_REQUIRE_MANUAL_REVIEW'
+    return out
+
 def probe_gzip(blob,name):
     if blob[:2]!=b'\x1f\x8b':raise ValueError('BAD_GZIP')
     with gzip.open(io.BytesIO(blob),'rt',encoding='utf8',errors='replace') as f:
@@ -93,7 +126,10 @@ def geo(acc,patterns):
                 try:
                     b,tx=fetch(url)
                     f.update({'status':'TRANSFER_PASS','transfer':tx})
-                    if fn.endswith('.gz'):f['content_probe']=probe_gzip(b,fn)
+                    if fn.endswith('.gz'):
+                        f['content_probe']=probe_gzip(b,fn)
+                        if 'cell_metadata' in fn.lower() or 'donor_metadata' in fn.lower():
+                            f['metadata_summary']=metadata_summary(b,fn)
                 except Exception as e:f.update({'status':'FAIL','reason':str(e)})
             r['files'].append(f)
     if samples and any(x.get('status')=='TRANSFER_PASS' for x in r['files']):r['status']='PARTIAL_G0_PASS'
