@@ -148,7 +148,7 @@ def inspect_xlsx(data):
     if not zipfile.is_zipfile(io.BytesIO(data)):
         raise ValueError("download not an XLSX ZIP workbook")
     with zipfile.ZipFile(io.BytesIO(data)) as book:
-        sheets = [n for n in book.namelist() if re.fullmatch(r"xl/worksheets/sheet\\d+\\.xml", n)]
+        sheets = [n for n in book.namelist() if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", n)]
         if not sheets:
             raise ValueError("no xlsx worksheets")
         def safe_read(name):
