@@ -140,6 +140,91 @@ def sheet_shape(z,part,first_rows=8):
             "row_summaries":row_summaries,
             "header_identifiers_and_expression_values_logged":False}
 
+def read_shared_strings(z,limit=125000):
+    """Keep publisher cell text in memory only; never store or print identifiers."""
+    path="xl/sharedStrings.xml"
+    if path not in z.namelist():return []
+    if z.getinfo(path).file_size>36*1024*1024:
+        raise ValueError("shared strings XML too large for privacy-safe sampling")
+    result=[]
+    with z.open(path) as stream:
+        for _,el in ET.iterparse(stream,events=("end",)):
+            if el.tag==NS+"si":
+                val="".join((t.text or "") for t in el.iter(NS+"t"))
+                result.append(val)
+                el.clear()
+                if len(result)>limit:raise ValueError("too many shared string values")
+    return result
+
+def classify_patient_label(x):
+    """Conservative candidate T/N matching; unclassified is not a patient."""
+    val=str(x).strip()
+    if len(val)>90 or len(val)<2:return None
+    # Common forms: T_123, N_123, 123_T, 123_N, PT123-Tumor, PT123-Normal
+    patterns=(
+       r"^(tumou?r|normal|t|n)[-_ .]+([a-zA-Z0-9][a-zA-Z0-9_-]{1,60})$",
+       r"^([a-zA-Z0-9][a-zA-Z0-9_-]{1,60})[-_ .]+(tumou?r|normal|t|n)$",
+       r"^(t|n)([0-9]{1,10})$",
+       r"^([0-9]{1,10})(t|n)$",
+    )
+    for i,pattern in enumerate(patterns):
+        m=re.match(pattern,val,re.I)
+        if m:
+            kind=m.group(1) if i in (0,2) else m.group(2)
+            key=m.group(2) if i in (0,2) else m.group(1)
+            tag="T" if kind.lower() in ("t","tumor","tumour") else "N"
+            return (key.lower(),tag,i)
+    return None
+
+def sample_header_audit(z,sheet_path,expected_sample_columns=304):
+    """Read row-2 labels; aggregate T/N pairs without outputting patient IDs."""
+    shared=read_shared_strings(z)
+    headers=[]
+    with z.open(sheet_path) as stream:
+        for _,row in ET.iterparse(stream,events=("end",)):
+            if row.tag!=NS+"row":continue
+            if str(row.get("r"))!="2":
+                row.clear()
+                continue
+            for c in row.findall(NS+"c"):
+                typ=c.get("t","n")
+                v=c.find(NS+"v")
+                x=None if v is None else v.text
+                if typ=="s" and x is not None:
+                    i=int(x)
+                    x=shared[i] if 0<=i<len(shared) else ""
+                elif typ=="inlineStr":
+                    x="".join(y.text or "" for y in c.iter(NS+"t"))
+                headers.append("" if x is None else str(x))
+            break
+    if not headers:raise ValueError("no sample header row 2")
+    # Three feature annotation columns are expected for 6512 proteins.
+    # Treat that as a provisional hypothesis, not a verified patient count.
+    candidate_headers=headers[3:]
+    out={"header_row_excel":2,"observed_row2_header_cells":len(headers),
+         "annotation_columns_excluded_hypothesis":3,
+         "candidate_sample_columns":len(candidate_headers),
+         "matches_expected_304_columns":len(candidate_headers)==expected_sample_columns,
+         "shared_string_records_loaded":len(shared),
+         "patient_ids_or_labels_logged":False,
+         "tumor_normal_pairing_verified":False}
+    paired={}
+    by_pattern={}
+    for label in candidate_headers:
+        c=classify_patient_label(label)
+        if c is None:continue
+        key,kind,method=c
+        paired.setdefault(key,set()).add(kind)
+        by_pattern[method]=by_pattern.get(method,0)+1
+    out["candidate_id_pattern_matches"]=sum(by_pattern.values())
+    out["candidate_header_match_patterns"]=by_pattern
+    out["candidate_keys_with_T_and_N"]=sum(types=={"T","N"} for types in paired.values())
+    out["candidate_keys_T_only"]=sum(types=={"T"} for types in paired.values())
+    out["candidate_keys_N_only"]=sum(types=={"N"} for types in paired.values())
+    out["unclassified_headers"]=len(candidate_headers)-sum(by_pattern.values())
+    out["interpretation"]="Heuristic T/N label grouping; requires author metadata/manual verification before scientific PASS."
+    return out
+
 def xlsx_only_manifest(raw):
     if not zipfile.is_zipfile(io.BytesIO(raw)):
         raise ValueError("not XLSX")
@@ -161,8 +246,17 @@ def xlsx_only_manifest(raw):
                 "uncompressed_xml_bytes":info.file_size,
                 **sheet_shape(z,part)
             })
+        patient_header={"status":"UNVERIFIED"}
+        selected=[part for idx,part in enumerate(xml_parts) if idx<len(names) and "6512 proteins" in names[idx]]
+        if len(selected)==1:
+            try:
+                patient_header=sample_header_audit(z,selected[0])
+                patient_header["status"]="HEADER_ROW_STRUCTURE_AUDITED"
+            except Exception as exc:
+                patient_header={"status":"UNVERIFIED","error_type":type(exc).__name__}
         return {"xlsx_verified":True,"sheet_count":len(names),"sheet_names":names,
                 "worksheet_structures":profiles,
+                "protein_sample_header_audit":patient_header,
                 "patient_expression_values_or_raw_ids_logged":False}
 
 
