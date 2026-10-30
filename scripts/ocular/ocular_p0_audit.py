@@ -132,6 +132,21 @@ def geo(acc,patterns):
                             f['metadata_summary']=metadata_summary(b,fn)
                 except Exception as e:f.update({'status':'FAIL','reason':str(e)})
             r['files'].append(f)
+    if acc=='GSE313736':
+        # Pair C is represented by both vehicle and dex pools; fetch *small* mapping files only.
+        for gsm,name in [
+          ('GSM9373278','GSM9373278_pool_C_dmx.best.gz'),
+          ('GSM9373287','GSM9373287_pool_dexC_dmx.best.gz'),
+          ('GSM9373278','GSM9373278_pool_C_barcodes.tsv.gz'),
+          ('GSM9373287','GSM9373287_pool_dexC_barcodes.tsv.gz')]:
+            url=f'https://ftp.ncbi.nlm.nih.gov/geo/samples/{gsm[:-3]}nnn/{gsm}/suppl/{name}'
+            item={'name':name,'url':url,'probe':'representative_pair_C'}
+            try:
+                b,tx=fetch(url,limit=8*1024*1024)
+                item.update({'status':'TRANSFER_PASS','transfer':tx,'content_probe':probe_gzip(b,name)})
+            except Exception as e:
+                item.update({'status':'FAIL','reason':str(e)})
+            r['files'].append(item)
     if samples and any(x.get('status')=='TRANSFER_PASS' for x in r['files']):r['status']='PARTIAL_G0_PASS'
     return r
 def mendeley():
