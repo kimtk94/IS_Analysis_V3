@@ -1,0 +1,52 @@
+name: Ocular P5d Nine-Pool Experimental-Unit Sensitivity
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p5d_poolunit.R'
+      - '.github/workflows/ocular-p5d-poolunit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conservative-pool-unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned numeric and Bioconductor dependencies
+        run: |
+          python -m pip install 'numpy==1.26.4'
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends r-base-core r-bioc-edger r-cran-statmod r-cran-jsonlite
+      - name: Validate and smoke-test parser and UMI summation
+        run: |
+          python -m py_compile scripts/ocular/ocular_p4_fullcohort.py scripts/ocular/ocular_p4_pseudobulk_pilot.py
+          python scripts/ocular/ocular_p4_pseudobulk_pilot.py --self-test
+          Rscript -e 'invisible(parse(file="scripts/ocular/ocular_p5_edger.R"));invisible(parse(file="scripts/ocular/ocular_p5d_poolunit.R"));cat("P5D_SYNTAX_PASS\n")'
+      - name: Stream 18 full source 10x matrices into runner-private paired counts
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-p5d-private" ocular-p5d-aggregate
+          python -u scripts/ocular/ocular_p4_fullcohort.py --score 0.75 --min-cells 30 --internal-export-dir "$RUNNER_TEMP/ocular-p5d-private" --output ocular-p5d-aggregate/p5d_source_qc.json
+      - name: Reproduce full paired donor edgeR reference results
+        run: |
+          Rscript scripts/ocular/ocular_p5_edger.R "$RUNNER_TEMP/ocular-p5d-private" ocular-p5d-aggregate
+      - name: Fit independent nine-pool-pair library-unit sensitivity
+        run: |
+          Rscript scripts/ocular/ocular_p5d_poolunit.R "$RUNNER_TEMP/ocular-p5d-private" ocular-p5d-aggregate/p5_all_gene_results.tsv.gz ocular-p5d-aggregate
+      - name: Remove private counts and pseudonymous donor table
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-p5d-private"
+      - name: Upload gene-level aggregates and experiment-unit QC only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5d-nine-pool-unit
+          path: ocular-p5d-aggregate/
+          retention-days: 30
+          if-no-files-found: warn
