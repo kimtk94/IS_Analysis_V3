@@ -24,8 +24,8 @@ NG_URLS = (
 )
 PDC_ENDPOINT = "https://pdc.cancer.gov/graphql"
 PDC_QUERY = (
-    '{ study(pdc_study_id: "PDC000198") { pdc_study_id study_name } '
-    'study2: study(pdc_study_id: "PDC000199") { pdc_study_id study_name } }'
+    '{ proteome: study(pdc_study_id: "PDC000198") { pdc_study_id study_name cases_count aliquots_count analytical_fraction } '
+    'phosphoproteome: study(pdc_study_id: "PDC000199") { pdc_study_id study_name cases_count aliquots_count analytical_fraction } }'
 )
 NS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
 REL = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
@@ -210,12 +210,22 @@ def probe_gao():
         if response.get("errors"):
             raise ValueError("GraphQL: " + str(response["errors"])[:200])
         data = response.get("data") or {}
+        studies = {}
+        for key, values in data.items():
+            if isinstance(values, dict):
+                values = [values]
+            if isinstance(values, list):
+                studies[key] = {
+                    "record_count": len(values),
+                    "records": [{k: v.get(k) for k in (
+                        "pdc_study_id", "study_name", "cases_count",
+                        "aliquots_count", "analytical_fraction")}
+                        for v in values[:3] if isinstance(v, dict)]
+                }
+        if not studies or all(x["record_count"] == 0 for x in studies.values()):
+            raise ValueError("PDC returned no matching study records")
         entry.update({"metadata_status": "FETCHED_PUBLIC_PDC_GRAPHQL",
-                      "http_status": code,
-                      "studies": {
-                          k: {"pdc_study_id": v.get("pdc_study_id"), "study_name": v.get("study_name")}
-                          for k, v in data.items() if isinstance(v, dict)
-                      }})
+                      "http_status": code, "studies": studies})
     except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError,
             OSError, ValueError) as ex:
         entry["error"] = str(ex)[:240]
