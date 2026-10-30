@@ -218,8 +218,27 @@ def disambiguate_tmt_run_slots(cases):
             "unique_aliquot_count":len({r["aid"] for r in observations}),
             "slot_aliquot_multiplicity_histogram":dict(sorted(histogram.items())),
         }
+    analyte_categories=collections.Counter(
+        (row["analyte"] if re.fullmatch(r"[a-zA-Z_ -]{1,48}",row["analyte"]) else "OTHER_OR_MISSING")
+        for row in observations)
+    analyte_aliquots=collections.defaultdict(set)
+    analyte_experiment_label=collections.defaultdict(lambda:collections.defaultdict(set))
+    for row in observations:
+        category=row["analyte"] if re.fullmatch(r"[a-zA-Z_ -]{1,48}",row["analyte"]) else "OTHER_OR_MISSING"
+        analyte_aliquots[category].add(row["aid"])
+        analyte_experiment_label[category][(row["experiment"],row["label"])].add(row["aid"])
+    analyte_specific={
+        name:{
+            "valid_run_records":count,
+            "distinct_aliquots":len(analyte_aliquots[name]),
+            "experiment_label_slots":len(analyte_experiment_label[name]),
+            "slots_with_multiple_distinct_aliquots":sum(len(a)>1 for a in analyte_experiment_label[name].values()),
+            "single_aliquot_slots":sum(len(a)==1 for a in analyte_experiment_label[name].values()),
+        } for name,count in sorted(analyte_categories.items())
+    }
     return {
         "valid_run_metadata_rows":len(observations),
+        "analyte_categories_aggregate":analyte_specific,
         "missing_fraction_rows":sum(not x["fraction"] for x in observations),
         "missing_replicate_rows":sum(not x["replicate"] for x in observations),
         "missing_analyte_rows":sum(not x["analyte"] for x in observations),
