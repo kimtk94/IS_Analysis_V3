@@ -370,7 +370,10 @@ def audit():
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--out",default="results/hcc/feasibility/pmc2026_cloud_mmc3_audit.json")
+    p.add_argument("--target",choices=("mmc2.xlsx","mmc3.xlsx","mmc7.xlsx"),default="mmc3.xlsx")
     args=p.parse_args()
+    global TARGET
+    TARGET=args.target
     report={"checked_utc":dt.datetime.now(dt.timezone.utc).isoformat(),
             "audit":audit(),"V02":"BLOCKED"}
     path=pathlib.Path(args.out)
