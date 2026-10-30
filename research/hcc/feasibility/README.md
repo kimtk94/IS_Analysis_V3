@@ -97,6 +97,18 @@ A **focused** [GitHub Actions #41066051263](https://github.com/kimtk94/IS_Analys
 
 **Interpretation:** these are client-side navigation routes, **not** demonstrated HTTP download endpoints or verified HCCDB25 RNA sample files. The route audit could not yet recover an expression matrix URL, a gene×sample matrix or matched case IDs. V02 remains BLOCKED. To proceed, navigate documented HCCDB25 public repository route through an authorized browser/workflow or obtain an official exported HCCDB25 expression matrix and sample manifest; alternatively request a direct access link from the data custodian. Never guess a dataset download URL from a route name.
 
+## Stage-9 source-paper calibration: prior **158-patient RNA/protein integration** (2026-10-30)
+
+**New high-priority paper:** Cheng et al., *Briefings in Bioinformatics* 24(2), 2023, [DOI 10.1093/bib/bbac601](https://doi.org/10.1093/bib/bbac601) ([publisher methods](https://academic.oup.com/bib/article/24/2/bbac601/7025463)). **This study already integrated the Gao HBV-HCC cohort at 158 patients after omitting samples with insufficient multi-omics data**. It states RNA quantification from BioSino `OEP000321` was **UQ_FPKM**; proteome and phosphosite came from Gao original supplementary files. Published differential-expression methods convert FPKM to TPM, apply log2(TPM+1), and use limma, BH correction, plus relative protein abundance normalization.
+
+- **Published, not independently replicated here**: 1,977 differential mRNAs, 1,273 differential proteins; 408 RNA/protein concordant deregulated genes (224 jointly upregulated, 184 jointly downregulated), 3 integrated molecular subgroups, and external validation. The 408-gene signature is a **required literature positive control**, not our thesis's novel discovery.
+- **Crucial distinction**: Gao original **159 paired patients**, PDC **160 tumor+normal lineage cases** among 171 cases, and Cheng analytic **158 paired patients** are different cohort selection/count concepts. The Cheng 158 figure is a publication-reported result, **NOT an intersection of files we have downloaded/joined**.
+- **HCCDB25 RNA external archive corroboration**: a separate study describes `OEP000321` as **158 tumor samples** in the HCCDB v2 RNA reanalysis ([Frontiers 2024](https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2024.1436131/full)). Gene expression file download and patient IDs remain unverified here.
+- **Novelty guardrail**: repeating proteotranscriptomic subtype clustering in the Gao HBV cohort, or the 408-gene RNA/protein concordance, is prior art. Keep RQ1 targeted at cross-etiology transferability + independent replication + patient-level cellular interpretation.
+- **V02 status still BLOCKED**: independent paired **quantitative matrix** join is mandatory regardless of earlier publications claiming paired data. The reproducible target is **158 paper-eligible pairs**, subject to filtering and sample ID verification, *not an assumed output count*.
+
+**Additional first-party literature portal route**: a 2024 study explicitly reports [`http://lifeome.net:809/#/repository?type=buke`](https://www.frontiersin.org/journals/cell-and-developmental-biology/articles/10.3389/fcell.2024.1407428/full) for HCCDB datasets including HCCDB25. This is a web-app view, **not a direct RNA file link**.
+
 ## Criteria (pilot engineering thresholds, NOT universally accepted clinical criteria)
 - At least one observed, documented **patient/specimen-level RNA↔protein join with N≥30** (paper abstract is insufficient).
 - At least two verified etiology categories **each N≥10 within those joined data**. Need inspect overlap and confounders (stage, treatment, batch, platform).
