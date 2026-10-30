@@ -20,3 +20,13 @@ Date / ID / repo commit / checkpoint / dataset / source SHA256 / patient N / eve
 For a future request such as “다음”, first inspect the protocol, checkpoint registry and **latest CI**. Complete the first actionable public-data blocker. Save real quantitative evidence and update the ledger. If the hypothesis turns out null, negative, confounded, or restricted by access, log the limitation rather than manufacturing a PASS.
 
 Study-governance PR is independent from the ongoing code/data-feasibility PR #251; merge or review both before treating them as available on main.
+
+## 2026-10-30 — D-007: Evidence-gate hardening and Drive handoff
+
+- Protocol governance PR: https://github.com/kimtk94/IS_Analysis_V3/pull/252
+- Automated verification: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41057719470 (12 offline tests PASS)
+- Google Drive reference: https://docs.google.com/document/d/1Ipk7kS6ukGYqwgwhSWHICs42EBqpu3eRFd82mBOkaAE/edit
+- Rule update: `V12`/`V13` clinical event/count gates alone do **not** authorize a biology-guided clinical significance claim when the biological validation prerequisites are incomplete. Full biological prerequisite set includes V00, V01, V02, V03, V04, V05, V06, V07, V08, V09, V14 and V15.
+- To mark any gate PASS, record explicit reviewer approval and reproducible analysis artifact path under `results/hcc/`, SHA256 of source (64 hex), exact code commit (40 hex), and checked date. V02/V04/V10 additionally require independent patient N; V12/V13 require verified event N.
+- The static evidence checker validates *format and declared evidence*, **not** remote artifact contents, statistical effects, new discovery, or prospective clinical usefulness. A scientific reviewer still needs to inspect outputs. Even every workflow gate being PASS only makes a claim eligible for review.
+- The user-facing handoff document resides with the original feasibility audit; the Markdown protocol and machine-readable status remain canonical in GitHub. Existing conclusions: molecular and clinical findings unproven.
