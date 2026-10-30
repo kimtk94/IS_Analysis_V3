@@ -1,0 +1,34 @@
+name: Ocular P3b Gene Feature Order Audit
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p3b_features.py'
+      - '.github/workflows/ocular-p3b-features.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  feature-order:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check
+        run: |
+          python -m py_compile scripts/ocular/ocular_p1_integrity.py scripts/ocular/ocular_p3b_features.py
+      - name: Compare uncompressed features across 18 libraries
+        run: |
+          python scripts/ocular/ocular_p3b_features.py --output ocular-feature-order.json
+      - name: Upload checksum summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p3b-feature-order
+          path: ocular-feature-order.json
+          retention-days: 30
+          if-no-files-found: warn
