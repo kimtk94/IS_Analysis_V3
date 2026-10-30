@@ -123,16 +123,66 @@ def normalized_header_fingerprint(study,design_rows):
         "RNA_PROTEIN_JOIN_VERIFIED":False,
     }
 
+def reconstruct_from_biospecimen_runs(cases):
+    """Reconstruct candidate plex/channel assignment from PDC aliquot_run_metadata.
+
+    Plex name is an explicit ambiguity: experiment_number alone may group multiple
+    analytical mixtures. Compare experiment-only and experiment+alias groupings,
+    never claim a final quantified aliquot mapping solely from this reconstruction.
+    """
+    raw=[]
+    for case in cases:
+        for sample in case.get("samples") or []:
+            for aliquot in sample.get("aliquots") or []:
+                aid=aliquot.get("aliquot_id") or aliquot.get("aliquot_submitter_id")
+                for run in aliquot.get("aliquot_run_metadata") or []:
+                    if not isinstance(run,dict):continue
+                    label=str(run.get("label") or "").lower()
+                    exp=str(run.get("experiment_number") or "")
+                    alias=str(run.get("alias") or "")
+                    if aid and exp and label in TMT:
+                        raw.append((exp,alias,label,str(aid)))
+    if not raw:
+        raise ValueError("No aliquot_run_metadata experiment-label assignments")
+    def groups(use_alias):
+        d={}
+        for exp,alias,label,aid in raw:
+            key=(exp,alias if use_alias else "")
+            if key not in d:
+                d[key]={"experiment_number":exp,"plex_dataset_name":key[1]}
+            d[key].setdefault(label,[]).append({"aliquot_id":aid})
+        return list(d.values())
+    exp_rows=groups(False)
+    alias_rows=groups(True)
+    # Aliases only resolve a multiplex split if most alias groups contain
+    # multiple independent TMT channels; single-channel aliases are insufficient.
+    multis=sum(sum(bool(x.get(c)) for c in TMT)>=8 for x in alias_rows)
+    choose_alias=len(alias_rows)>len(exp_rows) and multis>=max(1,len(alias_rows)//2)
+    chosen=alias_rows if choose_alias else exp_rows
+    support={
+        "run_metadata_rows_with_valid_tmt_labels":len(raw),
+        "distinct_experiment_numbers":len(exp_rows),
+        "distinct_experiment_alias_groups":len(alias_rows),
+        "experiment_alias_groups_with_8plus_labels":multis,
+        "grouping_mode":"EXPERIMENT_AND_ALIAS" if choose_alias else "EXPERIMENT_ONLY",
+        "alias_grouping_unvalidated":True,
+        "experiment_only_slot_count":len(flatten_design(exp_rows)),
+        "alias_group_slot_count":len(flatten_design(alias_rows)),
+        "interpretation":"Aliquot-run metadata supplies candidate TMT assignments, not verified multiplex/file column linkage."
+    }
+    return chosen,support
+
 def audit():
     o={}
     for study in STUDIES:
         result={"status":"UNVERIFIED","V02_RNA_PROTEIN_JOIN":"BLOCKED"}
         try:
-            design=load_design(study)
             bios,_=get_cases(study)
             links=flatten(bios)
+            design,provenance=reconstruct_from_biospecimen_runs(bios)
+            result["run_metadata_reconstruction"]=provenance
             result["design"]=unique_design_counts(design,links)
-            result["status"]="PUBLIC_EXPERIMENTAL_DESIGN_AGGREGATED"
+            result["status"]="PDC_BIOSPECIMEN_RUN_METADATA_RECONSTRUCTED"
             try:result["matrix_header_fingerprint"]=normalized_header_fingerprint(study,design)
             except Exception as e:result["header_fingerprint_error_type"]=type(e).__name__
         except Exception as e:
