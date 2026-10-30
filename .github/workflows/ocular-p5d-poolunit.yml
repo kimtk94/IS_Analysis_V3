@@ -1,9 +1,5 @@
 name: Ocular P5d Nine-Pool Experimental-Unit Sensitivity
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5d_poolunit.R'
-      - '.github/workflows/ocular-p5d-poolunit.yml'
   workflow_dispatch:
 
 permissions:

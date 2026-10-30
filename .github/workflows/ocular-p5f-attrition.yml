@@ -1,9 +1,5 @@
 name: Ocular P5f Dataset Attrition Reconciliation
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5f_attrition.py'
-      - '.github/workflows/ocular-p5f-attrition.yml'
   workflow_dispatch:
 
 permissions:

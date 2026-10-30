@@ -1,9 +1,5 @@
 name: Ocular P5e Cell-State Selection Bias Diagnostic
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5e_cellstate_bias.py'
-      - '.github/workflows/ocular-p5e-cellstate-bias.yml'
   workflow_dispatch:
 
 permissions:
