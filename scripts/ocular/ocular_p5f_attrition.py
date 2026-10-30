@@ -60,16 +60,20 @@ def evaluate(soft_bytes,meta_file):
         "Paper's 316799 singlets may represent a different QC stage than final downloaded 169398 rows",
         "No donor identities or phenotypes included in audit evidence"]}
     for i,p in enumerate("ABCDEFGHI"):
-        matched=set()
-        for x in samples:
-            if re.search(r"pool[-_](?:dex)?"+p+r"\b",x["title"],re.I):
-                matched|=orig[x["gsm"]]
+        # Pool identity is defined by the exact official GSM accessions.
+        # Sample titles are not guaranteed to contain "pool_A/B/etc".
+        ctrl=f"GSM{9373276+i}"
+        dex=f"GSM{9373285+i}"
+        matched=orig.get(ctrl,set())|orig.get(dex,set())
         report["by_pool"].append({"pool":p,
           "SOFT_unique_donors":len(matched),
           "metadata_unique_donors":len(per_pool[p]),
           "metadata_subset_of_SOFT":len(per_pool[p]-matched)==0,
           "SOFT_minus_metadata_donors":len(matched-per_pool[p])})
-    if len(samples)==18 and len(original)>=68 and len(both)==59 and sum(counts.values())==169398:
+    if (len(samples)==18 and len(original)>=68 and len(both)==59
+        and sum(counts.values())==169398
+        and all(r["SOFT_unique_donors"]>0 and r["metadata_subset_of_SOFT"]
+                for r in report["by_pool"])):
         report["status"]="PASS_DESCRIPTIVE_ATTRITION_RECONCILIATION"
     return report
 def main():
