@@ -38,6 +38,7 @@ def bounded_download(url, timeout=20):
 
 
 def inspect(raw):
+    import statistics
     try:
         text = raw.decode("utf-8-sig")
     except UnicodeDecodeError:
@@ -49,24 +50,45 @@ def inspect(raw):
     first = nonempty[0]
     delimiter = "\t" if first.count("\t") >= first.count(",") else ","
     parsed = csv.reader(nonempty, delimiter=delimiter)
-    headers = next(parsed)
+    headers = [x.strip() for x in next(parsed)]
     if len(headers) > 300:
         raise ValueError("more than 300 columns in metadata")
-    headers = [x.strip() for x in headers]
+    selected = [i for i, name in enumerate(headers) if any(s in name.lower() for s in KEYWORDS)]
     nonnull = collections.Counter()
+    values = {i: collections.Counter() for i in selected}
     n = 0
     for cells in parsed:
         n += 1
         if n > 250000:
             raise ValueError("metadata exceeds 250000 rows")
         for j, value in enumerate(cells[:len(headers)]):
-            if value.strip():
+            cleaned = value.strip()
+            if cleaned:
                 nonnull[j] += 1
-    selected = [i for i, name in enumerate(headers) if any(s in name.lower() for s in KEYWORDS)]
+                if j in values:
+                    values[j][cleaned] += 1
+    candidates = []
+    for i in selected[:60]:
+        name = headers[i]
+        freqs = values[i]
+        entry = {"name": name, "nonempty_rows": nonnull[i], "distinct_values": len(freqs)}
+        # Report only aggregate categorical labels; never list patient/sample IDs.
+        if any(s in name.lower() for s in ("status", "tissue type", "viral status")) and len(freqs) <= 15:
+            entry["value_counts"] = dict(freqs.most_common(15))
+        if "months" in name.lower() or name.lower().endswith("_time"):
+            numeric = []
+            for v, count in freqs.items():
+                try:
+                    numeric.extend([float(v)] * count)
+                except ValueError:
+                    pass
+            if numeric:
+                entry["numeric_summary"] = {"valid_rows": len(numeric), "minimum": min(numeric),
+                                            "maximum": max(numeric), "median": statistics.median(numeric)}
+        candidates.append(entry)
     return {
-        "row_count": n, "column_count": len(headers),
-        "columns": headers[:80],
-        "candidate_columns": [{"name": headers[i], "nonempty_rows": nonnull[i]} for i in selected[:60]],
+        "row_count": n, "column_count": len(headers), "columns": headers[:80],
+        "candidate_columns": candidates,
         "format_warning": "" if len(headers) > 1 else "single-column or unstructured supplement; manual parse needed"
     }
 
