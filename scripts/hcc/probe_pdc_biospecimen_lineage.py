@@ -88,14 +88,48 @@ def count_summary(records,links):
     all_cases={x.get("case_id") or x.get("case_submitter_id") for x in records}
     all_cases.discard(None)
     c=collections.Counter(x.get("type") or "MISSING_TYPE" for x in links)
+    case_tumor={x["case"] for x in links if x.get("type")=="Primary Tumor"}
+    case_normal={x["case"] for x in links if x.get("type")=="Solid Tissue Normal"}
+    cases_with_aliquots={x["case"] for x in links}
     bytype={}
     for typ in sorted(c):
         matching=[x for x in links if (x.get("type") or "MISSING_TYPE")==typ]
         bytype[typ]={"unique_cases":len({x["case"] for x in matching}),
                      "unique_samples":len({x["sample"] for x in matching}),
                      "aliquots":len({x["aliquot"] for x in matching})}
+    run_rows=0
+    distinct_experiments=set()
+    experiment_labels=set()
+    normalized_labels=collections.Counter()
+    no_experiment_aliquots=0
+    for case in records:
+        for sample in case.get("samples") or []:
+            for aliquot in sample.get("aliquots") or []:
+                runs=aliquot.get("aliquot_run_metadata") or []
+                if not runs:
+                    no_experiment_aliquots+=1
+                for record in runs:
+                    if not isinstance(record,dict):continue
+                    run_rows+=1
+                    experiment=record.get("experiment_number")
+                    label=record.get("label")
+                    if experiment is not None:distinct_experiments.add(str(experiment))
+                    if experiment is not None and label:
+                        experiment_labels.add((str(experiment),str(label)))
+                    if label:
+                        normalized_labels[str(label).lower()]+=1
     return {"distinct_cases":len(all_cases),"distinct_samples":len({x["sample"] for x in links}),
             "distinct_aliquots":len({x["aliquot"] for x in links}),
+            "cases_with_aliquot":len(cases_with_aliquots),
+            "cases_without_aliquot":len(all_cases-cases_with_aliquots),
+            "cases_with_tumor_and_normal_sample":len(case_tumor & case_normal),
+            "tumor_only_case_count":len(case_tumor-case_normal),
+            "normal_only_case_count":len(case_normal-case_tumor),
+            "run_metadata_records":run_rows,
+            "aliquots_without_run_metadata":no_experiment_aliquots,
+            "distinct_experiment_numbers":len(distinct_experiments),
+            "distinct_experiment_label_pairs":len(experiment_labels),
+            "tmt_labels_aggregated":dict(normalized_labels),
             "sample_types":bytype}
 
 def header_linkage(study, links):
