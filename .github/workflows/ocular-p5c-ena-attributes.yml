@@ -1,0 +1,32 @@
+name: Ocular P5c External RNAseq Sample Metadata Audit
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p5c_ena_attributes.py'
+      - '.github/workflows/ocular-p5c-ena-attributes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metadata-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate and audit public sample-specific ENA attributes
+        run: |
+          python -m py_compile scripts/ocular/ocular_p5c_ena_attributes.py
+          python scripts/ocular/ocular_p5c_ena_attributes.py --out ocular-p5c-sample-metadata.json
+      - name: Archive aggregate metadata only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5c-sample-metadata
+          path: ocular-p5c-sample-metadata.json
+          retention-days: 30
+          if-no-files-found: warn
