@@ -1,0 +1,215 @@
+{
+  "schema_version": "hcc-feasibility-v1",
+  "reviewed_at": "2026-10-30",
+  "scope": "PUBLIC METADATA / PUBLICATION ONLY. No molecular patient-level matrices downloaded or harmonized in this audit.",
+  "gate_policy": {
+    "min_verified_paired_n": 30,
+    "min_verified_etiology_group_n": 10,
+    "min_etiology_groups": 2,
+    "min_verified_recurrence_events": 30,
+    "min_verified_external_recurrence_events": 20
+  },
+  "datasets": [
+    {
+      "id": "NG2022",
+      "name": "Ng et al Nat Commun 2022 multi-etiology HCC",
+      "modalities": [
+        "RNA-seq",
+        "proteome",
+        "phosphoproteome",
+        "WES"
+      ],
+      "subjects_reported": 114,
+      "specimens_reported": 122,
+      "publication_paired_rna_protein_specimens": 51,
+      "publication_etiology": "alcohol-related 59%; HCV 26%; overlaps possible",
+      "access": "RNA-seq raw restricted EGA EGAS00001005074; proteome public PRIDE PXD025705; phosphoproteome public PRIDE PXD025836; processed source data exists but matching not audited",
+      "url": "https://www.nature.com/articles/s41467-022-29960-8",
+      "secondary_url": "https://proteomecentral.proteomexchange.org/cgi/GetDataset?ID=PXD025705",
+      "verified_pairing": false,
+      "verified_pair_n": 0,
+      "verified_etiology_counts": {},
+      "verified_recurrence_events": 0,
+      "verified_external_recurrence_events": 0,
+      "evidence_artifact": "",
+      "next_action": "Check article Source Data and supplementary patient/sample IDs against PRIDE protein matrices; request EGA RNA access if needed. Do not treat paper counts as downloadable pairs."
+    },
+    {
+      "id": "GAO2019",
+      "name": "Gao et al Cell 2019 HBV-HCC",
+      "modalities": [
+        "RNA-seq",
+        "proteome",
+        "phosphoproteome"
+      ],
+      "subjects_reported": 159,
+      "specimens_reported": null,
+      "publication_paired_rna_protein_specimens": null,
+      "publication_etiology": "HBV-related",
+      "access": "Published integrated paired tumor/non-tumor cohort; RNA BioSino OEP000321 and proteome CPTAC/ICPC reported; file-level join not inspected",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/31585088/",
+      "secondary_url": "https://www.biosino.org/node/project/detail/OEP000321",
+      "verified_pairing": false,
+      "verified_pair_n": 0,
+      "verified_etiology_counts": {},
+      "verified_recurrence_events": 0,
+      "verified_external_recurrence_events": 0,
+      "evidence_artifact": "",
+      "next_action": "Download processed matrices and metadata separately, check common patient and specimen identifiers; HBV-only reference is not a nonviral validation cohort."
+    },
+    {
+      "id": "TCGA-LIHC",
+      "name": "TCGA-LIHC",
+      "modalities": [
+        "RNA-seq",
+        "mutation",
+        "methylation",
+        "clinical",
+        "targeted RPPA subset"
+      ],
+      "subjects_reported": null,
+      "specimens_reported": null,
+      "publication_paired_rna_protein_specimens": null,
+      "publication_etiology": "etiology labels require patient-level extraction and completeness audit",
+      "access": "GDC public processed data; some clinical/genomics restricted; RPPA is targeted antibody measurement, NOT global mass-spectrometry proteome",
+      "url": "https://portal.gdc.cancer.gov/projects/TCGA-LIHC",
+      "secondary_url": "https://gdc.cancer.gov/about-data/publications/pancanatlas",
+      "verified_pairing": false,
+      "verified_pair_n": 0,
+      "verified_etiology_counts": {},
+      "verified_recurrence_events": 0,
+      "verified_external_recurrence_events": 0,
+      "evidence_artifact": "",
+      "next_action": "Query harmonized manifest and clinical endpoints, tally unique cases and etiologies, avoid defining recurrence from OS/PFI without endpoint audit."
+    },
+    {
+      "id": "GSE14520",
+      "name": "HCC paired tumor-adjacent microarray",
+      "modalities": [
+        "microarray",
+        "clinical supplement"
+      ],
+      "subjects_reported": null,
+      "specimens_reported": 488,
+      "publication_paired_rna_protein_specimens": 0,
+      "publication_etiology": "needs supplementary clinical metadata audit",
+      "access": "GEO public processed series and GSE14520_Extra_Supplement.txt.gz; 488 are samples NOT patients",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE14520",
+      "secondary_url": "",
+      "verified_pairing": false,
+      "verified_pair_n": 0,
+      "verified_etiology_counts": {},
+      "verified_recurrence_events": 0,
+      "verified_external_recurrence_events": 0,
+      "evidence_artifact": "",
+      "next_action": "Parse supplementary table, confirm clinical time/event definition and train/test partitions at patient level."
+    },
+    {
+      "id": "GSE149614",
+      "name": "HCC single-cell atlas",
+      "modalities": [
+        "scRNA-seq"
+      ],
+      "subjects_reported": 10,
+      "specimens_reported": 21,
+      "publication_paired_rna_protein_specimens": 0,
+      "publication_etiology": "HBV/HCV/nonviral described; group sizes must be audited",
+      "access": "GEO processed 157.7MB count and metadata; raw restricted EGA EGAS00001004468",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE149614",
+      "secondary_url": "",
+      "verified_pairing": false,
+      "verified_pair_n": 0,
+      "verified_etiology_counts": {},
+      "verified_recurrence_events": 0,
+      "verified_external_recurrence_events": 0,
+      "evidence_artifact": "",
+      "next_action": "Download metadata first; map exact patient group and tissue origin; pseudobulk per patient, not per cell."
+    },
+    {
+      "id": "GSE242889",
+      "name": "HCC microvascular invasion single-cell",
+      "modalities": [
+        "scRNA-seq"
+      ],
+      "subjects_reported": 5,
+      "specimens_reported": 10,
+      "publication_paired_rna_protein_specimens": 0,
+      "publication_etiology": "not verified",
+      "access": "GEO series processed/raw tar; 3 MVI+ and 2 MVI- patients, 5 tumor + 5 adjacent",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE242889",
+      "secondary_url": "",
+      "verified_pairing": false,
+      "verified_pair_n": 0,
+      "verified_etiology_counts": {},
+      "verified_recurrence_events": 0,
+      "verified_external_recurrence_events": 0,
+      "evidence_artifact": "",
+      "next_action": "Use for MVI cell-type context; MVI is NOT observed recurrence; patient-level N=5."
+    },
+    {
+      "id": "GSE319709",
+      "name": "Etiology-specific HBV/MASH immune single-cell",
+      "modalities": [
+        "scRNA-seq CD45+ immune"
+      ],
+      "subjects_reported": null,
+      "specimens_reported": 18,
+      "publication_paired_rna_protein_specimens": 0,
+      "publication_etiology": "HBV/MASH samples across PBMC/tumor/peritumor; matched patients and group Ns unverified",
+      "access": "GEO raw MTX/TSV tar, 18 samples; immune-cell enriched means not malignant-cell reference",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE319709",
+      "secondary_url": "",
+      "verified_pairing": false,
+      "verified_pair_n": 0,
+      "verified_etiology_counts": {},
+      "verified_recurrence_events": 0,
+      "verified_external_recurrence_events": 0,
+      "evidence_artifact": "",
+      "next_action": "Audit sample-to-patient and etiology, test for sample composition/processing confounding."
+    },
+    {
+      "id": "GSE238264",
+      "name": "Neoadjuvant cabozantinib+nivolumab spatial HCC",
+      "modalities": [
+        "spatial transcriptomics"
+      ],
+      "subjects_reported": 7,
+      "specimens_reported": 7,
+      "publication_paired_rna_protein_specimens": 0,
+      "publication_etiology": "not established",
+      "access": "GEO processed spatial data; raw restricted; treated advanced HCC",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE238264",
+      "secondary_url": "",
+      "verified_pairing": false,
+      "verified_pair_n": 0,
+      "verified_etiology_counts": {},
+      "verified_recurrence_events": 0,
+      "verified_external_recurrence_events": 0,
+      "evidence_artifact": "",
+      "next_action": "Contextual spatial figure ONLY; treatment response / single recurrence outlier cannot validate baseline RFS predictor."
+    },
+    {
+      "id": "PXD050969",
+      "name": "HCC proteome/lipidome/metabolome atlas",
+      "modalities": [
+        "proteome",
+        "lipidome",
+        "metabolome"
+      ],
+      "subjects_reported": null,
+      "specimens_reported": null,
+      "publication_paired_rna_protein_specimens": 0,
+      "publication_etiology": "not established",
+      "access": "ProteomeXchange announced via iProX; repository support lists unsupported; direct file accessibility unverified",
+      "url": "https://proteomecentral.proteomexchange.org/cgi/GetDataset?ID=PXD050969",
+      "secondary_url": "",
+      "verified_pairing": false,
+      "verified_pair_n": 0,
+      "verified_etiology_counts": {},
+      "verified_recurrence_events": 0,
+      "verified_external_recurrence_events": 0,
+      "evidence_artifact": "",
+      "next_action": "Verify iProX access, public matrices, sample IDs and clinically linkable outcomes before selecting."
+    }
+  ]
+}
