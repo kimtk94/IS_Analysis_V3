@@ -107,6 +107,7 @@ def _metadata_pair_summary(rows):
     etiology_all = {}
     etiology_paired = {}
     stage_paired = {}
+    patient_disease = {}
     for row in rows[header_row + 1:]:
         tumor = row.get(mapping["tumorbiopsyid"], "").strip()
         patient = row.get(mapping["patientid"], "").strip()
@@ -133,8 +134,14 @@ def _metadata_pair_summary(rows):
         if statuses.get("rnaseq") is True and statuses.get("proteomics") is True:
             etiology_paired[disease] = etiology_paired.get(disease, 0) + 1
             stage_paired[stage] = stage_paired.get(stage, 0) + 1
+            if patient:
+                patient_disease.setdefault(patient, set()).add(disease)
             flagged.append((tumor, patient, statuses.get("phosphoproteomics")))
     pair_patients = {p for _, p, _ in flagged if p}
+    patient_disease_counts = {}
+    for diseases in patient_disease.values():
+        label = next(iter(diseases)) if len(diseases) == 1 else "MULTIPLE_DIFFERENT_LABELS"
+        patient_disease_counts[label] = patient_disease_counts.get(label, 0) + 1
     return {
         "status": "PUBLIC_SAMPLE_METADATA_INSPECTED",
         "tumor_rows_with_biopsy_id": tumor_rows,
@@ -146,6 +153,7 @@ def _metadata_pair_summary(rows):
             sum(1 for _, _, value in flagged if value is True),
         "underlying_liver_disease_raw_counts_all_biopsies": etiology_all,
         "underlying_liver_disease_raw_counts_paired_biopsies": etiology_paired,
+        "underlying_liver_disease_raw_counts_unique_paired_patients": patient_disease_counts,
         "bclc_raw_counts_paired_biopsies": stage_paired,
         "etiology_warning": "Original categories may be overlapping, nonexclusive and missing. These are biopsy—not independent patient—counts. DO NOT infer two group Ns before patient-level disease codebook validation.",
         "modality_flag_value_counts": hist,
