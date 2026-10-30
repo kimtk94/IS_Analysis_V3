@@ -80,3 +80,9 @@ Study-governance PR is independent from the ongoing code/data-feasibility PR #25
 - Required V02 evidence when datasets are obtained: `N_paper_eligible=158` (reproduce or explain), `N_rna_protein_matched_for_cluster=156` (reproduce or explain), explicit identifiers/filters audited in a nonpublic workspace, patient/sample counts retained as sanitized summaries in Git; do not assert counts as results before direct reanalysis.
 - Required V06 positive control and V15 novelty restrictions remain as in D-012: Cheng's 408 genes and 3 subtypes are prior art.
 - Current V02 **BLOCKED** because neither exact UQ_FPKM raw processed matrix nor real matched patient manifest has been downloaded and independently audited.
+
+## 2026-10-30 — D-014: external 2023/2026 HCC prior art + alternative proteome
+
+- 2023 *Cell Reports Medicine*, DOI https://doi.org/10.1016/j.xcrm.2023.101315: 160 recruited, 152-patient quantitative proteomic supplement `mmc3.xlsx` (~16.2 MB), 132-patient phosphoproteomic supplement `mmc6.xlsx` (~66.2 MB), RNA differential-result supplement `mmc7.xlsx`. Actual public workbook download is being separately verified; mere file listing never constitutes independent quantitative patient matching. The study already cross-validates molecular subtypes in Jiang, Gao, and Ng cohorts.
+- 2026 *Nature Communications*, DOI https://doi.org/10.1038/s41467-026-73212-y: 529 integrated HCC samples classified into **nine genomic/immune subtypes**, external validation n=807. Generic new HCC subtype discovery is highly crowded.
+- **V15 novelty decision:** do not market three cross-cohort HCC proteomic subclasses or a nine-subtype genetic classification as newly discovered. Focus RQ1 on etiologic interaction and robust external transfer of RNA–Protein pathway concordance, with proper clinical and cell-level validation. Do not promote V02 from publication counts: only actual value+sample join is acceptable.
