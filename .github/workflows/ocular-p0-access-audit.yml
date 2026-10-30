@@ -1,0 +1,38 @@
+name: Ocular P0 Public Data Access Audit
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/**'
+      - 'docs/ocular/**'
+      - '.github/workflows/ocular-p0-access-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ocular-p0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check syntax
+        run: |
+          python -m py_compile scripts/ocular/ocular_p0_audit.py
+          python scripts/ocular/ocular_p0_audit.py --help
+      - name: Run bounded public transfer and metadata checks
+        run: |
+          python scripts/ocular/ocular_p0_audit.py --out "$RUNNER_TEMP/ocular-p0-audit.json"
+          cp "$RUNNER_TEMP/ocular-p0-audit.json" ocular-p0-audit.json
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p0-access-evidence
+          path: ocular-p0-audit.json
+          if-no-files-found: warn
+          retention-days: 30
