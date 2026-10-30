@@ -43,14 +43,22 @@ def main():
             tr,t=classify(title)
             assignments[(tr,t)]+=1
         samples={r["sample_accession"] for r in rows}
+        # Study/experiment titles can mention "dexamethasone" for *every*
+        # sample, irrespective of the actual arm. No arm mapping without
+        # explicit sample-specific labels for BOTH DEX and vehicle.
+        treatments={key for (key,_),count in assignments.items() if count>0}
+        has_both_arms="DEX" in treatments and "CONTROL" in treatments
+        if not has_both_arms:
+            out["warning"]="No sample-level DEX AND CONTROL contrast; keyword in shared study title is not a treatment assignment"
         out.update({"run_count":len(rows),"sample_count":len(samples),
             "fields":fields,"layout_counts":dict(Counter(r.get("library_layout") for r in rows)),
             "has_fastq":sum(bool(r.get("fastq_ftp")) for r in rows),
             "treatment_time_counts":{"/".join(k):n for k,n in assignments.items()},
             "treatment_classified":sum(n for (t,_),n in assignments.items() if t in ("DEX","CONTROL")),
             "timepoint_classified":sum(n for (_,t),n in assignments.items() if t!="UNKNOWN"),
-            "donor_pairing":"NOT_VERIFIED_FROM_ENA_FILE_REPORT"})
-        if out["treatment_classified"]>=0.8*len(rows) and out["timepoint_classified"]>=0.8*len(rows):
+            "donor_pairing":"NOT_VERIFIED_FROM_ENA_FILE_REPORT",
+            "has_valid_two_arm_contrast":has_both_arms})
+        if has_both_arms and out["treatment_classified"]>=0.8*len(rows) and out["timepoint_classified"]>=0.8*len(rows):
             out["status"]="CONDITIONAL_METADATA_GO_ONLY"
     except Exception as e:
         out["error"]=type(e).__name__+": "+str(e)[:180]
