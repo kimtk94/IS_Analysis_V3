@@ -44,7 +44,9 @@ tryCatch({
   if(qr(design)$rank!=ncol(design) || !"treatmentDEX" %in% colnames(design))
     stop("DESIGN_RANK_DEFICIENT")
   d <- DGEList(counts=counts,genes=feats)
-  keep <- filterByExpr(d,design=design,min.count=10,min.total.count=15)
+  # For paired designs filter on the treatment groups, NOT the high-rank donor block.
+  # edgeR User Guide section 2.7 explicitly recommends group=Treatment here.
+  keep <- filterByExpr(d,group=meta$treatment,min.count=10,min.total.count=15)
   if(sum(keep)<5000L)stop("UNEXPECTED_LOW_EXPRESSED_GENE_NUMBER")
   d <- d[keep,,keep.lib.sizes=FALSE]
   d <- calcNormFactors(d,method="TMM")
