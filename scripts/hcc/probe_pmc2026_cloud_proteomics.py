@@ -96,7 +96,7 @@ def parse_article_metadata(data):
         filename=urllib.parse.unquote(urllib.parse.urlsplit(url).path).rsplit("/",1)[-1]
         if re.fullmatch(r"[a-zA-Z0-9_.-]{1,120}\.xlsx", filename, re.I):
             xlsx_filenames.append(filename)
-        if re.search(r"(?:^|[-_.])mmc3\.xlsx$",filename,re.I):
+        if re.search(r"(?:^|[-_.])"+re.escape(TARGET)+r"$",filename,re.I):
             candidate_urls.append(resolved)
     return {
         "license_code":str(meta.get("license_code") or "UNKNOWN")[:32],
