@@ -1,0 +1,52 @@
+name: Ocular P5b Nine-Pool Robustness and MDS
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p5b_pool_sensitivity.R'
+      - '.github/workflows/ocular-p5b-pool-sensitivity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  edgeR-pool-robustness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install numeric and Bioconductor dependencies
+        run: |
+          python -m pip install 'numpy==1.26.4'
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends r-base-core r-bioc-edger r-cran-statmod r-cran-jsonlite
+      - name: Validate R and Python scripts without network data
+        run: |
+          python -m py_compile scripts/ocular/ocular_p1_integrity.py scripts/ocular/ocular_p4_pseudobulk_pilot.py scripts/ocular/ocular_p4_fullcohort.py
+          python scripts/ocular/ocular_p4_pseudobulk_pilot.py --self-test
+          Rscript -e 'invisible(parse(file="scripts/ocular/ocular_p5_edger.R"));invisible(parse(file="scripts/ocular/ocular_p5b_pool_sensitivity.R"));cat("P5B_SYNTAX_PASS\n")'
+      - name: Build private 57-pair pseudobulk from all 18 public matrices once
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-private" ocular-p5b-public
+          python -u scripts/ocular/ocular_p4_fullcohort.py --score 0.75 --min-cells 30 --internal-export-dir "$RUNNER_TEMP/ocular-private" --output ocular-p5b-public/source_qc.json
+      - name: Reproduce primary robust edgeR test and fixed anonymous MDS
+        run: |
+          Rscript scripts/ocular/ocular_p5_edger.R "$RUNNER_TEMP/ocular-private" ocular-p5b-public
+      - name: Fit nine leave-one-pool-out edgeR sensitivity models
+        run: |
+          Rscript scripts/ocular/ocular_p5b_pool_sensitivity.R "$RUNNER_TEMP/ocular-private" ocular-p5b-public/p5_all_gene_results.tsv.gz ocular-p5b-public
+      - name: Securely remove transient donor-level counts and paired sample table
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-private"
+      - name: Upload aggregate-only gene inference and QC plots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5b-pool-sensitivity
+          path: ocular-p5b-public/
+          if-no-files-found: warn
+          retention-days: 30
