@@ -5,7 +5,7 @@ import pathlib
 import sys
 import unittest
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts" / "hcc"))
 from feasibility_audit import decide, render, validate  # noqa: E402
 
