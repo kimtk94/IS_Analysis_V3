@@ -32,6 +32,11 @@ An independent 2022 study of short- and long-term DEX exposure in cultured prima
 
 PTK2B is among our highest-ranked FDR genes, but the direct 2022 evidence substantially reduces novelty of its **expression increase**; any claim of new regulatory mechanism requires a separate experimental or genotype-dependent result. The 2022 paper also identifies FST, MMP1, PDPN, RGCC, SERPINB2, VEGFC; those are literature comparison candidates only, not automatically replicated without checking our table.
 
+## MAOA and mitochondrial fission are also NOT novel DEX/steroid-linked TM mechanisms
+A 2026 peer-reviewed experimental study ([PMID 41579974](https://pubmed.ncbi.nlm.nih.gov/41579974/), *Free Radical Biology and Medicine*, doi:10.1016/j.freeradbiomed.2026.01.037) already linked sustained endogenous steroid/cortisol exposure to TM fibrosis, mitochondrial fragmentation and the **MIEF1–MAOA–DRP1** pathway. It reported MAOA upregulation in human TM and gene knockdown/overexpression experiments supporting a functional mechanism.
+
+In our corrected P5 pseudobulk, **MAOA log2FC +4.442772, BH-FDR 7.56e-52**; MIEF1 +0.184497 (FDR 1.16e-10), DNM1L/DRP1 +0.477118 (FDR 3.85e-26). Despite substantial response, **claiming discovery of MAOA-driven steroid TM fibrosis is a STOP** without a demonstrably new cell-state/donor-specific and independently validated mechanism. Cortisol/chronic stress and DEX 48h are **different exposures**, thus effect size magnitude should not be equated.
+
 ## Additional independent data
 Mehrotra et al., IOVS 2026 ([PMID 41636427](https://pubmed.ncbi.nlm.nih.gov/41636427/)) already found FKBP5, FAM107A and ECM/adhesion DEX effects; 46 ENA runs of PRJNA1243143 do not mean 46 donors, and accession-level titles do not reliably encode treatment/time/strain. External exact directional RNAseq validation remains **HOLD** until sample-specific metadata are reconciled.
 
