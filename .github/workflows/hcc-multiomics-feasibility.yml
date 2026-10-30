@@ -36,6 +36,8 @@ jobs:
         run: python scripts/hcc/probe_public_metadata.py --output results/hcc/feasibility/geo_metadata_probe.json
       - name: Inspect Ng supplement and Gao PDC public records
         run: python scripts/hcc/probe_ng_gao_public.py --output results/hcc/feasibility/pair_sources_probe.json
+      - name: Inspect public quantitative matrix manifests (Ng/PDC/PRIDE)
+        run: python scripts/hcc/probe_quant_matrix_manifest.py --output results/hcc/feasibility/quant_matrix_manifest.json
       - name: Upload HCC audit artifacts
         if: always()
         uses: actions/upload-artifact@v4
