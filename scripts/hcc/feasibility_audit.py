@@ -69,6 +69,9 @@ def decide(registry):
         "independent_external_recurrence_dataset": bool(external),
     }
     mechanism_go = gates["file_level_rna_protein_pairs"] and gates["two_sufficient_etiology_groups"]
+    # External validation must be from a different cohort than the event discovery set.
+    independent_external = [x for x in external if any(y["id"] != x["id"] for y in recurrence)]
+    gates["independent_external_recurrence_dataset"] = bool(independent_external)
     clinical_go = gates["event_defined_recurrence_dataset"] and gates["independent_external_recurrence_dataset"]
     return {
         "mechanistic_decision": "GO" if mechanism_go else "HOLD",
