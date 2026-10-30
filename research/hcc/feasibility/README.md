@@ -59,6 +59,17 @@ CI evidence: [Actions #41054812247](https://github.com/kimtk94/IS_Analysis_V3/ac
 
 **Gates unchanged:** full quantitative matrix/data join = HOLD; paired RNA/protein patient count = UNVERIFIED; recurrence validation = HOLD. Successful CI validates data access and schema, not biological associations.
 
+## Stage-5 PDC tumor/normal and 11-plex lineage (2026-10-30)
+
+**Evidence:** [Actions #41059030994](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41059030994) ran the documented public PDC `paginatedCasesSamplesAliquots` API for PDC000198 / PDC000199, aggregated **without persisting case, sample or aliquot IDs**.
+
+- Both studies have the exact **same set** of **171 case IDs / 331 sample IDs / 331 aliquot IDs**. These are storage-level lineages, not 171 publication-eligible cases or quantitation matches.
+- Each study contains **165 Primary Tumor samples, 165 Solid Tissue Normal samples, and 1 Not Reported sample**; when grouped by case ID, there are **160 cases with BOTH tumor and normal**, **5 tumor-only**, **5 normal-only**, and **1 Not Reported** case. This is distinct from the **159 analyzed tumor–normal patient pairs in Gao Cell 2019**, indicating paper eligibility/QC exclusions still need adjudication.
+- `aliquot_run_metadata` contains **33 distinct TMT experiment numbers, 363 distinct experiment×channel combinations (33×11), and 726 run metadata rows**, reflecting repeated/aliquot-specific records. Counts of run records or channels are **not independent patients**.
+- Protein table has 667 columns, phosphosite table 334. **Zero direct case/sample/aliquot full-ID token matches** against the table headers, so linking quantitative columns to PDC case IDs requires the run metadata plex/channel mapping (not blind header equality).
+- **V02 remains BLOCKED**: this work has not verified which exact quantitative columns correspond to patient cases, the full protein matrix values, or *any* matched public RNA gene-by-sample values.
+- **Next:** inspect standardized `(experiment_number, TMT label) → aliquot` mapping for uniqueness and reference/pool channels, then determine quantitative header-to-plex naming, reconcile paper N=159, and locate BioSino OEP000321 public processed RNA expression matrix or document access limitation.
+
 ## Criteria (pilot engineering thresholds, NOT universally accepted clinical criteria)
 - At least one observed, documented **patient/specimen-level RNA↔protein join with N≥30** (paper abstract is insufficient).
 - At least two verified etiology categories **each N≥10 within those joined data**. Need inspect overlap and confounders (stage, treatment, batch, platform).
