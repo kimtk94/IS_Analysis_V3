@@ -1,0 +1,32 @@
+name: HCCDB25 Public RNA Route Probe
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/hcc/probe_hccdb25_assets.py'
+      - 'tests/test_hcc_hccdb25_assets.py'
+      - '.github/workflows/hcc-hccdb25-route.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit-public-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test public frontend route safety
+        run: python -m unittest discover -s tests -p 'test_hcc_hccdb25_assets.py' -v
+      - name: Bounded public HCCDB25 asset inventory
+        run: python scripts/hcc/probe_hccdb25_assets.py --out results/hcc/feasibility/hccdb25_frontend_routes.json
+      - name: Upload route evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hccdb25-public-route-evidence
+          path: results/hcc/feasibility/hccdb25_frontend_routes.json
+          if-no-files-found: error
