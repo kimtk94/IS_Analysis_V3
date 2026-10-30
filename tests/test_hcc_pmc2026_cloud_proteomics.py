@@ -81,6 +81,35 @@ class CloudTests(unittest.TestCase):
         self.assertEqual(d["row_summaries"][1]["numeric_cells"],2)
         self.assertTrue(profile["patient_expression_values_or_raw_ids_logged"] is False)
 
+    def test_tn_patient_labels_and_unclassified_are_aggregate_only(self):
+        self.assertEqual(m.classify_patient_label("P001_T"),("p001","T",1))
+        self.assertEqual(m.classify_patient_label("P001_N"),("p001","N",1))
+        self.assertEqual(m.classify_patient_label("T_002"),("002","T",0))
+        self.assertEqual(m.classify_patient_label("unknown"),None)
+
+    def test_realistic_sharedstring_header_hides_identifiers(self):
+        buf=io.BytesIO()
+        wb=b'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheets><sheet name="1. 6512 proteins" sheetId="1"/></sheets></workbook>'
+        ws=(b'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            b'<dimension ref="A1:E3"/><sheetData>'
+            b'<row r="2"><c r="A2" t="s"><v>0</v></c><c r="B2" t="s"><v>1</v></c><c r="C2" t="s"><v>2</v></c>'
+            b'<c r="D2" t="s"><v>3</v></c><c r="E2" t="s"><v>4</v></c></row>'
+            b'</sheetData></worksheet>')
+        strings=b'<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+b''.join(
+            b'<si><t>'+x+b'</t></si>' for x in (b"gene",b"protein",b"annotation",b"Patient007_T",b"Patient007_N"))+b'</sst>'
+        with zipfile.ZipFile(buf,"w") as z:
+            z.writestr("xl/workbook.xml",wb)
+            z.writestr("xl/worksheets/sheet1.xml",ws)
+            z.writestr("xl/sharedStrings.xml",strings)
+        with zipfile.ZipFile(io.BytesIO(buf.getvalue())) as z:
+            result=m.sample_header_audit(z,"xl/worksheets/sheet1.xml",2)
+        self.assertEqual(result["candidate_sample_columns"],2)
+        self.assertEqual(result["candidate_keys_with_T_and_N"],1)
+        self.assertTrue(result["matches_expected_304_columns"])
+        self.assertFalse(result["patient_ids_or_labels_logged"])
+        self.assertFalse(result["tumor_normal_pairing_verified"])
+        self.assertNotIn("Patient007",str(result))
+
     def test_metadata_http404_is_hold_not_missing_science(self):
         import urllib.error
         def missing(*args,**kwargs):raise urllib.error.HTTPError("https://pmc-oa-opendata.s3.amazonaws.com/",404,"not found",None,None)
