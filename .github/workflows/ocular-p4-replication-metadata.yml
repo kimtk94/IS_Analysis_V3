@@ -1,0 +1,34 @@
+name: Ocular P4 External Replication Metadata
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p4_replication_metadata.py'
+      - '.github/workflows/ocular-p4-replication-metadata.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independent-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile metadata probe
+        run: |
+          python -m py_compile scripts/ocular/ocular_p4_replication_metadata.py
+      - name: Inspect independent ENA study metadata
+        run: |
+          python scripts/ocular/ocular_p4_replication_metadata.py --output ocular-p4-replication-metadata.json
+      - name: Archive aggregate interpretation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p4-replication-metadata
+          path: ocular-p4-replication-metadata.json
+          retention-days: 30
+          if-no-files-found: warn
