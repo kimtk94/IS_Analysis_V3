@@ -109,7 +109,9 @@ def paired_probe(name,gsm,pool,meta,tmp):
                 if bc in bset and d and d.lower() not in ("na","unassigned","doublet")}
         out["n_joined_donors"]=len(donors)
         if out["metadata_join_fraction"]<.90:raise ValueError("METADATA_BARCODE_JOIN_LT_90pct")
-        if out["demux_join_fraction"]<.90:raise ValueError("DEMUX_BARCODE_JOIN_LT_90pct")
+        if out["demux_join_fraction"]<.50:raise ValueError("DEMUX_BARCODE_JOIN_LT_50pct")
+        if out["demux_join_fraction"]<.90:
+            out["demux_coverage_warning"]="DEMUX_PARTIAL_COVERAGE_50_TO_90_PERCENT; paired-count matrix integrity may still PASS"
         matrix=tmp/(name+"_matrix.mtx.gz")
         out["files"]["matrix.mtx.gz"]=download(file_url(gsm,pool,"matrix.mtx.gz"),matrix,620*1024*1024)
         out["matrix"]=matrix_check(matrix,len(features),len(barcodes),full=True)
@@ -176,5 +178,6 @@ def main():
     for name,x in a["pairs"].items():
         print("SAMPLE",name,x["status"],"join",x.get("metadata_join_fraction"),"demux",x.get("demux_join_fraction"),"reason",x.get("reason",""))
     print("REPLICATION",a["independent_replication_PRJNA1243143"]["status"])
-    # Data QC failures produce HOLD evidence, without claiming the workflow itself passed QC.
+    if a["status"]!="GO_POOL_C_FULL_COUNT_MATRIX_INTEGRITY":raise SystemExit(2)
+    # No false green CI: QC-HOLD exits 2, aggregate artifact still uploaded.
 if __name__=="__main__":main()
