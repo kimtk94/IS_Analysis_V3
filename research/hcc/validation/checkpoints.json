@@ -112,19 +112,23 @@
         "L02",
         "L03"
       ],
-      "observation": "Ng metadata XLSX and PDC/PRIDE file listings inspected; quantitative matrix checks incomplete",
+      "observation": "Xing 2023 official protein XLSX quantitative QC and 152 T/N clinical sample-label rows structurally matched; 31 clinical columns completeness measured, codebook still pending",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41055576655",
           "level": "preliminary_public_metadata"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092590299",
+          "level": "source_file_sanitized_schema_qc_not_biological_inference"
         }
       ],
       "analysis_evidence": [],
       "reviewer_approved": false,
       "independent_patient_n": null,
       "independent_event_n": null,
-      "last_updated": "2026-10-30",
-      "next_action": "Gather actual sample/patient-level quantitative evidence; do not promote from metadata alone"
+      "last_updated": "2026-10-31",
+      "next_action": "Verify sample-label codebook and protein/RNA quantitative matrix ID join; no biological PASS"
     },
     {
       "id": "V02",
@@ -343,19 +347,23 @@
       "paper_refs": [
         "L05"
       ],
-      "observation": "GSE14520 raw recurrence columns 242 nonempty rows; codebook and unique patients unverified",
+      "observation": "Xing 152 matched clinical rows have numeric binary candidate RFS codes 0=26/1=126 and candidate survival codes 0=82/1=70, each with 152 positive numeric durations; coding direction, units/time origin/censoring not verified; GSE14520 recurrence also remains unverified",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41052039696",
           "level": "preliminary_public_metadata"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092972318",
+          "level": "source_file_sanitized_schema_qc_not_biological_inference"
         }
       ],
       "analysis_evidence": [],
       "reviewer_approved": false,
       "independent_patient_n": null,
       "independent_event_n": null,
-      "last_updated": "2026-10-30",
-      "next_action": "Gather actual sample/patient-level quantitative evidence; do not promote from metadata alone"
+      "last_updated": "2026-10-31",
+      "next_action": "Confirm Xing source RFS/OS event code direction, duration unit and censoring; then calculate actual complete-case events without public patient identifiers"
     },
     {
       "id": "V13",
@@ -407,19 +415,23 @@
       "paper_refs": [
         "L06"
       ],
-      "observation": "Feasibility GitHub Actions and artifacts exist; biological findings unavailable",
+      "observation": "Source-SHA256-constrained Xing proteome/clinical structural join and aggregate clinical missingness are recorded with synthetic CI regression tests; no inferential biological claims",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/pull/251",
           "level": "preliminary_public_metadata"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092590299",
+          "level": "source_file_sanitized_schema_qc_not_biological_inference"
         }
       ],
       "analysis_evidence": [],
       "reviewer_approved": false,
       "independent_patient_n": null,
       "independent_event_n": null,
-      "last_updated": "2026-10-30",
-      "next_action": "Gather actual sample/patient-level quantitative evidence; do not promote from metadata alone"
+      "last_updated": "2026-10-31",
+      "next_action": "Retain source hashes, versioned code and decision D-017; review codebook before any clinical PASS"
     }
   ]
 }
