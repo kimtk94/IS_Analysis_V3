@@ -53,6 +53,15 @@ class LayoutTests(unittest.TestCase):
         self.assertFalse(result["clinical_variable_definitions_verified"])
         self.assertFalse(result["rna_protein_join_confirmed"])
 
+    def test_first_evidence_row_not_dropped_by_header_assumption(self):
+        rows = [(1, {1: "Study"}), (2, {1: "Variables"}),
+                (3, {1: "1T", 2: "1N", 3: "clinical-data"}),
+                (4, {1: "2T", 2: "2N", 3: "clinical-data"})]
+        result = audit_clinical_row_identity_layout(self.PROTEIN, rows)
+        self.assertEqual(result["early_row_match_ordinals"], [3])
+        self.assertEqual(result["rows_with_same_key_tumor_and_normal_labels"], 2)
+        self.assertEqual(result["unique_protein_keys_with_exactly_one_T_and_one_N_in_same_row"], 2)
+
     def test_duplicate_label_cannot_be_counted_as_unique(self):
         rows = [(4, {1: "1T", 2: "1N", 3: "metadata"}),
                 (5, {1: "1T", 2: "2N", 3: "metadata"}),
