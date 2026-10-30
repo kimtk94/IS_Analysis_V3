@@ -1,10 +1,6 @@
 name: Ocular P3 Complete 18 Matrix Validation
 
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p3_all_matrices.py'
-      - '.github/workflows/ocular-p3-all-matrices.yml'
   workflow_dispatch:
 
 permissions:
