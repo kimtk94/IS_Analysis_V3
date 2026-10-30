@@ -67,6 +67,28 @@
         "evidence_level": "SAMPLE_METADATA_MODALITY_FLAGS_CONFIRMED",
         "expression_matrix_sample_join_verified": false,
         "key_limitation": "Published metadata flags/ID join only. Raw RNA EGA-controlled. Actual RNA/proteome expression matrices not both obtained or harmonized; prognosis is OS-focused and recurrence not validated."
+      },
+      "public_file_inventory": {
+        "checked_on": "2026-10-30",
+        "run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41054812247",
+        "springer_public_workbooks_scanned": [
+          "Supplementary Data 2",
+          "Supplementary Data 13",
+          "Supplementary Data 14",
+          "Source Data"
+        ],
+        "source_data_max_observed_worksheet_rows": 5407,
+        "pride_projects": [
+          "PXD025705",
+          "PXD025836"
+        ],
+        "pride_first_page_size_each": 100,
+        "pxd025836_first_page_candidate_filenames": [
+          "P-PROT_HCC_SET2_DDA_Progenesis_Mascot_SQ_Results.xlsx",
+          "P-PROT_HCC_SET3_DDA_Progenesis_Mascot_SQ_Results.xlsx",
+          "P-PROT_HCC_SET1_DDA_Progenesis_Mascot_SQ_Results.xlsx"
+        ],
+        "warning": "Workbook sheet geometries and PRIDE filenames only; no verified patient-by-gene quant matrix or RNA/protein paired expression join."
       }
     },
     {
@@ -102,6 +124,17 @@
         "evidence_level": "PUBLIC_PDC_STUDY_RECORD_VERIFIED",
         "expression_matrix_sample_join_verified": false,
         "key_limitation": "PDC case count 171 is repository metadata and NOT necessarily the 159 tumor patients reported in Gao Cell paper. Distinct tumor cases, aliquot-to-patient map, processed quantitative protein matrices, and BioSino RNA cohort join remain unverified."
+      },
+      "public_file_inventory": {
+        "checked_on": "2026-10-30",
+        "run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41054812247",
+        "pdc_proteome_id": "PDC000198",
+        "pdc_proteome_total_files": 6347,
+        "pdc_proteome_protein_assembly_text_files": 8,
+        "pdc_phosphoproteome_id": "PDC000199",
+        "pdc_phosphoproteome_total_files": 3896,
+        "pdc_phosphoproteome_protein_assembly_text_files": 9,
+        "warning": "PDC file counts include raw, processed, identification, and metadata; not matched biological patients. The 8/9 Protein Assembly files have not yet been inspected for quantitative matrices."
       }
     },
     {
