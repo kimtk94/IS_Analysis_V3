@@ -85,6 +85,79 @@ def score_sheet(protein_headers, rows):
     }
 
 
+
+def audit_clinical_row_identity_layout(protein_headers, rows):
+    """Require sample-label T/N correspondence on the SAME metadata record."""
+    pair_keys = paired_numeric_header_keys(protein_headers)
+    keyed_rows = collections.defaultdict(set)
+    keyed_types = collections.defaultdict(set)
+    occurrence = collections.Counter()
+    label_columns = collections.Counter()
+    matched_data_rows = 0
+    rows_one_key = 0
+    rows_same_tn_key = 0
+    rows_with_other_populated_fields = 0
+    total_data_rows = 0
+    for rownum, fields in rows:
+        if rownum <= 3:
+            continue
+        total_data_rows += 1
+        labels = []
+        matching_cols = set()
+        for col, value in fields.items():
+            parsed = pmc.classify_patient_label(value)
+            if not parsed:
+                continue
+            key = canon_id(parsed[0])
+            if key not in pair_keys:
+                continue
+            tag = parsed[1]
+            labels.append((key, tag))
+            matching_cols.add(col)
+            keyed_rows[key].add(rownum)
+            keyed_types[key].add(tag)
+            occurrence[(key, tag)] += 1
+            label_columns[(col, tag)] += 1
+        if not labels:
+            continue
+        matched_data_rows += 1
+        keys = {key for key, _ in labels}
+        if len(keys) == 1:
+            rows_one_key += 1
+            if {tag for _, tag in labels} == {"T", "N"}:
+                rows_same_tn_key += 1
+        if any(str(v).strip() for col, v in fields.items() if col not in matching_cols):
+            rows_with_other_populated_fields += 1
+
+    both_in_one_row = sum(
+        keyed_types[k] == {"T", "N"} and len(keyed_rows[k]) == 1
+        and occurrence[(k, "T")] == 1 and occurrence[(k, "N")] == 1
+        for k in pair_keys
+    )
+    return {
+        "clinical_data_rows_scanned": total_data_rows,
+        "rows_with_protein_matching_labels": matched_data_rows,
+        "rows_having_exactly_one_protein_patient_key": rows_one_key,
+        "rows_with_same_key_tumor_and_normal_labels": rows_same_tn_key,
+        "unique_protein_keys_with_exactly_one_T_and_one_N_in_same_row": both_in_one_row,
+        "protein_keys_with_any_matching_clinical_label": len(keyed_rows),
+        "matched_clinical_rows_with_non_label_fields": rows_with_other_populated_fields,
+        "repeated_t_or_n_sample_label_count": sum(max(0, n - 1) for n in occurrence.values()),
+        "matched_label_column_counts": [
+            {"column_ordinal": col, "assay": tag, "n": count}
+            for (col, tag), count in sorted(label_columns.items())
+        ],
+        "structure_consistent_for_all_protein_pairs": (
+            len(pair_keys) == 152 and both_in_one_row == 152
+            and matched_data_rows == 152 and rows_same_tn_key == 152
+            and rows_with_other_populated_fields == 152
+        ),
+        "clinical_variable_definitions_verified": False,
+        "clinically_eligible_patient_count_confirmed": False,
+        "rna_protein_join_confirmed": False,
+        "interpretation": "Same-row sample-label structural link, NOT independently reviewed clinical variable definitions or an RNA join."
+    }
+
 def workbook_sheet_count(z):
     root = ET.fromstring(z.read("xl/workbook.xml"))
     return len(root.find(pmc.NS + "sheets") or [])
@@ -115,10 +188,11 @@ def audit_from_workbooks(proteome_raw, clinical_raw):
                 if path not in archive.namelist():
                     continue
                 rows = sheet_rows(archive, index, limit=MAX_ROWS)
-                checks.append({
-                    "source": name, "sheet_ordinal": index,
-                    **score_sheet(protein_headers, rows)
-                })
+                record = {"source": name, "sheet_ordinal": index,
+                          **score_sheet(protein_headers, rows)}
+                if name == "mmc2_external_clinical" and index == 3:
+                    record["row_identity_structure"] = audit_clinical_row_identity_layout(protein_headers, rows)
+                checks.append(record)
     return {
         "protein_tn_header_pair_count": pair_count,
         "sheet_diagnostics": checks,
