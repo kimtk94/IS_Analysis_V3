@@ -272,6 +272,42 @@
         "hccdb25_matrix_download_endpoint_verified": false,
         "actual_hccdb25_expression_download_verified": false,
         "note": "JS route literals describe SPA frontend navigation, not verified RNA expression file URLs or API methods. HCCDB25 remains only a literature-grounded alternate source."
+      },
+      "pdc_20261030_reference_channel_audit": {
+        "checked_on": "2026-10-30",
+        "ci_evidence_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41068016825",
+        "tmt_analytes": [
+          "Proteome",
+          "Phosphoproteome"
+        ],
+        "per_analyte_experiments": 33,
+        "candidate_reference_label": "tmt_126",
+        "candidate_reference_run_records_per_analyte": 33,
+        "candidate_reference_distinct_aliquots_per_analyte": 1,
+        "biological_quant_channels_per_analyte": 330,
+        "biological_sample_assignments_per_analyte": {
+          "Primary Tumor": 165,
+          "Solid Tissue Normal": 165
+        },
+        "protein_tsv_log_ratio_field_count": 330,
+        "phosphosite_tsv_log_ratio_field_count": 330,
+        "sample_id_to_tsv_column_join_verified": false,
+        "official_experimental_design_confirmation": false,
+        "biological_interpretation": "TMT_126 fits reused common pooled reference, but author/protocol confirmation and actual TSV column-name joins still required; does not establish 330 independent patients."
+      },
+      "secondary_158_paired_proteotranscriptomics_prior_art": {
+        "paper_doi": "10.1093/bib/bbac601",
+        "paper_year": 2023,
+        "paper_title": "HBV-infected hepatocellular carcinoma can be robustly classified into three clinically relevant subgroups by a novel analytical protocol",
+        "publication_reported_paired_cohort": 158,
+        "rna_method": "OEP000321 UQ_FPKM converted to TPM and log2(TPM+1)",
+        "reported_concordant_mrna_protein_genes": 408,
+        "reported_concordant_up": 224,
+        "reported_concordant_down": 184,
+        "reported_subtypes": 3,
+        "matched_patient_count_recomputed_in_this_repo": null,
+        "status": "PUBLISHED_LITERATURE_ONLY_NOT_OUR_MATRIX_JOIN",
+        "novelty_warning": "Prior 158-patient RNA-protein integrated clustering is not a new thesis result."
       }
     },
     {
