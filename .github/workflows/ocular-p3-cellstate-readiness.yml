@@ -1,10 +1,6 @@
 name: Ocular P3 Cell State Donor Readiness
 
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p3_cellstate_readiness.py'
-      - '.github/workflows/ocular-p3-cellstate-readiness.yml'
   workflow_dispatch:
 
 permissions:

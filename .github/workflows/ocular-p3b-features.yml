@@ -1,9 +1,5 @@
 name: Ocular P3b Gene Feature Order Audit
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p3b_features.py'
-      - '.github/workflows/ocular-p3b-features.yml'
   workflow_dispatch:
 
 permissions:

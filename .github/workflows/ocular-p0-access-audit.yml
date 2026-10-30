@@ -1,11 +1,6 @@
 name: Ocular P0 Public Data Access Audit
 
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/**'
-      - 'docs/ocular/**'
-      - '.github/workflows/ocular-p0-access-audit.yml'
   workflow_dispatch:
 
 permissions:
