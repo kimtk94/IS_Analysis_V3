@@ -172,6 +172,61 @@ def reconstruct_from_biospecimen_runs(cases):
     }
     return chosen,support
 
+def disambiguate_tmt_run_slots(cases):
+    """How many (plex, channel) labels are ambiguous as aliquot assignments?
+
+    Evaluate several PDC run metadata keys. A disambiguated metadata assignment
+    still requires independently linking the quantitative TSV column name.
+    """
+    observations=[]
+    for case in cases:
+        for sample in case.get("samples") or []:
+            for aliquot in sample.get("aliquots") or []:
+                aid=aliquot.get("aliquot_id") or aliquot.get("aliquot_submitter_id")
+                for run in aliquot.get("aliquot_run_metadata") or []:
+                    if not isinstance(run,dict):continue
+                    label=str(run.get("label") or "").lower()
+                    exp=run.get("experiment_number")
+                    if aid and exp is not None and label in TMT:
+                        observations.append({
+                            "aid":str(aid), "experiment":str(exp),
+                            "label":label,
+                            "alias":str(run.get("alias") or ""),
+                            "fraction":str(run.get("fraction") or ""),
+                            "replicate":str(run.get("replicate_number") or ""),
+                            "analyte":str(run.get("analyte") or ""),
+                        })
+    keys={
+        "experiment_label":("experiment","label"),
+        "experiment_alias_label":("experiment","alias","label"),
+        "experiment_fraction_label":("experiment","fraction","label"),
+        "experiment_replicate_label":("experiment","replicate","label"),
+        "experiment_fraction_replicate_label":("experiment","fraction","replicate","label"),
+        "experiment_analyte_label":("experiment","analyte","label"),
+    }
+    outcomes={}
+    for name,columns in keys.items():
+        slots=collections.defaultdict(set)
+        for row in observations:
+            slots[tuple(row[k] for k in columns)].add(row["aid"])
+        histogram=collections.Counter(len(v) for v in slots.values())
+        outcomes[name]={
+            "distinct_slots":len(slots),
+            "single_aliquot_slots":histogram.get(1,0),
+            "multi_aliquot_slots":sum(n for distinct,n in histogram.items() if distinct>1),
+            "max_distinct_aliquots_per_slot":max(histogram,default=0),
+            "unique_aliquot_count":len({r["aid"] for r in observations}),
+            "slot_aliquot_multiplicity_histogram":dict(sorted(histogram.items())),
+        }
+    return {
+        "valid_run_metadata_rows":len(observations),
+        "missing_fraction_rows":sum(not x["fraction"] for x in observations),
+        "missing_replicate_rows":sum(not x["replicate"] for x in observations),
+        "missing_analyte_rows":sum(not x["analyte"] for x in observations),
+        "grouping_sensitivity":outcomes,
+        "warning":"A unique slot assignment still does not prove which quantitative TSV column belongs to this aliquot."
+    }
+
 def audit():
     o={}
     for study in STUDIES:
@@ -181,6 +236,7 @@ def audit():
             links=flatten(bios)
             design,provenance=reconstruct_from_biospecimen_runs(bios)
             result["run_metadata_reconstruction"]=provenance
+            result["slot_disambiguation"] = disambiguate_tmt_run_slots(bios)
             result["design"]=unique_design_counts(design,links)
             result["status"]="PDC_BIOSPECIMEN_RUN_METADATA_RECONSTRUCTED"
             try:result["matrix_header_fingerprint"]=normalized_header_fingerprint(study,design)
