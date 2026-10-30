@@ -5,7 +5,9 @@ on:
   pull_request:
     paths:
       - 'scripts/hcc/probe_hccdb25_assets.py'
+      - 'scripts/hcc/probe_hccdb25_route_context.py'
       - 'tests/test_hcc_hccdb25_assets.py'
+      - 'tests/test_hcc_hccdb25_route_context.py'
       - '.github/workflows/hcc-hccdb25-route.yml'
 
 permissions:
@@ -24,9 +26,15 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_hcc_hccdb25_assets.py' -v
       - name: Bounded public HCCDB25 asset inventory
         run: python scripts/hcc/probe_hccdb25_assets.py --out results/hcc/feasibility/hccdb25_frontend_routes.json
+      - name: Test HCCDB repository module introspection
+        run: python -m unittest discover -s tests -p 'test_hcc_hccdb25_route_context.py' -v
+      - name: Probe HCCDB repository route component
+        run: python scripts/hcc/probe_hccdb25_route_context.py --out results/hcc/feasibility/hccdb25_route_context.json
       - name: Upload route evidence
         uses: actions/upload-artifact@v4
         with:
           name: hccdb25-public-route-evidence
-          path: results/hcc/feasibility/hccdb25_frontend_routes.json
+          path: |
+            results/hcc/feasibility/hccdb25_frontend_routes.json
+            results/hcc/feasibility/hccdb25_route_context.json
           if-no-files-found: error
