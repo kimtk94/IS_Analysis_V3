@@ -1,6 +1,6 @@
 {
   "schema_version": "hcc-external-xing2023-evidence-v1",
-  "checked_date": "2026-10-30",
+  "checked_date": "2026-10-31",
   "study": {
     "doi": "10.1016/j.xcrm.2023.101315",
     "pmcid": "PMC10783603",
@@ -59,8 +59,8 @@
     "data_rows_considered_from_excel_row4": 160,
     "sample_numeric_patient_key_overlap_best_column": 2,
     "prefixed_patient_code_overlap_best_column": 0,
-    "protein_clinical_patient_join_status": "STRUCTURAL_SAMPLE_LABEL_LINK_REVIEW_REQUIRED",
-    "note": "Earlier numeric and prefixed-code searches missed sample-key T/N suffixes. Official mmc2 detailed worksheet contains exact T/N keys matching all 152 mmc3 protein header pairs on 152 distinct clinical rows, no duplicate T/N labels; source column A=T, B=N. Excel row 3 contains one of these records and must not be discarded as a header. This is a sample-label-to-clinical-row structural join, not confirmed clinical variable definitions, outcomes, or RNA-protein join.",
+    "protein_clinical_patient_join_status": "STRUCTURAL_JOIN_PASS_CODEBOOK_PENDING",
+    "note": "Exact T/N clinical-row sample-label structure (152/152) and 31 non-ID column missingness audited. RFS and survival candidate status/duration fields have 152 numeric pairs, two binary codes and strictly positive time values. Original source codebook and censoring/event mapping not confirmed; RNA quantitative matrix join remains BLOCKED.",
     "structural_sample_key_audit": {
       "protein_header_tn_pairs": 152,
       "clinical_sheet_source": "mmc2.xlsx: worksheet ordinal 3",
@@ -74,7 +74,95 @@
       "identity_key_mapping": "PASS_STRUCTURE",
       "clinical_covariate_codebook": "NOT_REVIEWED",
       "patient_level_clinical_link_claim": "HOLD_PENDING_SOURCE_DEFINITION",
-      "rna_protein_matched_quant_values": "BLOCKED"
+      "rna_protein_matched_quant_values": "BLOCKED",
+      "clinical_column_completeness_checked": true
+    },
+    "matched_152_covariate_audit": {
+      "source": "mmc2.xlsx sheet ordinal 3; 152 mmc3 T/N patient key pairs",
+      "inspected_matched_rows": 152,
+      "audited_non_id_columns": 31,
+      "rows_with_other_clinical_fields": 152,
+      "select_column_coverage": [
+        {
+          "column": "C",
+          "family": "age",
+          "n_nonmissing": 152
+        },
+        {
+          "column": "D",
+          "family": "sex",
+          "n_nonmissing": 152
+        },
+        {
+          "column": "E",
+          "family": "AFP",
+          "n_nonmissing": 152
+        },
+        {
+          "column": "H",
+          "family": "HBV-associated",
+          "n_nonmissing": 143
+        },
+        {
+          "column": "M",
+          "family": "HCV-associated",
+          "n_nonmissing": 138
+        },
+        {
+          "column": "O",
+          "family": "MVI",
+          "n_nonmissing": 152
+        },
+        {
+          "column": "U",
+          "family": "tumor_size",
+          "n_nonmissing": 152
+        },
+        {
+          "column": "V/W",
+          "family": "TNM",
+          "n_nonmissing": 152
+        },
+        {
+          "column": "X",
+          "family": "BCLC",
+          "n_nonmissing": 152
+        },
+        {
+          "column": "AC/AE",
+          "family": "RFS-associated",
+          "n_nonmissing_each": 152
+        }
+      ],
+      "candidate_endpoints": {
+        "candidate_rfs": {
+          "event_column": "AC",
+          "duration_column": "AE",
+          "complete_numeric_pairs": 152,
+          "observed_code_0": 26,
+          "observed_code_1": 126,
+          "other_numeric_codes": 0,
+          "positive_duration": 152,
+          "negative_or_zero_duration": 0,
+          "median_uninterpreted_duration": 7.1333333335
+        },
+        "candidate_survival": {
+          "event_column": "AF",
+          "duration_column": "AG",
+          "complete_numeric_pairs": 152,
+          "observed_code_0": 82,
+          "observed_code_1": 70,
+          "other_numeric_codes": 0,
+          "positive_duration": 152,
+          "negative_or_zero_duration": 0,
+          "median_uninterpreted_duration": 30.483333335
+        }
+      },
+      "interpretation": "Candidate code counts are NOT confirmed recurrence/death event counts. Units/time zero/censoring and etiology labels still require source data dictionary.",
+      "proof_type": "actual_file_schema_and_aggregate_QC",
+      "endpoint_codebook_verified": false,
+      "event_counts_verified": false,
+      "recurrence_prediction_ready": false
     }
   },
   "transcriptome_source": {
@@ -88,9 +176,11 @@
     "external_protein_quant_file": "PASS",
     "protein_numeric_completeness": "PASS",
     "protein_tumor_normal_header_pairs": "PARTIAL",
-    "clinical_patient_id_join": "HOLD",
+    "clinical_patient_id_join": "PARTIAL_SAMPLE_LABEL_STRUCTURE",
     "rna_protein_matched_matrix_join_V02": "BLOCKED",
-    "clinical_sample_label_structural_join": "PASS_STRUCTURE"
+    "clinical_sample_label_structural_join": "PASS_STRUCTURE",
+    "clinical_covariate_completeness": "PARTIAL_SCHEMA_QC",
+    "rfs_os_endpoint_codebook": "HOLD"
   },
   "evidence_runs": {
     "original_xlsx": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41075092093",
@@ -100,7 +190,9 @@
     "clinical_key_join": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41076963271",
     "prefixed_id_probe": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41077195020",
     "clinical_layout_orientation": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41091026280",
-    "clinical_same_row_integrity": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41091622662"
+    "clinical_same_row_integrity": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41091622662",
+    "clinical_covariate_completeness": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092590299",
+    "clinical_candidate_endpoint_qc": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092972318"
   },
   "restrictions": [
     "Do not upload original copyrighted xlsx to public GitHub",
