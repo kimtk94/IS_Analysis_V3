@@ -11,6 +11,7 @@ import json
 import pathlib
 import re
 import urllib.error
+import urllib.parse
 import urllib.request
 
 URL = "https://www.biosino.org/node/project/detail/OEP000321"
@@ -30,7 +31,7 @@ def probe():
             result["http_status"]=response.status
             result["content_type"]=response.headers.get("content-type","").split(";")[0]
             result["html_bytes_inspected"]=len(data)
-            result["final_host"]=urllib.request.urlparse(response.url).hostname if hasattr(urllib.request,"urlparse") else "unrecorded"
+            result["final_host"]=urllib.parse.urlsplit(response.url).hostname
         html=data.decode("utf-8",errors="replace")
         result["html_mentions_accession"]=bool(re.search(r"OEP000321",html,re.I))
         # Source shell can contain generic links; these are hints only.
