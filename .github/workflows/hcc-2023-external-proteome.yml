@@ -3,7 +3,9 @@ on:
   pull_request:
     paths:
       - 'scripts/hcc/probe_2023_hcc_proteome_supplement.py'
+      - 'scripts/hcc/probe_pmc2026_cloud_proteomics.py'
       - 'tests/test_hcc_2023_proteome_supplement.py'
+      - 'tests/test_hcc_pmc2026_cloud_proteomics.py'
       - '.github/workflows/hcc-2023-external-proteome.yml'
   workflow_dispatch:
 permissions:
@@ -11,7 +13,7 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 4
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -21,9 +23,15 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_hcc_2023_proteome_supplement.py' -v
       - name: Probe published 152 HCC proteomic workbook
         run: python scripts/hcc/probe_2023_hcc_proteome_supplement.py
+      - name: Test official PMC 2026 Cloud media resolution
+        run: python -m unittest discover -s tests -p 'test_hcc_pmc2026_cloud_proteomics.py' -v
+      - name: Probe official 2026 PMC Cloud supplement media
+        run: python scripts/hcc/probe_pmc2026_cloud_proteomics.py --out results/hcc/feasibility/pmc2026_cloud_mmc3_audit.json
       - name: Upload public supplement audit
         uses: actions/upload-artifact@v4
         with:
           name: hcc-2023-external-proteome-audit
-          path: results/hcc/feasibility/2023_152patient_proteome_mmc3_manifest.json
+          path: |
+            results/hcc/feasibility/2023_152patient_proteome_mmc3_manifest.json
+            results/hcc/feasibility/pmc2026_cloud_mmc3_audit.json
           if-no-files-found: error
