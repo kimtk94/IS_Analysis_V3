@@ -1,10 +1,6 @@
 name: Ocular P4 Pool C Pseudobulk Pilot
 
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p4_pseudobulk_pilot.py'
-      - '.github/workflows/ocular-p4-pseudobulk-pilot.yml'
   workflow_dispatch:
 
 permissions:
