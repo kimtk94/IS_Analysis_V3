@@ -6,7 +6,8 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts" / "hcc"))
 from probe_xing2023_clinical_completeness import (
-    classify_missing, finite_numeric, safe_label, strict_rows, inspect_availability
+    classify_missing, finite_numeric, safe_label, strict_rows, inspect_availability,
+    candidate_endpoint_qc
 )
 
 def mock_data():
@@ -49,6 +50,28 @@ class Tests(unittest.TestCase):
         self.assertEqual((recurrence["n_missing"], recurrence["n_numeric"]), (1, 151))
         self.assertNotIn("39", str(age))
         self.assertFalse(rep["raw_patient_identifiers_or_phenotypes_logged"])
+
+    def test_uninterpreted_binary_event_and_duration(self):
+        matched = {"a": {29: "0", 31: "3.5"},
+                   "b": {29: "1", 31: "0"},
+                   "c": {29: "0", 31: "NA"}}
+        rep = candidate_endpoint_qc(matched, 29, 31)
+        self.assertEqual(rep["event_observed_code_0_n"], 2)
+        self.assertEqual(rep["event_observed_code_1_n"], 1)
+        self.assertTrue(rep["event_code_set_is_binary"])
+        self.assertEqual(rep["both_event_and_duration_numeric"], 2)
+        self.assertEqual(rep["duration_zero_n"], 1)
+        self.assertFalse(rep["actual_recurrence_events_claimed"])
+        self.assertFalse(rep["survival_model_eligible"])
+
+    def test_nonbinary_event_blocks_any_event_inference(self):
+        matched = {"a": {29: "2", 31: "-2"},
+                   "b": {29: "1", 31: "5"}}
+        rep = candidate_endpoint_qc(matched, 29, 31)
+        self.assertFalse(rep["event_code_set_is_binary"])
+        self.assertEqual(rep["event_other_numeric_code_n"], 1)
+        self.assertEqual(rep["duration_negative_n"], 1)
+        self.assertFalse(rep["time_origin_and_censoring_confirmed"])
 
     def test_tn_keys_must_be_in_same_row(self):
         protein, rows = mock_data()
