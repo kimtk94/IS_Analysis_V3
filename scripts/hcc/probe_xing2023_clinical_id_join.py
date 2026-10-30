@@ -67,6 +67,42 @@ def canon_id(raw):
         return str(int(float(s)))
     return None
 
+def trailing_code(x):
+    """Only one stable prefixed code, not an arbitrary number embedded in text."""
+    val=str(x or "").strip()
+    m=re.fullmatch(r"([A-Za-z][A-Za-z_-]{0,24})(\d{1,8})(?:\.0+)?",val)
+    if m:return str(int(m.group(2))),m.group(1).lower()
+    return None,None
+
+def prefixed_id_candidate_search(pair_ids,clinical_rows):
+    """Compare prefixed patient-code fields to numeric protein keys in memory."""
+    columns=collections.defaultdict(lambda:collections.defaultdict(set))
+    rowcounts=collections.Counter()
+    shapes=collections.Counter()
+    for rownum,fields in clinical_rows:
+        if rownum<=3:continue
+        for col,raw in fields.items():
+            ident,prefix=trailing_code(raw)
+            if ident:
+                columns[col][prefix].add(ident)
+                rowcounts[(col,prefix)]+=1
+                shapes[prefix]+=1
+    ranked=sorted(
+        [(len(v&pair_ids),len(v),rowcounts[(col,prefix)],col,prefix)
+         for col,groups in columns.items() for prefix,v in groups.items()],
+        reverse=True)
+    top=ranked[0] if ranked else (0,0,0,None,None)
+    return {
+        "prefixed_id_fields_with_candidates":sum(map(len,columns.values())),
+        "best_prefixed_column":top[3],
+        "best_prefixed_id_code_matches":top[0],
+        "best_prefixed_distinct_source_codes":top[1],
+        "best_prefixed_numeric_cell_count":top[2],
+        "best_source_prefix_category":"ALPHABETIC_PREFIX" if top[4] else "NONE",
+        "second_prefixed_id_match_count":ranked[1][0] if len(ranked)>1 else 0,
+        "exact_patient_id_values_logged":False,
+    }
+
 def match_clinical_ids(protein_headers,clinical_rows):
     # Source RNA, protein values and actual case keys never serialized.
     pairs=collections.defaultdict(set)
@@ -92,7 +128,9 @@ def match_clinical_ids(protein_headers,clinical_rows):
         reverse=True)
     highest=rankings[0] if rankings else (0,None,0,0)
     runnerup=rankings[1][0] if len(rankings)>1 else 0
+    prefixed=prefixed_id_candidate_search(paired_keys,clinical_rows)
     return {
+        "prefixed_id_strategy":prefixed,
         "proteome_header_paired_numeric_case_keys":len(paired_keys),
         "clinic_rows_at_or_after_4":sum(row>=4 for row,_ in clinical_rows),
         "clinical_columns_with_numeric_code_candidates":len(fields),
