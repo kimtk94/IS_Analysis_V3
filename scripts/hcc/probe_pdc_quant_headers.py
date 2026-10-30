@@ -46,15 +46,16 @@ def sniff_tsv(raw):
     parts=first.split("\t")
     candidate_fields=("gene","protein","symbol","uniprot","accession",
                       "peptide","site","phospho","plex","tmt","sample","aliquot")
-    tags=[label for label in parts[:25] if any(key in label.lower() for key in candidate_fields)
-          and len(label)<70 and len(label)>0]
+    # Output fixed ontology tokens, NOT original columns: a sample ID may be a TSV header.
+    tags=sorted({key for label in parts[:25] for key in candidate_fields
+                 if key in label.lower()})
     return {
         "status":"HEADER_SNIFFED",
         "bytes_read":len(raw),
         "header_delimiter_tabs": first.count("\t"),
         "header_columns_in_prefix":len(parts),
         "header_complete_within_range": bool("\n" in string),
-        "first_25_columns_matching_biological_field_names":tags[:12],
+        "header_biological_field_categories":tags,
         "second_row_column_count_in_prefix":len(lines[1].split("\t")) if len(lines)>1 else None,
         "no_sample_ids_persisted":True
     }
