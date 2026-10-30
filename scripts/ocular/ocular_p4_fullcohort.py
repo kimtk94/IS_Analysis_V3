@@ -190,6 +190,12 @@ def evaluate(output,confidence=0.75,min_cells=30, export_dir=None):
             stacked[:,1::2]=filtered["dex"]
             # Last library features already passed identical gene-order hashes.
             gene_ids=[x.split("\t")[0] for x in features]
+            with (dest/"gene_features.tsv").open("w",newline="") as h:
+                writer=csv.writer(h,delimiter="\t")
+                writer.writerow(["gene_id","gene_symbol"])
+                for entry in features:
+                    parts=entry.split("\t")
+                    writer.writerow([parts[0],parts[1] if len(parts)>1 else parts[0]])
             with gzip.open(dest/"paired_raw_counts.tsv.gz","wt",compresslevel=3,newline="") as h:
                 writer=csv.writer(h,delimiter="\t")
                 writer.writerow(["gene_id"]+sample_labels)
