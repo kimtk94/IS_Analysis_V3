@@ -73,3 +73,10 @@ Study-governance PR is independent from the ongoing code/data-feasibility PR #25
 - HCCDB25 repository SPA route `http://lifeome.net:809/#/repository?type=buke` corroborated by published research (https://doi.org/10.3389/fcell.2024.1407428); successful public Vue router investigation: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41068016603. No RNA expression file downloaded.
 - **V06** paper-replication control expanded: attempt reproduction of Cheng 408 genes and 3 clusters only after source identity and assay normalization verification. **V15** novelty gate: do not market these results as new; favor independent etiologic transferability and patient-level cell context.
 - **V02 stays BLOCKED**, since neither direct `OEP000321` normalized matrix nor a full PDC case→quantitative-column and RNA–protein common-ID join has passed. Do not confuse green CI or published 158 with our joined patient N.
+
+## 2026-10-30 — D-013: 158 eligible but 156 matched tumor samples in Cheng integrative clustering
+
+- Primary paper Methods: https://academic.oup.com/bib/article/24/2/bbac601/7025463 . The study initially selected **158 paired multi-omics HBV-HCC** patients after data completeness filtering; **2 RNA/protein sample-ID-unmatched samples were removed** before the integrative clustering, yielding **156 tumor samples**. The paired 158 eligibility denominator must not be presented as the 156-sample final integrated cluster denominator.
+- Required V02 evidence when datasets are obtained: `N_paper_eligible=158` (reproduce or explain), `N_rna_protein_matched_for_cluster=156` (reproduce or explain), explicit identifiers/filters audited in a nonpublic workspace, patient/sample counts retained as sanitized summaries in Git; do not assert counts as results before direct reanalysis.
+- Required V06 positive control and V15 novelty restrictions remain as in D-012: Cheng's 408 genes and 3 subtypes are prior art.
+- Current V02 **BLOCKED** because neither exact UQ_FPKM raw processed matrix nor real matched patient manifest has been downloaded and independently audited.
