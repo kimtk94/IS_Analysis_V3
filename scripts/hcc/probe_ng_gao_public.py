@@ -104,12 +104,18 @@ def _metadata_pair_summary(rows):
     tumors = set()
     flagged = []
     unknown_flags = {}
+    etiology_all = {}
+    etiology_paired = {}
+    stage_paired = {}
     for row in rows[header_row + 1:]:
         tumor = row.get(mapping["tumorbiopsyid"], "").strip()
         patient = row.get(mapping["patientid"], "").strip()
         if not tumor:
             continue
         tumor_rows += 1
+        disease = row.get(mapping["underlyingliverdisease"], "").strip() if "underlyingliverdisease" in mapping else ""
+        stage = row.get(mapping["bclc"], "").strip() if "bclc" in mapping else ""
+        etiology_all[disease] = etiology_all.get(disease, 0) + 1
         tumors.add(tumor)
         if patient:
             patients.add(patient)
@@ -125,6 +131,8 @@ def _metadata_pair_summary(rows):
                 statuses[key] = None
                 unknown_flags[key] = unknown_flags.get(key, 0) + 1
         if statuses.get("rnaseq") is True and statuses.get("proteomics") is True:
+            etiology_paired[disease] = etiology_paired.get(disease, 0) + 1
+            stage_paired[stage] = stage_paired.get(stage, 0) + 1
             flagged.append((tumor, patient, statuses.get("phosphoproteomics")))
     pair_patients = {p for _, p, _ in flagged if p}
     return {
@@ -136,6 +144,10 @@ def _metadata_pair_summary(rows):
         "rna_and_proteome_yes_unique_patient_ids": len(pair_patients),
         "rna_and_proteome_and_phosphoproteome_yes_biopsy_rows":
             sum(1 for _, _, value in flagged if value is True),
+        "underlying_liver_disease_raw_counts_all_biopsies": etiology_all,
+        "underlying_liver_disease_raw_counts_paired_biopsies": etiology_paired,
+        "bclc_raw_counts_paired_biopsies": stage_paired,
+        "etiology_warning": "Original categories may be overlapping, nonexclusive and missing. These are biopsy—not independent patient—counts. DO NOT infer two group Ns before patient-level disease codebook validation.",
         "modality_flag_value_counts": hist,
         "uninterpreted_modality_flag_rows": unknown_flags,
         "matrix_join_verified": False,
