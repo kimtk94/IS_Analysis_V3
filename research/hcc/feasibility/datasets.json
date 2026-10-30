@@ -160,6 +160,38 @@
         "sample_id_join_verified": false,
         "rna_protein_patient_join_verified": false,
         "note": "These quant TSVs are relative TMT measurements, not absolute protein concentrations. 0 literal header matches is not a proof of no specimen matching."
+      },
+      "public_biospecimen_lineage_observed": {
+        "checked_on": "2026-10-30",
+        "evidence_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41059030994",
+        "source": "https://pdc.cancer.gov/graphql",
+        "studies": [
+          "PDC000198",
+          "PDC000199"
+        ],
+        "both_studies_distinct_cases": 171,
+        "both_studies_distinct_samples": 331,
+        "both_studies_distinct_aliquots": 331,
+        "sample_type_distribution_each": {
+          "Primary Tumor": 165,
+          "Solid Tissue Normal": 165,
+          "Not Reported": 1
+        },
+        "cases_with_both_primary_tumor_and_solid_normal": 160,
+        "tumor_only_cases": 5,
+        "normal_only_cases": 5,
+        "unknown_sample_type_cases": 1,
+        "cross_study_common_cases": 171,
+        "cross_study_common_samples": 331,
+        "cross_study_common_aliquots": 331,
+        "distinct_tmt_experiment_numbers": 33,
+        "distinct_tmt_experiment_label_pairs": 363,
+        "aliquot_run_metadata_records": 726,
+        "protein_tsv_cols": 667,
+        "phosphosite_tsv_cols": 334,
+        "matrix_header_to_case_sample_aliquot_full_alias_matches": 0,
+        "V02_matrix_rna_protein_patient_join_verified": false,
+        "interpretation": "Verified PDC biospecimen lineage and multiplex experimental metadata, NOT per-aliquot quantitative matrix assignment or RNA expression join. 160 biospecimen-matched tumor-normal case IDs vs 159 final paper patients requires exclusion/QC adjudication."
       }
     },
     {
