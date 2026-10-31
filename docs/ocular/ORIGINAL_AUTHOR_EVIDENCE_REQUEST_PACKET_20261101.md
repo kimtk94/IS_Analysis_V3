@@ -34,3 +34,25 @@
 | Mehrotra IOVS 2026 original authors | YES | **NO** | None | HOLD authoritative 1h/6h/2d sample crosswalk |
 
 No individual human-genotype/medical record data should be requested. Do not claim contact has occurred until an actual user-authorized communication and reply are verified.
+
+
+## C. Ready-to-send inquiry to GSE313736 source investigators (UNSENT)
+
+**Official route:** GSE313736 GEO Series/GSM lists University of Tasmania contact Alex Hewitt; use the **official GEO record** to confirm the address immediately before sending, rather than an unverified contact scrape. Do not automatically send from CI.
+
+**Suggested subject:** Request for original 80 DEX-responsive TM genes and methods (GSE313736)
+
+> Dear Professor Hewitt and research team,
+>
+> I am conducting an independent, methods-focused reanalysis of the public GSE313736 trabecular meshwork single-cell dataset. I located your group's 2024 Australian Vision Research report (63 DEX-upregulated and 17 downregulated genes), the July 2024 University of Tasmania showcase abstract (59 samples passing genotype and single-cell QC), and the 16 February 2024 ANZGS conference program featuring Thomas Guinan's presentation.
+>
+> Would you be able to share, or point me to a published supplementary source containing, the original **80-gene DEG results** (Ensembl gene IDs, symbols, log2 fold changes, nominal P values and adjusted P values)? The report and GEO abstract differ in the stated downregulated log2 fold-change cutoff, so a clarification of the actual threshold, DE contrast, cell-type subset, statistical model and unit of replication would be extremely helpful.
+>
+> If available, I would also appreciate the public analysis code or package versions and **aggregate, de-identified QC criteria/counts** explaining the original 59 passing samples. I am **not requesting individual genotypes or donor-identifying clinical records**.
+>
+> I would cite the original work and any relevant preprint, manuscript or published DOI appropriately. Thank you for considering this reproducibility request.
+>
+> Kind regards,
+> [Researcher name / university affiliation]
+
+**Evidence receipt checklist (not assumed received):** (1) author-owned 80-row gene table with stable IDs; (2) directional cutoff and effect scale; (3) original sample/cell-state eligibility and contrast/model; (4) file or publication provenance and version. **Do not** promote overlap from HOLD to GO on the basis of the reply text alone unless the actual gene-level table is attached or linked and checked. **Sent:** NO. **Reply:** NONE.
