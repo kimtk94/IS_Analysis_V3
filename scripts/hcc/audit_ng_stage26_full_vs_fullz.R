@@ -30,12 +30,28 @@ layer<-function(x,y,k){
  if(!(is.matrix(x)||is.data.frame(x))||!(is.matrix(y)||is.data.frame(y)))
    stop("source matrix type changed")
  xa<-as.matrix(x);ya<-as.matrix(y)
- if(!identical(dim(xa),dim(ya)))stop("source matrix shape mismatch")
  if(!is.numeric(xa)||!is.numeric(ya))stop("non-numeric layer")
  ids_row<-identical(rownames(xa),rownames(ya))
  ids_col<-identical(colnames(xa),colnames(ya))
- if(!ids_row||!ids_col)stop("row/column order identity mismatch")
- if(ncol(xa)!=50L)stop("unexpected source sample cardinality")
+ if(is.null(rownames(xa))||is.null(rownames(ya))||
+    is.null(colnames(xa))||is.null(colnames(ya)))
+  stop("missing dimensional identity in source matrix")
+ if(anyDuplicated(rownames(xa))||anyDuplicated(rownames(ya))||
+    anyDuplicated(colnames(xa))||anyDuplicated(colnames(ya)))
+  stop("duplicate source feature or sample identities")
+ if(ncol(xa)!=50L||ncol(ya)!=50L)stop("unexpected source sample cardinality")
+ common_rows<-intersect(rownames(xa),rownames(ya))
+ common_cols<-intersect(colnames(xa),colnames(ya))
+ if(length(common_rows)<20L||length(common_cols)!=50L)
+  stop("unverifiable common-source feature or patient alignment")
+ # Align by exactly matching original feature/sample identities. Row sets may
+ # differ because HCCfullz can have its own source feature selection.
+ full_features_n<-nrow(xa);fullz_features_n<-nrow(ya)
+ full_samples_n<-ncol(xa);fullz_samples_n<-ncol(ya)
+ sample_set_identical<-setequal(colnames(xa),colnames(ya))
+ feature_set_identical<-setequal(rownames(xa),rownames(ya))
+ xa<-xa[common_rows,common_cols,drop=FALSE]
+ ya<-ya[common_rows,common_cols,drop=FALSE]
  both<-is.finite(xa)&is.finite(ya)
  # Exact transformation comparison requires same finite positions
  both_finite<-sum(both)
@@ -54,6 +70,13 @@ layer<-function(x,y,k){
  cres<-abs(ycol[mc]-ya[mc])
  list(
   modality=k,features=as.integer(nrow(xa)),samples=as.integer(ncol(xa)),
+  source_full_features_n=as.integer(full_features_n),
+  source_fullz_features_n=as.integer(fullz_features_n),
+  source_full_samples_n=as.integer(full_samples_n),
+  source_fullz_samples_n=as.integer(fullz_samples_n),
+  source_common_feature_n=as.integer(length(common_rows)),
+  feature_set_identical=feature_set_identical,
+  sample_set_identical=sample_set_identical,
   row_and_column_names_identical=ids_row&&ids_col,
   both_finite_n=as.integer(both_finite),
   full_nonfinite_n=as.integer(sum(!is.finite(xa))),
@@ -75,6 +98,13 @@ layer<-function(x,y,k){
 stat<-lapply(keys,function(k)layer(a$object[[k]],b$object[[k]],k))
 field<-function(x)paste0('{',
  '"modality":"',x$modality,'","features":',x$features,',"samples":',x$samples,
+ ',"source_full_features_n":',x$source_full_features_n,
+ ',"source_fullz_features_n":',x$source_fullz_features_n,
+ ',"source_full_samples_n":',x$source_full_samples_n,
+ ',"source_fullz_samples_n":',x$source_fullz_samples_n,
+ ',"source_common_feature_n":',x$source_common_feature_n,
+ ',"feature_set_identical":',bval(x$feature_set_identical),
+ ',"sample_set_identical":',bval(x$sample_set_identical),
  ',"row_and_column_names_identical":',bval(x$row_and_column_names_identical),
  ',"both_finite_n":',x$both_finite_n,
  ',"full_nonfinite_n":',x$full_nonfinite_n,
