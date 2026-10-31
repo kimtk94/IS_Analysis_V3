@@ -88,7 +88,7 @@ def compare(private_labels,rows,columns):
         if re.search(r"\bhbv\b|hepatitis b",value):found.add("HBV")
         # Explicit ALD tag is required: "Non-alcoholic liver disease (NAFLD)"
         # must NEVER be misclassified as alcoholic liver disease.
-        if re.search(r"\bald\b|\balcoholic liver disease\b",value):found.add("ALD")
+        if re.search(r"\bald\b|(?<!non-)\balcoholic liver disease\b",value):found.add("ALD")
         if re.search(r"\bnafld\b|\bnash\b|\bmasld\b|\bmash\b|non-alcoholic",value):found.add("NAFLD")
         return tuple(sorted(found)) if found else ("SOURCE_OTHER_OR_UNCLASSIFIED",)
     for key,(patient,flags) in matched:
