@@ -32,11 +32,18 @@ if(length(digest)!=1L||sub(" .*","",digest)!=expected)stop("source RDS SHA misma
 obj<-readRDS(f);unlink(f)
 if(!is.list(obj)||!all(c("T","P")%in%names(obj)))stop("source T/P omics missing")
 a<-as.matrix(obj$T);b<-as.matrix(obj$P)
-if(ncol(a)!=50L||ncol(b)!=50L||!identical(colnames(a),colnames(b))||
+if(ncol(a)!=50L||ncol(b)!=50L||
+   anyDuplicated(colnames(a))||anyDuplicated(colnames(b))||
+   !setequal(colnames(a),colnames(b))||
    !all(pairs$gene%in%rownames(a))||!all(pairs$protein%in%rownames(b)))
-  stop("original source alignment mismatch")
-rna<-a[pairs$gene,,drop=FALSE]
-prot<-b[pairs$protein,,drop=FALSE]
+  stop("original source sample SET or RNA/protein feature alignment mismatch")
+# Source assay column order may differ: use verified exact label SET and
+# explicitly align P to T, never silently equate column positions.
+ordered_biopsies<-colnames(a)
+if(is.null(ordered_biopsies)||length(ordered_biopsies)!=50L)
+  stop("source biopsies missing")
+rna<-a[pairs$gene,ordered_biopsies,drop=FALSE]
+prot<-b[pairs$protein,ordered_biopsies,drop=FALSE]
 if(any(!is.finite(rna))||any(!is.finite(prot)))stop("nonfinite source quantity")
 rna48<-vapply(seq_len(48L),function(k)rowMeans(rna[,pi==k,drop=FALSE]),numeric(nrow(rna)))
 prot48<-vapply(seq_len(48L),function(k)rowMeans(prot[,pi==k,drop=FALSE]),numeric(nrow(prot)))
