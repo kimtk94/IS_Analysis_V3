@@ -1,0 +1,58 @@
+name: Ocular P5s Independent P5q-P5r Artifact Reconciliation
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-p5s-postrun-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  independently-recompute:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check parser syntax and retrieve immutable completed-run artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/ocular/ocular_p5s_postrun_gate.py
+          mkdir -p "$RUNNER_TEMP/p5q" "$RUNNER_TEMP/p5r-consensus" "$RUNNER_TEMP/p5r-timecourse" "$RUNNER_TEMP/p5r-thresholds" ocular-p5s-public
+          gh run download 41170641379 -n ocular-p5q-12-target-formal-loo -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5q"
+          gh run download 41172214095 -n ocular-p5r-consensus-aggregate -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5r-consensus"
+          gh run download 41172214095 -n ocular-p5r-timecourse-aggregate -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5r-timecourse"
+          gh run download 41172214095 -n ocular-p5r-thresholds-aggregate -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5r-thresholds"
+          test -s "$RUNNER_TEMP/p5q/P5q_12_target_18_loo_refits.tsv"
+          test -s "$RUNNER_TEMP/p5q/P5q_12_target_formal_loo_by_model.tsv"
+          test -s "$RUNNER_TEMP/p5q/P5q_12_target_formal_loo_summary.json"
+          test -s "$RUNNER_TEMP/p5r-consensus/P5r_12_candidate_aggregate_evidence.tsv"
+          test -s "$RUNNER_TEMP/p5r-timecourse/P5r_12_gene_external_timecourse.tsv"
+          test -s "$RUNNER_TEMP/p5r-thresholds/P5r_threshold_cutpoint_grid.tsv"
+      - name: Independently recompute all 216 per-model FDR/sign conditions and 24 summaries
+        run: |
+          python scripts/ocular/ocular_p5s_postrun_gate.py \
+            --p5q-detail "$RUNNER_TEMP/p5q/P5q_12_target_18_loo_refits.tsv" \
+            --p5q-summary "$RUNNER_TEMP/p5q/P5q_12_target_formal_loo_by_model.tsv" \
+            --p5q-json "$RUNNER_TEMP/p5q/P5q_12_target_formal_loo_summary.json" \
+            --p5r-consensus "$RUNNER_TEMP/p5r-consensus/P5r_12_candidate_aggregate_evidence.tsv" \
+            --p5r-timecourse "$RUNNER_TEMP/p5r-timecourse/P5r_12_gene_external_timecourse.tsv" \
+            --p5r-threshold-grid "$RUNNER_TEMP/p5r-thresholds/P5r_threshold_cutpoint_grid.tsv" \
+            --output ocular-p5s-public
+      - name: Clean temporary source artifact copies
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p5q" "$RUNNER_TEMP/p5r-consensus" "$RUNNER_TEMP/p5r-timecourse" "$RUNNER_TEMP/p5r-thresholds"
+      - name: Publish only integrated gene-level summaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5s-independent-aggregate-gate
+          path: ocular-p5s-public/
+          retention-days: 30
+          if-no-files-found: warn
