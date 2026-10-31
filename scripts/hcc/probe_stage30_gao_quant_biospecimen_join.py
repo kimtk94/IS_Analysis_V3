@@ -110,8 +110,8 @@ def study(pid):
     return result
 
 def review(v):
-    if v.get("schema")!="hcc-stage30-quant-header-vs-pdc-aliquot-source-v1" or
-      {s.get("pdc_study_id") for s in v.get("studies",[])}!=set(PDC):
+    if (v.get("schema")!="hcc-stage30-quant-header-vs-pdc-aliquot-source-v1" or
+        {s.get("pdc_study_id") for s in v.get("studies",[])}!=set(PDC)):
         raise ValueError("PDC source target mismatch")
     for s in v["studies"]:
         if s.get("status") not in ("SOURCE_ACCESS_HOLD","SOURCE_ASSEMBLY_HEADER_VS_PDC_ALIQUOT_METADATA_CHECKED"):
