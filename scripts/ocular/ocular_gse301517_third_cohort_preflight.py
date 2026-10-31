@@ -99,7 +99,33 @@ def main():
     with (args.out/"GSE301517_21_published_sample_manifest.tsv").open("w",encoding="utf8",newline="") as f:
         wr=csv.DictWriter(f,fieldnames=list(meta[0]),delimiter="\t")
         wr.writeheader();wr.writerows(sorted(meta,key=lambda x:x["gsm"]))
-    cpm=fetch(CPM,26_000_000)
+    cpm=None
+    attempts=[]
+    official_alternates=[
+      CPM,
+      CPM+"?download=1",
+      "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE301517&format=file&file=GSE301517_Control_vs_Dex_Gene_CPM_MSTR.tsv.gz",
+      "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE301nnn/GSE301517/suppl/GSE301517_Control_vs_Dex_Gene_CPM_MSTR.tsv.gz?tool=geo"
+    ]
+    for url in official_alternates:
+        try:
+            cpm=fetch(url,26_000_000)
+            report["cpm_successful_official_url"]=url
+            break
+        except Exception as ex:
+            attempts.append({"url":url,"error_type":type(ex).__name__,
+              "message":str(ex)[:260]})
+    report["cpm_download_route_attempts"]=attempts
+    if cpm is None:
+        report["status"]="HOLD_OFFICIAL_CPM_DOWNLOAD_BLOCKED"
+        report["cpm_complete_gzip_crc"]="NOT_EXECUTED"
+        (args.out/"GSE301517_P0_official_access_and_schema.json").write_text(
+           json.dumps(report,indent=2,ensure_ascii=False)+"\n",encoding="utf8")
+        print("GSE301517_P0",json.dumps({"status":report["status"],
+          "GSM_count":report["GSM_count"],"group_counts":report["group_counts"],
+          "resource_group_counts":report["resource_group_counts"],
+          "cpm_attempts":attempts},ensure_ascii=False),flush=True)
+        return
     report["cpm_sha256"]=hashlib.sha256(cpm).hexdigest()
     report["cpm_compressed_bytes"]=len(cpm)
     # Complete gzip/CRC through text-mode streaming. Inspect every row and header,
