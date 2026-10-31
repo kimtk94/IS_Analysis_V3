@@ -1,0 +1,49 @@
+name: Ocular P5q Twelve-Target Formal Pool Exclusion QL
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  targeted-formal-loo:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned reconstruction and edgeR packages
+        run: |
+          python -m pip install 'numpy==1.26.4'
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends r-base-core r-bioc-edger r-cran-statmod r-cran-jsonlite
+      - name: Parse new R runner and fetch verified P5l target provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          Rscript -e 'invisible(parse(file="scripts/ocular/ocular_p5q_12_target_formal_loo.R"));cat("P5Q_R_PARSE_PASS\n")'
+          python -m py_compile scripts/ocular/ocular_p4_fullcohort.py
+          mkdir -p "$RUNNER_TEMP/ocular-p5q-input" "$RUNNER_TEMP/ocular-p5q-private" ocular-p5q-public
+          gh run download 41158660082 -n ocular-p5l-discordant-poolunit -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-p5q-input"
+          test -s "$RUNNER_TEMP/ocular-p5q-input/P5l_96_discordant_poolunit_crosscheck.tsv"
+      - name: Stream GSE313736 18 original matrices and reconstruct transient 57 pairs
+        run: |
+          python -u scripts/ocular/ocular_p4_fullcohort.py --score 0.75 --min-cells 30 --internal-export-dir "$RUNNER_TEMP/ocular-p5q-private" --output ocular-p5q-public/source_qc.json
+      - name: Fit 9 donor and 9 paired-library leave-one-source-pool-out edgeR QL tests
+        run: |
+          Rscript scripts/ocular/ocular_p5q_12_target_formal_loo.R "$RUNNER_TEMP/ocular-p5q-private" "$RUNNER_TEMP/ocular-p5q-input/P5l_96_discordant_poolunit_crosscheck.tsv" ocular-p5q-public
+      - name: Remove all private donor-level matrices and source tables
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-p5q-private" "$RUNNER_TEMP/ocular-p5q-input"
+      - name: Publish gene-level aggregate and summary only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5q-12-target-formal-loo
+          path: ocular-p5q-public/
+          retention-days: 30
+          if-no-files-found: warn
