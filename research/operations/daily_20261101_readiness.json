@@ -1,0 +1,230 @@
+{
+  "schema": "master-degree-eight-track-readiness-v1",
+  "audit_date_kst": "2026-11-01",
+  "scope": "read-only source and inference-boundary audit; not biological rerun",
+  "ckd": "HOLD_NO_EXECUTION",
+  "tracks": [
+    {
+      "id": "is",
+      "title": "허혈성 뇌졸중 IS",
+      "task": "CI_ONLY 안전성 및 P1–P5 재실행 증거 경계 감사",
+      "audit_status": "PASS_SOURCE_CODE_REVIEW",
+      "scientific_gate": "HOLD",
+      "change": "서버 장애로 CI_ONLY fallback 확인; 원격 MR/coloc 재실행은 확인되지 않음",
+      "observations": {
+        "mode": "CI_ONLY_NO_SSH",
+        "remote_reexecution": "NOT_VERIFIED",
+        "replication": "NOT_ESTABLISHED"
+      },
+      "evidence_urls": [
+        "https://github.com/kimtk94/IS_Analysis_V3/blob/main/scripts/is/harness_ci_only.py",
+        "https://github.com/kimtk94/IS_Analysis_V3/blob/main/.github/workflows/is-harness-ci-only.yml"
+      ],
+      "known_next_gates": [
+        "P1–P5 원격 원본·체크섬 재확인",
+        "EUR/EAS LD 및 allele harmonization 재검증",
+        "독립 MR/coloc 복제"
+      ]
+    },
+    {
+      "id": "glaucoma",
+      "title": "녹내장 DEX/TM",
+      "task": "96개 반대 방향 후보의 발현량 기반 우선순위 검증",
+      "audit_status": "PASS_AGGREGATE_RECONCILIATION",
+      "scientific_gate": "HOLD",
+      "change": "저발현 Tier-A 3개와 충분한 발현 9개를 분리; 새 기전 발견 주장은 보류",
+      "observations": {
+        "discordant_total": 96,
+        "low_expression": {
+          "ERFE": 0.2394,
+          "CHAC1": 1.3315,
+          "PARM1": 1.0045
+        },
+        "adequate_expression": [
+          "DDIT4L",
+          "ADAMTS15",
+          "LPAR1",
+          "STK17B",
+          "EGR3",
+          "ABHD3",
+          "RAB32",
+          "TFPI",
+          "SDC1"
+        ],
+        "remaining_others": 84,
+        "threshold_logcpm": 2
+      },
+      "evidence_urls": [
+        "https://github.com/kimtk94/IS_Analysis_V3/blob/feat/ocular-p0-data-access-audit-20261030/docs/ocular/P5P_EXPRESSION_AWARE_9_VS_LOW3_VERIFIED_20261031.md",
+        "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161006241"
+      ],
+      "known_next_gates": [
+        "96개 유전자 정식 9x leave-pool-out QL 재적합",
+        "독립 strain/timepoint 원시 count 및 batch QC",
+        "qPCR/단백질/기능 실험 독립 검증"
+      ]
+    },
+    {
+      "id": "hcc",
+      "title": "HCC 멀티오믹스",
+      "task": "PDC 331 aliquot·TMT 채널 및 RNA 매칭의 증거 수준 분리",
+      "audit_status": "PASS_METADATA_ARITHMETIC",
+      "scientific_gate": "HOLD",
+      "change": "PDC Proteome/Phospho biospecimen 일치와 실제 RNA–Protein 환자 매칭을 구분",
+      "observations": {
+        "cases": 171,
+        "aliquots": 331,
+        "tumor": 165,
+        "normal": 165,
+        "other": 1,
+        "paired_metadata_cases": 160,
+        "tmt_channels": 363,
+        "unique_nonreference_channels": 330,
+        "repeated_reference_channels": 33,
+        "rna_join": "UNVERIFIED"
+      },
+      "evidence_urls": [
+        "https://github.com/kimtk94/IS_Analysis_V3/blob/docs/hcc-validation-governance-20261030/research/hcc/validation/STAGE30_GAO_EXTERNAL_MATCHED_OMICS_ACCESS_GATES.md",
+        "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41192179017"
+      ],
+      "known_next_gates": [
+        "공식 GCT/실험설계에서 330개 정량열-aliquot 유일 매핑",
+        "전체 수치 행렬 및 정규화/결측 QC",
+        "OEP000321 RNA 원본 확보 후 동일환자 매칭"
+      ]
+    },
+    {
+      "id": "radiomics",
+      "title": "Radiomics × RNA-seq",
+      "task": "등록 PV 14명·168행의 분석단위 및 임상 HOLD 경계 감사",
+      "audit_status": "PASS_DESIGN_ARITHMETIC",
+      "scientific_gate": "HOLD",
+      "change": "등록 PV 2×3 파라미터 factorial 기술검증; 환자 적격성은 별도",
+      "observations": {
+        "patients": 14,
+        "readers": 2,
+        "voxel_grids": 2,
+        "binwidths": 3,
+        "extraction_rows": 168,
+        "features": 4,
+        "frozen_feature_crosschecks": 112,
+        "clinical_eligibility": "NOT_ASSESSED"
+      },
+      "evidence_urls": [
+        "https://github.com/kimtk94/Codex/blob/feat/hcc-public-ci-20261022/research/hcc/HCC_MRI_P0_REGISTERED_PV_2X3_FACTORIAL_14_CASE_RESULTS_20261101.md",
+        "https://github.com/kimtk94/Codex/actions/runs/41208617950"
+      ],
+      "known_next_gates": [
+        "14명 등록 PV source spacing 실제 측정값 확인",
+        "전문가 lesion 및 촬영-조직 시점 적격성 판정",
+        "임상 적격 환자 확정 후에만 MRI–RNA 분석"
+      ]
+    },
+    {
+      "id": "ocular",
+      "title": "안과질환 멀티오믹스 P0",
+      "task": "Mehrotra 공식 erratum→SRA 46 run/23 처리군 쌍 근거 분리",
+      "audit_status": "PASS_METADATA_RECONCILIATION",
+      "scientific_gate": "HOLD",
+      "change": "정정 공고에서 PRJNA1243143 확인; 23 library pairs는 23 donors가 아님",
+      "observations": {
+        "runs": 46,
+        "fastq_files": 92,
+        "library_pairs": 23,
+        "alias_pairs": 17,
+        "biosample_resolved_pairs": 6,
+        "tm_strain_labels": 9,
+        "sce_strain_labels": 4,
+        "timepoint_mapping": "UNVERIFIED"
+      },
+      "evidence_urls": [
+        "https://github.com/kimtk94/IS_Analysis_V3/blob/feat/ocular-p0-data-access-audit-20261030/docs/ocular/MEHROTRA_2026_ERRATUM_RESOLVED_AND_SRA_46_RUN_AUDIT_20261101.md",
+        "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41214740781",
+        "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA1243143&result=read_run&format=tsv"
+      ],
+      "known_next_gates": [
+        "46 run의 1h/6h/48h 시간 매핑",
+        "독립 strain 및 라이브러리 batch 구조 확정",
+        "실제 raw-count 외부 재분석 및 기술적 교란 검증"
+      ]
+    },
+    {
+      "id": "muscle",
+      "title": "운동·근육 GWAS",
+      "task": "GTEx v10 rsID→variantId 쿼리 및 미해결 SNP 처리 코드 감사",
+      "audit_status": "PASS_SOURCE_CODE_REVIEW",
+      "scientific_gate": "HOLD",
+      "change": "GTEx rsID 직접 association 요청 금지와 GRCh37/38 구분 로직 확인",
+      "observations": {
+        "dataset": "gtex_v10",
+        "tissue": "Muscle_Skeletal",
+        "unresolved": "SKIPPED_NO_GTEX_VARIANT"
+      },
+      "evidence_urls": [
+        "https://github.com/kimtk94/IS_Analysis_V3/blob/main/scripts/muscle_stage2a_gtex.py",
+        "https://github.com/kimtk94/IS_Analysis_V3/blob/main/docs/MUSCLE_STAGE2A.md"
+      ],
+      "known_next_gates": [
+        "20개 RT loci 실제 API 반환과 누락율 감사",
+        "EAS ancestry-matched LD proxy Stage2B",
+        "독립 QTL/coloc 재현성"
+      ]
+    },
+    {
+      "id": "oral",
+      "title": "구강암·구강질환",
+      "task": "OSCC GSE103322 단일세포 후보의 표본단위와 멀티오믹스 적격성 감사",
+      "audit_status": "PASS_PUBLIC_SOURCE_DISCOVERY",
+      "scientific_gate": "HOLD",
+      "change": "Bioconductor 공식 패키지에서 18명/5,902 cells 확인; 환자별 paired proteomics는 미확인",
+      "observations": {
+        "accession": "GSE103322",
+        "cells": 5902,
+        "patients": 18,
+        "paired_proteomics": "UNVERIFIED"
+      },
+      "evidence_urls": [
+        "https://bioconductor.org/packages/release/data/experiment/html/GSE103322.html",
+        "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE103322",
+        "https://pubmed.ncbi.nlm.nih.gov/39842500/"
+      ],
+      "known_next_gates": [
+        "GSE103322 실제 expression/clinical metadata 다운로드와 donor ID QC",
+        "독립 bulk RNA·단백체 OSCC 코호트 환자 매핑 검증",
+        "원논문 중복·외부검증 및 임상 endpoint 적합성 평가"
+      ]
+    },
+    {
+      "id": "skin",
+      "title": "피부미용 MR",
+      "task": "perceived-age GWAS 공개 전체 요약통계의 원본 위치·표현형 적합성 확인",
+      "audit_status": "PASS_PUBLIC_SOURCE_DISCOVERY",
+      "scientific_gate": "HOLD",
+      "change": "Bristol 공개 1GiB GWAS 및 공식 readme 실제 열람: SNP/allele/frequency/LOG_OR/LOG_SE 확인; 원본 SNP 파일 미다운로드",
+      "observations": {
+        "trait": "self_reported_perceived_age",
+        "ukb_participants": 423992,
+        "reported_loci": 74,
+        "full_sumstats_downloaded": false,
+        "readme_schema_verified": true,
+        "readme_effect_scale": "LOG_OR",
+        "readme_allele_columns": [
+          "ALLELE1",
+          "ALLELE0",
+          "A1FREQ"
+        ]
+      },
+      "evidence_urls": [
+        "https://data.bris.ac.uk/data/dataset/21crwsnj4xwjm2g4qi8chathha",
+        "https://data.bris.ac.uk/datasets/21crwsnj4xwjm2g4qi8chathha/readme.txt",
+        "https://www.ukbiobank.ac.uk/publications/genome-wide-association-study-identifies-genetic-associations-with-perceived-age/",
+        "https://pubmed.ncbi.nlm.nih.gov/35421404/"
+      ],
+      "known_next_gates": [
+        "Bristol SNP summary 파일·readme 실제 다운로드 및 genome build/allele QC",
+        "한국인 얼굴주름 GWAS 원본 접근 및 ancestry 독립성 검증",
+        "MR exposure/outcome 및 pleiotropy/coloc 타당성 설계"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+name: MASTER DEGREE eight-track evidence readiness
+on:
+  pull_request:
+    paths:
+      - "research/operations/daily_20261101_readiness.json"
+      - "scripts/research/audit_eight_tracks.py"
+      - "tests/test_eight_track_readiness.py"
+      - ".github/workflows/research-eight-track-readiness.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-readiness:
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    name: Readiness - ${{ matrix.track }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate one research source-readiness task
+        run: python scripts/research/audit_eight_tracks.py --track ${{ matrix.track }} --out-dir results/research_operations
+      - name: Save bounded evidence status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-readiness-${{ matrix.track }}
+          path: results/research_operations/${{ matrix.track }}_audit.json
+          if-no-files-found: warn
+          retention-days: 30
+  fail-closed-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m unittest discover -s tests -p test_eight_track_readiness.py -v
