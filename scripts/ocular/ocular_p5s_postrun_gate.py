@@ -68,8 +68,8 @@ def main():
         raise ValueError("ENSMBL_TARGET_IDS_NOT_UNIQUE")
     gridbase=[x for x in grid if close(val(x["logCPM_cutoff"]),2) and
                                    close(val(x["min_abs_log2fc_all_three"]),.5)]
-    if len(gridbase)!=1 or int(gridbase[0]["n_genes"])!=9 or
-       set(gridbase[0]["genes"].split(","))!=ADEQUATE:
+    if (len(gridbase)!=1 or int(gridbase[0]["n_genes"])!=9 or
+        set(gridbase[0]["genes"].split(","))!=ADEQUATE):
         raise ValueError("ORIGINAL_NINE_SCREEN_NOT_REPRODUCED")
     bysummary={(x["gene_symbol"],x["model"]):x for x in s}
     output=[]
