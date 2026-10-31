@@ -1,0 +1,57 @@
+name: Ocular Gate B Metadata Cutoff and Authors' DEG Provenance
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-gateb-source-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  source-and-selection-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [eligibility, author]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate source audit script
+        run: |
+          python -m py_compile scripts/ocular/ocular_gateb_selection_author_audit.py
+      - name: Retrieve immutable original P5 16050-gene aggregate only for authors' provenance audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ matrix.mode }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-gateb-source" "ocular-gateb-${MODE}-public"
+          if [ "$MODE" = "author" ]; then
+            gh run download 41074586446 -n ocular-p5-edger-inference -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-gateb-source"
+            test -s "$RUNNER_TEMP/ocular-gateb-source/p5_all_gene_results.tsv.gz"
+          fi
+      - name: Check post-treatment label thresholds OR GEO author-list provenance
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          python -u scripts/ocular/ocular_gateb_selection_author_audit.py \
+            --mode "$MODE" \
+            --primary "$RUNNER_TEMP/ocular-gateb-source/p5_all_gene_results.tsv.gz" \
+            --out "ocular-gateb-${MODE}-public"
+      - name: Remove copied public source aggregate
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-gateb-source"
+      - name: Publish anonymous aggregate-only results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gateb-${{ matrix.mode }}-public
+          path: ocular-gateb-${{ matrix.mode }}-public/
+          if-no-files-found: warn
+          retention-days: 30
