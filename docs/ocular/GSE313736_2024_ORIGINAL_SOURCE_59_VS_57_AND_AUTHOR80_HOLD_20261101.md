@@ -44,3 +44,14 @@ The AVR report printed the high-effect genes as 63 increased with `log2 fold cha
 - **Specific evidence request:** source author group (as listed on official GEO and 2024 presentation) can supply the 80-row DEG table with Ensembl stable IDs, gene symbols, original effect scale/log2FC and BH-FDR, underlying contrast/annotation, QC-eligible donor IDs *in an appropriately anonymized form*, original code/version and publication/preprint URL if any. Also request the exact definition of “downregulated (log2FC <3)” and whether the actual cut was <−3.
 
 **Next action:** if no published gene list can be retrieved, use a short official author request and keep thesis overlap as HOLD rather than forcing a false identity match.
+
+
+## Additional exact ANZGS presentation provenance — 2024-02-16
+
+**Independent primary-source update (2026-11-01):** The [official ANZGS 2024 congress program, PDF page 1](https://anzgsconference.com/wp-content/uploads/2024/02/ANZGS-2024-Program_FINAL.pdf) lists **Mr Thomas Guinan (University of Tasmania)** for **Friday, 16 February 2024, 17:00–17:15 AEDT**, talk **"Expression Quantitative Trait Mapping of Trabecular Meshwork Cells at Single Cell Resolution."** This independently verifies the talk was **scheduled** before the **3 July 2024** [UTAS Research Showcase abstract](https://mooc-media.utas.edu.au/files/7/5/171877818175/CoHM%20Research%20Showcase%202024%20-%20Presentation%20Abstracts%20Booklet.pdf) that described 59 QC-passing samples.
+
+**Evidence scope:** the official program establishes speaker, date, talk title and slot — **not** the exact presentation's delivered content or that its 63 up/17 down results existed already by February. Those numeric DEG counts are supported separately by the **2024 reporting-period** AVR annual report. Its PDF is hosted at a URL dated **2025/08**; do not substitute the report's coverage year for a verified public publication date. The program, UTAS abstract and AVR report are three distinct archival resources, not three independent datasets or three replications.
+
+**Automated re-audit:** [ocular-gse313736-2024-original-audit.yml](../../.github/workflows/ocular-gse313736-2024-original-audit.yml) now checks all three sources, their exact documentary markers, SHA-256 and compact excerpts, and writes a three-source manifest. [CI run #41224782224](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41224782224) was triggered on the ocular feature branch; its **final conclusion/artifact must be checked separately** before labeling three-source CI PASS. The earlier two-source [run #41220669040](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41220669040) remains valid historical evidence.
+
+**Unchanged HOLD:** original 80 Ensembl gene IDs, exact effect/threshold model, author QC-eligible donor identities and specific reasons behind 59 vs 57. Do not infer original author gene-list overlap using our 83 large-effect genes.
