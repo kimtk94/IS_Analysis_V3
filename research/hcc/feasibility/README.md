@@ -215,3 +215,23 @@ Code: `scripts/hcc/probe_ng_suter_clinical_sample_join.py`, `scripts/hcc/audit_n
 **Analysis and power decisions:** 12 ALD-only vs 11 HCV-only are the most immediate independent-patient etiology contrast. This supports descriptive and effect-size feasibility but **not** a priori confirmatory transcriptomic/proteomic significance, given the small n and potentially thousands of tested features. Mixed etiologies cannot be naively assigned to either exclusive group. HBV-only remains a small suppressed stratum. Evaluate tissue stage, age, sex, batch and processed data transformations before choosing statistical tests.
 
 **Gate decisions:** V02 PARTIAL (50 exact biopsies/48 source patients and actual quantitative T/P matrices), V04 PARTIAL (source categories exact but clinical etiology codebook unreviewed), V12 PARTIAL, V13 BLOCKED. PASS claims for mechanism or recurrence **remain 0**. Evidence details in `NG_SUTER2022_PUBLIC_RDS_EVIDENCE.json`.
+
+## Stage-19: 48-patient ALD-only versus HCV-only confounder + RNA/protein numeric QC (2026-10-31)
+
+**Actual source-based CI PASS**: [clinical source balance #41161928470](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161928470) and [numeric/feature QC #41162144728](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162144728). Source-specified Ng clinical workbook SHA256 and pinned Suter RDS revision preserved; no patient rows/IDs, sensitive raw expression values, or clinical event assumptions were published.
+
+| Covariate (deduplicated patient) | ALD only | HCV only |
+|---|---:|---:|
+| N patients | 12 | 11 |
+| Age median [Q1, Q3], years | 67 [62, 74.75] | 69 [56, 76] |
+| BCLC stage 0/A | 7 | 5 |
+| BCLC B/C/D | 5 | 6 |
+| Male | 12 | 9 |
+
+Clinical workbook allowlist headers retrieved: age, sex, BCLC, Edmondson grade, MELD and cirrhosis. Treatment history and sequencing/proteomics batch columns were **not identified** under conservative header rules; do not assume these variables were measured or confounding removed. A within-patient discordant Edmondson annotation exists in the multi-biopsy cases (small count suppressed) and must not be collapsed arbitrarily.
+
+**Raw numeric QC on public preprocessed HCCfull.rds**: RNA T 20,356 features×50 biopsies, all Ensembl-format gene IDs, zero NA/nonfinite entries, 416,949 negative observations, 158,871 exact zeros, overall median 0. Protein P 5,585 features×50 biopsies, zero NA/nonfinite entries, 142,614 negative observations, 0 exact zeros, overall median -0.0211. **Exact RNA–protein feature label intersection = 0** because identifiers differ, *not because no corresponding biological genes exist*. A reviewed mapping between Ensembl gene IDs and proteome accessions/symbols is a hard prerequisite for paired gene-level concordance.
+
+**Scientific interpretation**: The processed matrices are centered/transformed in appearance and cannot be treated as raw RNA counts or raw mass-spectrometric intensities. Exact transformation, normalization and missing-value imputation cannot be proven from the numeric distribution and require direct review of Suter 2022 S5 Appendix and original Ng methods. Avoid DESeq2/count-based modelling on these processed RDS values. For now GO *descriptive sample pairing and covariate/omics QC only*, HOLD *ALD-versus-HCV high-dimensional differential effects*, BLOCKED *novel and independent prognostic claims*. V02 and V04 remain PARTIAL, V12 PARTIAL, V13 BLOCKED.
+
+Evidence record: `research/hcc/feasibility/NG_SUTER2022_STAGE19_CLINICAL_NUMERIC_QC.json`. New code: `scripts/hcc/probe_ng_suter_covariate_balance.py` and `scripts/hcc/assess_ng_rds_quantitative_qc.py`, with synthetic regression tests integrated in `.github/workflows/hcc-ng-public-rds.yml`.
