@@ -1,0 +1,32 @@
+name: Ocular P5h Public IOVS Table4 Reference Verification
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p5h_supplement_catalog.py'
+      - '.github/workflows/ocular-p5h-supplement-catalog.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify IOVS PMC supplementary table reference
+        run: |
+          python -m py_compile scripts/ocular/ocular_p5h_supplement_catalog.py
+          python scripts/ocular/ocular_p5h_supplement_catalog.py --output ocular-p5h-table4-catalog.json
+      - name: Preserve official supplementary metadata evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5h-ioVS-table4-catalog
+          path: ocular-p5h-table4-catalog.json
+          retention-days: 30
+          if-no-files-found: warn
