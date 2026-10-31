@@ -40,12 +40,15 @@ class Tests(unittest.TestCase):
             group=("ALD" if (k<15 or k>=48) else
                    "HCV" if k<26 else
                    "HCV + ALD" if k<34 else
-                   "NAFLD" if k<41 else "HBV")
+                   "Non-alcoholic liver disease (NAFLD)" if k<41 else "HBV")
             row[4]=group
         r=compare(a,b,clinical_cols)
         self.assertEqual(r["source_etiology_candidate_patients_per_group_suppress_lt5"]["ALD"],15)
         self.assertEqual(r["source_etiology_candidate_patients_per_group_suppress_lt5"]["ALD+HCV"],8)
         self.assertEqual(r["source_etiology_candidate_any_exposure_suppress_lt5"]["HCV"],19)
+        self.assertEqual(r["source_etiology_candidate_patients_per_group_suppress_lt5"]["NAFLD"],7)
+        self.assertNotIn("ALD+NAFLD",r["source_etiology_candidate_patients_per_group_suppress_lt5"])
+        self.assertEqual(r["source_etiology_candidate_any_exposure_suppress_lt5"]["ALD"],23)
         self.assertEqual(r["conflicting_etiology_labels_across_biopsies_n"],0)
         self.assertFalse(r["etiology_clinical_codebook_verified"])
 
