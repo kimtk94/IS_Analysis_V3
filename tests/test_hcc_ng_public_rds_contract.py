@@ -42,7 +42,10 @@ class Tests(unittest.TestCase):
     def test_mismatch_of_sample_count_fails(self):
         v=fixture()
         v["objects"]["HCCfull.rds"]["layers"]["T"]["sample_columns"]=42
-        with self.assertRaises(ValueError):verify(v)
+        result=verify(v)
+        self.assertFalse(result["files"]["HCCfull.rds"]["rna_protein_equal_column_counts"])
+        self.assertEqual(result["files"]["HCCfull.rds"]["status"],"SOURCE_GEOMETRY_OR_LABEL_MISMATCH_REQUIRES_JOIN")
+        self.assertFalse(result["biological_claim_ready"])
 
     def test_unapproved_clinical_claim_fails(self):
         v=fixture()
