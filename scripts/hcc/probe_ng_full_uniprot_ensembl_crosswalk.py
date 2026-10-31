@@ -202,19 +202,30 @@ def write_ephemeral_strict_pairs(path, t, pids, refs, expected):
 
 
 def request_mapping():
+    # UniProt bulk stream intermittently returns 500; treat transport errors
+    # as RETRYABLE, never as gene-annotation absence or a biological zero.
     req=urllib.request.Request(URL,headers={"Accept":"text/tab-separated-values",
                                             "User-Agent":"HCC-public-source-mapping-QC/1.0"})
-    with urllib.request.urlopen(req,timeout=105) as r:
-        chunks=[];size=0
-        while True:
-            chunk=r.read(128*1024)
-            if not chunk:break
-            size+=len(chunk)
-            if size>LIMIT:raise ValueError("annotation download exceeds bound")
-            chunks.append(chunk)
-    data=b"".join(chunks)
-    if len(data)<2000:raise ValueError("unexpected tiny annotation result")
-    return data
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(req,timeout=105) as r:
+                chunks=[];size=0
+                while True:
+                    chunk=r.read(128*1024)
+                    if not chunk:break
+                    size+=len(chunk)
+                    if size>LIMIT:raise ValueError("annotation download exceeds bound")
+                    chunks.append(chunk)
+            data=b"".join(chunks)
+            if len(data)<2000:raise ValueError("unexpected tiny annotation result")
+            return data
+        except (urllib.error.HTTPError,urllib.error.URLError,
+                TimeoutError,ConnectionError,OSError) as exc:
+            if isinstance(exc,urllib.error.HTTPError) and exc.code not in (429,500,502,503,504):
+                raise ValueError("UniProt TSV rejected HTTP "+str(exc.code)) from None
+            if attempt==3:
+                raise ValueError("UniProt TSV unavailable after 4 attempts") from None
+            time.sleep(2*(attempt+1))
 
 def main():
     ap=argparse.ArgumentParser()
