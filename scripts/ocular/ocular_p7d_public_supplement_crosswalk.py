@@ -8,10 +8,11 @@ import argparse,io,csv,json,re,urllib.request,urllib.parse,zipfile,hashlib
 from pathlib import Path
 
 URL="https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11172891/supplementaryFiles"
+DIRECT="https://pmc.ncbi.nlm.nih.gov/articles/instance/11172891/bin/ijms-25-06257-s001.zip"
 PROJECT="PRJEB74248"
-def fetch(url,limit=20_000_000):
+def fetch(url,limit=20_000_000,timeout=50):
     req=urllib.request.Request(url,headers={"User-Agent":"ocular-p7d-published-supplement-crosswalk-check/1.0"})
-    with urllib.request.urlopen(req,timeout=120) as resp:
+    with urllib.request.urlopen(req,timeout=timeout) as resp:
         data=resp.read(limit+1)
     if len(data)>limit:raise ValueError("SUPPLEMENT_EXCEEDS_SIZE_CAP")
     return data
@@ -39,9 +40,35 @@ def main():
         elif case:alias_case+=1
         elif healthy:alias_healthy+=1
         else:alias_unknown+=1
-    archive=fetch(URL)
-    if not zipfile.is_zipfile(io.BytesIO(archive)):
-        raise ValueError("EUROPE_PMC_SUPPLEMENT_NOT_ZIP")
+    errors=[]
+    archive=None
+    selected_source=None
+    for address in (DIRECT,URL):
+        try:
+            candidate=fetch(address,timeout=55)
+            if not zipfile.is_zipfile(io.BytesIO(candidate)):
+                raise ValueError("REMOTE_RESPONSE_NOT_ZIP")
+            archive=candidate
+            selected_source=address
+            break
+        except Exception as e:
+            errors.append(type(e).__name__+": "+str(e)[:170])
+    if archive is None:
+        hold={"status":"HOLD_OFFICIAL_SUPPLEMENT_REMOTE_ZIP_UNAVAILABLE",
+           "publication_pmc":"PMC11172891","project":PROJECT,
+           "ena_run_count":len(data),"ena_unique_samples":len(known_samples),
+           "ena_sample_alias_case_keyword_count":alias_case,
+           "ena_sample_alias_healthy_keyword_count":alias_healthy,
+           "ena_sample_alias_ambiguous_keyword_count":alias_ambig,
+           "ena_sample_alias_unclassified_count":alias_unknown,
+           "source_fetch_errors":errors,
+           "published_supplement_crosswalk_verified":False,
+           "clinical_case_control_from_ENA":"HOLD",
+           "note":"External source currently unavailable. A successful audit execution with explicit HOLD must not be interpreted as a proven absence of an ENA-to-patient crosswalk."}
+        (args.out/"P7d_public_supplement_crosswalk_discovery.json").write_text(
+           json.dumps(hold,indent=2,ensure_ascii=False)+"\n",encoding="utf8")
+        print("P7D_HOLD_OFFICIAL_ZIP_UNAVAILABLE",json.dumps(errors),flush=True)
+        return
     public_files=[];matches=set();content_scan_count=0
     def examine(z,prefix="",depth=0):
         nonlocal content_scan_count
@@ -80,6 +107,7 @@ def main():
       "bio_project":PROJECT,"source_publication_pmc":"PMC11172891",
       "europemc_supplement_size_bytes":len(archive),
       "supplement_archive_sha256":hashlib.sha256(archive).hexdigest(),
+      "official_download_source":selected_source,
       "supplement_file_count":len(public_files),
       "supplement_files":public_files,
       "tabular_sections_scanned":content_scan_count,
