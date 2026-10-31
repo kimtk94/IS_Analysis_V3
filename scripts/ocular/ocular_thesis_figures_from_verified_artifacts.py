@@ -57,7 +57,8 @@ def study_heatmap(source,dest):
         row=c[g]
         values.append([num(row[x]) for x in ("acute_500nM_48h_log2FC",
           "published_100nM_48h_log2FC","chronic_500nM_7d_CPM_log2ratio")])
-    fig,ax=plt.subplots(figsize=(11.6,5.0),layout="constrained")
+    fig,ax=plt.subplots(figsize=(11.6,6.0))
+    fig.subplots_adjust(left=.13,right=.98,top=.66,bottom=.29)
     for j in range(3):
         for i,g in enumerate(CORE):
             v=values[i][j]
@@ -74,22 +75,21 @@ def study_heatmap(source,dest):
        "GSE301517\n500 nM · 7 d\n3 TM strains"])
     ax.xaxis.tick_top();ax.tick_params(axis="both",length=0,pad=8)
     for s in ax.spines.values():s.set_visible(False)
-    ax.set_title("Figure 1 | Cross-study direction of DEX-associated TM transcripts",
-                 pad=62,loc="left",color=NAVY)
-    fig.text(.5,.035,
+    fig.suptitle("Figure 1 | Cross-study direction of DEX-associated TM transcripts",
+                 x=.08,y=.97,ha="left",color=NAVY,fontsize=15,fontweight="bold")
+    fig.text(.5,.075,
       "Cells display the original study estimate and sign. The 7-day normalized CPM+1 ratio\n"
       "is NOT directly effect-size comparable with the two 48-hour differential-expression log2FC values.\n"
       "ACTA2 changes sign in the 7-day study; no randomized dose × duration contrast or protein assay.",
       ha="center",va="top",fontsize=9,color=GREY)
-    fig.subplots_adjust(bottom=.12)
     save(fig,dest,"Fig1_three_study_core_transcript_signs")
 
 def label_figure(cut,dual,dest):
     a={r["gene_symbol"]:r for r in cut}
     b={r["gene_symbol"]:r for r in dual}
     if len(a)!=16 or len(b)!=16 or set(a)!=set(b):raise ValueError("PANEL_16_MISMATCH")
-    fig,axs=plt.subplots(1,2,figsize=(13,5.4),layout="constrained",
-                         sharey=True)
+    fig,axs=plt.subplots(1,2,figsize=(13,6.1),sharey=True)
+    fig.subplots_adjust(left=.12,right=.98,top=.63,bottom=.27,wspace=.18)
     left=("score075_log2fc","score050_log2fc")
     right=("BeamA_55_raw_edgeR_log2FC","TM_Fibro_55_raw_edgeR_log2FC")
     for ax,keys,source,toplab,title in (
@@ -114,7 +114,7 @@ def label_figure(cut,dual,dest):
         for sp in ax.spines.values():sp.set_visible(False)
     fig.suptitle("Figure 2 | Effect directions are robust to tested cell-annotation choices",
        fontsize=15,fontweight="bold",x=.06,ha="left",color=NAVY)
-    fig.text(.50,-.01,
+    fig.text(.50,.07,
       "Both panels use donor-paired raw-UMI edgeR log2FC. They are NOT independent cohorts:\n"
       "the 57-donor cutoff comparison and 55-donor annotation comparison reuse original 10x libraries;\n"
       "the latter labels can include overlapping cells. All four genes have FDR < 0.05 in each displayed model.",
@@ -136,7 +136,8 @@ def emt_bar(rows,dest):
             "500 nM 48 h vs 500 nM 7 d",
             "100 nM 48 h vs 500 nM 7 d",
             "All three experimental settings"]
-    fig,ax=plt.subplots(figsize=(11.5,4.4),layout="constrained")
+    fig,ax=plt.subplots(figsize=(11.5,5.3))
+    fig.subplots_adjust(left=.36,right=.96,top=.80,bottom=.28)
     y=list(range(4))
     colors=[BLUE,BLUE,BLUE,GREEN]
     ax.barh(y,counts,color=colors,height=.59)
@@ -146,7 +147,7 @@ def emt_bar(rows,dest):
     ax.set_xlabel("EMT genes with matching signed RNA effects (of 194 tested)")
     for i,v in enumerate(counts):ax.text(v+3,i,f"{v}/194   {v/194:.1%}",va="center",color=NAVY,fontweight="bold")
     ax.set_title("Figure 3 | Signed cross-experiment concordance of Hallmark EMT genes",loc="left",color=NAVY,pad=15)
-    fig.text(.51,-.035,
+    fig.text(.51,.055,
       "Descriptive fractions only: 194 post-hoc selected EMT genes are correlated, not independent Bernoulli trials.\n"
       "Shared doses, culture conditions and biological replication are NOT equivalent across studies.\n"
       "Sign concordance alone does not validate EMT-like tissue fibrosis or aqueous-outflow changes.",
@@ -179,7 +180,6 @@ def main():
     p.add_argument("--dual",required=True,type=Path)
     p.add_argument("--out",required=True,type=Path)
     a=p.parse_args();a.out.mkdir(parents=True,exist_ok=True)
-    inputs={k:({"three_core","three_emt","third_gate"} if False else []) for k in ()}
     paths={}
     for key,name in SOURCE_FILES.items():
         d=a.third if key.startswith("three_") or key=="third_gate" else a.cutoff if key.startswith("cutoff_") else a.dual
