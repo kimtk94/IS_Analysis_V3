@@ -45,9 +45,10 @@ def classify_erratum(raw):
     if not confirms:raise ValueError("ERRATUM_NO_VERIFIABLE_DEPOSITION_STATEMENT")
     # The notice body is compact. It explicitly adds data-availability text;
     # do not claim original supplement file hashes were themselves rechecked.
-    is_only=len(paras)==1 and text.lower().count("data availability")>=1 and not any(
+    is_only=("This Data Availability section has been added" in text and
+             PROJECT in text and not any(
        k in text.lower() for k in ["incorrect data","table 2", "supplementary table",
-                              "revised values","figure was","p-values","fold changes"])
+                              "revised values","figure was","p-values","fold changes"]))
     return {"status":"PASS_ERRATUM_DEPOSITION_STATEMENT_VERIFIED",
       "erratum_pmc":PMC,"doi":"10.1167/iovs.67.12.34",
       "xml_sha256":hashlib.sha256(raw).hexdigest(),
@@ -155,6 +156,51 @@ def main():
             "donor_unit_from_runs_NOT_ASSUMED":True,
             "dose_time_group_mapping":"HOLD_UNTIL_EXACT_SOURCE_DESIGN_AND_RUN_SAMPLE_CROSSWALK",
             "attempts":attempts})
+        # Count matching sequencing-library pairs only when a shared sample
+        # stem is unambiguous. "-1/-2" denotes replicate/run identifiers, NOT
+        # proven Vehicle vs DEX treatment assignment or timepoint.
+        pairs=defaultdict(list)
+        for rec in sanitized:
+            alias=rec["sample_alias"]
+            stem=re.sub(r"(?i)_(Con-EtOH|Dex)_Trypsin(?:_\d+)?$","",alias)
+            stem=re.sub(r"(?i)_(vehicle|dex)$","",stem)
+            stem=re.sub(r"-[12]$","",stem)
+            if re.search(r"(?i)(con-etoh|vehicle)",alias):
+                arm="Vehicle_explicit"
+            elif re.search(r"(?i)(Dex_Trypsin|_dex$)",alias):
+                arm="DEX_explicit"
+            else:
+                arm="UNKNOWN_-1_-2"
+            pairs[stem].append((rec,arm))
+        pair_rows=[]
+        for key,records in sorted(pairs.items()):
+            arms=[arm for _,arm in records]
+            confident=len(records)==2 and sorted(arms)==["DEX_explicit","Vehicle_explicit"]
+            category="SCE" if key.upper().startswith("SC") else "TM" if key.upper().startswith(("TM","HTM")) else "UNKNOWN"
+            pair_rows.append({
+              "source_pair_stem":key,
+              "tissue_from_alias":category,
+              "run_count":len(records),
+              "treatment_pair_status":"EXPLICIT_VEHICLE_DEX" if confident else
+                  "HOLD_TREATMENT_UNKNOWN_FOR_-1_-2",
+              "run_accessions":";".join(x["run_accession"] for x,_ in records),
+              "sample_aliases":";".join(x["sample_alias"] for x,_ in records),
+              "fastq_bytes":sum(int(x["fastq_bytes"]) for x,_ in records if isinstance(x["fastq_bytes"],int)),
+              "treatment_timepoint_not_verified":True,
+              "repeat_samples_may_share_donor_strain":True})
+        confident_count=sum(x["treatment_pair_status"]=="EXPLICIT_VEHICLE_DEX" for x in pair_rows)
+        uncertain_count=sum(x["treatment_pair_status"]!="EXPLICIT_VEHICLE_DEX" for x in pair_rows)
+        state["source_alias_pair_count"]=len(pair_rows)
+        state["explicit_vehicle_dex_pair_count"]=confident_count
+        state["unassigned_dash1_dash2_pairs"]=uncertain_count
+        state["tissue_pair_counts"]=dict(Counter(x["tissue_from_alias"] for x in pair_rows))
+        state["sampling_timepoints_verified_from_ENA_alias"]=0
+        state["pairing_note"]="Pair alias stem is sequencing-library grouping; cannot assume independent human donors, or deduce 1h/6h/48h without source mapping."
+        state["source_exact_23_pairs_expected"]=len(pair_rows)==23 and confident_count==17 and uncertain_count==6 and all(x["run_count"]==2 for x in pair_rows)
+        if pair_rows:
+            with (args.out/"MEHROTRA_PRJNA1243143_PAIRING_QC.tsv").open("w",newline="") as h:
+                writer=csv.DictWriter(h,fieldnames=list(pair_rows[0]),delimiter="\t")
+                writer.writeheader();writer.writerows(pair_rows)
         state["status"]="GO_OFFICIAL_ENA_RUN_METADATA_ACCESS_ONLY" if runs and unq else "HOLD_ENA_RUNS_UNUSABLE"
         if sanitized:
             with (args.out/"MEHROTRA_PRJNA1243143_ENA_RUN_MANIFEST.tsv").open("w",newline="") as h:
