@@ -60,18 +60,36 @@
     "source_sha256_in_run_artifact": true,
     "no_raw_patient_identifiers_or_expression_values_exported": true,
     "source_layer_sample_label_alignment": "PASS",
-    "exact_RDS_sample_to_Ng_clinical_biopsy_mapping": "NOT_YET_VERIFIED",
+    "exact_RDS_sample_to_Ng_clinical_biopsy_mapping": "PASS_50_OF_50_SOURCE_IDENTITY",
     "original_quantitation_units": "NOT_YET_VERIFIED",
     "etiology_sample_group_counts": "NOT_YET_VERIFIED",
-    "same_patient_omics_scientific_join": "HOLD",
-    "V02": "BLOCKED_UNTIL_CLINICAL_SAMPLE_PROVENANCE",
+    "same_patient_omics_scientific_join": "PARTIAL_QUANTITATIVE_MATRIX_SAMPLE_JOIN_VERIFIED__NORMALIZATION_AND_CODEBOOK_PENDING",
+    "V02": "PARTIAL_SOURCE_BIOPSY_PATIENT_JOIN_VERIFIED",
     "V04": "PARTIAL",
     "V12": "PARTIAL",
-    "independent_replication": "NOT_YET_VERIFIED"
+    "independent_replication": "NOT_YET_VERIFIED",
+    "source_cohort_sha256_verified": true,
+    "matched_biopsies_with_RNA_and_proteomics_flags": 50,
+    "exact_matched_distinct_patients": 48,
+    "unmatched_RDS_samples": 0,
+    "duplicate_patient_biopsies": 2,
+    "published_suter_sample_count_consistent": true,
+    "identity_join_details": {
+      "method": "strict normalized exact identity between public RDS sample column labels and Ng official Supplementary Data 1 tumor biopsy IDs",
+      "source_workbook_sha256": "edf1d2afd3baaedd56edee8536c16f10e4a62cb6cdac929863a062671ee73d25",
+      "public_source_biopsies": 122,
+      "matched_processed_biopsies": 50,
+      "matched_public_biopsies_assay_RNA_and_proteome_Y": 50,
+      "distinct_source_patients": 48,
+      "raw_identifiers_logged": false,
+      "ephemeral_sample_label_file_removed": true,
+      "scientific_limitation": "Published preprocessed matrices (Suter 2022), not raw individual RNA/PRIDE quant re-derivation; imputation, batch correction and etiology category codebook still require review."
+    }
   },
   "evidence_runs": [
     "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160271015",
-    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160494201"
+    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160494201",
+    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160770924"
   ],
-  "next": "Reconcile the 50 sample labels against Ng 2022 Supplementary Data 1 tumor biopsy and patient identifiers within protected in-memory CI; verify original assay normalization/imputation and etiology coding; do not claim 50 unique patients."
+  "next": "Use 50 matched biopsies/48 unique patients for descriptive feasibility. Audit normalization/imputation/missingness/batch; extract etiology group counts only from source-defined one-to-many biopsy-patient mapping, avoid pseudo-replication; retain V04/V12 holds."
 }
