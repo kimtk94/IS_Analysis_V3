@@ -197,7 +197,7 @@ def write_ephemeral_strict_pairs(path, t, pids, refs, expected):
     dest=pathlib.Path(path)
     dest.parent.mkdir(parents=True,exist_ok=True)
     # File exists only in GitHub runner temporary directory; never an artifact.
-    dest.write_text("".join(g+"\\t"+p+"\\n" for g,p in pairs),encoding="utf-8")
+    dest.write_text("".join(g+"\t"+p+"\n" for g,p in pairs),encoding="utf-8")
     dest.chmod(0o600)
 
 
