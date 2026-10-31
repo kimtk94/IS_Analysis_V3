@@ -76,8 +76,8 @@ def query(q,attempts):
     except (json.JSONDecodeError,TypeError):return []
 
 def eutils_xml(pmid,attempts):
-    u="https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?"+
-      urllib.parse.urlencode({"db":"pubmed","id":pmid,"rettype":"xml","retmode":"xml"})
+    u=("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?"+
+       urllib.parse.urlencode({"db":"pubmed","id":pmid,"rettype":"xml","retmode":"xml"}))
     return safeget(u,"NCBI-PubMed-EFetch-"+pmid,attempts,cap=1_500_000)
 
 def audit(out):
