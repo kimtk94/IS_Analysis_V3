@@ -27,6 +27,11 @@ def source(pid):
         if not isinstance(bs,list) or not 1<=len(bs)<=10000:raise ValueError("missing PDC biospecimen manifest")
         by_id={str(x.get("aliquot_id") or "").strip() for x in bs if x.get("aliquot_id")}
         by_submitter={str(x.get("aliquot_submitter_id") or "").strip() for x in bs if x.get("aliquot_submitter_id")}
+        sample_type_by_id={str(x.get("aliquot_id") or "").strip():
+             ("Normal" if "normal" in str(x.get("sample_type") or "").lower() else
+              "Tumor" if "tumor" in str(x.get("sample_type") or "").lower() or
+                         "primary" in str(x.get("sample_type") or "").lower() else
+              "OtherOrUnknown") for x in bs if x.get("aliquot_id")}
         if len(by_id)!=331 or len(by_submitter)!=331:raise ValueError("PDC source aliquot IDs changed")
         data,digest=pdc_query(QUERY%(pid,FIELD))
         designs=data.get("studyExperimentalDesign")
@@ -35,6 +40,8 @@ def source(pid):
         plex=set();run=set();channels=collections.Counter()
         seen_assigned_ids=set();seen_assigned_submitter=set()
         assignments=0;empty=0
+        multiplicity=collections.Counter()
+        assigned_by_channel=collections.defaultdict(set)
         unique_channel_pairs=set()
         for d in designs:
             if not isinstance(d,dict):continue
@@ -52,13 +59,20 @@ def source(pid):
                     channels[lab]+=1
                     ai=str(x.get("aliquot_id") or "").strip()
                     bi=str(x.get("aliquot_submitter_id") or "").strip()
-                    if ai:seen_assigned_ids.add(ai)
+                    if ai:
+                        seen_assigned_ids.add(ai)
+                        multiplicity[ai]+=1
+                        assigned_by_channel[lab].add(ai)
                     if bi:seen_assigned_submitter.add(bi)
                     if not ai and not bi:empty+=1
                     unique_channel_pairs.add((p or rn,lab))
         private={"plexes":plex,"run_names":run,
                  "aliquot_ids":seen_assigned_ids,"aliquot_submitter_ids":seen_assigned_submitter,
                  "channel_assignments":unique_channel_pairs}
+        repeated_ids={u:c for u,c in multiplicity.items() if c>1}
+        reused_types=collections.Counter(sample_type_by_id.get(u,"Unrecognized")
+                                        for u in repeated_ids)
+        assignment_freq=collections.Counter(multiplicity.values())
         out.update({"status":"OFFICIAL_PDC_EXPERIMENTAL_DESIGN_VERIFIED",
             "source_response_sha256":digest,"source_design_run_records_n":len(designs),
             "unique_plex_names_n":len(plex),
@@ -70,6 +84,12 @@ def source(pid):
             "aliquot_submitter_IDs_also_in_biospecimen_n":len(seen_assigned_submitter&by_submitter),
             "distinct_plex_TMT_channel_design_positions_n":len(unique_channel_pairs),
             "missing_aliquot_identity_assignments_n":empty,
+            "unique_aliquot_assignment_multiplicity_histogram":{str(k):n
+                 for k,n in sorted(assignment_freq.items())},
+            "reused_aliquot_count_n":len(repeated_ids),
+            "reused_aliquot_sample_type_groups":dict(sorted(reused_types.items())),
+            "excess_channel_assignments_over_distinct_aliquots_n":assignments-len(seen_assigned_ids),
+            "distinct_aliquot_ids_used_by_TMT_channel":{k:len(v) for k,v in sorted(assigned_by_channel.items())},
             "channel_assignment_counts_by_label":dict(sorted(channels.items())),
             "source_quant_matrix_channel_alias_verified":False})
     except Exception as exc:
