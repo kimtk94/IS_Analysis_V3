@@ -46,12 +46,16 @@ def verify(doc):
             if t.get("raw_labels_or_values_exported") is not False:
                 raise ValueError("privacy guardrail absent in layer")
             dimensions[k]={"features":n,"sample_columns":m}
-        if dimensions["T"]["sample_columns"]!=dimensions["P"]["sample_columns"]:
-            raise ValueError("RNA/protein quantitative matrices have unequal sample column counts")
+        same_n=(dimensions["T"]["sample_columns"]==dimensions["P"]["sample_columns"])
+        names_equal=o.get("transcript_protein_identical_sample_column_labels") is True
         report[filename]={
             "layers":dimensions,
-            "identical_RNA_protein_column_names":o.get("transcript_protein_identical_sample_column_labels") is True,
-            "same_biopsy_quantitative_join_claimed":False
+            "rna_protein_equal_column_counts":same_n,
+            "rna_protein_shared_column_labels_count":o.get("transcript_protein_column_label_intersection_count"),
+            "identical_RNA_protein_column_names":names_equal,
+            "same_biopsy_quantitative_join_claimed":False,
+            "status":"SOURCE_GEOMETRY_ALIGNABLE_NOT_CLINICALLY_VERIFIED" if same_n and names_equal
+                     else "SOURCE_GEOMETRY_OR_LABEL_MISMATCH_REQUIRES_JOIN"
         }
     return {
         "execution":"VERIFIED_PUBLIC_QUANTITATIVE_RDS_STRUCTURE",
