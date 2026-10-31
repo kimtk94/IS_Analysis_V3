@@ -1,5 +1,8 @@
 name: Ocular Erratum and Author DEG Official Source Audit
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-source-publication-audit.yml'
   workflow_dispatch:
 
 permissions:
