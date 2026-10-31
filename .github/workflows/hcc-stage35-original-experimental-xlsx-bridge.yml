@@ -1,0 +1,39 @@
+name: HCC Stage35 Original PDC Experimental XLSX Source Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage35-original-experimental-xlsx-bridge.yml'
+      - 'scripts/hcc/audit_stage35_original_experimental_xlsx_bridge.py'
+      - 'tests/test_hcc_stage35_original_xlsx_bridge.py'
+
+permissions:
+  contents: read
+
+jobs:
+  original-source-xlsx-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install local XLSX parser
+        run: python -m pip install 'openpyxl==3.1.5'
+      - name: Test source-token matches are not biological identities
+        run: python -m unittest discover -s tests -p 'test_hcc_stage35_original_xlsx_bridge.py' -v
+      - name: Compare two original PDC XLSX designs with CDAP and PDC official aliases
+        run: |
+          python scripts/hcc/audit_stage35_original_experimental_xlsx_bridge.py \
+            --out results/hcc/stage35/original_xlsx_aggregate.json \
+            --review-out results/hcc/stage35/original_xlsx_review.json
+      - name: Upload bounded anonymous source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage35-original-xlsx-source-design-review
+          path: results/hcc/stage35/*.json
+          retention-days: 30
+          if-no-files-found: error
