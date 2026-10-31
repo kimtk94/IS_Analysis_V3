@@ -40,6 +40,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--primary",required=True,type=Path)
     parser.add_argument("--emt",required=True,type=Path)
+    parser.add_argument("--markers",required=True,type=Path)
     parser.add_argument("--out",required=True,type=Path)
     args=parser.parse_args();args.out.mkdir(parents=True,exist_ok=True)
     primary=readtsv(args.primary,True)
@@ -53,6 +54,7 @@ def main():
     emt=readtsv(args.emt)
     if len(emt)!=194:raise ValueError("P7A_EMT_EXPECTED_194")
     emt_ids={x["gene_id"].split(".")[0] for x in emt}
+    emt_source_byid={x["gene_id"].split(".")[0]:x for x in emt}
     if len(emt_ids)!=194:raise ValueError("P7A_EMT_ENSG_DUPLICATED")
     cpm=fetch(CPM,26_000_000)
     actual_sha=hashlib.sha256(cpm).hexdigest()
@@ -135,6 +137,41 @@ def main():
         "strains_3_matching_primary":x["three_strain_sign_match_n"]}
         for x in sorted(common_emt,key=lambda x:x["gene_symbol"])]
     out_tsv(args.out/"GSE301517_EMT_shared_3strain_direction.tsv",emt_rows)
+    # The 100nM 48h external published effects are derived from the original
+    # P7a paper supplement; they are NOT a third randomized dosing arm.
+    threeway=[]
+    for x in sorted(common_emt,key=lambda g:g["gene_symbol"]):
+        ref=emt_source_byid[x["gene_id"]]
+        external=float(ref["external_100nM_log2fc"])
+        acute=x["primary_500nM_48h_log2fc"]
+        chronic=x["third_500nM_7d_equal_strain_log2_CPM_ratio"]
+        all_same=(acute*external>0 and external*chronic>0)
+        threeway.append({"gene_symbol":x["gene_symbol"],"gene_id":x["gene_id"],
+            "acute_500nM_48h_log2FC":round(acute,6),
+            "external_100nM_48h_log2FC":round(external,6),
+            "third_500nM_7d_CPM_log2ratio":round(chronic,6),
+            "three_studies_all_same_direction":all_same,
+            "external_48h_vs_7d_same_direction":external*chronic>0,
+            "independent_three_way_dose_time_test":False})
+    out_tsv(args.out/"GSE301517_EMT_194_3study_signed_direction.tsv",threeway)
+    markers=readtsv(args.markers)
+    external_markers={x["symbol"]:x for x in markers}
+    if not CORE.issubset(external_markers):raise ValueError("P7_EXTERNAL_CORE4_GENE_MISSING")
+    trio=[]
+    for x in sorted(selected,key=lambda r:r["gene_symbol"]):
+        sym=x["gene_symbol"]
+        if sym not in CORE:continue
+        original=external_markers[sym]
+        ref=float(original["external_lfc"])
+        acute=x["primary_500nM_48h_log2FC"]
+        chronic=x["third_500nM_7d_log2_CPM_ratio"]
+        trio.append({"gene_symbol":sym,"acute_500nM_48h_log2FC":acute,
+            "published_100nM_48h_log2FC":ref,
+            "chronic_500nM_7d_CPM_log2ratio":chronic,
+            "all_three_same_direction":acute*ref>0 and ref*chronic>0,
+            "three_strains_same_sign_as_acute":x["three_strain_sign_match_n"]==3,
+            "not_a_causal_dose_or_time_test":True})
+    out_tsv(args.out/"GSE301517_core4_3study_direction.tsv",trio)
     expressed=[x for x in allresults.values() if x["minimum_7d_3_strain_mean_CPM"]>=1]
     strong=[x for x in expressed if abs(x["third_500nM_7d_equal_strain_log2_CPM_ratio"])>=.25
               and abs(x["primary_500nM_48h_log2fc"])>=.25]
@@ -157,6 +194,9 @@ def main():
       "core4_sign_matched_3of3_n":sum(x["three_strain_sign_match_n"]==3 for x in selected if x["tier"]=="CORE"),
       "emt_matched_n":len(common_emt),
       "emt_sign_match_n":sum(x["third_vs_primary_sign_match"] for x in common_emt),
+      "emt_all_three_studies_same_signed_n":sum(x["three_studies_all_same_direction"] for x in threeway),
+      "emt_external_48h_vs_7d_same_signed_n":sum(x["external_48h_vs_7d_same_direction"] for x in threeway),
+      "core4_all_three_studies_same_signed_n":sum(x["all_three_same_direction"] for x in trio),
       "gene_universe_expressed_both_7d_arms_meanCPM_ge_1_n":len(expressed),
       "gene_universe_both_studies_abs_effect_ge_point25_n":len(strong),
       "gene_universe_strong_signed_agree_n":sum(x["third_vs_primary_sign_match"] for x in strong),
