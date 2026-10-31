@@ -51,6 +51,11 @@ same_gene<-function(a,b){
 rows<-character()
 for(k in c("T","P","PP")){
  a<-as.matrix(anchor[[k]]);b<-as.matrix(full[[k]]);c<-as.matrix(fullz[[k]])
+ # The real HCCdata RDS stores 50 biopsy samples as rows and its selected
+ # network features as columns: T=50x188, P=50x116, PP=50x158.
+ # Reorient the ephemeral in-memory matrix only; never rewrite original RDS.
+ stored_sample_rows<-nrow(a)==50L && ncol(a)!=50L
+ if(stored_sample_rows)a<-t(a)
  # HCCdata is the authors' small network-object input, NOT a guaranteed
  # quantitative 50-biopsy matrix. Preserve its real structure and report
  # whether same-name exact-gene Spearman is actually computable.
@@ -78,6 +83,7 @@ for(k in c("T","P","PP")){
  rows<-c(rows,paste0('{"modality":"',k,'",',
  '"small_data_feature_n":',nrow(a),',',
  '"small_data_sample_n":',ncol(a),',',
+ '"small_data_original_sample_axis_is_rows":',bool(stored_sample_rows),',',
  '"small_data_source_numeric_matrix":',bool(has_numeric),',',
  '"small_data_exact_50_biopsy_comparison_eligible":',bool(comparable),',',
  '"small_full_common_feature_n":',r$shared,',',
