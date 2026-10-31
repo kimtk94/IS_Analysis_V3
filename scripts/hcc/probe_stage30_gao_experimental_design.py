@@ -6,7 +6,6 @@ NOT prove normalized protein quantity or matched transcriptomic patient joins.
 """
 import argparse,collections,datetime as dt,json,pathlib
 from probe_stage30_gao_catalog import PDC,pdc_query
-from probe_stage30_gao_biospecimen_overlap import get_biospecimen as unused_get_biospecimen
 LABELS=("label_free","tmt_126","tmt_127n","tmt_127c","tmt_128n","tmt_128c",
         "tmt_129n","tmt_129c","tmt_130n","tmt_130c","tmt_131","tmt_131c",
         "tmt_132n","tmt_132c","tmt_133n","tmt_133c","tmt_134n","tmt_134c",
