@@ -121,6 +121,10 @@
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092590299",
           "level": "source_file_sanitized_schema_qc_not_biological_inference"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155499877",
+          "level": "source_hash_verified_aggregate_clinical_complete_case_prescreen"
         }
       ],
       "analysis_evidence": [],
@@ -128,7 +132,7 @@
       "independent_patient_n": null,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Verify sample-label codebook and protein/RNA quantitative matrix ID join; no biological PASS"
+      "next_action": "Clinical sample-key mapping and complete-case counts verified by source SHA; obtain patient-level RNA gene-by-sample quantitative matrix and confirm same-biopsy RNA/protein join"
     },
     {
       "id": "V02",
@@ -356,6 +360,10 @@
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092972318",
           "level": "source_file_sanitized_schema_qc_not_biological_inference"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155499877",
+          "level": "source_hash_verified_aggregate_clinical_complete_case_prescreen"
         }
       ],
       "analysis_evidence": [],
@@ -363,7 +371,7 @@
       "independent_patient_n": null,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Confirm Xing source RFS/OS event code direction, duration unit and censoring; then calculate actual complete-case events without public patient identifiers"
+      "next_action": "Confirm Xing Table S1 RFS/OS 0/1 codebook, units, time-zero and censoring before using N=152/143/125 candidate complete-case cohorts for event analysis"
     },
     {
       "id": "V13",
@@ -424,6 +432,10 @@
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092590299",
           "level": "source_file_sanitized_schema_qc_not_biological_inference"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155499877",
+          "level": "source_hash_verified_aggregate_clinical_complete_case_prescreen"
         }
       ],
       "analysis_evidence": [],
@@ -431,7 +443,7 @@
       "independent_patient_n": null,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Retain source hashes, versioned code and decision D-017; review codebook before any clinical PASS"
+      "next_action": "Keep SHA-locked source and CI evidence + D-018; do not promote biological PASS until reviewed codebook and quantitative multi-omics evidence"
     }
   ]
 }
