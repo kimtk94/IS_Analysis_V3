@@ -79,7 +79,7 @@ for(k in c("T","P","PP")){
  '"small_data_feature_n":',nrow(a),',',
  '"small_data_sample_n":',ncol(a),',',
  '"small_data_source_numeric_matrix":',bool(has_numeric),',',
- '"small_data_exact_50_biopsy_comparison_eligible":',bool(comparable),',
+ '"small_data_exact_50_biopsy_comparison_eligible":',bool(comparable),',',
  '"small_full_common_feature_n":',r$shared,',',
  '"small_full_common_sample_labels_n":',r$axis,',',
  '"small_full_rho_finite_feature_n":',r$finite,',',
