@@ -34,7 +34,7 @@
 Earlier project notes used loose expressions such as “published 2026 Singh paper” and “source authors' reported high-effect DEG list”. In this manuscript:
 - Call Singh et al. **the 2026 preprint** until a peer-reviewed article and DOI are separately verified.
 - Call GSE313736 **the public dataset deposition**, not a verified journal-published sc-eQTL article.
-- Call Mehrotra et al. the **2026 peer-reviewed journal article with an October data-availability-only erratum**. The notice publishes SRA accession PRJNA1243143; it does not report changes to gene effects. Retain the old supplement workbook's SHA256; exact sample-to-arm/timepoint mapping of newly accessible FASTQs is **not yet verified**.
+- Call Mehrotra et al. the **2026 peer-reviewed journal article with an October data-availability-only erratum**. The notice publishes SRA accession PRJNA1243143; it does not report changes to gene effects. Retain the old supplement workbook's SHA256; the 23 candidate pair **treatment arms are now verified** (17 labeled aliases + 6 pairs confirmed from 12 official BioSample XML records); however per-run 1h/6h/48h, independent strain, and final-QC sample mapping remain **HOLD**.
 - Correct the misleading GEO description “17 downregulated (log2 fold change <3)” **as an ambiguous threshold statement**; do not assert the authors used <−3 without their actual methods.
 - Watch for inconsistencies in individual GEO GSM protocol fields (GSM treatment characteristic says 48h, whereas some growth-protocol prose references 3 days). Prefer the explicit treatment field and disclose the provenance ambiguity; do not claim all protocol text is perfectly consistent.
 
