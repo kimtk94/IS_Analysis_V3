@@ -20,7 +20,11 @@ class Stage26Tests(unittest.TestCase):
         with self.assertRaises(ValueError):validate_paper(r)
     def test_matrix_source_provenance_fails_on_wrong_sha(self):
         layer=lambda k:{"modality":k,"samples":50,"features":100,"both_finite_n":5000,
-           "row_and_column_names_identical":True,
+           "source_full_features_n":110,"source_fullz_features_n":100,
+           "source_full_samples_n":50,"source_fullz_samples_n":50,
+           "source_common_feature_n":100,"sample_set_identical":True,
+           "feature_set_identical":False,
+           "row_and_column_names_identical":False,
            "row_z_frac_abs_lt_1e_5":1.0,"col_z_frac_abs_lt_1e_5":0.01,
            "row_z_median_abs_residual":0.0,"col_z_median_abs_residual":1.0}
         r={"schema":"hcc-stage26-full-vs-fullz-lineage-v1",
