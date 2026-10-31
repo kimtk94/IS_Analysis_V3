@@ -1,0 +1,71 @@
+name: HCC Stage30 Gao External Source Data Access
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-source-access.yml'
+      - 'scripts/hcc/probe_stage30_gao_catalog.py'
+      - 'scripts/hcc/probe_stage30_gao_file_catalog.py'
+      - 'tests/test_hcc_stage30_gao_catalog.py'
+
+permissions:
+  contents: read
+
+jobs:
+  source-catalog-and-node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Official PDC studies and version catalog plus NODE RNA landing probe
+        run: |
+          python scripts/hcc/probe_stage30_gao_catalog.py \
+            --out results/hcc/stage30/pdc_and_node_source_access.json \
+            --review-out results/hcc/stage30/pdc_and_node_source_access_review.json
+      - name: Store small source hashes, aggregate counts and access-HOLD decisions only
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-gao-pdc-198-199-node321-source-catalog
+          path: |
+            results/hcc/stage30/pdc_and_node_source_access.json
+            results/hcc/stage30/pdc_and_node_source_access_review.json
+          retention-days: 30
+          if-no-files-found: error
+
+  pdc-file-category-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read only first 40 official PDC file metadata rows for two study versions
+        run: |
+          python scripts/hcc/probe_stage30_gao_file_catalog.py \
+            --out results/hcc/stage30/pdc_file_catalog_preview.json \
+            --review-out results/hcc/stage30/pdc_file_catalog_preview_review.json
+      - name: Retain file format/category counts only, never per-file identifiers
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-gao-pdc-198-199-file-type-preview
+          path: |
+            results/hcc/stage30/pdc_file_catalog_preview.json
+            results/hcc/stage30/pdc_file_catalog_preview_review.json
+          retention-days: 30
+          if-no-files-found: error
+
+  source-validation-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify fail-closed distinction between catalog, quantitation matrix, and matched cohort
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_gao_catalog.py' -v
