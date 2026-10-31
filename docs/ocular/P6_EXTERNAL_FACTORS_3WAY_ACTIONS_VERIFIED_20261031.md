@@ -52,7 +52,7 @@ ENA official `read_run` report queried live for each exact accession; actual res
 | Study BioProject | Platform per ENA | Runs / unique BioSamples | Runs with `fastq_ftp` links | Data suitability |
 |---|---|---:|---:|---|
 | [PRJNA1145861](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1145861) | AMPLICON (conjunctiva) | **139/139** | **139/139** | conditional GO for independent glaucoma/DED ocular microbiome reanalysis |
-| [PRJEB74248](https://www.ncbi.nlm.nih.gov/bioproject/PRJEB74248) | WGS (conjunctival shotgun) | **62/62** | **31/62** | HOLD missing `fastq_ftp` for half; test submitted/aligned alternatives and which sample types are represented |
+| [PRJEB74248](https://www.ncbi.nlm.nih.gov/bioproject/PRJEB74248) | WGS (conjunctival shotgun) | **62/62** | **31/62** | P6e FOLLOW-UP: **62/62 have `submitted_ftp` paths**; binary download, file type and patient joins remain HOLD |
 | [PRJNA1416399](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1416399) | AMPLICON (oral wash) | **129/129** | **129/129** | conditional GO for separate oral microbiome glaucoma project |
 
 Corrections/controls:
@@ -62,6 +62,11 @@ Corrections/controls:
 - Shotgun data being public does **not** prove the paper's tear proteome is independently deposited or sample-paired at public access level.
 - Zero verified matching primary GSE313736 DEX-treated TM donors, zero validated donor-level clinical steroid IOP response, no verified per-sample antibiotics/glaucoma eye-drop adjustment in these metadata results.
 - For low-biomass ocular microbiome, experimental extraction and sampling negative blanks must be independently confirmed; the paper alone is insufficient for raw-data contamination correction.
+
+## P6d/P6e verified follow-up (supersedes earlier metadata-only HOLD on missing `fastq_ftp`)
+- [P6d cross-study pathway gate](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41173246350): **12,251 mapped Ensembl IDs**, 9 common-background Hallmark tests, **5/9 signed pathway scores agree**; EMT signed **-/-** but UPR **-/+**. These are descriptive pathway effect rankings, not replicated pathway p-values.
+- [P6e ENA alternative archive route gate](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41173368834): The 31 runs without FASTQ links have `submitted_ftp`; **62/62 WGS runs have a submitted archive link**. This resolves metadata route discovery, **not** binary file access or clinical sample annotation.
+- Full artifact-reviewed results in `P6DE_CROSS_STUDY_AND_SHOTGUN_ARCHIVE_VERIFIED_20261031.md`.
 
 ## Decision matrix
 - **GO P6a source library QC and contamination-disclosure; GO P6b exploratory pathway ranking; GO P6c three metadata accessions.**
