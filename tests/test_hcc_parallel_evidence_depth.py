@@ -20,6 +20,10 @@ def complete(root):
         {"status":"XLSX_SOURCE_FETCHED","xlsx_schema":{"sheets":4}}]}})
     write_fixture(root,"ng_quant_workbook_shape",{"ng_supplements":{
         "Supplementary_Data_2":{"status":"PUBLIC_XLSX_SHAPE_VERIFIED"}}})
+    write_fixture(root,"ng_all_public_supplement_layouts",{"audit":{
+        "supplements_targeted":14,
+        "supplements_downloaded_and_layout_screened":14,
+        "wide_matrix_geometry_hints":[]}})
     write_fixture(root,"pdc_protein_sample_link",{"records":{"PDC000198":{
         "status":"PUBLIC_MATRIX_METADATA_CORRESPONDENCE_SCREENED",
         "schema_comparison":{"any_exact_normalized_overlap":True}}}})
@@ -47,9 +51,10 @@ class Tests(unittest.TestCase):
             complete(tmp)
             r=summarize(tmp)
             self.assertTrue(r["all_source_reports_read"])
-            self.assertEqual(r["source_reports_read"],8)
+            self.assertEqual(r["source_reports_read"],9)
             self.assertEqual(r["evidence"]["xing_protein_clinical"]["structural_matched_pairs"],152)
             self.assertEqual(r["evidence"]["ng_quant_workbook_index"]["workbooks_with_shape_verified"],1)
+            self.assertEqual(r["evidence"]["ng_all_public_supplement_layouts"]["supplements_screened"],14)
             self.assertFalse(r["evidence"]["node_rna"]["patient_sample_join_established"])
             self.assertEqual(r["research_claim_gates"]["V02_patient_matched_quantitative_rna_protein"],"BLOCKED")
             self.assertIn("source-evidence depth",markdown(r))
@@ -62,7 +67,7 @@ class Tests(unittest.TestCase):
             (pathlib.Path(tmp)/f"hcc-p0-{item[1]}"/item[2]).unlink()
             r=summarize(tmp)
             self.assertFalse(r["all_source_reports_read"])
-            self.assertEqual(r["source_reports_read"],7)
+            self.assertEqual(r["source_reports_read"],8)
             self.assertEqual(r["evidence"]["xing_protein_clinical"]["state"],"UNVERIFIED")
             self.assertEqual(r["research_claim_gates"]["V12_event_coding_time_origin_censoring"],"PARTIAL")
 
