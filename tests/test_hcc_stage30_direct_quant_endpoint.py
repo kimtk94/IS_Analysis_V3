@@ -59,6 +59,27 @@ class QuantTests(unittest.TestCase):
         self.assertEqual(x["first_array_element_JSON_kind"],"OBJECT")
         self.assertEqual(x["first_complete_gene_records_seen_n"],0)
         self.assertNotIn("PRIVATE_",str(x))
+    def test_nested_list_quant_numeric_field_privacy(self):
+        blob=(b'{"data":{"quantDataMatrix":[['
+              b'["PRIVATE_GENE_1",1.25,2.0],'
+              b'["PRIVATE_GENE_2",0.12,-1.9],'
+              b'["PRIVATE_GENE_3",0.8,null]]')
+        x=inspect_oversized_matrix_prefix(blob)
+        self.assertEqual(x["first_array_element_JSON_kind"],"NESTED_ARRAY")
+        y=x["nested_matrix_prefix_shapes"]
+        self.assertEqual(y["nested_array_depth_from_first_element_n"],1)
+        self.assertEqual(y["completed_first_nested_values_n"],3)
+        self.assertEqual(y["finite_numeric_values_examined_n"],5)
+        self.assertNotIn("PRIVATE_",str(y))
+    def test_nested_object_quant_shape_privacy(self):
+        blob=(b'{"data":{"quantDataMatrix":[['
+              b'{"PRIVATE_SAMPLE_A":2.4,"PRIVATE_SAMPLE_B":"-0.19"},'
+              b'{"PRIVATE_SAMPLE_A":-0.4,"PRIVATE_SAMPLE_B":null}]')
+        x=inspect_oversized_matrix_prefix(blob)
+        y=x["nested_matrix_prefix_shapes"]
+        self.assertEqual(y["completed_nested_value_type_counts"]["OBJECT"],2)
+        self.assertEqual(y["finite_numeric_values_examined_n"],3)
+        self.assertNotIn("PRIVATE_SAMPLE",str(y))
     def test_no_unknown_study_call(self):
         with self.assertRaises(ValueError):direct("PDC000000")
     def test_source_access_timeout_is_hold(self):
