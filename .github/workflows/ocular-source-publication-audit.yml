@@ -1,5 +1,8 @@
 name: Ocular Erratum and Author DEG Official Source Audit
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-source-publication-audit.yml'
   workflow_dispatch:
 
 permissions:
@@ -8,7 +11,7 @@ permissions:
 jobs:
   bounded-official-source-check:
     runs-on: ubuntu-24.04
-    timeout-minutes: 18
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -16,7 +19,7 @@ jobs:
           python-version: '3.11'
       - name: Check audit parser syntax and external-source-only limits
         run: |
-          python -m py_compile scripts/ocular/ocular_erratum_and_author80_public_source_audit.py scripts/ocular/ocular_mehrotra_erratum_ena_manifest.py scripts/ocular/ocular_mehrotra_12_ambiguous_biosamples.py scripts/ocular/ocular_mehrotra_timepoint_source_inventory.py
+          python -m py_compile scripts/ocular/ocular_erratum_and_author80_public_source_audit.py scripts/ocular/ocular_mehrotra_erratum_ena_manifest.py scripts/ocular/ocular_mehrotra_12_ambiguous_biosamples.py scripts/ocular/ocular_mehrotra_timepoint_source_inventory.py scripts/ocular/ocular_mehrotra_four_pmc_supplements.py
       - name: Audit IOVS correction fulltext and deposited source paper
         run: |
           mkdir -p ocular-source-audit-public
@@ -33,6 +36,10 @@ jobs:
         run: |
           python -u scripts/ocular/ocular_mehrotra_timepoint_source_inventory.py \
             --manifest ocular-source-audit-public/MEHROTRA_PRJNA1243143_ENA_RUN_MANIFEST.tsv \
+            --out ocular-source-audit-public
+      - name: Inspect four official DOCX XLSX supplements for sample design and sample count availability
+        run: |
+          python -u scripts/ocular/ocular_mehrotra_four_pmc_supplements.py \
             --out ocular-source-audit-public
       - name: Publish compact provenance with raw journal text excluded
         if: always()
