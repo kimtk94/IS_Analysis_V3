@@ -225,7 +225,7 @@ def protocol(a):
       ("PRIMARY_RANDOMIZED_48H",["0 nM vehicle","100 nM DEX","500 nM DEX"],["48 h"],
        ["RT-qPCR: MYOC,TGFBI,MMP2,ACTA2","ELISA/Western: MYOC,TGFBI,MMP2 when feasible","MMP2 zymography, extracellular matrix imaging and contractility/outflow surrogate if feasible"]),
       ("SECONDARY_TIME_COURSE_OPTIONAL",["0 nM vehicle","100 nM DEX","500 nM DEX"],["1 h","6 h","48 h"],
-       ["RT-qPCR: four core + EGR3,LPAR1,SDC1,TFPI","MMP2 activity and selected ECM protein if feasible"]))):
+       ["RT-qPCR: four core + EGR3,LPAR1,SDC1,TFPI","MMP2 activity and selected ECM protein if feasible"])):
         blocks.append({"objective":objective,"doses":doses,"timepoints":times,
           "treatment_time_conditions":len(doses)*len(times),
           "assays":readouts,"donor_is_biological_unit":True,
