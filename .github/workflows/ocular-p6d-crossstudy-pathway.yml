@@ -1,8 +1,5 @@
 name: Ocular P6d Independent 100nM Cross-Study Hallmark Direction Gate
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-p6d-crossstudy-pathway.yml'
   workflow_dispatch:
 
 permissions:
