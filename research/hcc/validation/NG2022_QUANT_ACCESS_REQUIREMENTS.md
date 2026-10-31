@@ -11,6 +11,18 @@ Decision owner: study governance; **access NOT approved and quantitative patient
 - Public proteome: [PRIDE PXD025705](https://www.ebi.ac.uk/pride/archive/projects/PXD025705); public phosphoproteome [PXD025836](https://www.ebi.ac.uk/pride/archive/projects/PXD025836). A public PRIDE *file list* is not proof of accessible processed quantitative matrix.
 - Public supplementary data 1–14 / Source Data accompany the publication. A separate CI probe screens file layout and limited safe header families without storing row-level sample IDs.
 
+
+## New public processed-data route — Suter 2022 validation (2026-10-31)
+
+**Important change in acquisition strategy:** Suter et al., *PLOS Computational Biology* 2022, DOI [10.1371/journal.pcbi.1009767](https://doi.org/10.1371/journal.pcbi.1009767), analyzes the Ng/Basel HCC multi-omics cohort and explicitly provides preprocessed *reduced and non-reduced* multimodal data in the public repository [cbg-ethz/HCC](https://github.com/cbg-ethz/HCC). Public code loads `HCCfull.rds`, `HCCfullz.rds` and `HCCdata.rds` with layers `M/CN/T/P/PP`; `T` is transcriptomics and `P` is proteomics. This constitutes a materially stronger public route than a landing page or workbook geometry hint.
+
+- Pinned source Git commit: `438f52271d0a86a6701baa7a96e80c516ba575c2`.
+- Public binary RDS sizes from GitHub repository metadata: `HCCfull.rds` **11,959,798 bytes**; `HCCfullz.rds` **13,038,666 bytes**; `HCCdata.rds` **185,393 bytes**. They are not copied into this research repository or re-uploaded to CI outputs.
+- New [feasibility PR #251](https://github.com/kimtk94/IS_Analysis_V3/pull/251) uses GitHub Actions and base R to download these immutable-source files, inspect only aggregate layer matrices, verify numeric values and column-label overlap, and emit SHA256 provenance, with **no raw patient identifiers or expression values in the report**.
+- **Early executed source observation:** an initial CI parsed all three RDS objects successfully, but its strict validator detected at least one `T` vs `P` unequal sample column count. Thus source files are real, but the **RNA–Protein same-biopsy quantitative join is NOT yet established**; never claim 51/49 directly joined patients based on assay metadata or an RDS container's shared labels. Revised validator captures this mismatch as evidence rather than treating it as file download failure.
+- The processed RDS files may contain normalized or feature-selected measurements rather than raw RSEM/SWATH quantified values. Validate the precise scale, transformation, feature selection and sample key mappings from the Suter methods and the originating Ng cohort before analysis.
+- Original EGA raw RNA access remains restricted. **Re-prioritize** publicly readable RDS matrix structure, T/P column intersections and source-specific sample provenance *before* pursuing controlled sequencing access. Seek EGA/author permission only if the public processed data are insufficient.
+
 ## Quantitative data to request or verify
 
 1. **Per-biopsy RNA normalized gene expression matrix**: rows stable Ensembl/Entrez gene identifiers, columns unique biopsy sample IDs, explicit count/TPM/RSEM measure, transformation and annotation version, exact 51 tumor biopsy intersection. Confirm whether a processed matrix can lawfully be shared independently of restricted raw sequencing.
