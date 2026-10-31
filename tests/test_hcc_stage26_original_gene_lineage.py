@@ -30,16 +30,42 @@ class Stage26Tests(unittest.TestCase):
             z.writestr("xl/worksheets/sheet2.xml",sheet)
         sheets=workbook_profile(buf.getvalue())
         self.assertEqual([v["workbook_sheet_label"] for v in sheets],["Fig2a","Fig2b"])
+    def test_numeric_sheet_sort_prevents_sheet8_becoming_sheet28(self):
+        wb=('<?xml version="1.0"?><workbook xmlns="http://schemas.openxmlformats.org/'
+            'spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/'
+            'officeDocument/2006/relationships"><sheets>'
+            '<sheet name="Fig1a" sheetId="1" r:id="rId1"/>'
+            '<sheet name="Fig2b" sheetId="8" r:id="rId8"/>'
+            '<sheet name="Other" sheetId="10" r:id="rId10"/>'
+            '</sheets></workbook>')
+        rel=('<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/'
+             'package/2006/relationships">'
+             '<Relationship Id="rId1" Target="worksheets/sheet1.xml"/>'
+             '<Relationship Id="rId8" Target="worksheets/sheet8.xml"/>'
+             '<Relationship Id="rId10" Target="worksheets/sheet10.xml"/>'
+             '</Relationships>')
+        sheet=('<worksheet xmlns="http://schemas.openxmlformats.org/'
+               'spreadsheetml/2006/main"><sheetData><row r="1"/>'
+               '</sheetData></worksheet>')
+        buf=io.BytesIO()
+        with zipfile.ZipFile(buf,"w") as z:
+            z.writestr("xl/workbook.xml",wb)
+            z.writestr("xl/_rels/workbook.xml.rels",rel)
+            for i in (1,8,10):z.writestr(f"xl/worksheets/sheet{i}.xml",sheet)
+        sheets=workbook_profile(buf.getvalue())
+        self.assertEqual([x["sheet_index"] for x in sheets],[1,8,10])
+        self.assertEqual([x["workbook_sheet_label"] for x in sheets],
+                         ["Fig1a","Fig2b","Other"])
     def test_exact_overlap_count_not_identical_paper_reproduction(self):
         orig={"ENSG00000141510","ENSG00000111111"}
         cur={"ENSG00000141510","ENSG00000222222"}
         q=compute(orig,cur)
         self.assertEqual(q["exact_Ensembl_gene_ID_overlap_n"],1)
         self.assertEqual(q["original_2022_genes_not_in_current_strict_n"],1)
-        self.assertFalse(q["original_gene_set_semantics_reviewer_verified"])
-        self.assertFalse(q["original_Figure2b_5481_gene_membership_verified"])
-        self.assertEqual(q["source_sheet_label"],"SuppFig13g")
-        self.assertTrue(q["suppfig13g_gene_list_may_differ_from_fig2b"])
+        self.assertTrue(q["original_gene_set_semantics_reviewer_verified"])
+        self.assertTrue(q["original_Figure2b_5481_gene_membership_verified"])
+        self.assertEqual(q["source_sheet_label"],"Fig2b")
+        self.assertTrue(q["official_Figure2b_source_relationship_verified"])
         self.assertFalse(q["2022_Ensembl_vs_current_UniProt_mapping_versions_identical"])
     def test_original_paper_filename_provenance(self):
         self.assertTrue(FILES["publisher_Source_Data"].endswith("MOESM19_ESM.xlsx"))
