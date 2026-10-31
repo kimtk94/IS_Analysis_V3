@@ -2,6 +2,38 @@
 
 **Status: protocol proposal and public aggregate evidence review, NOT performed wet-lab validation.** 2026-10-31.
 
+## Verified P9 GitHub Actions results (2026-10-31)
+
+This document was first written as a future-protocol checklist. The **separate computational evidence gates have since been executed**. Do not confuse successful computational gates with actual functional experiments.
+
+- Original one-shot [P9 run #41185391620](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185391620) **FAILED** with a Python unmatched-closing-parenthesis syntax error. The code was corrected; initial three-way [run #41185501862](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185501862) then **3/3 SUCCESS**. ZIP artifact content was actually opened and audited.
+- After noticing ambiguous prospective sample-matrix `vehicle_matched` column semantics, the code was corrected to **`is_vehicle_arm`** vs **`matched_vehicle_solvent_required_for_all_arms`**. Final corrected [P9 run #41185708990](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185708990) re-runs the 3 independent gates. The corrected protocol artifact [#13036857915](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185708990/artifacts/13036857915) is **PASS** and its 0/100/500 nM TSV verified manually: all arms require solvent-matched vehicle while only dose 0 is the vehicle arm.
+
+### P9a — exact numeric genotype/source reconciliation
+[Initial successfully verified P9a artifact #13036956334](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185501862/artifacts/13036956334) contains exactly **16 distinct Ensembl genes** with primary edgeR logCPM and log2FC/fdr matched to the P7a public gene-level results. Structure:
+- **4** `CORE_CROSS_STUDY_CONCORDANT`: MYOC, TGFBI, MMP2, ACTA2, all same signed and BH-FDR<0.05 in both distinct TM cohorts.
+- **4** `SECONDARY_DISCORDANT_CONTEXT_TEST`: SDC1, EGR3, LPAR1, TFPI — two cohorts have **opposite** signs with gene-level FDR<0.05 in both, so they are *not* validation positives.
+- **4** `SECONDARY_CONCORDANT_ECM_PRIORITY`: LUM, IGFBP3, VCAM1, NTM — 49-gene EMT source confirms same sign and both FDR<0.05, post-hoc selection.
+- **1** `PRIMARY_ONLY_GLUCORTICOID_REFERENCE`: FKBP5, **primary logCPM 7.839 and log2FC +3.984**, but the frozen P7a/P8a subset does not contain verified external per-gene numeric log2FC/FDR. Do not invent or label external validation.
+- **3** `LOW_EXPRESSION_EXPLORATORY_NOT_CORE`: CHAC1 (logCPM **1.331**), ERFE (**0.239**), PARM1 (**1.004**). Their log2FC may be large but require independent limit-of-quantification confirmation.
+- All 12 original P5 post-hoc discordant genes remain flagged as opposite-sign; none is relabelled a cross-study treatment validation.
+
+### P9b — risk-of-interpretation and nomenclature audit
+[Initial successfully verified P9b artifact #13036932453](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185501862/artifacts/13036932453):
+- Ten predefined TM/ECM marker rows: **4** two-source same-sign BH-FDR positives (MYOC/TGFBI/MMP2/ACTA2), **5** source-only significant with no external gene-wise FDR (<0.05) (FN1, COL1A1, CCN2, THBS1, TIMP1), **1** significant opposite (SDC1).
+- **CTGF = CCN2** canonical alias. The P7a 'CTGF' entry is not an independently quantified second gene; `CCN2` is the measured locus. qPCR cannot count these as independent gene targets.
+- Interpreting MYOC as a known steroid-induced positive control is reasonable, but it does not eliminate condition-linked prep bias or validate TM stiffness/aqueous outflow physiology.
+
+### P9c — prospective wet-lab design, NOT completed assay
+[Corrected protocol artifact #13036857915](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185708990/artifacts/13036857915) includes:
+- 48h primary: **same-donor 0/100/500nM**, matched solvent in **all** arms, randomized across plates/prep, biological replicate = donor not well.
+- Optional 1h/6h/48h×0/100/500nM dose/time interaction follow-up, 9 within-donor condition cells.
+- RT-qPCR core marker panel; independent protein/gelatinase/ECM functional readouts if technically feasible.
+- Documented mycoplasma QC, reference-gene stability, blinded quantitative assays and pre-specified multiple-testing corrections.
+- **Donor number not asserted:** power analysis requires measured donor-level pilot variance. No actual DEX wet-lab, protein, endotoxin, IOP or clinical validation has occurred in this GitHub Actions computational stage.
+
+**Gate state:** GO public gene-level audit, assay decision framework, bioinformatics candidate preservation. HOLD prospective matched 100/500nM experiments and ECM protein/function. STOP any human IOP predictive model or microbial causal mechanism from this evidence.
+
 ## Why the next gate differs from P5–P8
 
 The existing 500 nM BeamA single-cell pseudobulk (57 paired donors, 9 source pools) and 100 nM 48h bulk TM published study yield consistent RNA signals for selected ECM/GC genes. However, the former's treatment arms use condition-specific 10x libraries, and between-study dose differences are confounded by donor cohort, platform, cell-state selection and protocols. Internal leave-one-pool-out edgeR testing, selected-gene concordance, and exploratory pathway enrichment **cannot identify dose-specific causation, protein expression, aqueous outflow change or patient IOP susceptibility**.
