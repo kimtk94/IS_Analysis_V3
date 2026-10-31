@@ -146,3 +146,15 @@ Repository registry: `research/hcc/feasibility/datasets.json`.
 - **Gates:** V02 BLOCKED (no RNA expression-by-patient matrix join); V12 PARTIAL (endpoint codebook missing); V13 BLOCKED (no independent locked survival score or external validation). No survival model has been fit.
 - Scripts: scripts/hcc/probe_xing2023_clinical_layout.py and scripts/hcc/probe_xing2023_clinical_completeness.py. Tests: tests/test_hcc_xing2023_clinical_layout.py and tests/test_hcc_xing2023_clinical_completeness.py. Artifact: xing2023_clinical_completeness.json. Evidence registry: research/hcc/feasibility/XING2023_EXTERNAL_QC.json.
 - **Next:** verify Table S1 source codebook; then calculate genuine event N and complete-case adjustment variables without publishing patient records. Independently procure lawful RNA gene-by-sample values for V02.
+
+
+## Stage-13 Xing 2023 clinical complete-case prescreen — 2026-10-31
+
+- **Actual GitHub Actions PASS:** https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155499877 (official mmc2/mmc3 source hash checks, 152/152 exact clinical-row sample-label mapping, synthetic tests, aggregate-only source analysis). Implemented in scripts/hcc/probe_xing2023_clinical_complete_case.py and tests/test_hcc_xing2023_clinical_complete_case.py.
+- Predeclared baseline variables (age, sex, tumor size, BCLC, candidate event/status + time): **152/152 numeric/presence-complete** for each candidate endpoint, RFS and survival.
+- Extended clinical covariates (adds numeric AFP, MVI, TNM stage): **143/152 candidate complete**, 9 lost. AFP itself has 143 finite numeric values though 152 have a nonblank value.
+- HBV/HCV-related fields together have **132/152** finite numeric paired coverage. HCV-related field alone 138, HBV-related field alone 143; **132 is the actual intersection**, not 143+138-152 inferred from marginal counts.
+- Extended covariate set including both viral marker fields and candidate endpoint: **125/152 complete**, 27 lost; these are not 125 patients of any verified HCC etiology or a matched RNA/Protein count. This is a sample-key-matched *protein/clinical-only* cohort.
+- Conditional candidate raw endpoint code frequencies (NOT recurrence/death events): extended N=143 RFS 0=25, 1=118, survival 0=78, 1=65; extended + viral N=125 RFS 0=20, 1=105, survival 0=71, 1=54. They must not be labelled event rates or used for survival inference before source-specific codebook adjudication.
+- **Decision:** V12 PARTIAL, V13 BLOCKED, V02 BLOCKED. This completes an engineering data-completeness preflight, NOT clinical event semantics, confounder adjustment, Cox/KM survival claims, external recurrence validation, or multiomics interactions.
+- **Next P0:** validate true RFS/OS event definitions/0–1 direction, unit, time-zero, censoring and eligibility directly in the publication/supplemental source; verify HBV/HCV marker clinical meaning and subgroup counts; compute reviewable biologically eligible complete cases; separately procure actual patient-level RNA quantification for V02.
