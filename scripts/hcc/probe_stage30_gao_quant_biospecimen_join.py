@@ -42,7 +42,13 @@ def get_biospecimen(pid):
         typ=str(r.get("sample_type") or "").lower()
         typ="Normal" if "normal" in typ or "non-tumor" in typ else (
             "Tumor" if "tumor" in typ or "malignant" in typ or "primary" in typ else "Other")
-        out[aliquot]={"sample":samp,"case":case,"kind":typ}
+        out[aliquot]={"sample":samp,"case":case,"kind":typ,
+            "aliquot_submitter_id":str(r.get("aliquot_submitter_id") or "").strip(),
+            "aliquot_id":str(r.get("aliquot_id") or "").strip(),
+            "sample_submitter_id":str(r.get("sample_submitter_id") or "").strip(),
+            "sample_id":str(r.get("sample_id") or "").strip(),
+            "case_submitter_id":str(r.get("case_submitter_id") or "").strip(),
+            "case_id":str(r.get("case_id") or "").strip()}
     return out
 
 def study(pid):
@@ -88,8 +94,26 @@ def study(pid):
                 matches=[r for a,r in index.items() if a in header]
                 matched_sample_ids={r["sample"] for r in matches}
                 matched_case_ids={r["case"] for r in matches}
+                # PDC aliquot submitter IDs may not be the file's column
+                # namespace. Independently test all six documented PDC
+                # case/sample/aliquot aliases. No fuzzy/cross-patient joining.
+                namespaces={}
+                for key in ("aliquot_submitter_id","aliquot_id",
+                            "sample_submitter_id","sample_id",
+                            "case_submitter_id","case_id"):
+                    names={r.get(key) for r in index.values() if r.get(key)}
+                    namespaces[key]=len(names & header)
+                # Conservative case-insensitive and trailing-whitespace-only
+                # comparison to detect trivial quoting/case changes.
+                hupper={k.strip().upper() for k in header}
+                namespaces_ci={}
+                for key in namespaces:
+                    names={r.get(key).upper() for r in index.values() if r.get(key)}
+                    namespaces_ci[key]=len(names & hupper)
                 metrics.update({
                     "nonfirst_header_unique_token_n":len(header),
+                    "exact_PDC_case_sample_aliquot_alias_namespace_match_n":namespaces,
+                    "casefold_PDC_alias_namespace_match_n":namespaces_ci,
                     "exact_matched_PDC_aliquot_submitter_IDs_n":len(matches),
                     "exact_matched_PDC_unique_samples_n":len(matched_sample_ids),
                     "exact_matched_PDC_unique_cases_n":len(matched_case_ids),
