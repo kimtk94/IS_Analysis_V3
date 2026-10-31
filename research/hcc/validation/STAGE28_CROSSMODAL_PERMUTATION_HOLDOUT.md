@@ -28,3 +28,13 @@ Same gene/protein feature identity, named same 50 biopsy columns but across-sour
 Source validated corrected original `Fig2b` 5,481 gene list and 5,253 intersection in Actions #41185931131 (three jobs PASS; individual gene rho still untested).
 
 Source code / CI Stage28: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41186682016 — pending at initial protocol timestamp. Any numerical findings must be appended to D-041 AFTER job logs inspected.
+
+## Actual CI findings / Stage28B (2026-10-31)
+
+**Stage28 PASS_TECHNICAL:** CI https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41186682016, artifact #13037146465. On disjoint heldout source feature sets, same 50-sample map learned on 1st 50% and reversed 2nd 50% feature splits (50/50 positions agree). RNA–Protein, RNA–PP and Protein–PP individually inferred maps all agree **50/50**. Original same-column sample matches only **2/50**. Heldout Spearman medians T=−0.001872749→1, P=0.024345738→1, PP=0.036110444→1; fraction of independent test features with rho>0.95 after mapping **100%** for each.
+
+**Stage28B PASS_NUMERIC_TECHNICAL:** CI https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41187009479, artifact #13037476122. On disjoint heldout rows after independent sample map training, actual `HCCfullz[,inferred_column_order]` reconstructed by source `(HCCfull - rowMean)/rowSD` for all common continuous features. Absolute residual median before vs after: T 0.780477824→0 at 9-decimal precision, P 0.824260984→0, PP 0.795386541→0; all tested cells have error <1e-6, and all heldout features have row-max error <1e-5. The exact floating-point error is not asserted zero beyond output precision.
+
+**Interpretation update:** The previously nearly zero cross-RDS rank concordance is not evidence of distinct biological expression patterns; one common source sample-column permutation and subsequent feature-wise standardization explain both rank and numerical discrepancies. However source author code for the permanent fullz construction, true Ng sample-label orientation, why 588 RNA features were omitted, and original Ng 2022 reference-normal transformations remain unverified. **V03 PARTIAL**. No original source files or sample identifiers were modified, uploaded, or retrospectively repaired.
+
+**Immediate following work:** Stage29 original Ng Figure2b correlation effect comparison and 50 biopsy / 48 patient group sensitivity; check source original sample-label map and 588 RNA gene filtering. Original published Fig2b source gene identity (5481) vs current strict (5343) share 5253 Ensembl IDs in corrected v3 CI https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185931131 (3/3 successful).
