@@ -79,7 +79,7 @@
   },
   "decision": {
     "exploratory_reanalysis_with_patient_n_48": "GO_DESCRIPTIVE_ONLY",
-    "exclusive_ALD_versus_HCV_crossomics_statistics": "HOLD_PENDING_CONFOUNDERS_AND_ID_MAPPING",
+    "exclusive_ALD_versus_HCV_crossomics_statistics": "HOLD_CONFIRMATORY__ALLOW_DESCRIPTIVE_ONLY_DUE_TO_SEX_AND_STAGE_CONFOUNDING",
     "novel_molecular_disease_claim": "NOT_ALLOWED",
     "confirmed_survival_or_treatment_claim": "NOT_ALLOWED",
     "V02": "PARTIAL",
@@ -118,5 +118,53 @@
     "differential_gene_protein_concordance_association_tested": false,
     "inferential_research_GO": false,
     "source_ci_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162706947"
+  },
+  "stage21_source_confounder_smd": {
+    "source": "Ng2022 Supplementary Data 1 SHA256 pinned, Suter 50 biopsies / 48 patients",
+    "run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41163101027",
+    "final_guardrail_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41163343921",
+    "exclusive_groups": {
+      "ALD": 12,
+      "HCV": 11
+    },
+    "absolute_SMD": {
+      "age": 0.077,
+      "male_sex": 0.667,
+      "BCLC_early_0_A": 0.26,
+      "ChildPugh_A_vs_BC": null
+    },
+    "source_Child_Pugh_class_ABC_interpretable_n": {
+      "ALD": 8,
+      "HCV": 3
+    },
+    "Child_Pugh_SMD_withheld_due_to_low_coverage": true,
+    "MELD": {
+      "ALD_median": 11,
+      "ALD_numeric_n": 12,
+      "HCV_median": 8,
+      "HCV_numeric_n": 10
+    },
+    "source_labeled_cirrhosis_yes": {
+      "ALD": 11,
+      "HCV": 8
+    },
+    "source_BCLC_0_A": {
+      "ALD": 7,
+      "HCV": 5
+    },
+    "source_male": {
+      "ALD": 12,
+      "HCV": 9
+    },
+    "age_median": {
+      "ALD": 67,
+      "HCV": 69
+    },
+    "imbalance_threshold_descriptive": 0.2,
+    "model_ready": false,
+    "scientific_effects_tested": false,
+    "group_comparison_decision": "EXPLORATORY_DESCRIPTIVE_ONLY__CONFIRMATORY_HOLD",
+    "reason": "Sex and BCLC imbalances, low Child-Pugh interpretable HCV N, no batch evidence, n23 and many omics hypotheses",
+    "privacy": "No patient identifiers, source clinical rows or sample abundance values published"
   }
 }
