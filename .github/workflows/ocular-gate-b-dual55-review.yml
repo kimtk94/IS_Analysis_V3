@@ -1,8 +1,5 @@
 name: Ocular Gate B Dual55 Aggregate-Only Reviewer
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-gate-b-dual55-review.yml'
   workflow_dispatch:
 
 permissions:
