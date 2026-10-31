@@ -1,8 +1,5 @@
 name: Ocular Gate B Metadata Cutoff and Authors' DEG Provenance
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-gateb-source-audit.yml'
   workflow_dispatch:
 
 permissions:
