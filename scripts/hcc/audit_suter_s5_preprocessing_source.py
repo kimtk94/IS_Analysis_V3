@@ -88,13 +88,17 @@ def layer_method_keyword_sections(text):
     for i,(start,name) in enumerate(found):
         end=found[i+1][0] if i+1<len(found) else len(flat)
         segment=flat[start:end]
+        if name=="cna":
+            # CNA is a boundary marker only. The remainder can include other
+            # appendix prose and is unsafe to label CNA processing.
+            continue
         result[name]={
           "section_heading_detected":True,
           "segment_character_count":len(segment),
           "upper_quartile_mentioned":bool(re.search(r"upper[- ]quartile",segment,re.I)),
           "normalization_to_1000_mentioned":bool(re.search(r"\b1000\b",segment,re.I)),
           "log2_mentioned":bool(re.search(r"log\s*2",segment,re.I)),
-          "median_subtraction_mentioned":bool(re.search(r"median.{0,30}subtract|subtract.{0,30}median",segment,re.I)),
+          "median_subtraction_mentioned":bool(re.search(r"median.{0,30}sub(?:tract|strac)|sub(?:tract|strac).{0,30}median",segment,re.I)),
           "half_sample_detection_filter_mentioned":bool(re.search(r"50\s*%|half.{0,15}sample",segment,re.I)),
           "imputation_mentioned":bool(re.search(r"imput",segment,re.I)),
           "clustering_only_qualifier_mentioned":bool(re.search(
