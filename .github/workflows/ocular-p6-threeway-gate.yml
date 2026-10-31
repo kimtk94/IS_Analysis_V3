@@ -1,0 +1,66 @@
+name: Ocular P6 External Factors Three-Way Gate
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-p6-threeway-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  p6-external-factor-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [p6a, p6b, p6c]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate P6 parser and pinned numeric dependency
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          python -m py_compile scripts/ocular/ocular_p6_external_factors.py
+          if [ "$MODE" = "p6b" ]; then python -m pip install 'numpy==1.26.4'; fi
+      - name: Get only pre-verified public aggregate artifacts as required
+        env:
+          MODE: ${{ matrix.mode }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/p6-source" "ocular-${MODE}-public"
+          if [ "$MODE" = "p6a" ]; then
+            gh run download 41170641379 -n ocular-p5q-12-target-formal-loo -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p6-source"
+            test -s "$RUNNER_TEMP/p6-source/source_qc.json"
+          elif [ "$MODE" = "p6b" ]; then
+            gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p6-source"
+            test -s "$RUNNER_TEMP/p6-source/p5_all_gene_results.tsv.gz"
+          fi
+      - name: Run mode-specific P6 scientific gate
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          if [ "$MODE" = "p6a" ]; then
+            python -u scripts/ocular/ocular_p6_external_factors.py --mode p6a --input "$RUNNER_TEMP/p6-source/source_qc.json" --out ocular-p6a-public
+          elif [ "$MODE" = "p6b" ]; then
+            python -u scripts/ocular/ocular_p6_external_factors.py --mode p6b --input "$RUNNER_TEMP/p6-source/p5_all_gene_results.tsv.gz" --out ocular-p6b-public --permutations 999
+          else
+            python -u scripts/ocular/ocular_p6_external_factors.py --mode p6c --out ocular-p6c-public
+          fi
+      - name: Purge temporary source artifacts
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p6-source"
+      - name: Publish aggregate-only P6 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-${{ matrix.mode }}-external-factors-public
+          path: ocular-${{ matrix.mode }}-public/
+          retention-days: 30
+          if-no-files-found: warn
