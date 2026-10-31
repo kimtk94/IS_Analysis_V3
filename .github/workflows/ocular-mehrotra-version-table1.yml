@@ -1,8 +1,5 @@
 name: Ocular Mehrotra Preprint vs Journal Table 1 Provenance
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-mehrotra-version-table1.yml'
   workflow_dispatch:
 
 permissions:
