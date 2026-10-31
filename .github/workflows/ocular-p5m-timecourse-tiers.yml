@@ -1,0 +1,49 @@
+name: Ocular P5m Cross-Study TM Time Course and Three-Tier Hypothesis
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p5m_timecourse_and_tiers.py'
+      - '.github/workflows/ocular-p5m-timecourse-tiers.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  infer-publication-trajectories:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned offline parsers
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+          python -m py_compile scripts/ocular/ocular_p5m_timecourse_and_tiers.py
+      - name: Get verified aggregate-only P5l and P5b artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/p5l" "$RUNNER_TEMP/p5b" ocular-p5m-public
+          gh run download 41158660082 -n ocular-p5l-discordant-poolunit -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5l"
+          gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5b"
+          test -s "$RUNNER_TEMP/p5l/P5l_96_discordant_poolunit_crosscheck.tsv"
+          test -s "$RUNNER_TEMP/p5b/p5b_top_gene_leave_pool.tsv"
+      - name: Validate 96 opposite-sign genes against official 100nM TM 1h 6h 48h supplements
+        run: |
+          python -u scripts/ocular/ocular_p5m_timecourse_and_tiers.py --p5l "$RUNNER_TEMP/p5l/P5l_96_discordant_poolunit_crosscheck.tsv" --p5b-loo "$RUNNER_TEMP/p5b/p5b_top_gene_leave_pool.tsv" --output-dir ocular-p5m-public
+      - name: Delete transient external artifact copies
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p5l" "$RUNNER_TEMP/p5b"
+      - name: Upload only aggregate gene statistics and method caveats
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5m-timecourse-96-tiering
+          path: ocular-p5m-public/
+          if-no-files-found: warn
+          retention-days: 30
