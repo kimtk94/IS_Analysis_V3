@@ -37,6 +37,9 @@ class Stage26Tests(unittest.TestCase):
         self.assertEqual(q["exact_Ensembl_gene_ID_overlap_n"],1)
         self.assertEqual(q["original_2022_genes_not_in_current_strict_n"],1)
         self.assertFalse(q["original_gene_set_semantics_reviewer_verified"])
+        self.assertFalse(q["original_Figure2b_5481_gene_membership_verified"])
+        self.assertEqual(q["source_sheet_label"],"SuppFig13g")
+        self.assertTrue(q["suppfig13g_gene_list_may_differ_from_fig2b"])
         self.assertFalse(q["2022_Ensembl_vs_current_UniProt_mapping_versions_identical"])
     def test_original_paper_filename_provenance(self):
         self.assertTrue(FILES["publisher_Source_Data"].endswith("MOESM19_ESM.xlsx"))
