@@ -1,0 +1,40 @@
+name: HCC Research Protocol Governance
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'research/hcc/validation/**'
+      - 'scripts/hcc/validate_research_protocol.py'
+      - 'tests/test_hcc_research_protocol.py'
+      - '.github/workflows/hcc-validation-governance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/hcc/validation/**'
+      - 'scripts/hcc/validate_research_protocol.py'
+      - 'tests/test_hcc_research_protocol.py'
+      - '.github/workflows/hcc-validation-governance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validation-governance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate 16 evidence-protected research gates
+        run: python -m unittest discover -s tests -p 'test_hcc_research_protocol.py' -v
+      - name: Render protocol status and allowable claims
+        run: python scripts/hcc/validate_research_protocol.py --out-dir results/hcc/validation
+      - name: Save protocol status artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-validation-governance-status
+          path: results/hcc/validation/
+          if-no-files-found: error
