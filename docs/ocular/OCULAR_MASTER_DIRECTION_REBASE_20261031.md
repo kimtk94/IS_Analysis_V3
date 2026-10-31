@@ -1,5 +1,15 @@
 # OCULAR MASTER — 연구 방향 재설정 (2026-10-31)
 
+## Figure·논문 Results 1차 패키지 — 실제 GitHub Actions 검증 완료 (2026-10-31)
+
+기존 검증 산출물만 재사용한 [최종 Figure CI #41208972011](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41208972011) **SUCCESS**. 원본 SHA256 고정 확인 후 3개 PNG와 3개 SVG, 16개 후보 Supplementary Table S1, 출처 manifest, 해석용 Figure legends 생성. [artifact #13045363678](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41208972011/artifacts/13045363678) 직접 다운로드 및 압축 CRC 확인, **그림 3개를 열어 본문과 하단 주석의 겹침이 없도록 수정**한 최종본을 기준으로 사용. 초기 도표 run #41208620110은 CI 자체는 성공했으나 하단 설명문이 겹쳐 최종본에서 제외.
+
+- **Fig 1:** GSE313736 500 nM 48h / Mehrotra 100 nM 48h / GSE301517 500 nM 7d. MYOC↑, TGFBI↓, MMP2↓ 세 연구 일치, ACTA2는 7d에서 반대 방향. 7d CPM+1 로그 비율과 48h edgeR 로그 효과크기는 **동일 추정치가 아니므로 방향을 중심으로 그렸다**.
+- **Fig 2:** 내부 57명 BeamA confidence .75/.50, 동일 55명 BeamA/scPred TM_Fibro. 핵심 3개 방향·유전자별 FDR 안정성. **동일 원자료 재분석이지 독립 복제가 아님**.
+- **Fig 3:** Hallmark EMT 194개 중 방향 일치: 48h 두 연구 141개, 500nM 48h↔500nM 7d 156개, 100nM 48h↔500nM 7d 145개, 세 실험 모두 124개. 탐색적·상관된 유전자 기반 비율이지 경로 검정 p값이 아니다.
+
+[검증한 논문 Figure와 Results 해석 문서](THESIS_FIGURES_AND_MANUSCRIPT_RESULTS_VERIFIED_20261031.md)를 본 연구의 공식 작성 기준으로 사용한다. 다음은 figure 생성 반복이 아니라 (1) 원 논문 80개 유전자 원본 목록 확보 (2) 기존 논문의 핵심 발견 대비 novelty table (3) 결과 Methods·Discussion 통합이다. **아직 wet-lab ECM 기능, 임상 스테로이드 ∆IOP, 약물 인과 효과는 입증되지 않았다.**
+
 ## Gate B 공통 donor 기준 검증 완료 — 55명 BeamA/scPred raw UMI 이중 재분석
 
 2026-10-31 [공통 55명 두 주석 원시 UMI/edgeR run #41206289766](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41206289766)에서 **18개 원본 한 번 집계 및 두 edgeR paired model 적합이 실제 성공**했다. 다만 해당 run의 전체 결론은 **FAIL**: 마지막 비교 스크립트가 scPred에서 발현 필터로 제거된 `ERFE`를 반드시 양쪽에 있어야 하는 유전자로 간주했기 때문이다. 유전자별 결과를 다운로드하여 ERFE는 *untestable*로 표시하는 수정 후, **[집계된 결과만 다시 비교하는 CI #41207583296](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41207583296) SUCCESS**, [artifact #13045350639](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41207583296/artifacts/13045350639) 실제 TSV/JSON 점검 완료. [최종 검증 문서](GATE_B_MATCHED55_BEAMA_TM_FIBRO_ACTUAL_VERIFIED_20261031.md)에 전체 근거와 실패·수정 기록 보존.
