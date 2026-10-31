@@ -1,9 +1,5 @@
 name: Ocular P5m Cross-Study TM Time Course and Three-Tier Hypothesis
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5m_timecourse_and_tiers.py'
-      - '.github/workflows/ocular-p5m-timecourse-tiers.yml'
   workflow_dispatch:
 
 permissions:
