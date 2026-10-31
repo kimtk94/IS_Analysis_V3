@@ -171,7 +171,7 @@
       "id": "V03",
       "title": "RNA·Protein QC/정규화",
       "stage": "pairedomics",
-      "status": "NOT_STARTED",
+      "status": "PARTIAL",
       "priority": "P0",
       "pass_criteria": "QC report on actual quantitative matrices, identifier harmonization, missingness/batch",
       "paper_refs": [
@@ -179,14 +179,19 @@
         "L02",
         "L03"
       ],
-      "observation": "",
-      "evidence": [],
+      "observation": "Source-pinned Suter HCCfull RDS T/P 50-biopsy numeric-layer QA verified; zero nonfinite values across 20,356 T and 5,585 P features, global negatives and zero patterns audited; exact T/P row-label overlap 0 due to Ensembl-versus-protein identifier namespaces. S5 Appendix imputation, normalization and exact feature gene mapping not yet reviewed.",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162144728",
+          "level": "source_pinned_50_sample_numeric_distribution_QC_not_normalization_approved"
+        }
+      ],
       "analysis_evidence": [],
       "reviewer_approved": false,
       "independent_patient_n": null,
       "independent_event_n": null,
-      "last_updated": "2026-10-30",
-      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+      "last_updated": "2026-10-31",
+      "next_action": "Review Suter S5 preprocessing and original Ng normalized RNA/proteomic scale; implement source-checked Ensembl-to-protein/gene-symbol mapping and verify many-to-one/isoform duplicates before concordance."
     },
     {
       "id": "V04",
@@ -224,20 +229,25 @@
       "id": "V05",
       "title": "병기·치료·batch 교란",
       "stage": "etiology",
-      "status": "NOT_STARTED",
+      "status": "PARTIAL",
       "priority": "P1",
       "pass_criteria": "stage and treatment balance, interaction adjustability, cohort platform confounding",
       "paper_refs": [
         "L03"
       ],
-      "observation": "",
-      "evidence": [],
+      "observation": "Ng/Suter original Supplementary Data 1 patient-deduplicated source matched N=48; ALD-only12 versus HCV-only11. Median age 67 vs 69; early BCLC(0/A) 7/12 versus 5/11 and advanced(B/C/D) 5/12 vs 6/11; male 12/12 versus 9/11. Age, sex, BCLC, Edmondson, MELD, cirrhosis headers found, treatment and batch not identified; within-person Edmondson disagreement observed. Not a balanced, adjusted clinical model.",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161928470",
+          "level": "source_patient_48_demographic_stage_covariate_prescreen_no_causal_adjustment"
+        }
+      ],
       "analysis_evidence": [],
       "reviewer_approved": false,
       "independent_patient_n": null,
       "independent_event_n": null,
-      "last_updated": "2026-10-30",
-      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+      "last_updated": "2026-10-31",
+      "next_action": "Confirm all candidate clinical values and source codebook; acquire treatment and assay batch metadata, assess residual confounding and duplicate-biopsy handling before any adjusted RNA/Protein etiology effect."
     },
     {
       "id": "V06",
