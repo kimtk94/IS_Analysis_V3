@@ -80,6 +80,31 @@ class QuantTests(unittest.TestCase):
         self.assertEqual(y["completed_nested_value_type_counts"]["OBJECT"],2)
         self.assertEqual(y["finite_numeric_values_examined_n"],3)
         self.assertNotIn("PRIVATE_SAMPLE",str(y))
+    def test_complete_outer_row_header_and_numeric_cells(self):
+        blob=(b'{"data":{"quantDataMatrix":['
+              b'["PRIVATE_GENE_COLUMN","PRIVATE_CASE_A","PRIVATE_CASE_B"],'
+              b'["PRIVATE_FEATURE_A","1.20",-0.18],'
+              b'["PRIVATE_FEATURE_B",0.31,"0.7"],'
+              b'["PRIVATE_FEATURE_C",null,-0.8]]')
+        x=inspect_oversized_matrix_prefix(blob)
+        summary=x["first_complete_matrix_rows_summary"]
+        self.assertEqual(summary["complete_outer_array_rows_seen_n"],4)
+        self.assertEqual(summary["first_row_column_count_n"],3)
+        self.assertTrue(summary["first_row_is_non_numeric_header_candidate"])
+        self.assertTrue(summary["all_inspected_rows_same_width"])
+        self.assertEqual(summary["first_data_rows_finite_numeric_cells_n"],6-1)
+        self.assertFalse(summary["per_cell_names_or_values_exported"])
+        self.assertNotIn("PRIVATE_",str(summary))
+    def test_incomplete_outer_row_prefix_is_not_false_success(self):
+        blob=(b'{"data":{"quantDataMatrix":['
+              b'["PRIVATE_HEAD","PRIVATE_CASE"],'
+              b'["PRIVATE_INCOMPLETE_FEATURE",1.2,')
+        x=inspect_oversized_matrix_prefix(blob)
+        summary=x["first_complete_matrix_rows_summary"]
+        self.assertEqual(summary["complete_outer_array_rows_seen_n"],1)
+        self.assertEqual(summary["first_data_rows_inspected_n"],0)
+        self.assertIsNone(summary["first_data_rows_numeric_fraction"])
+        self.assertNotIn("PRIVATE_",str(summary))
     def test_no_unknown_study_call(self):
         with self.assertRaises(ValueError):direct("PDC000000")
     def test_source_access_timeout_is_hold(self):
