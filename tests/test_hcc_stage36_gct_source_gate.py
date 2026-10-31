@@ -74,6 +74,15 @@ class Stage36Tests(unittest.TestCase):
         self.assertEqual(o["all_page_explicit_GCT_links_unassigned_n"],1)
         self.assertFalse(o["full_original_GCT_retrieved"])
 
+    def test_study_table_row_identifies_heatmap_link_without_id_in_anchor(self):
+        html=(b'<table><tr><td>PDC000198</td><td><a href="/export/pdc-source.gct">'
+              b'Log2 Ratio</a></td></tr><tr><td>PDC000199</td><td>'
+              b'<a href="/other.gct">Log2 Ratio</a></td></tr></table>')
+        d=page_inventory(html,"https://pdc.cancer.gov/pdc/explore-quantitation-data","PDC000198")
+        self.assertEqual(d["target_study_explicit_GCT_links_n"],1)
+        self.assertEqual(d["target_study_associated_links_n"],1)
+        self.assertFalse(d["full_original_GCT_retrieved"])
+
     def test_unapproved_gct_url_never_probed(self):
         self.assertTrue(is_safe_page("https://pdc.cancer.gov/pdc/study/PDC000198"))
         self.assertFalse(is_safe_page("http://pdc.cancer.gov/pdc/study/PDC000198"))
