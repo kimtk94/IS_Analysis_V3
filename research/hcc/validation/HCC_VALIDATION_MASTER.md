@@ -1,5 +1,9 @@
 # HCC Multi-omics — 연구 검증·논문 유의성 MASTER v1.0
 
+> **최신 운영 우선문서 / 2026-10-31 D-039:** [Stage28 전략 재정립](HCC_STAGE28_REBASELINE_RESEARCH_STRATEGY_20261031.md). 아래 2026-10-30 상태표는 역사적 스냅샷이며 최신 실측으로 **대체된 항목**(특히 Ng Figure2b 5,481 ID 실물 확보, Suter HCCfull vs fullz sample-axis mismatch, 50/48 source patient join, Stage24~27 수치)은 새 문서를 우선 적용합니다. 공개 GitHub Actions 성공은 biological gate PASS가 아닙니다. 현재 P0 = 50×50 cross-modal sample permutation 원인 확인 → original Fig2b gene-wise quantitative benchmark. 임상·병인 확증은 보류합니다.
+
+
+
 **작성:** 2026-10-30 KST · **용도:** 분석 재개 시 가장 먼저 확인할 연구 운영 문서  
 **상태:** PROTOCOL, 아직 논문의 연구가설·통계결과를 확증하지 않음  
 **관리 문서:** research/hcc/validation/checkpoints.json (기계 판독 기준), research/hcc/validation/DECISION_LOG.md (의사결정 이력)  
