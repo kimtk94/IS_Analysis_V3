@@ -38,6 +38,13 @@ jobs:
           ref: 5f2bc0341354fd5590aef76a533ada1e1e5b4e62
           path: upstream
           persist-credentials: false
+      - name: Checkout independent eight-track evidence PR (read only)
+        uses: actions/checkout@v4
+        with:
+          repository: kimtk94/IS_Analysis_V3
+          ref: refs/pull/255/head
+          path: evidence
+          persist-credentials: false
       - name: Audit selected skill metadata
         shell: bash
         env:
@@ -99,6 +106,26 @@ jobs:
                   'reason': 'Skill document checks do not validate study source data'}
           (out / 'research_gate.json').write_text(json.dumps(gate, indent=2) + '\\n')
           print(json.dumps(result))
+          source = pathlib.Path('evidence/research/operations/daily_20261101_readiness.json')
+          if not source.is_file():
+              raise SystemExit('MISSING_EVIDENCE_MANIFEST')
+          manifest = json.loads(source.read_text())
+          aliases = {'IS': 'is', 'glaucoma': 'glaucoma', 'HCC': 'hcc',
+                     'radiomics': 'radiomics', 'ophthalmology': 'ocular',
+                     'muscle': 'muscle', 'oral-cancer': 'oral', 'skin-mr': 'skin'}
+          track = next((t for t in manifest.get('tracks', [])
+                        if t.get('id') == aliases[result['research']]), None)
+          if not track:
+              raise SystemExit('MISSING_TRACK_EVIDENCE')
+          if track.get('scientific_gate') not in ('HOLD', 'PASS', 'FAIL'):
+              raise SystemExit('INVALID_RESEARCH_GATE')
+          gate['source_evidence'] = 'PR255:research/operations/daily_20261101_readiness.json'
+          gate['source_audit_status'] = track.get('audit_status')
+          gate['source_scientific_gate'] = track.get('scientific_gate')
+          gate['research_gate_status'] = ('HOLD_SOURCE_REVIEW' if track['scientific_gate'] == 'HOLD'
+                                        else 'HOLD_INDEPENDENT_REVIEW_REQUIRED')
+          gate['reason'] = 'Source manifest is a bounded audit; not a fresh biological rerun'
+          (out / 'research_gate.json').write_text(json.dumps(gate, indent=2) + '\\n')
           print(json.dumps(gate))
           PY
       - uses: actions/upload-artifact@v4
