@@ -24,6 +24,11 @@ class OfficialPDCHarness(unittest.TestCase):
                 x=study("PDC000198")
         self.assertEqual(x["status"],"SOURCE_ASSEMBLY_HEADER_VS_PDC_ALIQUOT_METADATA_CHECKED")
         self.assertEqual(x["per_candidate_aliquot_ID_overlap_counts"][0]["exact_matched_PDC_aliquot_submitter_IDs_n"],1)
+        namespaces=x["per_candidate_aliquot_ID_overlap_counts"][0]["exact_PDC_case_sample_aliquot_alias_namespace_match_n"]
+        self.assertEqual(namespaces["aliquot_submitter_id"],1)
+        self.assertEqual(namespaces["sample_submitter_id"],0)
+        self.assertEqual(namespaces["case_submitter_id"],0)
+        self.assertEqual(namespaces["aliquot_id"],0)
         self.assertNotIn("ALIQUOT_PRIVATE",str(x))
         self.assertNotIn("token=private",str(x))
         self.assertFalse(x["full_matrix_numeric_values_and_gene_annotations_verified"])
