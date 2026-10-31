@@ -9,7 +9,8 @@ import argparse,csv,gzip,hashlib,json,re,tempfile
 from collections import Counter,defaultdict
 from pathlib import Path
 from ocular_p4_fullcohort import collect_metadata
-from ocular_p1_integrity import BASE,download
+from ocular_p1_integrity import BASE
+from ocular_gate_b_050_p4_retry import resilient_geo_download as download
 from ocular_p0_audit import fetch,root
 
 N=169398
