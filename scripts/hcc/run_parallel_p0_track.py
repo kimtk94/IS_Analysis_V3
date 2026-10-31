@@ -18,6 +18,7 @@ TRACKS = {
         ("ng_gao_metadata", "probe_ng_gao_public.py", "--output"),
         ("quant_matrix_manifest", "probe_quant_matrix_manifest.py", "--output"),
         ("quant_candidate_index", "probe_quant_candidates.py", "--out"),
+        ("ng_supplements_matrix_depth", "probe_ng_supplement_matrix_depth.py", "--out"),
     ],
     "pdc-mapping": [
         ("pdc_quant_headers", "probe_pdc_quant_headers.py", "--output"),
