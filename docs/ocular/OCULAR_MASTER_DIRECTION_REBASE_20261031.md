@@ -6,7 +6,7 @@
 
 **출처 관련 핵심 수정:**
 1. Singh et al. (PMID 41890121, DOI 10.64898/2026.03.12.711121)은 검색·PMC 검증 기준 **2026년 3월 bioRxiv 프리프린트**이다. 현재 단계에서 동료심사 저널 논문으로 설명하면 안 된다.
-2. Mehrotra et al. 100nM 연구는 **2026년 2월 IOVS 정식 출판**(PMID 41636427, DOI 10.1167/iovs.67.2.13)이다. 그보다 앞선 bioRxiv 버전은 PMID 41509484. **2026년 10월 1일 정정 공고**(PMID 42895266, DOI 10.1167/iovs.67.12.34)의 공식 원문을 확보했다. 누락된 **Data Availability** 단락 및 SRA **PRJNA1243143** 공개 안내를 추가한 정정이며 유전자 효과값 수정은 보고하지 않았다. 실제 ENA **46개 RUN, 92개 FASTQ, 총 89.68GB**, 23개 후보 라이브러리 쌍 중 17개만 처리군 명시, 6개는 `-1/-2` 처리군 매핑 HOLD. [최종 원본 검증](MEHROTRA_2026_ERRATUM_RESOLVED_AND_SRA_46_RUN_AUDIT_20261101.md).
+2. Mehrotra et al. 100nM 연구는 **2026년 2월 IOVS 정식 출판**(PMID 41636427, DOI 10.1167/iovs.67.2.13)이다. 그보다 앞선 bioRxiv 버전은 PMID 41509484. **2026년 10월 1일 정정 공고**(PMID 42895266, DOI 10.1167/iovs.67.12.34)의 공식 원문을 확보했다. 누락된 **Data Availability** 단락 및 SRA **PRJNA1243143** 공개 안내를 추가한 정정이며 유전자 효과값 수정은 보고하지 않았다. 실제 ENA **46개 RUN, 92개 FASTQ, 총 89.68GB**, 23개 후보 라이브러리 쌍 중 17개는 alias, 나머지 6개는 **공식 BioSample 12건**의 treatment 필드로 Vehicle/100nM DEX 대응을 확인했다. **23/23쌍 처리군 GO**, 1h/6h/48h 시간대·독립 strain/QC 통과 여부는 HOLD ([확인 CI #41214740781](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41214740781)). [최종 원본 검증](MEHROTRA_2026_ERRATUM_RESOLVED_AND_SRA_46_RUN_AUDIT_20261101.md).
 3. GSE313736는 공개된 GEO 데이터세트임을 확인했지만 **63↑·17↓=80개 DEG의 저자 원본 유전자 리스트와 대응하는 독립 동료심사 본문은 미확인**이다. 우리의 83/88 집합을 저자의 정확한 80개로 단정하거나 중복집계하지 않는다.
 4. DEX TM 전사체·장기 노출 효과는 2022년 논문, TM ROS/TGFβ/NOX4 기전은 2023년 연구, ECM·시간별 변화는 Mehrotra 2026 논문, TM chromatin/GWAS는 Singh 2026 프리프린트에서 이미 분석했다. **새 기전 발견 주장은 STOP**, 실제 검증된 **독립 실험 간 전사 방향 재현성·동일 donor 분류 강건성·재현 가능성 감사**만 학위논문 주요 기여로 남긴다.
 
