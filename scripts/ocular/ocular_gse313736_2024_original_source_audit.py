@@ -99,6 +99,10 @@ def main():
     a=ap.parse_args();a.out.mkdir(parents=True,exist_ok=True)
     records=[source_audit(k,v) for k,v in SOURCES.items()]
     r={x["source"]:x for x in records}
+    for x in records:
+        print("SOURCE_STATUS",x["source"],x["status"],
+              "required_terms",x.get("all_required_terms_found"),
+              "error",x.get("error",""),flush=True)
     all_three=all(x["status"]=="GO_OFFICIAL_PUBLIC_PDF_PROVENANCE" for x in records)
     summary={
       "status":"GO_THREE_AUTHOR_PRE_GEO_SOURCE_REPORTS_VERIFIED" if all_three else
