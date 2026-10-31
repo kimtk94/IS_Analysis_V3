@@ -7,11 +7,13 @@ on:
       - 'scripts/hcc/probe_xing2023_clinical_id_join.py'
       - 'scripts/hcc/probe_xing2023_clinical_layout.py'
       - 'scripts/hcc/probe_xing2023_clinical_completeness.py'
+      - 'scripts/hcc/probe_xing2023_clinical_complete_case.py'
       - 'tests/test_hcc_2023_proteome_supplement.py'
       - 'tests/test_hcc_pmc2026_cloud_proteomics.py'
       - 'tests/test_hcc_xing2023_clinical_id_join.py'
       - 'tests/test_hcc_xing2023_clinical_layout.py'
       - 'tests/test_hcc_xing2023_clinical_completeness.py'
+      - 'tests/test_hcc_xing2023_clinical_complete_case.py'
       - '.github/workflows/hcc-2023-external-proteome.yml'
   workflow_dispatch:
 permissions:
@@ -49,6 +51,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_hcc_xing2023_clinical_completeness.py' -v
       - name: Audit 152 matched clinical rows and per-column missingness
         run: python scripts/hcc/probe_xing2023_clinical_completeness.py --out results/hcc/feasibility/xing2023_clinical_completeness.json
+      - name: Test 152-case clinical complete-case profiles (synthetic)
+        run: python -m unittest discover -s tests -p 'test_hcc_xing2023_clinical_complete_case.py' -v
+      - name: Calculate actual matched-patient preflight complete-case counts
+        run: python scripts/hcc/probe_xing2023_clinical_complete_case.py --out results/hcc/feasibility/xing2023_clinical_complete_case.json
       - name: Upload public supplement audit
         uses: actions/upload-artifact@v4
         with:
@@ -61,4 +67,5 @@ jobs:
             results/hcc/feasibility/xing2023_proteome_clinical_id_overlap.json
             results/hcc/feasibility/xing2023_clinical_layout_audit.json
             results/hcc/feasibility/xing2023_clinical_completeness.json
+            results/hcc/feasibility/xing2023_clinical_complete_case.json
           if-no-files-found: error
