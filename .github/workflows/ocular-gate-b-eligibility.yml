@@ -1,5 +1,8 @@
 name: Ocular Gate B BeamA Selection and Original Author DEG Provenance
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-gate-b-eligibility.yml'
   workflow_dispatch:
 
 permissions:
@@ -17,11 +20,14 @@ jobs:
       - name: Verify public metadata parser without downloading expression matrices
         run: |
           python -m pip install 'numpy==1.26.4'
-          python -m py_compile scripts/ocular/ocular_gate_b_metadata_author_audit.py
+          python -m py_compile scripts/ocular/ocular_gate_b_metadata_author_audit.py scripts/ocular/ocular_gate_b_alt_annotations.py
       - name: Recompute donor eligibility at score 0.50 and 0.75 and verify author gene-list provenance
         run: |
           mkdir -p ocular-gate-b-public
           python -u scripts/ocular/ocular_gate_b_metadata_author_audit.py --out ocular-gate-b-public
+      - name: Audit alternative scpred TM_Fibro and JCT paired donor feasibility
+        run: |
+          python -u scripts/ocular/ocular_gate_b_alt_annotations.py --out ocular-gate-b-public
       - name: Upload aggregate QC only
         if: always()
         uses: actions/upload-artifact@v4
