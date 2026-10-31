@@ -132,32 +132,40 @@
       "independent_patient_n": null,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Clinical sample-key mapping and complete-case counts verified by source SHA; obtain patient-level RNA gene-by-sample quantitative matrix and confirm same-biopsy RNA/protein join"
+      "next_action": "Public Ng/Suter numeric T/P matrices and 50/48 strict source biopsy-patient join now verified; check assay transformation/normalization, missingness and feature annotation before full PASS."
     },
     {
       "id": "V02",
       "title": "동일 조직 RNA–Protein 정량 매칭",
       "stage": "pairedomics",
-      "status": "BLOCKED",
+      "status": "PARTIAL",
       "priority": "P0",
       "pass_criteria": "non-sensitive patient/biopsy RNA and protein matrix join counts with source hashes",
       "paper_refs": [
         "L02",
         "L03"
       ],
-      "observation": "Ng 51 biopsies / 49 people have metadata assay Y flags; no expression matrix join",
+      "observation": "Ng/Suter 2022 publicly released preprocessed numeric T/P/PP matrices: all five layers align on 50 samples; strict public RDS sample aliases matched 50/50 to Ng official Supplementary Data 1 biopsies, 50 both RNA/proteomics flags Y, 48 unique patients. Preprocessing units, imputation, batch correction, etiology clinical codebook and scientific reviewer sign-off remain pending.",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053421959",
           "level": "preliminary_public_metadata"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160494201",
+          "level": "source_pinned_numeric_quant_matrix_with_strict_sample_alias_50_biopsies_48_patients_not_scientific_PASS"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160770924",
+          "level": "source_pinned_numeric_quant_matrix_with_strict_sample_alias_50_biopsies_48_patients_not_scientific_PASS"
         }
       ],
       "analysis_evidence": [],
       "reviewer_approved": false,
-      "independent_patient_n": null,
+      "independent_patient_n": 48,
       "independent_event_n": null,
-      "last_updated": "2026-10-30",
-      "next_action": "Resolve missing access/valid matrix or switch research route"
+      "last_updated": "2026-10-31",
+      "next_action": "Verify Suter normalized RSEM/SWATH source units, imputation and batch correction; derive etiology group sizes on 48 unique source-matched patients and audit within-patient multiple tumor biopsies; independent review before V02 PASS."
     },
     {
       "id": "V03",
