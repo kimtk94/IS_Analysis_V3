@@ -1,8 +1,5 @@
 name: Ocular P8 EMT Specificity and BioSample/Shotgun QC
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-p8-specificity-biosample.yml'
   workflow_dispatch:
 
 permissions:
