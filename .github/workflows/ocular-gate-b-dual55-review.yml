@@ -1,0 +1,51 @@
+name: Ocular Gate B Dual55 Aggregate-Only Reviewer
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-gate-b-dual55-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify-fixed-55-model-results-without-raw-redownload:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install numerical validator only
+        run: |
+          python -m pip install 'numpy==1.26.4'
+          python -m py_compile scripts/ocular/ocular_gate_b_55_compare.py
+      - name: Download actual two already fitted edgeR aggregate reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-dual55-source" ocular-dual55-review-public
+          gh run download 41206289766 -n ocular-gate-b-dual55-public-results -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-dual55-source"
+          test -s "$RUNNER_TEMP/ocular-dual55-source/BeamA_075/p5_all_gene_results.tsv.gz"
+          test -s "$RUNNER_TEMP/ocular-dual55-source/TM_Fibro/p5_all_gene_results.tsv.gz"
+      - name: Audit shared 55 biological donors, annotation-specific gene filters and core panel
+        run: |
+          python -u scripts/ocular/ocular_gate_b_55_compare.py \
+            --beam "$RUNNER_TEMP/ocular-dual55-source/BeamA_075/p5_all_gene_results.tsv.gz" \
+            --fibro "$RUNNER_TEMP/ocular-dual55-source/TM_Fibro/p5_all_gene_results.tsv.gz" \
+            --source "$RUNNER_TEMP/ocular-dual55-source/dual_annotation_source_qc.json" \
+            --out ocular-dual55-review-public
+      - name: Remove read-only aggregate source copy
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-dual55-source"
+      - name: Save gene-level reviewed results only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gate-b-dual55-validated-review
+          path: ocular-dual55-review-public/
+          retention-days: 30
+          if-no-files-found: warn
