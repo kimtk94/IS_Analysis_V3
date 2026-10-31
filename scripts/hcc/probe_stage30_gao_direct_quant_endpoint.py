@@ -27,6 +27,24 @@ def inspect_oversized_matrix_prefix(raw):
                 "first_complete_gene_records_seen_n":0,
                 "numeric_cells_in_complete_first_records_n":0}
     pos=match.end()
+    while pos<len(text) and text[pos] in " \\t\\r\\n,":
+        pos+=1
+    first = text[pos:pos+1]
+    kinds = {'{':'OBJECT', '"':'JSON_STRING', '[':'NESTED_ARRAY',
+             'n':'NULL', 't':'TRUE', 'f':'FALSE'}
+    payload_kind = kinds.get(first,'OTHER_OR_INCOMPLETE')
+    # Only anonymous structural counts, never property names, patient
+    # identifiers, signed URLs, annotations or expression magnitudes.
+    structural = {
+        "first_array_element_JSON_kind":payload_kind,
+        "first_two_MiB_object_open_marker_n":text.count('{'),
+        "first_two_MiB_object_close_marker_n":text.count('}'),
+        "first_two_MiB_array_open_marker_n":text.count('['),
+        "first_two_MiB_array_close_marker_n":text.count(']'),
+        "first_two_MiB_json_keyvalue_colon_marker_n":text.count(':'),
+        "first_two_MiB_newline_n":text.count('\\n'),
+        "first_two_MiB_literal_tab_n":text.count('\\t'),
+    }
     decoder=json.JSONDecoder()
     shapes=[]
     numeric=0;values_total=0
@@ -52,6 +70,7 @@ def inspect_oversized_matrix_prefix(raw):
             except (ValueError,TypeError,OverflowError):pass
         pos+=consumed
     return {"array_prefix_marker_observed":True,
+            **structural,
             "first_complete_gene_records_seen_n":len(shapes),
             "sample_gene_field_present_in_partial_rows":gene_header_seen,
             "first_record_field_count_n":shapes[0] if shapes else None,
