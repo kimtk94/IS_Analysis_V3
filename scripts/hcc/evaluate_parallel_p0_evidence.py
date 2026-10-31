@@ -15,6 +15,7 @@ MAX_BYTES=2_000_000
 EVIDENCE_ITEMS=(
     ("ng_supplement", "ng-public", "ng_gao_metadata.json"),
     ("ng_quant_workbook_shape", "ng-public", "quant_matrix_manifest.json"),
+    ("ng_all_public_supplement_layouts", "ng-public", "ng_supplements_matrix_depth.json"),
     ("pdc_protein_sample_link", "pdc-mapping", "pdc_sample_mapping.json"),
     ("node_rna_access", "rna-access", "node_oep000321_access.json"),
     ("hccdb_rna_access", "rna-access", "hccdb25_access.json"),
@@ -45,6 +46,12 @@ def summarize(root):
     ng_workbooks=list((qm.get("ng_supplements") or {}).values()) if qm else []
     ng_shape_n=sum(isinstance(v,dict) and v.get("status") ==
                    "PUBLIC_XLSX_SHAPE_VERIFIED" for v in ng_workbooks)
+
+    all_ng_doc=docs["ng_all_public_supplement_layouts"]
+    all_ng=(all_ng_doc.get("audit") or {}) if all_ng_doc else {}
+    all_ng_scanned=all_ng.get("supplements_downloaded_and_layout_screened",0)
+    if not isinstance(all_ng_scanned,int) or isinstance(all_ng_scanned,bool):
+        all_ng_scanned=0
 
     pm=docs["pdc_protein_sample_link"]
     studies=(pm.get("records") or {}) if pm else {}
@@ -94,6 +101,14 @@ def summarize(root):
         "ng_quant_workbook_index": {
             "state":"PUBLIC_WORKBOOK_SHAPE" if ng_shape_n else "UNVERIFIED",
             "workbooks_with_shape_verified":ng_shape_n,
+            "quantitative_omics_join_verified":False,
+        },
+        "ng_all_public_supplement_layouts": {
+            "state":"PUBLIC_SUPPLEMENT_LAYOUT_SCREENED" if all_ng_scanned>0 else "UNVERIFIED",
+            "supplements_targeted":all_ng.get("supplements_targeted"),
+            "supplements_screened":all_ng_scanned,
+            "matrix_geometry_hints_n":len(all_ng.get("wide_matrix_geometry_hints") or []),
+            "verified_rna_expression_matrix":False,
             "quantitative_omics_join_verified":False,
         },
         "gao_pdc_protein_metadata": {
