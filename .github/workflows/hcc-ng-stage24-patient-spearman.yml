@@ -1,0 +1,96 @@
+name: HCC Ng Stage24 Patient-aware RNA Protein Spearman Pilot
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-ng-stage24-patient-spearman.yml'
+      - 'scripts/hcc/audit_ng_stage24_patient_spearman.R'
+      - 'scripts/hcc/build_ng_stage24_patient_index.py'
+      - 'scripts/hcc/validate_ng_stage24_spearman.py'
+      - 'scripts/hcc/probe_ng_full_uniprot_ensembl_crosswalk.py'
+      - 'tests/test_hcc_ng_stage24_patient_spearman.py'
+
+permissions:
+  contents: read
+
+jobs:
+  processed-omics-descriptive-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test pairing, source patient grouping and claim restrictions
+        run: python -m unittest discover -s tests -p 'test_hcc_ng_stage24_patient_spearman.py' -v
+      - name: Test reviewed UniProt mapping input and postflight evidence
+        run: |
+          python -m unittest discover -s tests -p 'test_hcc_ng_full_uniprot_crosswalk.py' -v
+          python -m unittest discover -s tests -p 'test_hcc_ng_crosswalk_metrics.py' -v
+      - name: Extract immutable full feature labels to transient runner temp
+        env:
+          NG_PRIVATE_FEATURE_IDS_OUT: ${{ runner.temp }}/stage24-protein-feature-accessions.txt
+        run: |
+          Rscript scripts/hcc/audit_ng_full_feature_namespace.R \
+            results/hcc/feasibility/stage24_full_feature_namespace.json
+      - name: Query reviewed UniProt and store strict gene/protein pairs only in runner temp
+        run: |
+          python scripts/hcc/probe_ng_full_uniprot_ensembl_crosswalk.py \
+            --private-features "${{ runner.temp }}/stage24-protein-feature-accessions.txt" \
+            --private-strict-pairs-out "${{ runner.temp }}/stage24-strict-gene-protein.tsv" \
+            --out results/hcc/feasibility/stage24_full_uniprot_mapping.json
+      - name: Validate corrected full crosswalk numbers and source provenance
+        run: |
+          python scripts/hcc/validate_ng_crosswalk_metrics.py \
+            --input results/hcc/feasibility/stage24_full_uniprot_mapping.json \
+            --output results/hcc/feasibility/stage24_mapping_review.json
+      - name: Load public RDS source biopsy labels into transient runner temp
+        env:
+          NG_PRIVATE_KEYS_OUT: ${{ runner.temp }}/stage24-source-biopsy-labels.txt
+        run: |
+          Rscript scripts/hcc/audit_ng_public_multiomics_rds.R \
+            results/hcc/feasibility/stage24_public_rds_source_qc.json
+      - name: Match 50 biopsy labels to 48 unique source patients without exporting identifiers
+        run: |
+          python scripts/hcc/build_ng_stage24_patient_index.py \
+            --source-labels "${{ runner.temp }}/stage24-source-biopsy-labels.txt" \
+            --private-patient-index-out "${{ runner.temp }}/stage24-private-patient-index.txt"
+      - name: Run source SHA-pinned processed 1-to-1 RNA protein Spearman diagnostic
+        run: |
+          Rscript scripts/hcc/audit_ng_stage24_patient_spearman.R \
+            "${{ runner.temp }}/stage24-strict-gene-protein.tsv" \
+            "${{ runner.temp }}/stage24-private-patient-index.txt" \
+            results/hcc/feasibility/stage24_patient_spearman.json
+      - name: Validate Stage24 result with noninferential and privacy guards
+        run: |
+          python scripts/hcc/validate_ng_stage24_spearman.py \
+            --mapping results/hcc/feasibility/stage24_mapping_review.json \
+            --correlations results/hcc/feasibility/stage24_patient_spearman.json \
+            --out results/hcc/feasibility/stage24_pilot_review.json
+      - name: Purge all temporary patient/source feature identifiers
+        if: always()
+        run: |
+          rm -f "${{ runner.temp }}/stage24-protein-feature-accessions.txt" \
+            "${{ runner.temp }}/stage24-strict-gene-protein.tsv" \
+            "${{ runner.temp }}/stage24-source-biopsy-labels.txt" \
+            "${{ runner.temp }}/stage24-private-patient-index.txt"
+      - name: Publish only aggregate evidence; never patient/gene-level statistics
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-ng-stage24-patient-spearman-aggregate
+          path: |
+            results/hcc/feasibility/stage24_full_feature_namespace.json
+            results/hcc/feasibility/stage24_full_uniprot_mapping.json
+            results/hcc/feasibility/stage24_mapping_review.json
+            results/hcc/feasibility/stage24_public_rds_source_qc.json
+            results/hcc/feasibility/stage24_patient_spearman.json
+            results/hcc/feasibility/stage24_pilot_review.json
+          retention-days: 30
+          if-no-files-found: error
