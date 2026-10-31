@@ -10,6 +10,14 @@
 
 **다음 실제 최우선은 Gate B:** BeamA post-exposure selection (score .5 vs .75) / cell-state annotation/배치 민감도 및 원 논문 63↑/17↓ 정확 유전자 목록 비교. Gate A를 반복해서 '확인 예정'이라고 쓰지 않는다. GSE301516 ATAC/POAG GWAS 연동은 이 기반을 정리한 후 조건부 검토. 새로운 P번호를 계속 늘리지 않는다.
 
+## Gate B 실행 갱신 — 실제 메타데이터 PASS / 원시 count 재적합 미완료 (2026-10-31)
+
+[공식 GEO 메타데이터 Gate B run #41198576725](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41198576725) PASS. BeamA confidence 0.75와 0.50을 비교하면, **각 조건에 최소 30세포인 paired donor는 57명으로 동일**하다. score0.5에서 포함되는 메타데이터 세포는 Vehicle **48,903**(0.75에서는 40,115), DEX **55,652**(0.75에서는 46,454)이고, donor 추가는 **0명**이다. 이 수치는 10x 원본과 실제 barcode join 전 메타데이터 개수이므로 원시 count 기반 유전자 효과 재현성이라고 해석하지 않는다.
+
+원 저자 GEO 요약은 63개 증가·17개 감소라고 보고했으나 GEO Series 공식 보충자료 목록에서 그 80개 Ensembl 유전자 명단은 제공되지 않아 우리 고효과 83개(67 증가·16 감소)와 정확한 목록 비교는 **HOLD**다.
+
+원시 score0.5 재집계는 공식 GEO 다운로드가 간헐적으로 잘못된 gzip·중도 종료 응답을 반환하여 [첫 실행 #41198827259](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41198827259)와 [재실행 #41198957708](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41198957708)이 실패했다. 전송 재시도 및 대형 행렬 전체 CRC를 추가해 [검증 재실행 #41199532259](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41199532259)를 시작했다. **실제 최종 결과 확인 전에는 edgeR score0.5의 효과크기·FDR에 어떤 결론도 부여하지 않는다.** 상세 문서는 [GATE_B_BEAMA_SELECTION_AND_AUTHOR_DEG_AUDIT_20261031.md](GATE_B_BEAMA_SELECTION_AND_AUTHOR_DEG_AUDIT_20261031.md).
+
 ## 현재 확인된 상태
 
 GitHub [PR #253](https://github.com/kimtk94/IS_Analysis_V3/pull/253)은 검토 시점 OPEN, mergeable, 미병합. 기준 커밋 `1a7d2a61e`, 변경 98파일, 159커밋. 최신 [경량 CI #41185786190](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185786190) 성공, [P9 최종 3개 검증 #41185708990](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185708990) 성공. 구현과 CI의 성공은 생물학적 검증 완료가 아님.
