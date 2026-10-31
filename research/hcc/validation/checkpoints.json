@@ -179,7 +179,7 @@
         "L02",
         "L03"
       ],
-      "observation": "Source-pinned Suter HCCfull RDS T/P 50-biopsy numeric-layer QA verified; zero nonfinite values across 20,356 T and 5,585 P features, global negatives and zero patterns audited; exact T/P row-label overlap 0 due to Ensembl-versus-protein identifier namespaces. S5 Appendix imputation, normalization and exact feature gene mapping not yet reviewed. Suter public HCCinfo RDS source gene mapping directly verifies 188 reduced RNA, 116 reduced protein features and 114 one-to-one shared gene labels, but full feature ID crosswalk still missing and S5 normalization remains unreviewed. Stage23 latest completed CI measured 5,390 mapped proteome features / 5,437 distinct Ensembl genes (union incl. ambiguous links), 43 multi-gene features and 5,343 one-to-one genes; 5,490 paper comparable count NOT exact reproduced mapping; JSON-vs-TSV provenance correction queued on feasibility branch. Stage24 source SHA256 RDS 20,356T×5,585P with 5,343 mapped strict pair correlation descriptive QC passed; no preimputation missingness/batch documentation or original Ng 2022 normalization reproduction yet.",
+      "observation": "Source-pinned Suter HCCfull RDS T/P 50-biopsy numeric-layer QA verified; zero nonfinite values across 20,356 T and 5,585 P features, global negatives and zero patterns audited; exact T/P row-label overlap 0 due to Ensembl-versus-protein identifier namespaces. S5 Appendix imputation, normalization and exact feature gene mapping not yet reviewed. Suter public HCCinfo RDS source gene mapping directly verifies 188 reduced RNA, 116 reduced protein features and 114 one-to-one shared gene labels, but full feature ID crosswalk still missing and S5 normalization remains unreviewed. Stage23 latest completed CI measured 5,390 mapped proteome features / 5,437 distinct Ensembl genes (union incl. ambiguous links), 43 multi-gene features and 5,343 one-to-one genes; 5,490 paper comparable count NOT exact reproduced mapping; JSON-vs-TSV provenance correction queued on feasibility branch. Stage24 source SHA256 RDS 20,356T×5,585P with 5,343 mapped strict pair correlation descriptive QC passed; no preimputation missingness/batch documentation or original Ng 2022 normalization reproduction yet. Stage25 final PLOS published S5 official PDF 97109 bytes SHA256 2ab792e2a5b2445c5e5d702e09dd957eeff42b8e3e158716da6fd2caab4bd26a fetched in CI. Text section indicators RNA upper quartile to1000/log2, protein log2/filter+clustering-only imputation/unimputed DE, PP separate batch correction. Automated keyword flags are not exact source RDS T/P transformation validation; method/lineage review required.",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162144728",
@@ -196,6 +196,10 @@
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41173779578",
           "level": "processed_full_quantitative_5343_source_mapped_spearman_source_and_patient_dimension_QC_not_batch_correction_validation"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41180067497",
+          "level": "2022_final_published_Suter_S5_sha256_verified_pdf_section_method_indicators_only_not_full_matrix_reproduction"
         }
       ],
       "analysis_evidence": [],
@@ -203,7 +207,7 @@
       "independent_patient_n": null,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Document Suter S5 original normalization, imputation and technical batch assumptions; compare Ng original relative tumor-normal scale and historical gene identity; keep V03 PARTIAL pending review."
+      "next_action": "Verify final-S5 exact RNA/P/PP transformation and source HCCfull/HCCfullz mapping, imputation applied only where appropriate; original Ng normal-reference / 2022 GRCh37 annotation comparison. Keep V03 PARTIAL."
     },
     {
       "id": "V04",
@@ -297,11 +301,15 @@
         "L02",
         "L03"
       ],
-      "observation": "Stage24 real public Ng/Suter processed 5,343 strict one-gene-one-protein feature pairs, 50 biopsies/48 distinct patients, source-pinned aggregate Spearman across patients: median rho=0.284086 q10=-0.052106 q90=0.627182; 46 single-biopsy patients median=0.284490, 50 nonindependent biopsies median=0.282881. All 5343 defined, positive rho fraction=0.858132; no gene-level p-value/FDR/CI or independent replication. Ng paper median 0.287 is not exact reproduction due processed measurement and gene universe differences.",
+      "observation": "Stage24 real public Ng/Suter processed 5,343 strict one-gene-one-protein feature pairs, 50 biopsies/48 distinct patients, source-pinned aggregate Spearman across patients: median rho=0.284086 q10=-0.052106 q90=0.627182; 46 single-biopsy patients median=0.284490, 50 nonindependent biopsies median=0.282881. All 5343 defined, positive rho fraction=0.858132; no gene-level p-value/FDR/CI or independent replication. Ng paper median 0.287 is not exact reproduction due processed measurement and gene universe differences. Stage25 patient-wise 48x leave-one-out median rho 0.273127 to 0.292900 (max 0.010959 departure from baseline 0.284086); fixed-seed 80x patient bootstrap empirical rho median interval 0.243922 to 0.329928. Technical source/aggregate postflight SUCCESS, not gene-level CI, FDR, batch/purity control or external replication.",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41173779578",
           "level": "source_SHA_pinned_processed_5343_strict_pairs_48_patient_descriptive_spearman_aggregate_only_not_gene_level_inference"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41179643931",
+          "level": "Stage25_real_source_pinned_48patient_LOPO_and_80bootstrap_aggregate_technical_sensitivity_NOT_INFERENTIAL"
         }
       ],
       "analysis_evidence": [],
@@ -309,7 +317,7 @@
       "independent_patient_n": 48,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Review Suter S5 normalization/imputation/batch and original Ng 5481-gene IDs/reference normal differences; inspect cohort confounding/purity and uncertainty, run independent replication before inferential V07 PASS; do not present source-correlated descriptive result as novelty."
+      "next_action": "Audit original Ng full 5481 gene identities and Suter exact transformation before claiming original reproduction; independent external validation and gene-wise uncertainty prior to V07 PASS."
     },
     {
       "id": "V08",
