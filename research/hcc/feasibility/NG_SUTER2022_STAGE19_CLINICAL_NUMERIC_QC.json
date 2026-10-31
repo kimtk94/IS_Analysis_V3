@@ -85,7 +85,9 @@
     "V02": "PARTIAL",
     "V04": "PARTIAL",
     "V12": "PARTIAL",
-    "V13": "BLOCKED"
+    "V13": "BLOCKED",
+    "selected_114_gene_reduced_crossomics_mapping": "SOURCE_MAPPING_GO_DESCRIPTIVE_VALIDATION",
+    "full_gene_protein_mapping": "HOLD_PENDING_CURATED_CROSSWALK"
   },
   "evidence_runs": {
     "clinical_balance": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161928470",
@@ -94,5 +96,27 @@
   "privacy": {
     "raw_biopsy_ids_patient_ids_per_sample_values_exported": false,
     "small_source_etiology_cells_suppressed": true
+  },
+  "stage20_reduced_feature_source_gene_mapping": {
+    "checked_at": "2026-10-31",
+    "original_source_repo": "https://github.com/cbg-ethz/HCC",
+    "source_commit": "438f52271d0a86a6701baa7a96e80c516ba575c2",
+    "HCCdata_sha256": "1f04556782d4f8934f804d87d7cfd4062221cebbf12d750d2a2dd26541458b04",
+    "HCCinfo_sha256": "22cc09ed0e5082ae97d9eba15a169aaedd6e8aa88df95638b43f319fc1526694",
+    "source_rds_mapping_structure": "bnInfo_like_allnames, source gene column",
+    "selected_rna_features": 188,
+    "selected_proteome_features": 116,
+    "mapped_rna_features": 188,
+    "mapped_proteome_features": 116,
+    "unique_gene_rna": 188,
+    "unique_gene_proteome": 116,
+    "cross_omics_common_gene_symbols": 114,
+    "unambiguous_one_to_one_genes": 114,
+    "full_20356_transcripts_to_5585_proteins_map_completed": false,
+    "independent_annotation_cross_validation_completed": false,
+    "selected_feature_mapping_method_status": "PASS_SOURCE_GEOMETRY_AND_GENE_LABEL_MATCH",
+    "differential_gene_protein_concordance_association_tested": false,
+    "inferential_research_GO": false,
+    "source_ci_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162706947"
   }
 }
