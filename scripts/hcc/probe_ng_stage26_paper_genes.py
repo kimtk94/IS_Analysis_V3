@@ -19,8 +19,9 @@ import zipfile
 
 BASE="https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-022-29960-8/MediaObjects/"
 PMC="https://pmc.ncbi.nlm.nih.gov/articles/PMC9068765/bin/"
-# The published Figure 2 has Source Data; SuppFig13f/g also contain matching ID
-# cardinalities but must NOT be mislabeled as exact Fig2A/Fig2B universes.
+# The published Figure 2 Source Data contains 15272 Fig2a and 5481 Fig2b
+# feature IDs. A previous lexical sort BUG incorrectly attributed these IDs
+# to physical sheet27/28 and labeled them SuppFig13f/g.
 # Ng Supplementary Data 4 is
 # specifically referenced in main text for gene-correlation pathways.
 FILES={
@@ -47,8 +48,12 @@ def workbook_profile(payload, private_candidate_out=None):
     sheets=[]
     with zipfile.ZipFile(io.BytesIO(payload)) as z:
         members=set(z.namelist())
-        names=sorted(p for p in members
-                     if re.fullmatch(r"xl/worksheets/sheet\d+\.xml",p))
+        # IMPORTANT: lexicographic order makes sheet8 appear at index28.
+        # Always sort by the physical sheet number and look up official
+        # workbook relationship label by that SAME physical number.
+        names=sorted((p for p in members
+                     if re.fullmatch(r"xl/worksheets/sheet\d+\.xml",p)),
+                     key=lambda p:int(re.search(r"sheet(\d+)\.xml$",p).group(1)))
         if not names:raise ValueError("no actual XLSX worksheets")
         # Excel sheetId is NOT guaranteed to match sheetN.xml's N.
         # Resolve workbook rel IDs via xl/_rels/workbook.xml.rels instead.
@@ -116,12 +121,12 @@ def workbook_profile(payload, private_candidate_out=None):
                         ids.update(row_genes);ensg_rows+=1
                     if nonempty:nonempty_rows+=1
                     row.clear()
-            sheet_index=len(sheets)+1
-            if (private_candidate_out is not None and sheet_index==28 and
+            sheet_index=int(re.search(r"sheet(\d+)\.xml$",entry).group(1))
+            if (private_candidate_out is not None and sheet_index==8 and sheet_names.get(sheet_index)=="Fig2b" and
                 observed_rows==5482 and len(ids)==5481 and ensg_rows==5481):
                 figure2_ids=sorted(ids)
                 figure2_candidate_sheet=sheet_index
-            if (private_candidate_out is not None and sheet_index==27 and
+            if (private_candidate_out is not None and sheet_index==7 and sheet_names.get(sheet_index)=="Fig2a" and
                 observed_rows==15273 and len(ids)==15272 and ensg_rows==15272):
                 cna_15272_corrob=True
             sheets.append({
@@ -143,8 +148,8 @@ def workbook_profile(payload, private_candidate_out=None):
         if figure2_ids is None or not cna_15272_corrob:
             raise ValueError("the original 5481 IDs cannot be anchored to both figure panels")
         # Prevent false Figure-2 claims from coincidental 5481 row counts.
-        if sheet_names.get(28)!="SuppFig13g" or sheet_names.get(27)!="SuppFig13f":
-            raise ValueError("expected published Supplementary Figure 13 f/g source labels absent")
+        if sheet_names.get(8)!="Fig2b" or sheet_names.get(7)!="Fig2a":
+            raise ValueError("expected original published Figure 2a/2b labels absent")
         # The output is STRICTLY runner temporary and is NEVER an artifact.
         destination=pathlib.Path(private_candidate_out)
         destination.parent.mkdir(parents=True,exist_ok=True)
@@ -156,9 +161,10 @@ def probe(private_genes_out=None):
        "checked_utc":dt.datetime.now(dt.timezone.utc).isoformat(),
        "paper_doi":"10.1038/s41467-022-29960-8",
        "source_5481_correlation_benchmark":5481,
-       "published_5481_ENSG_candidate_sheet_label":"SuppFig13g",
-       "published_15272_ENSG_candidate_sheet_label":"SuppFig13f",
-       "published_5481_suppfig13g_ids_are_exact_Fig2b_correlation_universe":False,
+       "published_5481_ENSG_candidate_sheet_label":"Fig2b",
+       "published_15272_ENSG_candidate_sheet_label":"Fig2a",
+       "published_5481_fig2b_IDs_are_supplementary_Fig13g":False,
+       "published_5481_fig2b_source_rho_median_in_separate_stage27_check":0.287059,
        "source_5490_comparable_gene_benchmark":5490,
        "sources":{},
        "exact_published_5481_gene_membership_verified":False,
