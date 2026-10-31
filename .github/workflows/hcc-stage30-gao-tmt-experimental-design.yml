@@ -1,0 +1,38 @@
+name: HCC Stage30 Gao Experimental Plex Aliquot Design
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-tmt-experimental-design.yml'
+      - 'scripts/hcc/probe_stage30_gao_experimental_design.py'
+      - 'tests/test_hcc_stage30_experimental_design.py'
+
+permissions:
+  contents: read
+
+jobs:
+  pdc-experimental-design-channel-to-aliquot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Source ID matching and inferential hold regression
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_experimental_design.py' -v
+      - name: Official PDC studyExperimentalDesign TMT plex and aliquot bridge
+        run: |
+          python scripts/hcc/probe_stage30_gao_experimental_design.py \
+            --out results/hcc/stage30/PDC_tmt_experimental_design_aggregate.json \
+            --review-out results/hcc/stage30/PDC_tmt_experimental_design_review.json
+      - name: Archive only counts and response digests without PDC sample or plex labels
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-gao-PDC-TMT-plex-aliquot-bridge
+          path: |
+            results/hcc/stage30/PDC_tmt_experimental_design_aggregate.json
+            results/hcc/stage30/PDC_tmt_experimental_design_review.json
+          retention-days: 30
+          if-no-files-found: error
