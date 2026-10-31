@@ -141,6 +141,20 @@ def summarize(primary,official,candidates):
     high_replicated=[g for g in original_de
                      if primary[g]["fdr"]<.05 and same_sign(primary[g]["log2fc"],high[g]["log2fc"])]
     stratum=[(a,b) for a,b in comparable if a["fdr"]<.05 and abs(a["log2fc"])>=1]
+    opposite=[]
+    for a,b in both_sig:
+        if not same_sign(a["log2fc"],b["log2fc"]):
+            opposite.append({
+                "gene_id":a["gene_id"],
+                "gene_symbol":a["gene_symbol"],
+                "primary_log2fc":round(a["log2fc"],6),
+                "primary_fdr":a["fdr"],
+                "external_TM_log2fc":round(b["log2fc"],6),
+                "external_TM_fdr":b["fdr"],
+                "effect_difference_log2fc":round(a["log2fc"]-b["log2fc"],6),
+                "status":"SIGN_DISCORDANT_FDR_BOTH",
+            })
+    opposite.sort(key=lambda x:(-abs(x["effect_difference_log2fc"]),x["gene_id"]))
     result={
       "status":"PASS_GENE_LEVEL_PUBLIC_TM_CROSSWALK",
       "study_primary":"GSE313736 high-confidence BeamA, 57 donor-paired edgeR",
@@ -156,6 +170,8 @@ def summarize(primary,official,candidates):
       "primary_FDR_significant_shared":sum(primary[g]["fdr"]<.05 for g in shared),
       "external_FDR_significant_shared":sum(tm[g]["fdr"] is not None and tm[g]["fdr"]<.05 for g in shared),
       "FDR_significant_in_both":len(both_sig),
+      "both_FDR_significant_opposite_direction":len(opposite),
+      "opposite_direction_top10_symbols":[x["gene_symbol"] for x in opposite[:10]],
       "shared_log2fc_Pearson":round(correlation(
           [a["log2fc"] for a,b in paired],[b["log2fc"] for a,b in paired]),6),
       "all_shared_same_sign_n":sum(same_sign(a["log2fc"],b["log2fc"]) for a,b in paired),
@@ -212,7 +228,7 @@ def summarize(primary,official,candidates):
     result["p5g_not_in_official_all_TM_tested"]=flags["NOT_IN_PUBLISHED_TM_ALL_TESTS"]
     # Full lookup output is only derived comparisons on our own primary gene set,
     # not verbatim redistribution of the independent supplementary workbook.
-    return result,annotated
+    return result,annotated,opposite
 
 def main():
     arg=argparse.ArgumentParser()
@@ -229,11 +245,19 @@ def main():
         zip_path.unlink(missing_ok=True)
         base=load_primary(args.primary)
         candidates=load_candidates(args.candidates)
-        report,selected=summarize(base,official,candidates)
+        report,selected,opposite=summarize(base,official,candidates)
         report["download_bytes"]=transferred
         with (dest/"P5j_86_candidates_external_TM_crosswalk.tsv").open("w",newline="",encoding="utf8") as h:
             writer=csv.DictWriter(h,fieldnames=list(selected[0]),delimiter="\t")
             writer.writeheader();writer.writerows(selected)
+        with (dest/"P5j_sign_discordant_both_FDR_genes.tsv").open("w",newline="",encoding="utf8") as h:
+            writer=csv.DictWriter(h,fieldnames=list(opposite[0]) if opposite else
+                ["gene_id","gene_symbol","primary_log2fc","primary_fdr",
+                 "external_TM_log2fc","external_TM_fdr","effect_difference_log2fc","status"],
+                delimiter="\t")
+            writer.writeheader();writer.writerows(opposite)
+        print("P5J_SIGN_DISCORDANCES",len(opposite),
+              "top10",report["opposite_direction_top10_symbols"],flush=True)
         print("P5J_OFFICIAL_TM_OVERLAP",report["shared_primary_official_gene_ids"],
               "both_FDR",report["FDR_significant_in_both"],
               "high_conf_replicated",report["external_high_conf_reproduced_FDR_and_direction"],
