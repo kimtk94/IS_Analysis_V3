@@ -32,8 +32,27 @@ def extract_table1(payload,version):
         cap=text(wrapper.find("./caption")) if wrapper.find("./caption") is not None else ""
         if "Demographic Data of Donors" in cap or "Demographic and" in cap:
             results.append(wrapper)
+    detection="CAPTION_MATCH"
     if not results:
-        return {"status":"HOLD_NOT_FOUND_PAPER_TABLE1"}
+        # Publisher and preprint can label the same table differently. Identify
+        # candidate using actual primary-source TM151/TM155 + exposure-duration
+        # rows; don't infer a missing table from caption changes.
+        for wrapper in root.findall(".//table-wrap"):
+            table=wrapper.find(".//table")
+            if table is None:continue
+            source_rows=[]
+            for tr in table.findall(".//tr"):
+                cells=[text(x) for x in tr if x.tag in ("th","td")]
+                if len(cells)>1:source_rows.append(cells)
+            whole=" ".join(" ".join(row) for row in source_rows)
+            has_strains=bool(re.search(r"TM\\s*151",whole,re.I)) and bool(re.search(r"TM\\s*155",whole,re.I))
+            has_time=bool(re.search(r"\\b(2\\s*d|6\\s*h|1\\s*h)\\b",whole,re.I))
+            if has_strains and has_time:results.append(wrapper)
+        detection="SOURCE_STRAIN_AND_EXPOSURE_ROWS"
+    if not results:
+        return {"status":"HOLD_NOT_FOUND_PAPER_TABLE1",
+                "table_captions":[text(w.find("./caption"))[:160] if w.find("./caption") is not None else ""
+                                  for w in root.findall(".//table-wrap")][:12]}
     if len(results)!=1:raise ValueError("MULTIPLE_SOURCE_TABLES")
     table=results[0].find(".//table")
     if table is None:raise ValueError("NO_TABLE_TAG")
@@ -50,7 +69,7 @@ def extract_table1(payload,version):
                    "1Hr" if t.replace(" ","").lower()=="1h" else "6Hrs"
                    for t in re.findall(r"\b(?:2\s*d|2\s*days|48\s*h|1\s*h|6\s*h)\b",raw,re.I)))
         strains[name]={"timepoints":times,"raw_exposure_text":raw[:120]}
-    return {"status":"GO_PAPER_STRAIN_TABLE1_READ","strains":strains,
+    return {"status":"GO_PAPER_STRAIN_TABLE1_READ","detection":detection,"strains":strains,
             "TM_count":sum(x.startswith("TM") for x in strains),
             "SCE_count":sum(x.startswith("SC") for x in strains)}
 def main():
