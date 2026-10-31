@@ -1,9 +1,5 @@
 name: Ocular P5p Low-Abundance and Nine Adequate-Expression Candidates
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5p_expression_aware.py'
-      - '.github/workflows/ocular-p5p-expression-aware.yml'
   workflow_dispatch:
 
 permissions:
