@@ -22,7 +22,7 @@ HEADER_ALLOWLIST={
  "sex":re.compile(r"^(?:sex|gender)$"),
  "bclc":re.compile(r"^bclc(?:stage)?$"),
  "edmondson":re.compile(r"^edmondson(?:grade)?$"),
- "child_pugh":re.compile(r"^childpugh(?:score|class)?$"),
+ "child_pugh":re.compile(r"^(?:child|childpugh(?:score|class)?)$"),
  "meld":re.compile(r"^meld(?:score)?$"),
  "cirrhosis":re.compile(r"^cirrhosis$"),
  "treatment":re.compile(r"^(?:treatment|prior(?:systemic)?treatment|therapy|therapybeforebiopsy)$"),
@@ -51,6 +51,18 @@ def qtile(nums,p):
     pos=(len(nums)-1)*p
     lo=int(math.floor(pos)); hi=int(math.ceil(pos))
     return round(nums[lo]+(nums[hi]-nums[lo])*(pos-lo),2)
+
+def numeric_abs_smd(a,b):
+    if len(a)<2 or len(b)<2:return None
+    va=statistics.variance(a);vb=statistics.variance(b)
+    scale=(va+vb)/2
+    return round(abs((statistics.mean(a)-statistics.mean(b))/(scale**.5)),3) if scale>0 else None
+
+def binary_abs_smd(a,b):
+    if not a or not b:return None
+    pa=sum(a)/len(a);pb=sum(b)/len(b)
+    scale=(pa*(1-pa)+pb*(1-pb))/2
+    return round(abs((pa-pb)/(scale**.5)),3) if scale>0 else (0.0 if pa==pb else None)
 
 def safe_counter(items):
     counts=collections.Counter(items)
@@ -135,6 +147,23 @@ def audit(private_labels,rows,columns):
     h=summary["HCV"].get("age",{})
     unadjusted_median_difference=(round(a["median"]-h["median"],2)
         if a.get("median") is not None and h.get("median") is not None else None)
+    age_values={g:[parse_age(patient_covariates[p].get("age"))
+                  for p in groups[g]] for g in GROUPS}
+    age_obs={g:[v for v in age_values[g] if v is not None] for g in GROUPS}
+    age_smd=numeric_abs_smd(age_obs["ALD"],age_obs["HCV"])
+    sex_values={g:[str(patient_covariates[p].get("sex") or "").lower()
+                   for p in groups[g]] for g in GROUPS}
+    sex_male={g:[v in ("m","male") for v in sex_values[g]
+                 if v in ("m","male","f","female")] for g in GROUPS}
+    sex_smd=binary_abs_smd(sex_male["ALD"],sex_male["HCV"])
+    stage_values={g:[str(patient_covariates[p].get("bclc") or "").upper()
+                     for p in groups[g]] for g in GROUPS}
+    bclc_early={g:[v in ("0","A") for v in stage_values[g]
+                  if v in ("0","A","B","C","D")] for g in GROUPS}
+    bclc_smd=binary_abs_smd(bclc_early["ALD"],bclc_early["HCV"])
+    smds={"age":age_smd,"male_sex":sex_smd,"BCLC_early_0_A":bclc_smd}
+    imbalance={k:(v>=0.2 if v is not None else None) for k,v in smds.items()}
+
     return {
       "status":"ORIGINAL_SOURCE_EXCLUSIVE_ETIOLOGY_CONFOUNDER_SCREEN",
       "source_biopsies_matched_n":50,
@@ -146,6 +175,11 @@ def audit(private_labels,rows,columns):
           field:(n if n>=5 else None) for field,n in conflicts.items()},
       "groups":summary,
       "ALD_minus_HCV_unadjusted_age_median_years":unadjusted_median_difference,
+      "absolute_standardized_mean_difference":smds,
+      "imbalance_attention_threshold_0_2":imbalance,
+      "source_child_pugh_header_detected": "child_pugh" in clinical,
+      "candidate_baseline_adjustment_ready":False,
+      "claim_context":"descriptive imbalance screen, not hypothesis test or clinical adjudication",
       "independent_patient_unit_used":True,
       "clinical_prognosis_coding_reviewed":False,
       "treatment_confounded_effect_disproved":False,
