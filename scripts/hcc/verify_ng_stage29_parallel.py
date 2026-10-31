@@ -70,9 +70,13 @@ def validate(kind,d):
             d.get("source_full_sha256")!=FULL or d.get("source_fullz_sha256")!=FULLZ or
             d.get("official_source_biopsies_n")!=50 or d.get("official_unique_patients_n")!=48 or
             d.get("source_original_supplement_patient_groups_verified") is not True or
-            d.get("original_labels_identical_across_all_six_T_P_PP_layers") is not True or
+            d.get("original_label_sets_identical_across_all_six_T_P_PP_layers") is not True or
             d.get("crossmodal_inferred_permutation_identical") is not True):
             raise ValueError("source labels not anchored")
+        for key in ("original_full_T_P_PP_same_order",
+                    "original_fullz_T_P_PP_same_order",
+                    "full_T_vs_fullz_T_sample_name_order_equal"):
+            if type(d.get(key)) is not bool:raise ValueError("source array order flag absent: "+key)
         n=d.get("same_biopsy_label_position_best_match_n")
         a=d.get("same_official_patient_group_under_candidate_crossfile_mapping_n")
         b=d.get("different_official_patient_group_under_candidate_crossfile_mapping_n")
