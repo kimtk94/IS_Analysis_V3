@@ -80,7 +80,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-  original-5481-vs-strict-5343-identity:
+  suppfig13g-5481-vs-current-5343-identity:
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -94,11 +94,11 @@ jobs:
           python-version: '3.11'
       - name: Test membership arithmetic and no original-paper reproduction shortcut
         run: python -m unittest discover -s tests -p 'test_hcc_stage26_original_gene_lineage.py' -v
-      - name: Extract publisher Figure2B 5481 ENSG identities after Figure2A CNA 15272 cross-check
+      - name: Extract publisher SuppFig13g 5481 ENSG list with SuppFig13f 15272 source corroboration
         run: |
           python scripts/hcc/probe_ng_stage26_paper_genes.py \
-            --private-gene-ids-out "${{ runner.temp }}/ng2022-fig2b-original-private.txt" \
-            --out results/hcc/feasibility/stage26_fig2_source_integrity.json
+            --private-gene-ids-out "${{ runner.temp }}/ng2022-suppfig13g-private.txt" \
+            --out results/hcc/feasibility/stage26_suppfig13g_source_integrity.json
       - name: Get immutable original 20356 RNA and 5585 P source features in private temp only
         env:
           NG_PRIVATE_FEATURE_IDS_OUT: ${{ runner.temp }}/suter-stage26-source-feature-ids.txt
@@ -111,34 +111,34 @@ jobs:
             --private-features "${{ runner.temp }}/suter-stage26-source-feature-ids.txt" \
             --private-strict-pairs-out "${{ runner.temp }}/suter-stage26-current-strict-pairs.txt" \
             --out results/hcc/feasibility/stage26_current_uniprot_review.json
-      - name: Compare exact original and current ENSG identity intersection without exporting names
+      - name: Compare exact published SuppFig13g and current ENSG identity without exporting names
         run: |
           python scripts/hcc/compare_ng_stage26_gene_membership.py \
-            --published-private "${{ runner.temp }}/ng2022-fig2b-original-private.txt" \
+            --published-private "${{ runner.temp }}/ng2022-suppfig13g-private.txt" \
             --current-private "${{ runner.temp }}/suter-stage26-current-strict-pairs.txt" \
-            --out results/hcc/feasibility/stage26_original_vs_current_membership.json
+            --out results/hcc/feasibility/stage26_suppfig13g_vs_current_membership.json
       - name: Fail-closed exact gene membership arithmetic and scientific status
         run: |
           python scripts/hcc/verify_ng_stage26_source_and_lineage.py \
             --kind overlap \
-            --input results/hcc/feasibility/stage26_original_vs_current_membership.json \
-            --out results/hcc/feasibility/stage26_original_membership_review.json
+            --input results/hcc/feasibility/stage26_suppfig13g_vs_current_membership.json \
+            --out results/hcc/feasibility/stage26_suppfig13g_membership_review.json
       - name: Delete original paper gene lists and all source identifiers
         if: always()
         run: |
-          rm -f "${{ runner.temp }}/ng2022-fig2b-original-private.txt" \
+          rm -f "${{ runner.temp }}/ng2022-suppfig13g-private.txt" \
             "${{ runner.temp }}/suter-stage26-source-feature-ids.txt" \
             "${{ runner.temp }}/suter-stage26-current-strict-pairs.txt"
-      - name: Publish aggregate-only original 5481 vs current 5343 matched IDs
+      - name: Publish aggregate-only SuppFig13g 5481 vs current 5343 matched IDs
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: hcc-stage26-original-5481-vs-current-5343-gene-identity
+          name: hcc-stage26-suppfig13g-5481-vs-current-5343-gene-identity
           path: |
-            results/hcc/feasibility/stage26_fig2_source_integrity.json
+            results/hcc/feasibility/stage26_suppfig13g_source_integrity.json
             results/hcc/feasibility/stage26_full_feature_source.json
             results/hcc/feasibility/stage26_current_uniprot_review.json
-            results/hcc/feasibility/stage26_original_vs_current_membership.json
-            results/hcc/feasibility/stage26_original_membership_review.json
+            results/hcc/feasibility/stage26_suppfig13g_vs_current_membership.json
+            results/hcc/feasibility/stage26_suppfig13g_membership_review.json
           retention-days: 30
           if-no-files-found: error
