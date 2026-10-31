@@ -1,8 +1,5 @@
 name: Ocular Third TM Cohort GSE301517 Official GEO Preflight
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-third-tm-gse301517.yml'
   workflow_dispatch:
 
 permissions:
