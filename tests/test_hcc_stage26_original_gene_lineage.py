@@ -2,9 +2,18 @@
 import pathlib,sys,unittest
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]/"scripts"/"hcc"))
 from probe_ng_stage26_paper_genes import ENSG,FILES
+from compare_ng_stage26_gene_membership import compute
 from verify_ng_stage26_source_and_lineage import validate_lineage,validate_paper,SHA,COMMIT
 
 class Stage26Tests(unittest.TestCase):
+    def test_exact_overlap_count_not_identical_paper_reproduction(self):
+        orig={"ENSG00000141510","ENSG00000111111"}
+        cur={"ENSG00000141510","ENSG00000222222"}
+        q=compute(orig,cur)
+        self.assertEqual(q["exact_Ensembl_gene_ID_overlap_n"],1)
+        self.assertEqual(q["original_2022_genes_not_in_current_strict_n"],1)
+        self.assertFalse(q["original_gene_set_semantics_reviewer_verified"])
+        self.assertFalse(q["2022_Ensembl_vs_current_UniProt_mapping_versions_identical"])
     def test_original_paper_filename_provenance(self):
         self.assertTrue(FILES["publisher_Source_Data"].endswith("MOESM19_ESM.xlsx"))
         self.assertEqual(ENSG.findall("ENSG00000141510.12 | ENST01"),["ENSG00000141510.12"])
