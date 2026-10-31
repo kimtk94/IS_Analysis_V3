@@ -195,3 +195,23 @@ Repository registry: `research/hcc/feasibility/datasets.json`.
 **V02 scientific gate upgraded from BLOCKED to PARTIAL, not PASS.** Missing verification: original RNA/protein normalization units and directions, Suter's feature filtering/imputation/batch correction (S5 Appendix), clinical etiology definition and distribution of groups among 48 patients, outcome event/censoring codebook, independent external replication. Source-identity verification alone does not establish mechanistic effects or clinical significance.
 
 Code: `scripts/hcc/probe_ng_suter_clinical_sample_join.py`, `scripts/hcc/audit_ng_public_multiomics_rds.R`; evidence: `research/hcc/feasibility/NG_SUTER2022_PUBLIC_RDS_EVIDENCE.json`.
+
+## Stage-18: 48 matched-patient source etiology distribution — corrected and CI validated (2026-10-31)
+
+**Source-level direct result**: [Ng/Suter patient-join CI #41161332568](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161332568) PASS on original SHA256-validated Ng Supplemental Data 1 and public quantitative RDS, 50/50 matched biopsies, 48 distinct patient keys. All exposed values are aggregate source-defined label categories; patient keys, individual phenotypes and small cells (<5) are not published.
+
+| Etiology label within the 48 distinct patients | Source-category candidate n |
+| --- | ---: |
+| ALD only | 12 |
+| HCV only | 11 |
+| NAFLD only | 7 |
+| ALD + HCV | 7 |
+| HBV only / ALD + HBV / ALD + NAFLD / source-other | suppressed (<5 each) |
+
+**Non-exclusive exposures across mixed categories**: source-labelled ALD **24**, HCV **18**, HBV **7**, NAFLD **9** of 48; these exposures overlap and cannot be summed as independent patients. No per-patient conflicting etiology labels among the two patients with multiple biopsies.
+
+**Bug found and corrected**: `Non-alcoholic liver disease (NAFLD)` must not be categorized as ALD merely because it contains the substring `alcoholic`. Source classification was fixed to require explicit `ALD` or alcoholic liver disease not preceded by `non-`, with a synthetic regression reproducing the source wording. The preliminary ALD=31 inclusive tally was an **invalid overcount**; the validated corrected ALD any-exposure value is **24**.
+
+**Analysis and power decisions:** 12 ALD-only vs 11 HCV-only are the most immediate independent-patient etiology contrast. This supports descriptive and effect-size feasibility but **not** a priori confirmatory transcriptomic/proteomic significance, given the small n and potentially thousands of tested features. Mixed etiologies cannot be naively assigned to either exclusive group. HBV-only remains a small suppressed stratum. Evaluate tissue stage, age, sex, batch and processed data transformations before choosing statistical tests.
+
+**Gate decisions:** V02 PARTIAL (50 exact biopsies/48 source patients and actual quantitative T/P matrices), V04 PARTIAL (source categories exact but clinical etiology codebook unreviewed), V12 PARTIAL, V13 BLOCKED. PASS claims for mechanism or recurrence **remain 0**. Evidence details in `NG_SUTER2022_PUBLIC_RDS_EVIDENCE.json`.
