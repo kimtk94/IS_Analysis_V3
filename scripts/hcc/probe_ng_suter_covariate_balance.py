@@ -162,7 +162,18 @@ def audit(private_labels,rows,columns):
                   if v in ("0","A","B","C","D")] for g in GROUPS}
     bclc_smd=binary_abs_smd(bclc_early["ALD"],bclc_early["HCV"])
     smds={"age":age_smd,"male_sex":sex_smd,"BCLC_early_0_A":bclc_smd}
-    imbalance={k:(v>=0.2 if v is not None else None) for k,v in smds.items()}
+    complete_separation={
+        "age":len(age_obs["ALD"])>=2 and len(age_obs["HCV"])>=2
+            and len(set(age_obs["ALD"]+age_obs["HCV"]))>1
+            and all(len(set(age_obs[g]))==1 for g in GROUPS),
+        "male_sex":len(sex_male["ALD"])>0 and len(sex_male["HCV"])>0
+            and len(set(sex_male["ALD"]))==len(set(sex_male["HCV"]))==1
+            and sex_male["ALD"][0]!=sex_male["HCV"][0],
+        "BCLC_early_0_A":len(bclc_early["ALD"])>0 and len(bclc_early["HCV"])>0
+            and len(set(bclc_early["ALD"]))==len(set(bclc_early["HCV"]))==1
+            and bclc_early["ALD"][0]!=bclc_early["HCV"][0]}
+    imbalance={k:(True if complete_separation[k] else
+                   v>=0.2 if v is not None else None) for k,v in smds.items()}
 
     return {
       "status":"ORIGINAL_SOURCE_EXCLUSIVE_ETIOLOGY_CONFOUNDER_SCREEN",
@@ -176,6 +187,7 @@ def audit(private_labels,rows,columns):
       "groups":summary,
       "ALD_minus_HCV_unadjusted_age_median_years":unadjusted_median_difference,
       "absolute_standardized_mean_difference":smds,
+      "complete_group_separation_no_finite_SMD":complete_separation,
       "imbalance_attention_threshold_0_2":imbalance,
       "source_child_pugh_header_detected": "child_pugh" in clinical,
       "candidate_baseline_adjustment_ready":False,
