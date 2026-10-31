@@ -45,6 +45,12 @@ Official ENA response SHA256 **`8108331d9d9d836486591354503a4767d16f07920dbf6b3e
 
 **Important hierarchy:** There are **23 matched sequencing-library candidate pairs, NOT 23 independent donors**. The same TM strain name recurs in distinct experimental groups. For six pairs originally named only `-1/-2` (TM96, TM151, TM123, SC91, SC89, SC86), **12 official BioSample XML records establish six Vehicle and six 100 nM DEX samples**. Therefore, adding the 17 explicitly labeled pairs, all **23/23 library-pair treatment assignments** have original-source evidence. This does **not** establish exposure duration, independent donor identities, or the 48h QC-eligible subset. The publication describes nine QC-passing TM and four SCE strains.
 
+## 2b. Nominal source cell-strain group consistency
+
+The actual ENA alias stems group into exactly **nine distinct TM prefixes** (`TM92, TM96, TM123, TM134, TM135, TM137, TM140, TM151, TM155`) and **four SCE prefixes** (`SC67, SC86, SC89, SC91`). These *label-level* distinct group counts match the nine QC-passing TM and four SCE strains described in the published study. Several strain labels occur in multiple library pairs (e.g., TM96 and TM151), reinforcing that 23 experiment pairs are **not** 23 independent biological donors. This nominal match alone **does not** prove all deposited experiments passed publication-level QC, link any one run to the 48-hour subset, or establish independent donor genomic identity.
+
+The latest [12-BioSample official XML check #41214740781](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41214740781) resolved treatment attributes for the previously ambiguous `TM96-1/-2`, `TM151-1/-2`, `TM123-1/-2`, `SC91-1/-2`, `SC89-1/-2` and `SC86-1/-2` groups, but none of those 12 BioSample treatment records provided a verified 1h/6h/48h exposure-duration attribute. **Actual source-paper experiment-level metadata is still needed for timepoint mapping.**
+
 ## 3. Research ramifications — important priority change
 
 **Previously** the IOVS 100 nM 48h study had been used only from a frozen paper supplementary workbook, and its raw sample-level replicates had not been accessible through the known workflow. **Now** there is an authenticated path to actual source RNA-seq FASTQ. This may enable more convincing independent validation of MYOC/TGFBI/MMP2, batch/donor effects, cell-state compatibility and EMT pathway robustness.
