@@ -94,7 +94,6 @@ def compare(phead,pdata,shead,sdata):
     if feature_n>=4:
         for j in range(330):
             q=[finite(row[1+j]) for row,source in selected]
-            s=[finite(source[ratio[jj]]) for row,source in selected for jj in []] # deliberately no ordinal alignment
             if all(z is not None for z in q):
                 fingerprints_a[tuple(round(z,6) for z in q)].append(j)
             # A separate source report sample column has its OWN name/position;
