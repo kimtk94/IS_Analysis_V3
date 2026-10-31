@@ -41,14 +41,27 @@ def bounded_download(url):
     if not zipfile.is_zipfile(io.BytesIO(payload)):
         raise ValueError("download not XLSX ZIP")
     return payload
-def workbook_profile(payload):
+def workbook_profile(payload, private_candidate_out=None):
     sheets=[]
     with zipfile.ZipFile(io.BytesIO(payload)) as z:
         members=set(z.namelist())
         names=sorted(p for p in members
                      if re.fullmatch(r"xl/worksheets/sheet\d+\.xml",p))
         if not names:raise ValueError("no actual XLSX worksheets")
+        sheet_names={}
+        if "xl/workbook.xml" in members:
+            root=ET.fromstring(z.read("xl/workbook.xml"))
+            for node in root.iter(NS+"sheet"):
+                try:
+                    sheet_index=int(node.get("sheetId","0"))
+                except ValueError:continue
+                name=node.get("name","")
+                if 0<sheet_index<=100 and len(name)<=100:
+                    sheet_names[sheet_index]=name
         shared=[]
+        figure2_ids=None
+        figure2_candidate_sheet=None
+        cna_15272_corrob=False
         if "xl/sharedStrings.xml" in members:
             if z.getinfo("xl/sharedStrings.xml").file_size>MAX_SHEET_XML:
                 raise ValueError("shared strings entry too big")
@@ -93,8 +106,18 @@ def workbook_profile(payload):
                         ids.update(row_genes);ensg_rows+=1
                     if nonempty:nonempty_rows+=1
                     row.clear()
+            sheet_index=len(sheets)+1
+            if (private_candidate_out is not None and sheet_index==28 and
+                observed_rows==5482 and len(ids)==5481 and ensg_rows==5481):
+                figure2_ids=sorted(ids)
+                figure2_candidate_sheet=sheet_index
+            if (private_candidate_out is not None and sheet_index==27 and
+                observed_rows==15273 and len(ids)==15272 and ensg_rows==15272):
+                cna_15272_corrob=True
             sheets.append({
-              "sheet_index":len(sheets)+1,
+              "sheet_index":sheet_index,
+              "workbook_sheet_label":sheet_names.get(sheet_index),
+             
               "status":"SCAN_COMPLETED",
               "observed_rows_n":observed_rows,
               "nonempty_rows_n":nonempty_rows,
@@ -106,8 +129,16 @@ def workbook_profile(payload):
                   hashlib.sha256("\n".join(sorted(ids)).encode()).hexdigest()
                   if ids else None,
             })
+    if private_candidate_out is not None:
+        if figure2_ids is None or not cna_15272_corrob:
+            raise ValueError("the original 5481 IDs cannot be anchored to both figure panels")
+        # The output is STRICTLY runner temporary and is NEVER an artifact.
+        destination=pathlib.Path(private_candidate_out)
+        destination.parent.mkdir(parents=True,exist_ok=True)
+        destination.write_text("\n".join(figure2_ids)+"\n",encoding="utf-8")
+        destination.chmod(0o600)
     return sheets
-def probe():
+def probe(private_genes_out=None):
     result={"schema":"hcc-stage26-ng-paper-gene-source-probe-v1",
        "checked_utc":dt.datetime.now(dt.timezone.utc).isoformat(),
        "paper_doi":"10.1038/s41467-022-29960-8",
@@ -125,7 +156,8 @@ def probe():
             record["tested_official_urls_n"]+=1
             try:
                 content=bounded_download(url)
-                sheets=workbook_profile(content)
+                sheets=workbook_profile(content,
+                    private_candidate_out=private_genes_out if role=="publisher_Source_Data" else None)
                 record.update({"status":"PUBLIC_XLSX_CONTENT_AUDITED",
                    "source_url":url,
                    "sha256":hashlib.sha256(content).hexdigest(),
@@ -141,9 +173,10 @@ def probe():
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--out",required=True)
+    ap.add_argument("--private-gene-ids-out",default=None)
     a=ap.parse_args()
     p=pathlib.Path(a.out);p.parent.mkdir(parents=True,exist_ok=True)
-    report=probe()
+    report=probe(a.private_gene_ids_out)
     p.write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(report,indent=2))
 if __name__=="__main__":main()
