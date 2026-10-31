@@ -9,6 +9,8 @@ def fixture():
       "source_fullz_sha256":"9c1e4e05472a0aa477b81aa7b4c4e1b27809df9a2b71c1f57e247bb031263007",
       "modalities":[{
           "modality":m,"small_data_feature_n":200,"small_data_sample_n":50,
+          "small_data_source_numeric_matrix":True,
+          "small_data_exact_50_biopsy_comparison_eligible":True,
           "small_full_common_feature_n":100,"small_full_common_sample_labels_n":50,
           "small_full_rho_finite_feature_n":100,
           "small_full_same_label_per_feature_rho_median":.9,
