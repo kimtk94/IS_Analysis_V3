@@ -107,6 +107,16 @@ for (fname in files) {
     item$bytes <- as.integer(bytes)
     item$sha256 <- sha256_file(tmp)
     x <- readRDS(tmp)
+    # Optional *ephemeral only* sample keys for within-run exact original
+    # supplementary clinical matching. The file is never uploaded or logged.
+    private_keys <- Sys.getenv("NG_PRIVATE_KEYS_OUT", unset="")
+    if(fname=="HCCfull.rds" && nzchar(private_keys)) {
+      ids <- if(is.list(x) && !is.null(x[["T"]])) colnames(x[["T"]]) else NULL
+      if(!is.null(ids) && length(ids)==50 && all(nzchar(ids))) {
+        writeLines(ids,private_keys,useBytes=TRUE)
+        Sys.chmod(private_keys,mode="0600")
+      }
+    }
     objects[[fname]] <- audit_object(x,fname)
     item$status <- "PUBLIC_PINNED_RDS_READ_IN_MEMORY"
     rm(x)
