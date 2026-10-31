@@ -130,6 +130,26 @@ def main():
     p=argparse.ArgumentParser();p.add_argument("--out",required=True,type=Path)
     args=p.parse_args();args.out.mkdir(parents=True,exist_ok=True)
     results=[]
+    archive={}
+    archive_summary={"official_europepmc_url":"https://www.ebi.ac.uk/europepmc/webservices/rest/"+PMC+"/supplementaryFiles",
+                     "status":"HOLD_OFFICIAL_SUPPLEMENT_ARCHIVE_UNAVAILABLE"}
+    try:
+        body,source,ctype=get(archive_summary["official_europepmc_url"],limit=90_000_000)
+        with zipfile.ZipFile(io.BytesIO(body)) as z:
+            if z.testzip():raise ValueError("ARCHIVE_CRC_FAIL")
+            for filename in FILES:
+                options=[n for n in z.namelist() if n.rsplit("/",1)[-1]==filename]
+                if len(options)==1:
+                    raw=z.read(options[0])
+                    if not zipfile.is_zipfile(io.BytesIO(raw)):
+                        raise ValueError("NOT_OFFICE_DOCUMENT_"+filename)
+                    archive[filename]=raw
+        archive_summary.update({"status":"PASS_OFFICIAL_ARCHIVE_CRC",
+            "sha256":hashlib.sha256(body).hexdigest(),
+            "bytes":len(body),"final_url":source,
+            "found_named_supplements":sorted(archive)})
+    except Exception as e:
+        archive_summary["error"]=type(e).__name__+": "+str(e)[:200]
     for name in FILES:
         x={"filename":name,
            "source_declared_in_publisher_PMC_fullTextXML":True,
@@ -138,16 +158,22 @@ def main():
             BASE+"/instance/"+NUM+"/bin/"+name,
             BASE+"/"+PMC+"/bin/"+name,
         ]
-        data=None
-        for url in urls:
-            try:
-                data,final,ctype=get(url)
-                x.update({"official_url":final,"content_type":ctype,
-                          "sha256":hashlib.sha256(data).hexdigest(),
-                          "compressed_bytes":len(data),"crc_pass":True})
-                break
-            except Exception as e:
-                x.setdefault("attempts",[]).append({"url":url,"error":str(e)[:150]})
+        data=archive.get(name)
+        if data is not None:
+            x.update({"official_url":archive_summary.get("final_url"),
+                      "content_type":"application/zip; archived "+name,
+                      "sha256":hashlib.sha256(data).hexdigest(),
+                      "compressed_bytes":len(data),"crc_pass":True})
+        else:
+            for url in urls:
+                try:
+                    data,final,ctype=get(url)
+                    x.update({"official_url":final,"content_type":ctype,
+                              "sha256":hashlib.sha256(data).hexdigest(),
+                              "compressed_bytes":len(data),"crc_pass":True})
+                    break
+                except Exception as e:
+                    x.setdefault("attempts",[]).append({"url":url,"error":str(e)[:150]})
         if data:
             try:
                 x["source_status"]="PASS_OFFICIAL_SUPPLEMENT_DOWNLOADED_AND_CRC"
@@ -164,6 +190,7 @@ def main():
         r["source_status"]=="PASS_OFFICIAL_SUPPLEMENT_DOWNLOADED_AND_CRC" for r in results
         ) else "HOLD_ALL_FOUR_SUPPLEMENTS_NOT_ACCESSIBLE",
       "study":"Mehrotra 2026 IOVS 67(2):13","PMC":PMC,
+      "official_supplement_archive_audit":archive_summary,
       "official_supplement_names":FILES,
       "retrieved_crc_passed_n":sum(r["source_status"]=="PASS_OFFICIAL_SUPPLEMENT_DOWNLOADED_AND_CRC" for r in results),
       "direct_processed_raw_counts_confirmed":False,
