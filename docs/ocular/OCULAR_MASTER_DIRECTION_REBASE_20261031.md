@@ -1,5 +1,13 @@
 # OCULAR MASTER — 연구 방향 재설정 (2026-10-31)
 
+## Gate B 최신 — full raw UMI cutoff 검증 완료 / 대체 주석 확장 결정
+
+[완료된 0.50 재집계 + 18개 10x gzip QC + 57 donor edgeR run #41199532259](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41199532259) **SUCCESS**, 원시파일 SHA/CRC와 실제 분석결과 [보고서](GATE_B_BEAMA_050_075_ACTUAL_RAW_EDGER_VERIFIED_20261031.md) 확인. 같은 57명, 16,050 공통 유전자 효과 상관 **r=0.99911597**, Δ|log2FC| 중앙값 **0.0112462**, MYOC/TGFBI/MMP2 **3/3 방향/FDR 안정**, ACTA2도 동일 연구 내 기준 간 안정이나 독립 7일 TM 연구와 방향 불일치. 고효과 내부 유전자 |log2FC|≥3은 0.75 기준 **83**, 0.50 기준 **88**, **81** 교집합. 기존 83의 2개 ACP5/HLF는 threshold 경계 이탈, 신규 7개 중 5개는 이전 0.75에서 검정되지 않았다. **원 저자 63 증가·17 감소 80개의 원본 명단 비교가 아니라 우리 내부 분석의 cutoff 민감도 결과**이다.
+
+[대체 세포주석 metadata run #41201790738](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41201790738)도 SUCCESS: scPred **TM_Fibro 조건별 ≥30세포 paired donor 57명**, 9 pools, 이 중 **55명** 원래 BeamA57과 공통. JCT any 56명, JCT confidence≥0.75는 **8명**에 불과. [실제 주석 준비상태 보고서](GATE_B_ALTERNATE_CELL_STATE_METADATA_20261031.md)를 참고. **다음 우선 순위는 단일 패스 scPred TM_Fibro/BeamA 공동 55 donor raw-count 분석 타당성 및 구현**; 이전 BeamA .50/.75 원시 매트릭스 작업을 기계적으로 반복하지 않는다. 해당 대체 주석 유전자 발현/FDR은 아직 분석하지 않았으므로 HOLD.
+
+중요한 한계: 효과 수치가 0.50/0.75에서 일치해도 DEX와 다른 10x 처리 라이브러리의 완전한 교란, 처리 후 레이블 선택과 독립 임상 안압 결과 부재는 해결되지 않았다. **논문 주장: 3개 독립 연구의 전사 반응 후보 우선순위 + 내부 cutoff 민감도**, 기전/인과/임상 예측은 불가. 원 저자 고효과 80개 개별 원본 유전자 명단 역시 확보 전까지 HOLD.
+
 ## Gate A 업데이트 — 제3 DEX–TM 코호트 실제 확인 완료 (2026-10-31)
 
 이전 마스터 문서에서 최우선 P0로 지정했던 GSE301517의 원본·메타데이터 검증은 이제 **완료**되었다. [최종 3연구 비교 Actions #41186736618](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41186736618) PASS, 공개 artifact #13037335888 검증. 자세한 결과는 [GSE301517_THIRD_COHORT_7DAY_ACTUAL_VERIFIED_20261031.md](GSE301517_THIRD_COHORT_7DAY_ACTUAL_VERIFIED_20261031.md)를 기준으로 사용한다.
