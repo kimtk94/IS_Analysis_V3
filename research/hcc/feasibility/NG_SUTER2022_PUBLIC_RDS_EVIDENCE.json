@@ -1,0 +1,77 @@
+{
+  "schema_version": "ng-suter2022-public-quantitative-source-v1",
+  "checked_date": "2026-10-31",
+  "original_paper": {
+    "doi": "10.1038/s41467-022-29960-8",
+    "initial_triple_omics_biopsies": 51,
+    "initial_triple_omics_distinct_patients": 49
+  },
+  "reanalysis_paper": {
+    "doi": "10.1371/journal.pcbi.1009767",
+    "biopsies_after_one_hypermutated_exclusion": 50,
+    "distinct_patients_reported": 48,
+    "normalization_imputation_batch_correction_provenance": "Suter 2022 Methods 2.1; details require S5 Appendix review"
+  },
+  "source": {
+    "repository": "https://github.com/cbg-ethz/HCC",
+    "commit": "438f52271d0a86a6701baa7a96e80c516ba575c2",
+    "format": "RDS",
+    "publicly_readable": true,
+    "original_rds_committed_to_this_repo": false
+  },
+  "files": {
+    "HCCfull.rds": {
+      "M_features": 3519,
+      "CN_features": 20339,
+      "T_features": 20356,
+      "P_features": 5585,
+      "PP_features": 7889,
+      "samples_in_each": 50,
+      "orientation": "features_by_samples",
+      "T_P_exact_sample_label_overlap": 50,
+      "T_P_same_order": true
+    },
+    "HCCfullz.rds": {
+      "M_features": 3519,
+      "CN_features": 20339,
+      "T_features": 19768,
+      "P_features": 5585,
+      "PP_features": 7889,
+      "samples_in_each": 50,
+      "orientation": "features_by_samples",
+      "T_P_exact_sample_label_overlap": 50,
+      "T_P_same_order": true
+    },
+    "HCCdata.rds": {
+      "M_features": 24,
+      "CN_features": 292,
+      "T_features": 188,
+      "P_features": 116,
+      "PP_features": 158,
+      "samples_in_each": 50,
+      "orientation": "samples_by_features",
+      "T_P_exact_sample_label_overlap": 50,
+      "T_P_same_order": true
+    }
+  },
+  "verification": {
+    "source_RDS_files_downloaded_and_parsed": true,
+    "quantitative_numeric_layers_in_all_three_files": true,
+    "source_sha256_in_run_artifact": true,
+    "no_raw_patient_identifiers_or_expression_values_exported": true,
+    "source_layer_sample_label_alignment": "PASS",
+    "exact_RDS_sample_to_Ng_clinical_biopsy_mapping": "NOT_YET_VERIFIED",
+    "original_quantitation_units": "NOT_YET_VERIFIED",
+    "etiology_sample_group_counts": "NOT_YET_VERIFIED",
+    "same_patient_omics_scientific_join": "HOLD",
+    "V02": "BLOCKED_UNTIL_CLINICAL_SAMPLE_PROVENANCE",
+    "V04": "PARTIAL",
+    "V12": "PARTIAL",
+    "independent_replication": "NOT_YET_VERIFIED"
+  },
+  "evidence_runs": [
+    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160271015",
+    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160494201"
+  ],
+  "next": "Reconcile the 50 sample labels against Ng 2022 Supplementary Data 1 tumor biopsy and patient identifiers within protected in-memory CI; verify original assay normalization/imputation and etiology coding; do not claim 50 unique patients."
+}
