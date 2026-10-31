@@ -1,5 +1,15 @@
 # OCULAR MASTER — 연구 방향 재설정 (2026-10-31)
 
+## Gate A 업데이트 — 제3 DEX–TM 코호트 실제 확인 완료 (2026-10-31)
+
+이전 마스터 문서에서 최우선 P0로 지정했던 GSE301517의 원본·메타데이터 검증은 이제 **완료**되었다. [최종 3연구 비교 Actions #41186736618](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41186736618) PASS, 공개 artifact #13037335888 검증. 자세한 결과는 [GSE301517_THIRD_COHORT_7DAY_ACTUAL_VERIFIED_20261031.md](GSE301517_THIRD_COHORT_7DAY_ACTUAL_VERIFIED_20261031.md)를 기준으로 사용한다.
+
+중요한 새로운 사실: 원 연구 GEO 처리는 **500 nM DEX, 7일**이고 기존 GSE313736 **500 nM, 48시간**, Mehrotra **100 nM, 48시간**이므로 셋을 시간/농도의 동일 조건 재현성으로 취급하지 않는다. 공식 CPM 7,905,333 bytes SHA256 `717f4c9861de4d6b169439ef56a781f50d93ec918c456a9d0e61873e4a6e5f09`; 21 GSM / 85,298 Ensembl rows / 14 Control-Dex 발현 샘플 / TM62 4+4, TM70 2+2, TM72 1+1 / 별도 Resource 7건. 3개 TM strain에서 각 처리군 반복을 먼저 평균 내므로 독립 donor를 14명으로 과대계산하지 않았다. 57-donor 원 연구와 15,876 Ensembl ID 매칭.
+
+**세 연구에 걸쳐 방향이 모두 일치한 핵심은 MYOC↑, TGFBI↓, MMP2↓ 총 3개**다. ACTA2는 두 48h 연구에서 ↑, 새 7일 연구에서 ↓로 **핵심에서 조건 의존성 후보로 내려야 한다**. EMT shared 194 중 156개가 기존 500 nM 48h와 일치, **124/194개가 세 연구 모두 같은 방향**. P9 핵심 4개를 모두 일반화된 안정 핵심이라고 설명한 기존 결론은 이 후속 결과로 **수정한다**. MYOC/TGFBI/MMP2의 7일 CPM +1 log2 비율은 원자료 기반 edgeR log2FC와 같은 모수로 비교하거나 임상 의미를 단정하면 안 된다.
+
+**다음 실제 최우선은 Gate B:** BeamA post-exposure selection (score .5 vs .75) / cell-state annotation/배치 민감도 및 원 논문 63↑/17↓ 정확 유전자 목록 비교. Gate A를 반복해서 '확인 예정'이라고 쓰지 않는다. GSE301516 ATAC/POAG GWAS 연동은 이 기반을 정리한 후 조건부 검토. 새로운 P번호를 계속 늘리지 않는다.
+
 ## 현재 확인된 상태
 
 GitHub [PR #253](https://github.com/kimtk94/IS_Analysis_V3/pull/253)은 검토 시점 OPEN, mergeable, 미병합. 기준 커밋 `1a7d2a61e`, 변경 98파일, 159커밋. 최신 [경량 CI #41185786190](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185786190) 성공, [P9 최종 3개 검증 #41185708990](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185708990) 성공. 구현과 CI의 성공은 생물학적 검증 완료가 아님.
