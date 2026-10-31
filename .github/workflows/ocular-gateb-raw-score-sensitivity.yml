@@ -1,0 +1,62 @@
+name: Ocular Gate B Full Raw-UMI BeamA 0.50 vs 0.75 edgeR
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-gateb-raw-score-sensitivity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  score-050-independent-refit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install edgeR/Bioconductor and verify original P4/P5 parsers
+        run: |
+          python -m pip install 'numpy==1.26.4'
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends r-base-core r-bioc-edger r-cran-statmod r-cran-jsonlite
+          python -m py_compile scripts/ocular/ocular_p4_fullcohort.py scripts/ocular/ocular_gateb_edger_cutoff_sensitivity.py
+          Rscript -e 'invisible(parse(file="scripts/ocular/ocular_p5_edger.R"));stopifnot(requireNamespace("edgeR",quietly=TRUE));cat("GATE_B_R_PARSE_PASS\n")'
+      - name: Reconstruct 57 donor pairs from original 18 complete 10x matrices at BeamA 0.50
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-gateb-private" "$RUNNER_TEMP/ocular-gateb-baseline" ocular-gateb-raw-public
+          python -u scripts/ocular/ocular_p4_fullcohort.py \
+            --score 0.50 --min-cells 30 \
+            --internal-export-dir "$RUNNER_TEMP/ocular-gateb-private" \
+            --output ocular-gateb-raw-public/gateb_050_source_qc.json
+      - name: Refit the full paired donor edgeR QL model using identical P5 method
+        run: |
+          Rscript scripts/ocular/ocular_p5_edger.R "$RUNNER_TEMP/ocular-gateb-private" ocular-gateb-raw-public 0.50
+      - name: Retrieve frozen originally verified 0.75 edgeR source and check effect/sign stability
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 41074586446 -n ocular-p5-edger-inference \
+            -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-gateb-baseline"
+          test -s "$RUNNER_TEMP/ocular-gateb-baseline/p5_all_gene_results.tsv.gz"
+          test -s ocular-gateb-raw-public/p5_all_gene_results.tsv.gz
+          python -u scripts/ocular/ocular_gateb_edger_cutoff_sensitivity.py \
+            --baseline "$RUNNER_TEMP/ocular-gateb-baseline/p5_all_gene_results.tsv.gz" \
+            --sensitivity ocular-gateb-raw-public/p5_all_gene_results.tsv.gz \
+            --source ocular-gateb-raw-public/gateb_050_source_qc.json \
+            --out ocular-gateb-raw-public
+      - name: Purge private donor pseudobulk count matrix and prior artifact
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-gateb-private" "$RUNNER_TEMP/ocular-gateb-baseline"
+      - name: Upload aggregate gene-level evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gateb-raw-beama-050-edgeR
+          path: ocular-gateb-raw-public/
+          retention-days: 30
+          if-no-files-found: warn
