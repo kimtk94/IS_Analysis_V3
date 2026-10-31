@@ -30,7 +30,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(classify_literal_text("HBV"),"HBV_LITERAL")
         self.assertEqual(classify_literal_text("HBV, HCV"),"MULTIPLE_LITERAL")
         self.assertEqual(classify_literal_text("NASH"),"METABOLIC_LITERAL")
-        self.assertEqual(classify_literal_text("Unknown"),"UNCLASSIFIED_OR_OTHER")
+        self.assertEqual(classify_literal_text("Unknown"),"MISSING")
         self.assertEqual(classify_literal_text("HBsAg 12.1"),"UNCLASSIFIED_OR_OTHER")
         self.assertEqual(classify_literal_text("."),"MISSING")
 
