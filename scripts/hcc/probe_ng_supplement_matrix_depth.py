@@ -46,6 +46,10 @@ def parse_worksheets(raw):
         pathlist=sorted((x for x in z.namelist()
                          if re.fullmatch(r"xl/worksheets/sheet\d+\.xml",x)),
                         key=lambda x:int(re.search(r"sheet(\d+)",x).group(1)))
+        shared=[]
+        if "xl/sharedStrings.xml" in z.namelist() and z.getinfo("xl/sharedStrings.xml").file_size<=MAX_XML:
+            strs=ET.fromstring(z.read("xl/sharedStrings.xml"))
+            shared=["".join(t.text or "" for t in item.iter(NS+"t")) for item in strs.findall(NS+"si")]
         results=[]
         for path in pathlist[:MAX_SHEETS]:
             f=z.getinfo(path)
@@ -70,13 +74,7 @@ def parse_worksheets(raw):
             for row in rows[:2]:
                 row_values=[]
                 for cell in row.findall(NS+"c")[:50]:
-                    val=cell.find(NS+"v")
-                    # Shared string index needs sharedStrings.xml to decode.
-                    # Include string/numeric only if shared strings are bounded.
-                    if cell.attrib.get("t")=="inlineStr":
-                        label=" ".join(x.text or "" for x in cell.iter(NS+"t"))
-                    else:
-                        label=val.text if val is not None and cell.attrib.get("t")!="s" else ""
+                    label=_cell_value(cell,shared)
                     if label:row_values.append(label)
                 head.extend(row_values)
             result.update({
