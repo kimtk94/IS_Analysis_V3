@@ -73,6 +73,8 @@ def validate_track(t):
     elif k == "skin":
         require(o["ukb_participants"] == 423992 and o["reported_loci"] == 74, "perceived-age study")
         require(o["full_sumstats_downloaded"] is False, "no claim of raw verification")
+        require(o["readme_schema_verified"] is True and o["readme_effect_scale"] == "LOG_OR", "Bristol readme schema")
+        require(set(o["readme_allele_columns"]) == {"ALLELE1", "ALLELE0", "A1FREQ"}, "allele fields")
     else:
         raise ValueError("unknown track")
     return {"track": k, "audit_check": "PASS", "scientific_gate": t["scientific_gate"],
