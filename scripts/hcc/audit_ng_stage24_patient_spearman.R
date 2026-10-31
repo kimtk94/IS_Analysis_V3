@@ -27,13 +27,14 @@ ref<-"438f52271d0a86a6701baa7a96e80c516ba575c2"
 expected<-"461bd5aad6024a3dfef2abffe9d830ed2222c69e0b159bcbfdd35fe779c3869a"
 url<-paste0("https://raw.githubusercontent.com/cbg-ethz/HCC/",ref,"/HCCinputs/HCCfull.rds")
 f<-tempfile(fileext=".rds")
-on.exit(unlink(f),add=TRUE)
+
 suppressWarnings(download.file(url,f,mode="wb",quiet=TRUE,method="libcurl"))
 if(is.na(file.info(f)$size)||file.info(f)$size<100L||file.info(f)$size>16000000L)
   stop("unexpected source RDS size")
 sha<-suppressWarnings(system2("sha256sum",f,stdout=TRUE,stderr=FALSE))
 if(length(sha)!=1L||!identical(sub(" .*","",sha),expected))stop("source checksum drift")
 full<-readRDS(f)
+unlink(f)
 if(!is.list(full)||!all(c("T","P")%in%names(full)))stop("missing RDS layer")
 T<-full$T;P<-full$P
 if(!is.matrix(T)||!is.matrix(P)||nrow(T)!=20356L||nrow(P)!=5585L||
