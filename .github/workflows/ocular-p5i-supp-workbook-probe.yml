@@ -1,0 +1,33 @@
+name: Ocular P5i Official IOVS 2026 Supplement Workbook Probe
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p5i_supp_workbook_probe.py'
+      - '.github/workflows/ocular-p5i-supp-workbook-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  xlsx-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install openpyxl and parse public workbook
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+          python -m py_compile scripts/ocular/ocular_p5i_supp_workbook_probe.py
+          python scripts/ocular/ocular_p5i_supp_workbook_probe.py --out ocular-p5i-official-supplement.json
+      - name: Publish sheet manifest only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5i-official-supplement
+          path: ocular-p5i-official-supplement.json
+          if-no-files-found: warn
+          retention-days: 30
