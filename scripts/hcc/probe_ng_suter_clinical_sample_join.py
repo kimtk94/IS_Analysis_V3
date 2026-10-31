@@ -63,10 +63,14 @@ def compare(private_labels,rows,columns):
         raise ValueError("invalid normalized sample label")
     src={}
     duplicate=0
+    etiology_by_biopsy={}
+    eti_col=columns.get("underlyingliverdisease")
     for row in rows:
         tumor=_normalized_label(row.get(columns["tumorbiopsyid"],""))
         patient=_normalized_label(row.get(columns["patientid"],""))
         if not tumor:continue
+        if eti_col is not None:
+            etiology_by_biopsy[tumor]=str(row.get(eti_col,""))
         flags={k:str(row.get(columns[k],"")).strip().lower() in YES
                for k in ("rnaseq","proteomics")}
         if tumor in src:
@@ -74,6 +78,36 @@ def compare(private_labels,rows,columns):
             if src[tumor]!=(patient,flags):raise ValueError("source alias collision")
         else:src[tumor]=(patient,flags)
     matched=[(key,src[key]) for key in private_labels if key in src]
+    # Per-patient source-reported liver disease labels are preclinical candidate
+    # grouping only. Overlapping etiologies are not merged into single-exposure.
+    patient_source_group={}
+    def categories(raw):
+        value=raw.lower()
+        found=set()
+        if re.search(r"\\bhcv\\b|hepatitis c",value):found.add("HCV")
+        if re.search(r"\\bhbv\\b|hepatitis b",value):found.add("HBV")
+        if re.search(r"\\bald\\b|alcohol",value):found.add("ALD")
+        if re.search(r"\\bnafld\\b|\\bnash\\b|steato|metabolic",value):found.add("NAFLD")
+        return tuple(sorted(found)) if found else ("SOURCE_OTHER_OR_UNCLASSIFIED",)
+    for key,(patient,flags) in matched:
+        if patient:
+            patient_source_group.setdefault(patient,set()).add(categories(etiology_by_biopsy.get(key,"")))
+    group_counts=collections.Counter()
+    multi_biopsy_label_conflict=0
+    for patient,groups in patient_source_group.items():
+        if len(groups)!=1:
+            multi_biopsy_label_conflict+=1
+            group_counts["CONFLICTING_SOURCE_LABELS"]+=1
+        else:
+            k="+".join(next(iter(groups)))
+            group_counts[k]+=1
+    presence={}
+    for disease in ("ALD","HCV","HBV","NAFLD"):
+        n=sum(disease in next(iter(groups)) for groups in patient_source_group.values() if len(groups)==1)
+        presence[disease]=n if n>=5 else None
+    safe_groups={key:(count if count>=5 else None)
+                 for key,count in sorted(group_counts.items())}
+
     all_both=sum(all(flags.values()) for _,(_,flags) in matched)
     unique_patients={pat for _,(pat,_) in matched if pat}
     return {
@@ -92,6 +126,11 @@ def compare(private_labels,rows,columns):
             len(matched)==50 and len(unique_patients)==48,
         "strict_same_biopsy_source_label_match":
             len(matched)==50 and all_both==50 and len(unique_patients)==48,
+        "source_etiology_candidate_patients_per_group_suppress_lt5":safe_groups,
+        "source_etiology_candidate_any_exposure_suppress_lt5":presence,
+        "source_etiology_small_cell_suppressed_count":sum(v<5 for v in group_counts.values()),
+        "conflicting_etiology_labels_across_biopsies_n":multi_biopsy_label_conflict,
+        "etiology_clinical_codebook_verified":False,
         "source_TP_quant_matrix_same_sample_names":True,
         "scientific_etiology_coding_confirmed":False,
         "prognosis_event_coding_confirmed":False,
