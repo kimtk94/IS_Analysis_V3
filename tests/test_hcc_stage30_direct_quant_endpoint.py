@@ -41,11 +41,24 @@ class QuantTests(unittest.TestCase):
         self.assertEqual(x["first_record_field_count_n"],3)
         self.assertEqual(x["numeric_cells_in_complete_first_records_n"],5)
         self.assertTrue(x["sample_gene_field_present_in_partial_rows"])
+        self.assertEqual(x["first_array_element_JSON_kind"],"OBJECT")
         self.assertNotIn("PRIVATE_",str(x))
     def test_missing_or_malformed_prefix_has_no_leakage(self):
         x=inspect_oversized_matrix_prefix(b'{"other":[{"ID":"PRIVATE"}]}')
         self.assertFalse(x["array_prefix_marker_observed"])
         self.assertNotIn("PRIVATE",str(x))
+    def test_first_array_element_string_kind_not_interpreted_as_genes(self):
+        x=inspect_oversized_matrix_prefix(
+            b'{"data":{"quantDataMatrix":["PRIVATE_INCOMPLETE_BLOB')
+        self.assertEqual(x["first_array_element_JSON_kind"],"JSON_STRING")
+        self.assertEqual(x["first_complete_gene_records_seen_n"],0)
+        self.assertNotIn("PRIVATE_",str(x))
+    def test_first_array_element_object_may_be_incomplete(self):
+        x=inspect_oversized_matrix_prefix(
+            b'{"data":{"quantDataMatrix":[{"PRIVATE_GENE":"PRIVATE_VAL"')
+        self.assertEqual(x["first_array_element_JSON_kind"],"OBJECT")
+        self.assertEqual(x["first_complete_gene_records_seen_n"],0)
+        self.assertNotIn("PRIVATE_",str(x))
     def test_no_unknown_study_call(self):
         with self.assertRaises(ValueError):direct("PDC000000")
     def test_source_access_timeout_is_hold(self):
