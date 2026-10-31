@@ -35,6 +35,15 @@ audit_layer <- function(x,sample_axis="columns") {
   mat<-as.matrix(x)
   numeric_type<-is.numeric(mat)||is.integer(mat)
   values<-if(numeric_type)as.numeric(mat) else numeric(0)
+  finite_values<-values[is.finite(values)]
+  value_quantiles<-if(length(finite_values))as.list(setNames(
+    round(as.numeric(quantile(finite_values,c(.05,.25,.5,.75,.95),names=FALSE)),4),
+    c("p05","p25","p50","p75","p95"))) else list()
+  feature_patterns<-if(feature_present)c(
+    ensembl_gene=sum(grepl("^ENSG[0-9]+(?:\\.[0-9]+)?$",feature_ids)),
+    uniprot_swissprot=sum(grepl("^[A-NR-Z][0-9][A-Z0-9]{3}[0-9]$",feature_ids)),
+    nonempty=sum(nzchar(feature_ids))
+  ) else c(ensembl_gene=0,uniprot_swissprot=0,nonempty=0)
   list(
     type=if(is.matrix(x))"matrix" else "data.frame",
     orientation=if(sample_axis=="rows")"samples_by_features" else "features_by_samples",
@@ -43,6 +52,10 @@ audit_layer <- function(x,sample_axis="columns") {
     numeric_matrix=as.logical(numeric_type),
     finite_numeric_count=if(numeric_type)as.integer(sum(is.finite(values))) else NA_integer_,
     missing_or_nonfinite_count=if(numeric_type)as.integer(sum(!is.finite(values))) else NA_integer_,
+    negative_numeric_count=if(numeric_type)as.integer(sum(finite_values<0)) else NA_integer_,
+    zero_numeric_count=if(numeric_type)as.integer(sum(finite_values==0)) else NA_integer_,
+    value_quantiles_global=value_quantiles,
+    feature_label_style_counts=as.list(feature_patterns),
     feature_labels_nonempty=as.logical(feature_present),
     sample_labels_nonempty=as.logical(sample_present),
     unique_sample_labels=if(sample_present)as.integer(length(unique(sample_ids))) else NA_integer_,
