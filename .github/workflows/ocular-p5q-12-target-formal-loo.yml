@@ -1,8 +1,5 @@
 name: Ocular P5q Twelve-Target Formal Pool Exclusion QL
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-p5q-12-target-formal-loo.yml'
   workflow_dispatch:
 
 permissions:
