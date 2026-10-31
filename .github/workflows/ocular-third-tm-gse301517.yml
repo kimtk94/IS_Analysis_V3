@@ -1,0 +1,34 @@
+name: Ocular Third TM Cohort GSE301517 Official GEO Preflight
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-third-tm-gse301517.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-metadata-and-cpm:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify official third-cohort audit parser
+        run: |
+          python -m py_compile scripts/ocular/ocular_gse301517_third_cohort_preflight.py
+      - name: Download 21 official sample metadata and complete bounded 7.5 MB GEO CPM table
+        run: |
+          mkdir -p ocular-third-gse301517-public
+          python -u scripts/ocular/ocular_gse301517_third_cohort_preflight.py --out ocular-third-gse301517-public
+      - name: Upload only public sample design and aggregate schema; no raw expression matrix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-third-gse301517-preflight
+          path: ocular-third-gse301517-public/
+          retention-days: 30
+          if-no-files-found: warn
