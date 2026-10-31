@@ -1,5 +1,11 @@
 # OCULAR MASTER — 연구 방향 재설정 (2026-10-31)
 
+## 2026-11-01 원논문 Table 1 ↔ Supplement S003 ↔ SRA의 불일치 확인
+
+[세 출처 감사 CI #41219957609](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41219957609) **SUCCESS**, [실제 원문-보충표-SRA 검증 문서](MEHROTRA_TABLE1_S003_SRA_TRIPLE_SOURCE_20261101.md). 최신 아티팩트 #13049965603 ZIP/JSON/TSV 직접 확인. 공식 논문 XML SHA256과 원 보충표 XLSX SHA256을 고정하고 6개 세포유형×시간 strata를 비교했더니 **5/6 일치, TM 6h 한 곳만 충돌**한다. 논문 Table 1에는 **TM155 6h**, Table 82의 6h control TPM 열에는 **TM151 6h**가 기록돼 있다. 해당 6h SRA 후보 `TM151.4` = `SRR32897704;SRR32897705`는 **HOLD 원문 상충**. 이를 저자 확인 없이 자동 수정하거나 배정하지 않는다.
+
+긍정적으로는 **9개의 48h TM 후보 세포주 명단은 Table 1과 Supplement S003가 정확히 일치**해 후보 신뢰도를 높인다. 하지만 23개 후보 RUN pair의 실제 BioSample 직접 시간대 검증은 **0/23**이므로 9개를 저자가 확인한 48h RUN이라고 단정하면 안 된다. 범위는 계속 9쌍/18 RUN/32.71GB이며 원시 count 확보·실제 QC 검증 전까지 **REVIEW/HOLD**, 데이터 전량 다운로드 STOP. 문서가 제출되는 논문에서는 원 논문의 내부 6h 실험설계 불일치를 공개 한계로 명시한다.
+
 ## 2026-11-01 원본 SRA 시간대 후보 매핑과 공식 보충자료 재검증
 
 [Mehrotra 공식 보충자료·23 라이브러리 쌍·9개 48h TM 후보 검증](MEHROTRA_SRA_23PAIR_TIMEPOINT_AND_RAW_COUNTS_GATE_20261101.md)에서 중요한 진전. 공식 Europe PMC ZIP `PMC12882097/supplementaryFiles`을 실제 획득하여 **4개 원본 DOCX/XLSX 무결성 PASS**([CI #41218079101](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41218079101)). 기존 PMC 개별 파일 다운로드 실패는 접근 차단이며 자료 부재가 아니었다. 16.7MB XLSX는 63개 저자 DEG/경로/표지유전자 보충 시트가 있으며 `SuppTable82_TM_MarkerExpression`, `SuppTable83_SC_MarkerExpression`에 **세포주별 1h/6h/2Days 대조군 TPM 열**을 명시한다. **원시 integer count 전체 행렬로 오인하지 않는다.**
