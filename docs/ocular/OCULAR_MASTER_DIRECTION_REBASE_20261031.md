@@ -1,5 +1,17 @@
 # OCULAR MASTER — 연구 방향 재설정 (2026-10-31)
 
+## 2026-11-01 신규성 및 논문 원고 검증 — 이전 자료의 출판 수준 재분류
+
+[선행연구별 Claim Overlap / 신규성 / Erratum 감사](THESIS_NOVELTY_CLAIM_OVERLAP_AND_ERRATUM_AUDIT_20261101.md)와 [영문 초록·Introduction·Methods·Results·Discussion 전체 초안](THESIS_MANUSCRIPT_METHODS_RESULTS_DISCUSSION_DRAFT_20261101.md)을 작성했다. 새로운 원시 데이터 분석은 수행하지 않았으며 **기존 검증된 Figure/edgeR/교차연구 산출물에만 의존**한다.
+
+**출처 관련 핵심 수정:**
+1. Singh et al. (PMID 41890121, DOI 10.64898/2026.03.12.711121)은 검색·PMC 검증 기준 **2026년 3월 bioRxiv 프리프린트**이다. 현재 단계에서 동료심사 저널 논문으로 설명하면 안 된다.
+2. Mehrotra et al. 100nM 연구는 **2026년 2월 IOVS 정식 출판**(PMID 41636427, DOI 10.1167/iovs.67.2.13)이다. 그보다 앞선 bioRxiv 버전은 PMID 41509484. **2026년 10월 1일 정정 공고**(PMID 42895266, DOI 10.1167/iovs.67.12.34)가 실제 있으나 정정 원문/수정 보충표 영향을 확인하지 못해 **외부 결과 최종 출판본 검증 HOLD**다. 정정 내용 확인 전에는 이전 그림 수치를 확정된 정정 후 보충표라고 주장하지 않는다.
+3. GSE313736는 공개된 GEO 데이터세트임을 확인했지만 **63↑·17↓=80개 DEG의 저자 원본 유전자 리스트와 대응하는 독립 동료심사 본문은 미확인**이다. 우리의 83/88 집합을 저자의 정확한 80개로 단정하거나 중복집계하지 않는다.
+4. DEX TM 전사체·장기 노출 효과는 2022년 논문, TM ROS/TGFβ/NOX4 기전은 2023년 연구, ECM·시간별 변화는 Mehrotra 2026 논문, TM chromatin/GWAS는 Singh 2026 프리프린트에서 이미 분석했다. **새 기전 발견 주장은 STOP**, 실제 검증된 **독립 실험 간 전사 방향 재현성·동일 donor 분류 강건성·재현 가능성 감사**만 학위논문 주요 기여로 남긴다.
+
+**원고 진행 판정:** Methods/Results/Discussion 초안 작성 GO, 최종 원고 제출 **HOLD** (2026-10-01 Erratum 원문 영향 검증, 원 저자 80개 리스트·방법 대응, 지도교수와 학위논문 수준 신규성 합의). 전체 표·그림 설명은 저널 출판 수준과 GEO 자료 상태를 혼동하지 말 것.
+
 ## Figure·논문 Results 1차 패키지 — 실제 GitHub Actions 검증 완료 (2026-10-31)
 
 기존 검증 산출물만 재사용한 [최종 Figure CI #41208972011](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41208972011) **SUCCESS**. 원본 SHA256 고정 확인 후 3개 PNG와 3개 SVG, 16개 후보 Supplementary Table S1, 출처 manifest, 해석용 Figure legends 생성. [artifact #13045363678](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41208972011/artifacts/13045363678) 직접 다운로드 및 압축 CRC 확인, **그림 3개를 열어 본문과 하단 주석의 겹침이 없도록 수정**한 최종본을 기준으로 사용. 초기 도표 run #41208620110은 CI 자체는 성공했으나 하단 설명문이 겹쳐 최종본에서 제외.
