@@ -65,6 +65,48 @@ def extract_pdf_text(b):
     return "\n".join((p.extract_text() or "") for p in reader.pages),"pypdf_6.1.3"
 
 
+def layer_method_keyword_sections(text):
+    """Extract *mentions within headings*, not assert application to HCCfull.
+
+    Unlike globally counting 'impute' or 'batch', separate each assay section
+    and keep provenance in the official final-S5 PDF. Derived flags are hints
+    that still require a researcher's source-method interpretation.
+    """
+    flat=re.sub(r"\\s+"," ",text)
+    headings=[
+      ("transcriptome",r"for\\s+transcriptome\\s+data[^.]{0,70}"),
+      ("proteome",r"for\\s+proteome\\s+data[^.]{0,70}"),
+      ("phosphoproteome",r"for\\s+phosphoproteome\\s+data[^.]{0,70}"),
+      ("cna",r"(?:the\\s+)?CNA\\s+data[^.]{0,80}"),
+    ]
+    found=[]
+    for name,regex in headings:
+        m=re.search(regex,flat,flags=re.I)
+        if m:found.append((m.start(),name))
+    found.sort()
+    result={}
+    for i,(start,name) in enumerate(found):
+        end=found[i+1][0] if i+1<len(found) else len(flat)
+        segment=flat[start:end]
+        result[name]={
+          "section_heading_detected":True,
+          "segment_character_count":len(segment),
+          "upper_quartile_mentioned":bool(re.search(r"upper[- ]quartile",segment,re.I)),
+          "normalization_to_1000_mentioned":bool(re.search(r"\\b1000\\b",segment,re.I)),
+          "log2_mentioned":bool(re.search(r"log\\s*2",segment,re.I)),
+          "median_subtraction_mentioned":bool(re.search(r"median.{0,30}subtract|subtract.{0,30}median",segment,re.I)),
+          "half_sample_detection_filter_mentioned":bool(re.search(r"50\\s*%|half.{0,15}sample",segment,re.I)),
+          "imputation_mentioned":bool(re.search(r"imput",segment,re.I)),
+          "clustering_only_qualifier_mentioned":bool(re.search(
+              r"for\\s+clustering\\s+only|only\\s+for\\s+clustering",segment,re.I)),
+          "unimputed_differential_expression_mentioned":bool(re.search(
+              r"unimputed.{0,60}differential|differential.{0,100}unimputed",segment,re.I)),
+          "batch_correction_mentioned":bool(re.search(r"batch.{0,30}correct",segment,re.I)),
+          "edgeR_mentioned":bool(re.search(r"\\bedgeR\\b",segment,re.I)),
+        }
+    return result
+
+
 def audit():
     report={
         "schema":"hcc-stage25-suter-s5-source-audit-v1",
@@ -79,6 +121,8 @@ def audit():
         "pdftotext_available":shutil.which("pdftotext") is not None,
         "pdf_extractor":None,
         "method_keyword_counts":{},
+        "layer_method_section_indicators":{},
+        "layer_method_indicators_are_text_mentions_only":True,
         "annotation":"Counts identify text mentions only, not the layer-specific transformation, order, parameters, or validation.",
         "s5_all_processing_parameters_manually_reviewed":False,
         "raw_ng_counts_reanalysis_performed":False,
@@ -93,12 +137,14 @@ def audit():
             b=fetch_pdf(url)
             extracted,extractor=extract_pdf_text(b)
             words=summarize_text(extracted)
+            layers=layer_method_keyword_sections(extracted)
             report.update({
                 "status":"SOURCE_PDF_TEXT_VERIFIED_NEEDS_LAYER_METHOD_REVIEW",
                 "verified_source_url":url,
                 "source_pdf_sha256":hashlib.sha256(b).hexdigest(),
                 "source_pdf_bytes":len(b),
                 "method_keyword_counts":words,
+                "layer_method_section_indicators":layers,
                 "pdf_extractor":extractor,
             })
             return report
