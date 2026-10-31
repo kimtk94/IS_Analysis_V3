@@ -79,6 +79,8 @@ jobs:
           out = pathlib.Path('audit')
           out.mkdir(exist_ok=True)
           (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+          with pathlib.Path(os.environ['GITHUB_STEP_SUMMARY']).open('a') as summary:
+              summary.write(f"| {result['research']} | {result['skill']} | {result['status']} | {result['sha256'][:12]} |\\n")
           print(json.dumps(result))
           PY
       - uses: actions/upload-artifact@v4
