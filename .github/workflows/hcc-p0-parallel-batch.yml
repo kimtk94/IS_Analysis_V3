@@ -9,11 +9,19 @@ on:
       - 'tests/test_hcc_*.py'
       - 'research/hcc/feasibility/**'
 
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hcc-p0-parallel-batch.yml'
+      - 'scripts/hcc/**'
+      - 'tests/test_hcc_*.py'
+      - 'research/hcc/feasibility/**'
+
 permissions:
   contents: read
 
 concurrency:
-  group: hcc-p0-parallel-${{ github.event.pull_request.number || github.ref }}
+  group: hcc-p0-evidence-batch-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
