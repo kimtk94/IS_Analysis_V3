@@ -191,7 +191,9 @@ def audit(private_labels,rows,columns):
                      for p in groups[g]] for g in GROUPS}
     child_binary={g:[v=="A" for v in child_values[g] if v in ("A","B","C")]
                   for g in GROUPS}
-    child_smd=binary_abs_smd(child_binary["ALD"],child_binary["HCV"])
+    child_smd=(binary_abs_smd(child_binary["ALD"],child_binary["HCV"])
+               if min(len(child_binary[g]) for g in GROUPS)>=5 else None)
+    child_pugh_coverage_warning=any(len(child_binary[g])<5 for g in GROUPS)
     smds={"age":age_smd,"male_sex":sex_smd,"BCLC_early_0_A":bclc_smd,
           "ChildPugh_A_vs_BC":child_smd}
     complete_separation={
@@ -225,6 +227,7 @@ def audit(private_labels,rows,columns):
       "complete_group_separation_no_finite_SMD":complete_separation,
       "imbalance_attention_threshold_0_2":imbalance,
       "source_child_pugh_header_detected": "child_pugh" in clinical,
+      "ChildPugh_effect_smd_withheld_for_low_coverage":child_pugh_coverage_warning,
       "candidate_baseline_adjustment_ready":False,
       "claim_context":"descriptive imbalance screen, not hypothesis test or clinical adjudication",
       "independent_patient_unit_used":True,
