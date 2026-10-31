@@ -9,6 +9,7 @@ on:
       - 'scripts/hcc/audit_ng_stage27_fullz_rank_lineage.R'
       - 'scripts/hcc/verify_stage27_lineage.py'
       - 'tests/test_hcc_stage27_lineage.py'
+      - 'scripts/hcc/audit_ng_stage27_original_figure2_source.py'
 
 permissions:
   contents: read
@@ -77,5 +78,28 @@ jobs:
           path: |
             results/hcc/feasibility/stage27_full_fullz_rank_metrics.json
             results/hcc/feasibility/stage27_full_fullz_rank_review.json
+          retention-days: 30
+          if-no-files-found: error
+  
+  original-figure2-source-sheet-structure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test Figure2 source header redaction and lineage claims
+        run: python -m unittest discover -s tests -p 'test_hcc_stage27_lineage.py' -v
+      - name: Profile actual original Figure2a/b vs supplementary Figure13f/g workbook
+        run: |
+          python scripts/hcc/audit_ng_stage27_original_figure2_source.py \
+            --out results/hcc/feasibility/stage27_fig2_suppfig13_source_aggregate.json
+      - name: Upload source structure counts only; never gene IDs or workbook payload
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage27-fig2-publisher-source-structure
+          path: results/hcc/feasibility/stage27_fig2_suppfig13_source_aggregate.json
           retention-days: 30
           if-no-files-found: error
