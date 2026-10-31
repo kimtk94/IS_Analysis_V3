@@ -207,7 +207,7 @@
       "paper_refs": [
         "L03"
       ],
-      "observation": "Ng/Suter processed RNA+protein numeric matrices source-aligned in 50 biopsies/48 distinct patients (exact Ng Supplementary Data 1 sample-identity join). Source-reported exclusive labels ALD12 HCV11 NAFLD7, ALD+HCV7; other small source categories suppressed, any-exposure ALD24 HCV18 HBV7 NAFLD9. Prior invalid ALD31 corrected by explicit non-alcoholic-vs-alcoholic regex test; clinician-verified etiology codebook still pending.",
+      "observation": "Ng/Suter processed RNA+protein numeric matrices source-aligned in 50 biopsies/48 distinct patients (exact Ng Supplementary Data 1 sample-identity join). Source-reported exclusive labels ALD12 HCV11 NAFLD7, ALD+HCV7; other small source categories suppressed, any-exposure ALD24 HCV18 HBV7 NAFLD9. Prior invalid ALD31 corrected by explicit non-alcoholic-vs-alcoholic regex test; clinician-verified etiology codebook still pending. Source-verified ALD-only12/HCV-only11 SMD age=0.077, male sex=0.667, BCLC early 0/A=0.260; MELD medians 11/8. Source Child-Pugh class interpretable for ALD8/HCV3 only; SMD withheld. No source technical batch, independent clinical codebook or adequately adjusted mechanism result.",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053421959",
@@ -220,6 +220,10 @@
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161332568",
           "level": "strict_48_patient_source_label_exposure_counts__not_clinical_codebook"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41163343921",
+          "level": "source_pinned_patient_level_confounder_smd_and_low_child_pugh_coverage_guard_not_inference"
         }
       ],
       "analysis_evidence": [],
@@ -227,7 +231,7 @@
       "independent_patient_n": 48,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Confirm source Ng 2022 underlying liver disease category meanings/exclusivity and clinical confounders on matched 48 independent patients; ALD12 vs HCV11 only exploratory, inspect age/stage/treatment/batch and the two duplicate-biopsy patients before pathway tests."
+      "next_action": "Do not declare etiologic differential omics: ALD12/HCV11 n23, sex SMD 0.667, BCLC SMD 0.260 and Child-Pugh low coverage; inspect batch/protein-RSEM transformations and independent replication. Only descriptive feasibility may proceed."
     },
     {
       "id": "V05",
