@@ -22,13 +22,15 @@ def classify_nested_array_prefix(text, start, limit=12):
     decoder=json.JSONDecoder()
     pos=start
     depth=0
-    while depth<6:
-        while pos<len(text) and text[pos] in " \t\r\n,":
-            pos+=1
-        if pos<len(text) and text[pos]=="[":
-            pos+=1
-            depth+=1
-        else:break
+    # Enter exactly ONE wrapper array: each completed inner list/object is
+    # an independent record whose shape can be checked on a bounded prefix.
+    # Descending repeatedly would strip the first record's own array wrapper
+    # and misclassify its individual fields as separate records.
+    while pos<len(text) and text[pos] in " \t\r\n,":
+        pos+=1
+    if pos<len(text) and text[pos]=="[":
+        pos+=1
+        depth=1
     counts={"NUMBER":0,"STRING":0,"OBJECT":0,"LIST":0,"BOOLEAN":0,"NULL":0}
     numeric_field_n=0
     anonymous_field_n=0
