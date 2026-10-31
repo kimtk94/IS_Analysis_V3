@@ -119,7 +119,8 @@ def main():
     # single 6h SC library in this 46-run deposited accession.
     exp={("TM","2Days"):9,("TM","6Hrs"):4,("TM","1Hr"):3,
          ("SC","2Days"):4,("SC","6Hrs"):0,("SC","1Hr"):3}
-    if dict(matched)!=exp:raise ValueError("SOURCE_ALIAS_DISTRIBUTION_UNEXPECTED "+str(dict(matched)))
+    if any(matched[k]!=v for k,v in exp.items()) or len(matched)!=5:
+        raise ValueError("SOURCE_ALIAS_DISTRIBUTION_UNEXPECTED "+str(dict(matched)))
     all_strains={t:sorted(set(g for gs in times.values() for g in gs)) for t,times in design.items()}
     two_day=[r for r in rows if r["tissue_from_source_alias"]=="TM" and
                            r["candidate_exposure"]=="2Days"]
