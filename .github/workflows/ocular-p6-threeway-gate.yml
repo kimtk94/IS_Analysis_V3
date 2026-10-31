@@ -1,8 +1,5 @@
 name: Ocular P6 External Factors Three-Way Gate
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-p6-threeway-gate.yml'
   workflow_dispatch:
 
 permissions:
