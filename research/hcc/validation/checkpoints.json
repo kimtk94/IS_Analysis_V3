@@ -313,7 +313,7 @@
         "L02",
         "L03"
       ],
-      "observation": "Stage24 real public Ng/Suter processed 5,343 strict one-gene-one-protein feature pairs, 50 biopsies/48 distinct patients, source-pinned aggregate Spearman across patients: median rho=0.284086 q10=-0.052106 q90=0.627182; 46 single-biopsy patients median=0.284490, 50 nonindependent biopsies median=0.282881. All 5343 defined, positive rho fraction=0.858132; no gene-level p-value/FDR/CI or independent replication. Ng paper median 0.287 is not exact reproduction due processed measurement and gene universe differences. Stage25 patient-wise 48x leave-one-out median rho 0.273127 to 0.292900 (max 0.010959 departure from baseline 0.284086); fixed-seed 80x patient bootstrap empirical rho median interval 0.243922 to 0.329928. Technical source/aggregate postflight SUCCESS, not gene-level CI, FDR, batch/purity control or external replication. Stage26 official Ng Source Data SuppFig13g (NOT main Fig2b) contains 5481 distinct published ENSG gene IDs, 5253 overlap with current strict 5343, 228 published-only, 90 current-only; this is a supplement-specific set comparison, NOT exact original Fig2b source gene-set verification. Preliminary earlier output falsely labelled physical sheet28 as Fig2b, corrected via workbook relationships. Stage27 negative cross-RDS control: processed T/P/PP values from HCCfull are not rank-preserved in HCCfullz despite same feature ID and same labeled 50 biopsy columns. Stage24 rho 0.284086 strictly dataset-specific until provenance explained; cannot use fullz as a direct Spearman sensitivity substitute.",
+      "observation": "Stage24 real public Ng/Suter processed 5,343 strict one-gene-one-protein feature pairs, 50 biopsies/48 distinct patients, source-pinned aggregate Spearman across patients: median rho=0.284086 q10=-0.052106 q90=0.627182; 46 single-biopsy patients median=0.284490, 50 nonindependent biopsies median=0.282881. All 5343 defined, positive rho fraction=0.858132; no gene-level p-value/FDR/CI or independent replication. Ng paper median 0.287 is not exact reproduction due processed measurement and gene universe differences. Stage25 patient-wise 48x leave-one-out median rho 0.273127 to 0.292900 (max 0.010959 departure from baseline 0.284086); fixed-seed 80x patient bootstrap empirical rho median interval 0.243922 to 0.329928. Technical source/aggregate postflight SUCCESS, not gene-level CI, FDR, batch/purity control or external replication. Stage26 official Ng Source Data SuppFig13g (NOT main Fig2b) contains 5481 distinct published ENSG gene IDs, 5253 overlap with current strict 5343, 228 published-only, 90 current-only; this is a supplement-specific set comparison, NOT exact original Fig2b source gene-set verification. Preliminary earlier output falsely labelled physical sheet28 as Fig2b, corrected via workbook relationships. Stage27 negative cross-RDS control: processed T/P/PP values from HCCfull are not rank-preserved in HCCfullz despite same feature ID and same labeled 50 biopsy columns. Stage24 rho 0.284086 strictly dataset-specific until provenance explained; cannot use fullz as a direct Spearman sensitivity substitute. D-038 SOURCE CORRECTION: earlier D-036 assertion that 5481 gene set was SuppFig13g was caused by lexicographically sorting worksheet XML paths then treating array position as sheet number. True file was sheet8.xml = original Fig2b (5481 ENSG source genes, published Spearman rho median 0.287059), paired with sheet7.xml = original Fig2a (15272 ENSG, rho median 0.203142). Thus actual original Figure2b gene ID overlap with current strict 5343 is 5253, original-only 228, current-only 90. Provenance GO, source correlation effect replication NOT done.",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41173779578",
@@ -330,6 +330,10 @@
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185391498",
           "level": "stage27_source_specific_descriptive_Spearman_limits_NO_between_file_equivalence"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185474022",
+          "level": "actual_Ng_Fig2b_source_5481_original_gene_ID_universe_meaning_verified_by_workbook_rels_and_median_rho_0_287059;_previous_SuppFig13g_name_SUPERSEDED"
         }
       ],
       "analysis_evidence": [],
@@ -337,7 +341,7 @@
       "independent_patient_n": 48,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Locate actual Ng original Figure 2b 5481-gene membership using upstream analysis code, explicit workbook Figure2b data, and 2022 mappings; then compare full identity, uncertainty and independent external reproducibility."
+      "next_action": "Original Figure2b 5481 gene IDs and overlap now located; reproduce per-gene published mRNA-protein Spearman using original tumor-to-median-normal quantitation, reconcile 2022 vs current annotation (228 original-only and 90 current-only); independent validation, batch/purity/confounder controls before V07 PASS."
     },
     {
       "id": "V08",
