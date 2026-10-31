@@ -1,5 +1,13 @@
 # OCULAR MASTER — 연구 방향 재설정 (2026-10-31)
 
+## 2026-11-01 원본 SRA 시간대 후보 매핑과 공식 보충자료 재검증
+
+[Mehrotra 공식 보충자료·23 라이브러리 쌍·9개 48h TM 후보 검증](MEHROTRA_SRA_23PAIR_TIMEPOINT_AND_RAW_COUNTS_GATE_20261101.md)에서 중요한 진전. 공식 Europe PMC ZIP `PMC12882097/supplementaryFiles`을 실제 획득하여 **4개 원본 DOCX/XLSX 무결성 PASS**([CI #41218079101](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41218079101)). 기존 PMC 개별 파일 다운로드 실패는 접근 차단이며 자료 부재가 아니었다. 16.7MB XLSX는 63개 저자 DEG/경로/표지유전자 보충 시트가 있으며 `SuppTable82_TM_MarkerExpression`, `SuppTable83_SC_MarkerExpression`에 **세포주별 1h/6h/2Days 대조군 TPM 열**을 명시한다. **원시 integer count 전체 행렬로 오인하지 않는다.**
+
+[고정된 공식 아티팩트를 통한 23쌍 교차검증 CI #41218779997](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41218779997) **SUCCESS**. 논문 timepoint별 strain 명단과 ENA library alias 스타일을 교차검증하면 **48h TM 후보 9쌍/18 RUN/36 FASTQ/압축 약 32.71GB**, 6h TM 4쌍, 1h TM 3쌍, 48h SCE 4쌍, 1h SCE 3쌍으로 일치한다. 보충자료에 포함된 SCE 6h 4세포주는 **이 46-RUN 프로젝트 안에서 대응 후보가 없음**. 단 **BioSample 명시적 시간대는 0/23**이므로 48h TM 아홉 쌍은 **후보 REVIEW**, 저자 원본 시료 설계/실험 시간 검증 전 확정 원시 count 검증 아님.
+
+이 단계의 목표는 **89.7GB를 무작정 받지 않고 32.7GB의 소수 후보군으로 범위를 좁힌 것**. 여전히 원시 count 전체 파일은 확인되지 않았고, 저자 80 DEG ID 원본 목록도 HOLD. 신규 실험의 유의성이 아니라 출처 검증과 분석 가능성 정밀화 결과다.
+
 ## 2026-11-01 신규성 및 논문 원고 검증 — 이전 자료의 출판 수준 재분류
 
 [선행연구별 Claim Overlap / 신규성 / Erratum 감사](THESIS_NOVELTY_CLAIM_OVERLAP_AND_ERRATUM_AUDIT_20261101.md)와 [영문 초록·Introduction·Methods·Results·Discussion 전체 초안](THESIS_MANUSCRIPT_METHODS_RESULTS_DISCUSSION_DRAFT_20261101.md)을 작성했다. 새로운 원시 데이터 분석은 수행하지 않았으며 **기존 검증된 Figure/edgeR/교차연구 산출물에만 의존**한다.
