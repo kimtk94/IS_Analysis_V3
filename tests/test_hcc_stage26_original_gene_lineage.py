@@ -1,11 +1,35 @@
 """Stage26 synthetic error contracts: no exact paper 5481 claim from aggregate sheet counts."""
-import pathlib,sys,unittest
+import pathlib,sys,unittest,io,zipfile
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]/"scripts"/"hcc"))
-from probe_ng_stage26_paper_genes import ENSG,FILES
+from probe_ng_stage26_paper_genes import ENSG,FILES,workbook_profile
 from compare_ng_stage26_gene_membership import compute
 from verify_ng_stage26_source_and_lineage import validate_lineage,validate_paper,SHA,COMMIT
 
 class Stage26Tests(unittest.TestCase):
+    def test_sheet_names_follow_relationships_not_sheet_id(self):
+        wb=('<?xml version="1.0"?><workbook xmlns="http://schemas.openxmlformats.org/'
+            'spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/'
+            'officeDocument/2006/relationships"><sheets>'
+            '<sheet name="Fig2b" sheetId="1" r:id="rId1"/>'
+            '<sheet name="Fig2a" sheetId="2" r:id="rId2"/>'
+            '</sheets></workbook>')
+        rel=('<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/'
+             'package/2006/relationships">'
+             '<Relationship Id="rId1" Target="worksheets/sheet2.xml" Type="worksheet"/>'
+             '<Relationship Id="rId2" Target="worksheets/sheet1.xml" Type="worksheet"/>'
+             '</Relationships>')
+        sheet=('<worksheet xmlns="http://schemas.openxmlformats.org/'
+               'spreadsheetml/2006/main"><sheetData><row r="1">'
+               '<c r="A1" t="inlineStr"><is><t>header</t></is></c>'
+               '</row></sheetData></worksheet>')
+        buf=io.BytesIO()
+        with zipfile.ZipFile(buf,"w") as z:
+            z.writestr("xl/workbook.xml",wb)
+            z.writestr("xl/_rels/workbook.xml.rels",rel)
+            z.writestr("xl/worksheets/sheet1.xml",sheet)
+            z.writestr("xl/worksheets/sheet2.xml",sheet)
+        sheets=workbook_profile(buf.getvalue())
+        self.assertEqual([v["workbook_sheet_label"] for v in sheets],["Fig2a","Fig2b"])
     def test_exact_overlap_count_not_identical_paper_reproduction(self):
         orig={"ENSG00000141510","ENSG00000111111"}
         cur={"ENSG00000141510","ENSG00000222222"}
