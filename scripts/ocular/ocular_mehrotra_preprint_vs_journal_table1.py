@@ -30,7 +30,7 @@ def extract_table1(payload,version):
     results=[]
     for wrapper in root.findall(".//table-wrap"):
         cap=text(wrapper.find("./caption")) if wrapper.find("./caption") is not None else ""
-        if "Demographic Data of Donors" in cap or "Demographic and" in cap:
+        if "demographic data of donors" in cap.lower() or "demographic and" in cap.lower():
             results.append(wrapper)
     detection="CAPTION_MATCH"
     if not results:
