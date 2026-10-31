@@ -7,7 +7,8 @@ Cell label is post-exposure and cannot remove causal treatment/library confoundi
 import argparse,csv,gzip,json,math,tempfile
 from collections import defaultdict,Counter
 from pathlib import Path
-from ocular_p1_integrity import BASE,download
+from ocular_p1_integrity import BASE
+from ocular_gate_b_050_p4_retry import resilient_geo_download as download
 from ocular_p4_fullcohort import pool_name
 
 TYPES=("BeamA_any","BeamA_050","BeamA_075","scpred_TM_Fibro","BeamA_050_AND_TM_Fibro",
