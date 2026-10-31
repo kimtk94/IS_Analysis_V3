@@ -23,7 +23,8 @@ class Stage37Tests(unittest.TestCase):
         self.assertEqual(x["original_PDC_GCT_file_catalog_candidate_n"],1)
         self.assertTrue(x["all_pages_exhausted"])
         self.assertNotIn("data_category:",queries[0])
-        self.assertNotIn("author_quant",str(x))
+        self.assertNotIn("author_quant.gct.gz",str(x))
+        self.assertNotIn("A.sample.txt",str(x))
         self.assertFalse(x["quant_330_aliquot_join_certified"])
 
     def test_empty_first_page_is_not_proof_of_absence(self):
