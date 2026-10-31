@@ -1,0 +1,49 @@
+name: Ocular Mehrotra Official Table1 versus Supplement and SRA Audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-mehrotra-table1-s003-sra.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  table1-versus-s003-versus-sra:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile official-source triple audit
+        run: |
+          python -m py_compile scripts/ocular/ocular_mehrotra_table1_vs_s003_sra.py
+      - name: Retrieve frozen actual 23-pair candidate metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-table1-audit" ocular-table1-sra-public
+          gh run download 41218779997 -n ocular-mehrotra-23-pair-temporal-candidates -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-table1-audit"
+          test -s "$RUNNER_TEMP/ocular-table1-audit/MEHROTRA_SOURCE_CONSISTENT_48H_TM_CANDIDATE_GATE.json"
+          test -s "$RUNNER_TEMP/ocular-table1-audit/MEHROTRA_23_SOURCE_CONSISTENT_TIMEPOINT_CANDIDATES.tsv"
+      - name: Cross-audit immutable publisher Table1 and s003 against SRA labels
+        run: |
+          python -u scripts/ocular/ocular_mehrotra_table1_vs_s003_sra.py \
+            --source-gate "$RUNNER_TEMP/ocular-table1-audit/MEHROTRA_SOURCE_CONSISTENT_48H_TM_CANDIDATE_GATE.json" \
+            --pairs "$RUNNER_TEMP/ocular-table1-audit/MEHROTRA_23_SOURCE_CONSISTENT_TIMEPOINT_CANDIDATES.tsv" \
+            --out ocular-table1-sra-public
+      - name: Erase temporary prior evidence copy
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-table1-audit"
+      - name: Retain only traceable triple-source QC tables
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-mehrotra-table1-s003-sra-verified
+          path: ocular-table1-sra-public/
+          retention-days: 45
+          if-no-files-found: warn
