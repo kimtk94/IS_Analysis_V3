@@ -11,6 +11,8 @@ on:
       - 'scripts/hcc/probe_ng_suter_covariate_balance.py'
       - 'tests/test_hcc_ng_suter_clinical_sample_join.py'
       - 'tests/test_hcc_ng_suter_covariate_balance.py'
+      - 'scripts/hcc/assess_ng_rds_quantitative_qc.py'
+      - 'tests/test_hcc_ng_rds_quantitative_qc.py'
 
 permissions:
   contents: read
@@ -34,6 +36,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_hcc_ng_suter_clinical_sample_join.py' -v
       - name: Test source patient confounder QC with synthetic IDs
         run: python -m unittest discover -s tests -p 'test_hcc_ng_suter_covariate_balance.py' -v
+      - name: Test RNA-protein QC numeric and feature provenance guards
+        run: python -m unittest discover -s tests -p 'test_hcc_ng_rds_quantitative_qc.py' -v
       - name: Audit immutable public Ng/Suter multilayer RDS files (no private EGA access)
         env:
           NG_PRIVATE_KEYS_OUT: ${{ runner.temp }}/ng-suter-private-sample-labels.txt
@@ -44,6 +48,11 @@ jobs:
         run: |
           python scripts/hcc/verify_ng_public_rds_evidence.py \
             --source results/hcc/feasibility/ng_public_multiomics_rds.json
+      - name: Audit RNA/protein numeric scales, missingness and feature label intersection
+        run: |
+          python scripts/hcc/assess_ng_rds_quantitative_qc.py \
+            --source results/hcc/feasibility/ng_public_multiomics_rds.json \
+            --out results/hcc/feasibility/ng_rds_quantitative_qc.json
       - name: Source-check RDS sample aliases against official Ng 2022 biopsy and patient metadata
         run: |
           python scripts/hcc/probe_ng_suter_clinical_sample_join.py \
@@ -66,5 +75,6 @@ jobs:
             results/hcc/feasibility/ng_public_multiomics_rds.json
             results/hcc/feasibility/ng_suter_biopsy_patient_join_qc.json
             results/hcc/feasibility/ng_suter_confounder_balance.json
+            results/hcc/feasibility/ng_rds_quantitative_qc.json
           retention-days: 30
           if-no-files-found: warn
