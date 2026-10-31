@@ -80,14 +80,43 @@ def validate_paper(r):
        "source_gene_id_count_candidates_are_not_identity_replication":True,
        "original_published_5481_genes_exact_membership":"HOLD",
        "source_2022_original_annotation_identity":"HOLD","V03":"PARTIAL","V07":"PARTIAL"}
+def validate_overlap(r):
+    if r.get("schema")!="hcc-stage26-published-5481-vs-current-5343-gene-membership-v1":
+        raise ValueError("unexpected ID membership source")
+    if r.get("original_Ng_fig2b_ENSG_n")!=5481 or r.get("current_Suter_strict_1to1_ENSG_n")!=5343:
+        raise ValueError("original/current gene cardinality changed")
+    n=r.get("exact_Ensembl_gene_ID_overlap_n")
+    u=r.get("original_2022_genes_not_in_current_strict_n")
+    v=r.get("current_strict_genes_not_in_original_2022_n")
+    if any(type(x)!=int for x in (n,u,v)) or n+u!=5481 or n+v!=5343 or n<4000:
+        raise ValueError("invalid original-source gene membership intersection")
+    for field in ("original_gene_id_set_sha256","current_gene_id_set_sha256","shared_gene_id_set_sha256"):
+        if len(r.get(field,""))!=64:raise ValueError("source membership integrity digest missing")
+    for key in ("original_gene_set_semantics_reviewer_verified",
+        "exact_matching_of_original_2022_molecular_quantitation",
+        "original_ng_2022_expression_RSEM_and_normal_reference_reproduced",
+        "2022_Ensembl_vs_current_UniProt_mapping_versions_identical",
+        "biological_significance_or_replication_tested",
+        "patient_feature_or_original_gene_ID_lists_exported"):
+        if r.get(key) is not False:raise ValueError("scientific claim overreach: "+key)
+    return {"schema":"hcc-stage26-published-gene-identity-postflight-v1",
+        "source_gene_membership_intersection_audited":"PASS_AGGREGATE_ONLY",
+        "published_gene_n":5481,"current_strict_gene_n":5343,
+        "shared_gene_n":n,"original_only_gene_n":u,
+        "current_only_gene_n":v,
+        "published_source_file_semantics_reviewer_verified":False,
+        "original_Ng_gene_correlation_calculation_reproduced":False,
+        "V03":"PARTIAL","V07":"PARTIAL"}
+
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument("--kind",choices=("lineage","paper"),required=True)
+    p.add_argument("--kind",choices=("lineage","paper","overlap"),required=True)
     p.add_argument("--input",required=True)
     p.add_argument("--out",required=True)
     a=p.parse_args()
     x=json.loads(pathlib.Path(a.input).read_text(encoding="utf-8"))
-    y=validate_lineage(x) if a.kind=="lineage" else validate_paper(x)
+    y=validate_lineage(x) if a.kind=="lineage" else (
+        validate_paper(x) if a.kind=="paper" else validate_overlap(x))
     dest=pathlib.Path(a.out);dest.parent.mkdir(parents=True,exist_ok=True)
     dest.write_text(json.dumps(y,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(y,indent=2))
