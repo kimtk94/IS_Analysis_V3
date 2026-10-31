@@ -1,8 +1,5 @@
 name: Ocular Thesis Figures from Frozen Verified Aggregates
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-thesis-figures.yml'
   workflow_dispatch:
 
 permissions:
