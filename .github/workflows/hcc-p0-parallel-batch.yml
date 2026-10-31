@@ -85,11 +85,20 @@ jobs:
           python scripts/hcc/aggregate_parallel_p0.py \
             --artifact-root results/hcc/parallel/artifacts \
             --out-dir results/hcc/parallel/batch
+      - name: Assess actual source-evidence depth separately from execution PASS
+        if: always()
+        run: |
+          python scripts/hcc/evaluate_parallel_p0_evidence.py \
+            --artifact-root results/hcc/parallel/artifacts \
+            --out-dir results/hcc/parallel/batch
       - name: Publish combined audit as GitHub job summary
         if: always()
         run: |
           if test -f results/hcc/parallel/batch/batch_report.md; then
             cat results/hcc/parallel/batch/batch_report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if test -f results/hcc/parallel/batch/evidence_depth.md; then
+            cat results/hcc/parallel/batch/evidence_depth.md >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Retain consolidated non-identifying evidence on failure or success
         if: always()
