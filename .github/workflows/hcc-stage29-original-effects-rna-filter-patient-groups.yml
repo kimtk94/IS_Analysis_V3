@@ -12,6 +12,10 @@ on:
       - 'scripts/hcc/verify_ng_stage29_parallel.py'
       - 'tests/test_hcc_stage29_evidence.py'
 
+concurrency:
+  group: hcc-stage29-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
