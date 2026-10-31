@@ -16,6 +16,7 @@ import pathlib
 import re
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor,as_completed
 
 COMMIT="438f52271d0a86a6701baa7a96e80c516ba575c2"
 ENSG=re.compile(r"ENSG\d{11}")
@@ -66,6 +67,54 @@ def parse_uniprot_tsv(data):
         if key in out:out[key].update(genes)
         else:out[key]=genes
     return out,rows
+
+def parse_uniprot_json(result):
+    """UniProtKB JSON Ensembl crossreference GeneId can be absent in TSV."""
+    if not isinstance(result,dict) or not isinstance(result.get("results"),list):
+        raise ValueError("Uniprot JSON schema lacks results")
+    mapped={}
+    for entry in result["results"]:
+        accession=entry.get("primaryAccession")
+        if not isinstance(accession,str):continue
+        genes=set()
+        for ref in entry.get("uniProtKBCrossReferences") or []:
+            if isinstance(ref,dict) and ref.get("database")=="Ensembl":
+                for prop in ref.get("properties") or []:
+                    if prop.get("key")=="GeneId":
+                        genes.update(ENSG.findall(prop.get("value") or ""))
+        mapped.setdefault(accession,set()).update(genes)
+    return mapped
+
+def fetch_json_batch(ids):
+    # Keep URLs bounded and public. No source identifiers in output artifacts.
+    query="("+ " OR ".join("accession:"+v for v in ids)+") AND organism_id:9606"
+    url="https://rest.uniprot.org/uniprotkb/search?"+urllib.parse.urlencode({
+        "query":query,"format":"json","fields":"accession,xref_ensembl","size":500})
+    if len(url)>10000:raise ValueError("mapping query URL too long")
+    with urllib.request.urlopen(urllib.request.Request(url,headers={
+        "Accept":"application/json","User-Agent":"HCC-public-source-mapping-QC/1.0"
+    }),timeout=55) as rsp:
+        body=rsp.read(3*1024*1024+1)
+    if len(body)>3*1024*1024:raise ValueError("batch exceeded JSON size limit")
+    return parse_uniprot_json(json.loads(body)),hashlib.sha256(body).hexdigest()
+
+def supplement_from_json(protein_ids,refs):
+    unique=sorted({canonical_protein(p) for p in protein_ids if canonical_protein(p)})
+    chunks=[unique[i:i+100] for i in range(0,len(unique),100)]
+    # Bounded, read-only public API; individual accessions never logged.
+    outcomes=[]
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures=[pool.submit(fetch_json_batch,chunk) for chunk in chunks]
+        for future in as_completed(futures):
+            outcomes.append(future.result())
+    for records,_ in outcomes:
+        for key,genes in records.items():
+            refs.setdefault(key,set()).update(genes)
+    return {"batches":len(chunks),
+            "batches_completed":len(outcomes),
+            "JSON_response_sha256_digest_of_digests":hashlib.sha256(
+                "".join(sorted(d for _,d in outcomes)).encode()).hexdigest(),
+            "JSON_accessions_with_ENSG_crossrefs_n":sum(bool(v) for v in refs.values())}
 
 def summarize(t,pids,refs,rows,checksum):
     aliases={p:canonical_protein(p) for p in pids}
@@ -129,7 +178,11 @@ def main():
     t,proteins=read_ids(args.private_features)
     data=request_mapping()
     refs,rows=parse_uniprot_tsv(data)
+    fallback=None
+    if not any(refs.values()):
+        fallback=supplement_from_json(proteins,refs)
     result=summarize(t,proteins,refs,rows,hashlib.sha256(data).hexdigest())
+    result["accession_specific_json_enrichment"]=fallback
     path=pathlib.Path(args.out)
     path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(result,indent=2)+"\n",encoding="utf-8")
