@@ -10,6 +10,8 @@ on:
       - 'scripts/hcc/validate_ng_stage24_spearman.py'
       - 'scripts/hcc/probe_ng_full_uniprot_ensembl_crosswalk.py'
       - 'tests/test_hcc_ng_stage24_patient_spearman.py'
+      - 'scripts/hcc/validate_ng_stage25_patient_influence.py'
+      - 'tests/test_hcc_ng_stage25_patient_influence.py'
 
 permissions:
   contents: read
@@ -33,6 +35,8 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_hcc_ng_full_uniprot_crosswalk.py' -v
           python -m unittest discover -s tests -p 'test_hcc_ng_crosswalk_metrics.py' -v
+      - name: Test Stage25 influence and bootstrap evidence guards
+        run: python -m unittest discover -s tests -p 'test_hcc_ng_stage25_patient_influence.py' -v
       - name: Extract immutable full feature labels to transient runner temp
         env:
           NG_PRIVATE_FEATURE_IDS_OUT: ${{ runner.temp }}/stage24-protein-feature-accessions.txt
@@ -66,13 +70,20 @@ jobs:
           Rscript scripts/hcc/audit_ng_stage24_patient_spearman.R \
             "${{ runner.temp }}/stage24-strict-gene-protein.tsv" \
             "${{ runner.temp }}/stage24-private-patient-index.txt" \
-            results/hcc/feasibility/stage24_patient_spearman.json
+            results/hcc/feasibility/stage24_patient_spearman.json \
+            results/hcc/feasibility/stage25_patient_influence.json
       - name: Validate Stage24 result with noninferential and privacy guards
         run: |
           python scripts/hcc/validate_ng_stage24_spearman.py \
             --mapping results/hcc/feasibility/stage24_mapping_review.json \
             --correlations results/hcc/feasibility/stage24_patient_spearman.json \
             --out results/hcc/feasibility/stage24_pilot_review.json
+      - name: Validate Stage25 LOPO and patient bootstrap are descriptive-only
+        run: |
+          python scripts/hcc/validate_ng_stage25_patient_influence.py \
+            --stage24 results/hcc/feasibility/stage24_patient_spearman.json \
+            --stage25 results/hcc/feasibility/stage25_patient_influence.json \
+            --out results/hcc/feasibility/stage25_patient_influence_review.json
       - name: Purge all temporary patient/source feature identifiers
         if: always()
         run: |
@@ -92,5 +103,7 @@ jobs:
             results/hcc/feasibility/stage24_public_rds_source_qc.json
             results/hcc/feasibility/stage24_patient_spearman.json
             results/hcc/feasibility/stage24_pilot_review.json
+            results/hcc/feasibility/stage25_patient_influence.json
+            results/hcc/feasibility/stage25_patient_influence_review.json
           retention-days: 30
           if-no-files-found: error
