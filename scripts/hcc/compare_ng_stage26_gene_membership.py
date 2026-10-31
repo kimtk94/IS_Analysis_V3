@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare original published 5481 ENSG Figure2B identities to 5343 current
+"""Compare published SuppFig13g 5481 ENSG identities to 5343 current
 strict reviewed UniProt 1:1 RNA/protein IDs; report only aggregate overlap.
 """
 import argparse,hashlib,json,pathlib,re
@@ -32,8 +32,8 @@ def read_current_pairs(filepath):
 def compute(original,current):
     overlap=original & current
     result={
-        "schema":"hcc-stage26-published-5481-vs-current-5343-gene-membership-v1",
-        "original_Ng_fig2b_ENSG_n":len(original),
+        "schema":"hcc-stage26-suppfig13g-5481-vs-current-5343-gene-membership-v2",
+        "published_suppfig13g_2022_ENSG_n":len(original),
         "current_Suter_strict_1to1_ENSG_n":len(current),
         "exact_Ensembl_gene_ID_overlap_n":len(overlap),
         "original_2022_genes_not_in_current_strict_n":len(original-current),
@@ -45,12 +45,15 @@ def compute(original,current):
         "current_gene_id_set_sha256":hashlib.sha256("\n".join(sorted(current)).encode()).hexdigest(),
         "shared_gene_id_set_sha256":hashlib.sha256("\n".join(sorted(overlap)).encode()).hexdigest(),
         "original_gene_set_semantics_reviewer_verified":False,
+        "original_Figure2b_5481_gene_membership_verified":False,
+        "source_sheet_label":"SuppFig13g",
+        "suppfig13g_gene_list_may_differ_from_fig2b":True,
         "exact_matching_of_original_2022_molecular_quantitation":False,
         "original_ng_2022_expression_RSEM_and_normal_reference_reproduced":False,
         "2022_Ensembl_vs_current_UniProt_mapping_versions_identical":False,
         "biological_significance_or_replication_tested":False,
         "patient_feature_or_original_gene_ID_lists_exported":False,
-        "interpretation":"Exact ENSG string membership in publisher Figure2B source vs current strict reviewed-2026 Uniprot 1:1 subset, NOT reproduction of original computation or annotation versions.",
+        "interpretation":"Exact ENSG membership in publisher SuppFig13g source vs current reviewed-UniProt 1:1 subset. Figure2b 5481 exact gene universe NOT verified; same count alone insufficient.",
     }
     if result["exact_Ensembl_gene_ID_overlap_n"]==0:
         raise ValueError("unexpected empty overlap")
