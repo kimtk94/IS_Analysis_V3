@@ -20,7 +20,7 @@ class Tests(unittest.TestCase):
         passage=(
             "S5 Appendix. Data pre-processing. "
             "For transcriptome data, the preprocessing steps included upper-quartile normalization to 1000 and log2 transformation. "
-            "For proteome data, log2 transformation and normalization by median subtraction and removing 50% missing proteins. "
+            "For proteome data, log2 transformation and normalization by median substraction and removing 50% missing proteins. "
             "For clustering only: imputation using impute. For differential expression analysis we used unimputed values. "
             "For phosphoproteome data, batch correction with edgeR was used. "
             "The CNA data was collected from the original paper."
@@ -31,6 +31,8 @@ class Tests(unittest.TestCase):
         self.assertIn("phosphoproteome",a)
         self.assertTrue(a["transcriptome"]["upper_quartile_mentioned"])
         self.assertFalse(a["transcriptome"]["batch_correction_mentioned"])
+        self.assertTrue(a["proteome"]["median_subtraction_mentioned"])
+        self.assertNotIn("cna",a)
         self.assertTrue(a["proteome"]["imputation_mentioned"])
         self.assertTrue(a["proteome"]["clustering_only_qualifier_mentioned"])
         self.assertTrue(a["phosphoproteome"]["batch_correction_mentioned"])
