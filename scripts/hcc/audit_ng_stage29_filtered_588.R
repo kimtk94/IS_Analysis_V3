@@ -35,9 +35,8 @@ counts_highest<-sum(drop[order(mu)[seq_len(588)]])
 strict_sd_separation<-max(sdv[drop])<min(sdv[selected])
 strict_mean_separation<-max(mu[drop])<min(mu[selected])
 qstats<-function(v)list(min=min(v),med=median(v),max=max(v),q10=unname(quantile(v,.1)),q90=unname(quantile(v,.9)))
-put<-function(name,x)paste0('"',name,'":{',
- '"min":',num(x$min),',"median":',num(x$med),',"max":',num(x$max),',',
- '"q10":',num(x$q10),',"q90":',num(x$q90),'}')
+put<-function(name,x)sprintf('"%s":{"min":%s,"median":%s,"max":%s,"q10":%s,"q90":%s}',
+ name,num(x$min),num(x$med),num(x$max),num(x$q10),num(x$q90))
 str<-paste0('{"schema":"hcc-stage29-source-filter-588-transcripts-v1",',
  '"source_commit":"',commit,'",',
  '"full_sha256":"',sha[["HCCfull.rds"]],'",',
