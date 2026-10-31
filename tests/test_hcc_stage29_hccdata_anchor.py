@@ -10,6 +10,7 @@ def fixture():
       "modalities":[{
           "modality":m,"small_data_feature_n":200,"small_data_sample_n":50,
           "small_data_source_numeric_matrix":True,
+          "small_data_original_sample_axis_is_rows":True,
           "small_data_exact_50_biopsy_comparison_eligible":True,
           "small_full_common_feature_n":100,"small_full_common_sample_labels_n":50,
           "small_full_rho_finite_feature_n":100,
