@@ -6,14 +6,16 @@ suppressPackageStartupMessages({
   library(jsonlite)
 })
 args <- commandArgs(trailingOnly=TRUE)
-if (length(args) != 2L) stop("Rscript ocular_p5_edger.R <runner_input_dir> <summary_output_dir>")
+if (!length(args) %in% c(2L,3L)) stop("Rscript ocular_p5_edger.R <runner_input_dir> <summary_output_dir> [BeamA_score]")
+score_cutoff <- if(length(args)==3L) as.numeric(args[[3]]) else 0.75
+if(is.na(score_cutoff) || !(score_cutoff %in% c(0.50,0.75))) stop("ONLY_0_50_OR_0_75_ALLOWED")
 input_dir <- args[[1]]
 out_dir <- args[[2]]
 dir.create(out_dir,recursive=TRUE,showWarnings=FALSE)
 summary_path <- file.path(out_dir,"p5_edger_summary.json")
 summary <- list(status="HOLD",dataset="GSE313736",
   phenotype="in_vitro_trabecular_meshwork_dexamethasone_not_clinical_IOP",
-  primary_cell_state="BeamA_score_ge_0.75",
+  primary_cell_state=paste0("BeamA_score_ge_",sprintf("%.2f",score_cutoff)),
   method="edgeR_paired_NB_QL_BH_FDR",
   caveat="DEX and vehicle preparations sequenced in separate 10x libraries")
 persist <- function() write_json(summary,summary_path,pretty=TRUE,auto_unbox=TRUE,digits=8,na="null")
