@@ -18,8 +18,21 @@ def verify(v):
     raise ValueError("three source layers required")
   summaries={}
   for x in r:
-    if x.get("small_data_sample_n")!=50 or type(x.get("small_data_feature_n"))!=int or not 1<=x["small_data_feature_n"]<=1000:
-      raise ValueError("small source matrix shape")
+    if (type(x.get("small_data_sample_n")) is not int or
+        not 1<=x["small_data_sample_n"]<=500 or
+        type(x.get("small_data_feature_n")) is not int or
+        not 1<=x["small_data_feature_n"]<=1000):
+      raise ValueError("small network source structure invalid")
+    for key in ("small_data_source_numeric_matrix",
+                "small_data_exact_50_biopsy_comparison_eligible"):
+      if type(x.get(key)) is not bool:
+        raise ValueError("source network matrix evidence missing: "+key)
+    if (x["small_data_exact_50_biopsy_comparison_eligible"] and
+        (x["small_data_sample_n"]!=50 or
+         x["small_full_common_sample_labels_n"]!=50 or
+         x["small_fullz_common_sample_labels_n"]!=50 or
+         not x["small_data_source_numeric_matrix"])):
+      raise ValueError("invalid comparable small network source")
     if x.get("biopsy_or_gene_identifiers_exported") is not False:raise ValueError("source label leak")
     for f in ("small_full_common_feature_n","small_fullz_common_feature_n",
               "small_full_common_sample_labels_n","small_fullz_common_sample_labels_n",
@@ -37,6 +50,8 @@ def verify(v):
         raise ValueError("zero finite genes yet median exists")
     summaries[x["modality"]]={
       "same_gene_compared_n":x["small_full_common_feature_n"],
+      "source_numeric_matrix":x["small_data_source_numeric_matrix"],
+      "source_50_biopsy_comparison_eligible":x["small_data_exact_50_biopsy_comparison_eligible"],
       "HCCdata_vs_full_same_label_rho_median":x["small_full_same_label_per_feature_rho_median"],
       "HCCdata_vs_fullz_same_label_rho_median":x["small_fullz_same_label_per_feature_rho_median"]}
   return {"schema":"hcc-stage29-HCCdata-author-source-technical-postflight-v1",
