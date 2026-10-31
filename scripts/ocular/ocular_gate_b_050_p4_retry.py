@@ -30,12 +30,13 @@ def resilient_geo_download(url,path,cap):
                 metadata=original(route,path,cap)
                 if metadata["bytes"]<=10:
                     raise ValueError("TRUNCATED_GEO_RESPONSE")
-                if cap<=12*1024*1024:
-                    # Validate complete gzip stream (not just magic) for small
-                    # barcode/feature/cell metadata before downstream parsing.
-                    with gzip.open(path,"rb") as src:
-                        while src.read(1<<20):
-                            pass
+                # Check full gzip footer/CRC even for large MatrixMarket files.
+                # Source GEO transfers can return a valid gzip header but truncate
+                # after several hundred MB, otherwise killing P4 hours later.
+                # Data are decompressed in bounded blocks, never held in RAM.
+                with gzip.open(path,"rb") as src:
+                    while src.read(1<<22):
+                        pass
                 if route!=url:
                     metadata["official_alternate_route_used"]=True
                 return metadata
