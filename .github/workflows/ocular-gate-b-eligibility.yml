@@ -1,5 +1,8 @@
 name: Ocular Gate B BeamA Selection and Original Author DEG Provenance
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-gate-b-eligibility.yml'
   workflow_dispatch:
 
 permissions:
