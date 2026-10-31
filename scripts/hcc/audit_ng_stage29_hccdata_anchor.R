@@ -51,12 +51,35 @@ same_gene<-function(a,b){
 rows<-character()
 for(k in c("T","P","PP")){
  a<-as.matrix(anchor[[k]]);b<-as.matrix(full[[k]]);c<-as.matrix(fullz[[k]])
- if(!is.numeric(a)||ncol(a)!=50L||anyDuplicated(rownames(a))||
-    anyDuplicated(colnames(a)))stop("HCCdata source matrix quality")
- r<-same_gene(a,b);s<-same_gene(a,c)
+ # HCCdata is the authors' small network-object input, NOT a guaranteed
+ # quantitative 50-biopsy matrix. Preserve its real structure and report
+ # whether same-name exact-gene Spearman is actually computable.
+ if(length(dim(a))!=2L||is.null(nrow(a))||is.null(ncol(a))||
+    nrow(a)<1L||ncol(a)<1L||
+    anyDuplicated(rownames(a))||anyDuplicated(colnames(a)))
+     stop("HCCdata structural source matrix invalid")
+ has_numeric<-is.numeric(a) && all(is.finite(a))
+ comparable<-has_numeric && ncol(a)==50L && !is.null(colnames(a)) &&
+    length(intersect(colnames(a),colnames(b)))==50L &&
+    length(intersect(colnames(a),colnames(c)))==50L
+ if(comparable){
+    r<-same_gene(a,b);s<-same_gene(a,c)
+ }else{
+    # A small network input without 50 quantitative biopsy columns
+    # cannot validate per-biopsy labels. This is a scientific HOLD, not
+    # a source-download or code-execution failure.
+    r<-list(shared=length(intersect(rownames(a),rownames(b))),
+       axis=length(intersect(colnames(a),colnames(b))),
+       finite=0L,rho=NA_real_,positive=NA_real_)
+    s<-list(shared=length(intersect(rownames(a),rownames(c))),
+       axis=length(intersect(colnames(a),colnames(c))),
+       finite=0L,rho=NA_real_,positive=NA_real_)
+ }
  rows<-c(rows,paste0('{"modality":"',k,'",',
  '"small_data_feature_n":',nrow(a),',',
- '"small_data_sample_n":50,',
+ '"small_data_sample_n":',ncol(a),',',
+ '"small_data_source_numeric_matrix":',bool(has_numeric),',',
+ '"small_data_exact_50_biopsy_comparison_eligible":',bool(comparable),',
  '"small_full_common_feature_n":',r$shared,',',
  '"small_full_common_sample_labels_n":',r$axis,',',
  '"small_full_rho_finite_feature_n":',r$finite,',',
