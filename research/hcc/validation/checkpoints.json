@@ -195,14 +195,18 @@
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053421959",
           "level": "preliminary_public_metadata"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155985179",
+          "level": "source_sha256_binary_code_imbalance_uninterpreted"
         }
       ],
       "analysis_evidence": [],
       "reviewer_approved": false,
       "independent_patient_n": null,
       "independent_event_n": null,
-      "last_updated": "2026-10-30",
-      "next_action": "Gather actual sample/patient-level quantitative evidence; do not promote from metadata alone"
+      "last_updated": "2026-10-31",
+      "next_action": "Independently verify Xing HBV/HCV 0/1 codebook and true etiology count; HCV marker has just one code=1 among 138 numeric cases. Xing is HOLD for cross-etiology contrasts; validate etiology-diverse expression-level Ng or independent cohorts before scientific PASS."
     },
     {
       "id": "V05",
