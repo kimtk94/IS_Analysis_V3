@@ -56,8 +56,8 @@ def workbook_profile(payload, private_candidate_out=None):
             relmap={}
             for rel in rel_root:
                 target=rel.get("Target","")
-                if rel.get("Id") and re.search(r"(?:^|/)sheet[0-9]+\\.xml$",target):
-                    m=re.search(r"(?:^|/)sheet([0-9]+)\\.xml$",target)
+                if rel.get("Id") and re.search(r"(?:^|/)sheet[0-9]+\.xml$",target):
+                    m=re.search(r"(?:^|/)sheet([0-9]+)\.xml$",target)
                     if m:relmap[rel.get("Id")]=int(m.group(1))
             wb=ET.fromstring(z.read("xl/workbook.xml"))
             for node in wb.iter(NS+"sheet"):
