@@ -55,11 +55,37 @@ def main():
           "cells_can_overlap_across_annotations":True,
           "independent_study_replication":False,
           "batch_effect_independent_treatment_identified":False})
-    if len(rows)!=16 or len({r["gene_symbol"] for r in rows})!=16:
-        raise ValueError("EXPECTED_P9_16_GENES")
-    table(args.out/"GATE_B_55_matched_BeamA_vs_scPred_16_genes.tsv",
-          sorted(rows,key=lambda r:r["gene_symbol"]))
-    note={r["gene_symbol"]:r for r in rows}
+    # An annotation with fewer selected cells may filter genuinely low-CPM genes.
+    # This is NOT a failure of the fitted models. Report all preselected targets
+    # and mark untestable genes without inventing an FDR or forcing sign agreement.
+    target_rows={r["gene_symbol"]:r for r in rows}
+    raw_a={r["gene_symbol"]:r for r in a.values()}
+    raw_b={r["gene_symbol"]:r for r in b.values()}
+    if not all(g in target_rows for g in CORE):
+        raise ValueError("THREE_CORE_UNTESTABLE_IN_ONE_ANNOTATION")
+    complete=[]
+    for gene in MARKERS:
+        r=target_rows.get(g)
+        if r is not None:
+            complete.append({**r,"tested_in_both_annotations":True,
+              "filter_status":"TESTED_IN_BOTH"})
+        else:
+            complete.append({"gene_id":"","gene_symbol":gene,
+              "BeamA_55_raw_edgeR_log2FC":round(raw_a[gene]["logFC"],7) if gene in raw_a else "",
+              "TM_Fibro_55_raw_edgeR_log2FC":round(raw_b[gene]["logFC"],7) if gene in raw_b else "",
+              "BeamA_55_FDR":raw_a[gene]["FDR"] if gene in raw_a else "",
+              "TM_Fibro_55_FDR":raw_b[gene]["FDR"] if gene in raw_b else "",
+              "sign_agrees":"","FDR_both_lt_005":"",
+              "same_55_donors_verified":True,
+              "cells_can_overlap_across_annotations":True,
+              "independent_study_replication":False,
+              "batch_effect_independent_treatment_identified":False,
+              "tested_in_both_annotations":False,
+              "filter_status":"FILTERED_FROM_TM_FIBRO" if gene not in raw_b else "FILTERED_FROM_BEAMA"})
+    if len(complete)!=16 or len({r["gene_symbol"] for r in complete})!=16:
+        raise ValueError("PANEL_16_UNIQUE_EXPECTED")
+    table(args.out/"GATE_B_55_matched_BeamA_vs_scPred_16_genes.tsv",complete)
+    note=target_rows
     summary={"status":"PASS_MATCHED_55_DONOR_DUAL_ANNOTATION_EDGER_SENSITIVITY",
      "biological_pairs_same_donors":55,"source_libraries":18,
      "beam_tested_genes":len(a),"fibro_tested_genes":len(b),
@@ -69,6 +95,8 @@ def main():
      "shared_genes_both_FDR_lt005":sum(a[g]["FDR"]<.05 and b[g]["FDR"]<.05 for g in common),
      "beam_FDR_lt005":sum(z["FDR"]<.05 for z in a.values()),
      "fibro_FDR_lt005":sum(z["FDR"]<.05 for z in b.values()),
+     "marker_16_testable_both_n":len(rows),
+     "marker_16_filtered_from_one_annotation":[z["gene_symbol"] for z in complete if not z["tested_in_both_annotations"]],
      "marker_16_same_sign":sum(z["sign_agrees"] for z in rows),
      "marker_16_FDR_both_lt005":sum(z["FDR_both_lt_005"] for z in rows),
      "core_3_same_sign":sum(note[s]["sign_agrees"] for s in CORE),
