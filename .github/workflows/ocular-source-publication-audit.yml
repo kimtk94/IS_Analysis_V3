@@ -1,0 +1,34 @@
+name: Ocular Erratum and Author DEG Official Source Audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-source-publication-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-official-source-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check audit parser syntax and external-source-only limits
+        run: |
+          python -m py_compile scripts/ocular/ocular_erratum_and_author80_public_source_audit.py
+      - name: Audit IOVS correction fulltext and deposited source paper
+        run: |
+          mkdir -p ocular-source-audit-public
+          python -u scripts/ocular/ocular_erratum_and_author80_public_source_audit.py --out ocular-source-audit-public
+      - name: Publish compact provenance with raw journal text excluded
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-official-erratum-author80-source-audit
+          path: ocular-source-audit-public/
+          retention-days: 45
+          if-no-files-found: warn
