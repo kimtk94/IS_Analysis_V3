@@ -1,8 +1,5 @@
 name: Ocular Mehrotra Frozen Supplement Candidate Timepoint Crosswalk
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-mehrotra-frozen-timepoint-crosswalk.yml'
   workflow_dispatch:
 
 permissions:
