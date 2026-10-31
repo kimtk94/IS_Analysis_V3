@@ -29,18 +29,18 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_hcc_ng_full_uniprot_crosswalk.py' -v
       - name: Build local full RNA/protein source accession list; preserve public aggregate only
         env:
-          NG_PRIVATE_FEATURE_IDS_OUT: \${{ runner.temp }}/hcc-source-feature-accessions.txt
+          NG_PRIVATE_FEATURE_IDS_OUT: ${{ runner.temp }}/hcc-source-feature-accessions.txt
         run: |
           Rscript scripts/hcc/audit_ng_full_feature_namespace.R \
             results/hcc/feasibility/ng_full_feature_namespace.json
       - name: Query public UniProt Ensembl crossrefs and compare exact gene IDs to full RNA
         run: |
           python scripts/hcc/probe_ng_full_uniprot_ensembl_crosswalk.py \
-            --private-features "\${{ runner.temp }}/hcc-source-feature-accessions.txt" \
+            --private-features "${{ runner.temp }}/hcc-source-feature-accessions.txt" \
             --out results/hcc/feasibility/ng_full_uniprot_ensembl_crosswalk.json
       - name: Delete transient feature IDs
         if: always()
-        run: rm -f "\${{ runner.temp }}/hcc-source-feature-accessions.txt"
+        run: rm -f "${{ runner.temp }}/hcc-source-feature-accessions.txt"
       - name: Archive only aggregate research evidence (no accession lists)
         if: always()
         uses: actions/upload-artifact@v4
