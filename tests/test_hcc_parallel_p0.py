@@ -10,12 +10,12 @@ from run_parallel_p0_track import ALL_TRACKS, TRACKS, run_track, tasks_for
 from summarize_parallel_p0 import summarize, as_markdown
 
 class Tests(unittest.TestCase):
-    def test_six_parallel_lanes_have_sixteen_tasks(self):
+    def test_six_parallel_lanes_have_seventeen_tasks(self):
         self.assertEqual(len(ALL_TRACKS),6)
         for name in ("ng-public","pdc-mapping","rna-access",
                      "geo-clinical","xing-clinical","regression"):
             self.assertIn(name,TRACKS)
-        self.assertEqual(sum(len(tasks_for(t,pathlib.Path("/tmp"))) for t in ALL_TRACKS),16)
+        self.assertEqual(sum(len(tasks_for(t,pathlib.Path("/tmp"))) for t in ALL_TRACKS),17)
 
     def test_failure_isolation_inside_lane(self):
         with tempfile.TemporaryDirectory() as d:
