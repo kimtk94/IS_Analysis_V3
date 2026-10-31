@@ -1,5 +1,8 @@
 name: Ocular P9 Prospective TM Functional Validation Evidence
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-p9-tm-validation-panel.yml'
   workflow_dispatch:
 
 permissions:
