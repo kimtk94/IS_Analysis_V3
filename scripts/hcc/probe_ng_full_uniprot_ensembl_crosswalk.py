@@ -234,21 +234,37 @@ def main():
     ap.add_argument("--private-strict-pairs-out",default=None)
     args=ap.parse_args()
     t,proteins=read_ids(args.private_features)
-    data=request_mapping()
-    refs,rows=parse_uniprot_tsv(data)
-    # Record TSV-only provenance before optional JSON enrichment. Previous
-    # output labelled post-JSON counts as "in TSV" (a provenance bug).
+    # TSV can be unavailable due to a UniProt transient HTTP 500. In that
+    # specific transport case alone, fail over to independently queried
+    # reviewed-only JSON; never treat a transport failure as zero gene matches.
+    try:
+        data=request_mapping()
+        refs,rows=parse_uniprot_tsv(data)
+        tsv_status="VERIFIED"
+    except ValueError as exc:
+        if str(exc)!="UniProt TSV unavailable after 4 attempts":
+            raise
+        data=None
+        refs,rows={},0
+        tsv_status="TRANSIENT_UNAVAILABLE_REVIEWED_JSON_FALLBACK"
+    # Snapshot TSV-only provenance BEFORE mutating references with JSON.
     reviewed_tsv_accessions=set(refs)
     reviewed_tsv_ensg_n=sum(bool(gs) for gs in refs.values())
     fallback=None
     if not any(refs.values()):
         fallback=supplement_from_json(proteins,refs)
-    result=summarize(t,proteins,refs,rows,hashlib.sha256(data).hexdigest())
+    if not refs:
+        raise ValueError("no UniProt reviewed entries in either transport")
+    checksum=hashlib.sha256(data).hexdigest() if data is not None else None
+    result=summarize(t,proteins,refs,rows,checksum)
+    result["annotation_transport"]=tsv_status
+    if data is None:
+        result["annotation_source"]="UniProtKB reviewed Homo sapiens JSON (TSV service unavailable)"
     result["uniprot_reviewed_entries_with_gene_ENSG_in_TSV_field_n"]=reviewed_tsv_ensg_n
     result["uniprot_reviewed_entries_with_gene_ENSG_after_json_n"]=sum(
-        bool(gs) for key,gs in refs.items() if key in reviewed_tsv_accessions)
+        bool(gs) for gs in refs.values())
     result["source_protein_accessions_found_in_uniprot_reviewed_n"]=sum(
-        canonical_protein(p) in reviewed_tsv_accessions for p in proteins)
+        canonical_protein(p) in refs for p in proteins)
     result["reviewed_only_annotation_policy"]=True
     result["accession_specific_json_enrichment"]=fallback
     path=pathlib.Path(args.out)
