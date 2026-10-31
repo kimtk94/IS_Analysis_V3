@@ -1,5 +1,8 @@
 name: Ocular Erratum and Author DEG Official Source Audit
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-source-publication-audit.yml'
   workflow_dispatch:
 
 permissions:
@@ -16,7 +19,7 @@ jobs:
           python-version: '3.11'
       - name: Check audit parser syntax and external-source-only limits
         run: |
-          python -m py_compile scripts/ocular/ocular_erratum_and_author80_public_source_audit.py scripts/ocular/ocular_mehrotra_erratum_ena_manifest.py
+          python -m py_compile scripts/ocular/ocular_erratum_and_author80_public_source_audit.py scripts/ocular/ocular_mehrotra_erratum_ena_manifest.py scripts/ocular/ocular_mehrotra_12_ambiguous_biosamples.py
       - name: Audit IOVS correction fulltext and deposited source paper
         run: |
           mkdir -p ocular-source-audit-public
@@ -24,6 +27,11 @@ jobs:
       - name: Confirm erratum adds raw RNA-seq accession and audit official ENA reads
         run: |
           python -u scripts/ocular/ocular_mehrotra_erratum_ena_manifest.py --out ocular-source-audit-public
+      - name: Inspect 12 ambiguous SRA BioSample attributes, never assume dash1/dash2 arm assignment
+        run: |
+          python -u scripts/ocular/ocular_mehrotra_12_ambiguous_biosamples.py \
+            --manifest ocular-source-audit-public/MEHROTRA_PRJNA1243143_ENA_RUN_MANIFEST.tsv \
+            --out ocular-source-audit-public
       - name: Publish compact provenance with raw journal text excluded
         if: always()
         uses: actions/upload-artifact@v4
