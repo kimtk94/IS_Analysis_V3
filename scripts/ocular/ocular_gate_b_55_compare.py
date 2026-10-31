@@ -65,7 +65,7 @@ def main():
         raise ValueError("THREE_CORE_UNTESTABLE_IN_ONE_ANNOTATION")
     complete=[]
     for gene in MARKERS:
-        r=target_rows.get(g)
+        r=target_rows.get(gene)
         if r is not None:
             complete.append({**r,"tested_in_both_annotations":True,
               "filter_status":"TESTED_IN_BOTH"})
