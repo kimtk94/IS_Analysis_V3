@@ -23,11 +23,15 @@ full<-get("HCCfull.rds");z<-get("HCCfullz.rds")
 mods<-c("T","P","PP")
 original_names<-colnames(full$T)
 if(length(original_names)!=50||anyDuplicated(original_names)||
-   !identical(original_names,colnames(full$P))||
-   !identical(original_names,colnames(full$PP))||
-   !identical(original_names,colnames(z$T))||
-   !identical(original_names,colnames(z$P))||
-   !identical(original_names,colnames(z$PP)))stop("source RDS column name identities unexpectedly differ")
+   !all(vapply(c(full[c("T","P","PP")],z[c("T","P","PP")]),
+      function(x)length(colnames(x))==50L &&
+        !anyDuplicated(colnames(x))&&setequal(original_names,colnames(x)),
+      logical(1))))stop("source RDS biopsy label SET differs from official 50")
+full_order_identical<-identical(original_names,colnames(full$P))&&
+ identical(original_names,colnames(full$PP))
+fullz_order_identical<-identical(colnames(z$T),colnames(z$P))&&
+ identical(colnames(z$T),colnames(z$PP))
+cross_source_T_order_identical<-identical(original_names,colnames(z$T))
 order_map<-function(k){
  a<-as.matrix(full[[k]])
  b<-as.matrix(z[[k]])
@@ -66,7 +70,10 @@ payload<-paste0('{"schema":"hcc-stage29-patient-group-label-orientation-v1",',
  '"official_source_biopsies_n":50,"official_unique_patients_n":48,',
  '"source_full_sha256":"',sha[["HCCfull.rds"]],'",',
  '"source_fullz_sha256":"',sha[["HCCfullz.rds"]],'",',
- '"original_labels_identical_across_all_six_T_P_PP_layers":true,',
+ '"original_label_sets_identical_across_all_six_T_P_PP_layers":true,',
+ '"original_full_T_P_PP_same_order":',tolower(as.character(full_order_identical)),',',
+ '"original_fullz_T_P_PP_same_order":',tolower(as.character(fullz_order_identical)),',',
+ '"full_T_vs_fullz_T_sample_name_order_equal":',tolower(as.character(cross_source_T_order_identical)),',
  '"crossmodal_inferred_permutation_identical":true,',
  '"same_biopsy_label_position_best_match_n":',same_label,',',
  '"same_official_patient_group_under_candidate_crossfile_mapping_n":',same_patient,',',
