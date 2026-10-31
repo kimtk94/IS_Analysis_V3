@@ -1,8 +1,5 @@
 name: Ocular P5s Independent P5q-P5r Artifact Reconciliation
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-p5s-postrun-gate.yml'
   workflow_dispatch:
 
 permissions:
