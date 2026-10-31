@@ -1,0 +1,66 @@
+name: Ocular P5j Exact Published TM DEG Crosswalk
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/ocular_p5j_official_TM_overlap.py'
+      - 'scripts/ocular/ocular_p5g_candidate_screen.py'
+      - '.github/workflows/ocular-p5j-published-overlap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  independent-study-gene-overlap:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned numerical and spreadsheet readers
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+      - name: Verify both source models and exact gene IDs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/ocular/ocular_p5g_candidate_screen.py scripts/ocular/ocular_p5j_official_TM_overlap.py
+          mkdir -p "$RUNNER_TEMP/p5b" "$RUNNER_TEMP/p5d" ocular-p5j-public
+          gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5b"
+          gh run download 41090827791 -n ocular-p5d-nine-pool-unit -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5d"
+          python - <<'PY'
+          import os
+          import zipfile
+          from pathlib import Path
+          base=Path(os.environ["RUNNER_TEMP"])
+          for name in ("p5b","p5d"):
+              src=base/name
+              with zipfile.ZipFile(base/(name+".zip"),"w") as archive:
+                  for path in sorted(src.iterdir()):
+                      if path.is_file():
+                          archive.write(path,path.name)
+          assert (base/"p5b"/"p5_all_gene_results.tsv.gz").exists()
+          assert (base/"p5d"/"p5d_poolunit_all_gene_results.tsv.gz").exists()
+          PY
+      - name: Recompute P5g candidates with identical filters
+        run: |
+          python scripts/ocular/ocular_p5g_candidate_screen.py --p5b "$RUNNER_TEMP/p5b.zip" --p5d "$RUNNER_TEMP/p5d.zip" --output ocular-p5j-public
+      - name: Read official independent 2026 IOVS full TM supplement and join by Ensembl ID
+        run: |
+          python scripts/ocular/ocular_p5j_official_TM_overlap.py --primary "$RUNNER_TEMP/p5b/p5_all_gene_results.tsv.gz" --candidates ocular-p5j-public/P5g_robust_candidates.tsv --output-dir ocular-p5j-public
+      - name: Delete downloaded intermediate source artifacts
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p5b" "$RUNNER_TEMP/p5d" "$RUNNER_TEMP/p5b.zip" "$RUNNER_TEMP/p5d.zip"
+      - name: Upload aggregate overlap statistics and 86-gene audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5j-external-TM-gene-overlap
+          path: ocular-p5j-public/
+          retention-days: 30
+          if-no-files-found: warn
