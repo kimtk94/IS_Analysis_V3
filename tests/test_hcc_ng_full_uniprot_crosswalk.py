@@ -3,7 +3,7 @@ import pathlib,sys,unittest
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"scripts"/"hcc"))
 from probe_ng_full_uniprot_ensembl_crosswalk import (
-    canonical_protein,parse_uniprot_tsv,summarize,COMMIT
+    canonical_protein,parse_uniprot_tsv,parse_uniprot_json,summarize,COMMIT
 )
 class Tests(unittest.TestCase):
     def test_reference_tsv_gives_Ensembl_gene_not_transcript(self):
@@ -30,6 +30,20 @@ class Tests(unittest.TestCase):
         self.assertEqual(r["multi_gene_protein_feature_count"],1)
         self.assertFalse(r["exact_original_paper_2022_mapping_reproduced"])
         self.assertNotIn("P04637",str(r))
+    def test_json_geneid_extraction_does_not_confuse_transcript_id(self):
+        doc={"results":[{"primaryAccession":"P04637",
+             "uniProtKBCrossReferences":[
+                {"database":"Ensembl","id":"ENST00000269305",
+                 "properties":[{"key":"ProteinId","value":"ENSP00000269305"},
+                               {"key":"GeneId","value":"ENSG00000141510"}]}]}]}
+        self.assertEqual(parse_uniprot_json(doc),{"P04637":{"ENSG00000141510"}})
+        self.assertEqual(parse_uniprot_json({"results":[]}),{})
+    def test_json_without_geneid_is_not_assumed_mapped(self):
+        doc={"results":[{"primaryAccession":"P04637",
+             "uniProtKBCrossReferences":[{"database":"Ensembl",
+             "id":"ENST00000269305","properties":[]}]}]}
+        self.assertEqual(parse_uniprot_json(doc),{"P04637":set()})
+
     def test_uniprot_accession_not_gene_symbol_guess(self):
         self.assertEqual(canonical_protein("sp|P04637|P53_HUMAN"),"P04637")
         self.assertEqual(canonical_protein("Q14534-2"),"Q14534")
