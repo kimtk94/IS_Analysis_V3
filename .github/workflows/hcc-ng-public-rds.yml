@@ -26,7 +26,11 @@ jobs:
           python-version: '3.11'
       - name: Check output privacy and semantic guardrails with synthetic data
         run: python -m unittest discover -s tests -p 'test_hcc_ng_public_rds_contract.py' -v
+      - name: Test protected source-biopsy patient matching on synthetic keys
+        run: python -m unittest discover -s tests -p 'test_hcc_ng_suter_clinical_sample_join.py' -v
       - name: Audit immutable public Ng/Suter multilayer RDS files (no private EGA access)
+        env:
+          NG_PRIVATE_KEYS_OUT: ${{ runner.temp }}/ng-suter-private-sample-labels.txt
         run: |
           Rscript scripts/hcc/audit_ng_public_multiomics_rds.R \
             results/hcc/feasibility/ng_public_multiomics_rds.json
@@ -34,11 +38,21 @@ jobs:
         run: |
           python scripts/hcc/verify_ng_public_rds_evidence.py \
             --source results/hcc/feasibility/ng_public_multiomics_rds.json
+      - name: Source-check RDS sample aliases against official Ng 2022 biopsy and patient metadata
+        run: |
+          python scripts/hcc/probe_ng_suter_clinical_sample_join.py \
+            --private-labels "${{ runner.temp }}/ng-suter-private-sample-labels.txt" \
+            --out results/hcc/feasibility/ng_suter_biopsy_patient_join_qc.json
+      - name: Remove transient source biopsy IDs from runner
+        if: always()
+        run: rm -f "${{ runner.temp }}/ng-suter-private-sample-labels.txt"
       - name: Publish aggregate-only RDS research audit
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: hcc-ng-public-quantitative-rds-evidence
-          path: results/hcc/feasibility/ng_public_multiomics_rds.json
+          path: |
+            results/hcc/feasibility/ng_public_multiomics_rds.json
+            results/hcc/feasibility/ng_suter_biopsy_patient_join_qc.json
           retention-days: 30
           if-no-files-found: warn
