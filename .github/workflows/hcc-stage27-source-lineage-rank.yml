@@ -1,0 +1,81 @@
+name: HCC Stage27 Suter Source Code and Fullz Rank Lineage
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage27-source-lineage-rank.yml'
+      - 'scripts/hcc/audit_stage27_public_code_lineage.py'
+      - 'scripts/hcc/audit_ng_stage27_fullz_rank_lineage.R'
+      - 'scripts/hcc/verify_stage27_lineage.py'
+      - 'tests/test_hcc_stage27_lineage.py'
+
+permissions:
+  contents: read
+
+jobs:
+  immutable-repository-methods:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Regression tests for source loader vs source producer
+        run: python -m unittest discover -s tests -p 'test_hcc_stage27_lineage.py' -v
+      - name: Audit immutable publisher-linked public code repository and source file hashes
+        run: |
+          python scripts/hcc/audit_stage27_public_code_lineage.py \
+            --out results/hcc/feasibility/stage27_suter_code_source.json
+      - name: Source-code postflight prohibits claims of missing code outside repo
+        run: |
+          python scripts/hcc/verify_stage27_lineage.py \
+            --kind source-code \
+            --input results/hcc/feasibility/stage27_suter_code_source.json \
+            --out results/hcc/feasibility/stage27_suter_code_review.json
+      - name: Upload only aggregate immutable code provenance
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage27-suter-source-code-lineage
+          path: |
+            results/hcc/feasibility/stage27_suter_code_source.json
+            results/hcc/feasibility/stage27_suter_code_review.json
+          retention-days: 30
+          if-no-files-found: error
+
+  empirical-source-rank-preservation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify strict patient source rank numerical contract
+        run: python -m unittest discover -s tests -p 'test_hcc_stage27_lineage.py' -v
+      - name: Run source-SHA256-pinned HCCfull vs HCCfullz same-feature sample Spearman
+        run: |
+          Rscript scripts/hcc/audit_ng_stage27_fullz_rank_lineage.R \
+            results/hcc/feasibility/stage27_full_fullz_rank_metrics.json
+      - name: Validate aggregate per-feature rank preservation and biological HOLD
+        run: |
+          python scripts/hcc/verify_stage27_lineage.py \
+            --kind ranks \
+            --input results/hcc/feasibility/stage27_full_fullz_rank_metrics.json \
+            --out results/hcc/feasibility/stage27_full_fullz_rank_review.json
+      - name: Upload aggregate-only source rank diagnostics
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage27-full-fullz-rank-preservation
+          path: |
+            results/hcc/feasibility/stage27_full_fullz_rank_metrics.json
+            results/hcc/feasibility/stage27_full_fullz_rank_review.json
+          retention-days: 30
+          if-no-files-found: error
