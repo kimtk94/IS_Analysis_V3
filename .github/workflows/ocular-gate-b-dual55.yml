@@ -1,8 +1,5 @@
 name: Ocular Gate B Matched 55 Donor Dual Annotation QL
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-gate-b-dual55.yml'
   workflow_dispatch:
 
 permissions:
