@@ -22,6 +22,14 @@ jobs:
             skill: depmap
           - research: radiomics
             skill: imaging-data-commons
+          - research: ophthalmology
+            skill: ontology-term-resolution
+          - research: muscle
+            skill: database-lookup
+          - research: oral-cancer
+            skill: depmap
+          - research: skin-mr
+            skill: database-lookup
     steps:
       - name: Checkout pinned upstream skills (never execute upstream code)
         uses: actions/checkout@v4
