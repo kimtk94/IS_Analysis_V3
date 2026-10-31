@@ -122,8 +122,8 @@ def study(pid):
     return result
 
 def review(v):
-    if v.get("schema")!="hcc-stage30-pdc-protein-assembly-bounded-header-v1" or
-      {x.get("pdc_study_id") for x in v.get("studies",[])}!=set(PDC):
+    if (v.get("schema")!="hcc-stage30-pdc-protein-assembly-bounded-header-v1" or
+        {x.get("pdc_study_id") for x in v.get("studies",[])}!=set(PDC)):
         raise ValueError("source contract")
     for x in v["studies"]:
         for f in ("signed_urls_or_filename_exported","patient_gene_or_aliquot_identifiers_exported",
