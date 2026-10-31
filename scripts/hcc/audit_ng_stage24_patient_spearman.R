@@ -37,9 +37,15 @@ full<-readRDS(f)
 unlink(f)
 if(!is.list(full)||!all(c("T","P")%in%names(full)))stop("missing RDS layer")
 T<-full$T;P<-full$P
-if(!is.matrix(T)||!is.matrix(P)||nrow(T)!=20356L||nrow(P)!=5585L||
+# The source uses numeric data.frames for some layers; preserve exact axes
+# while converting to matrices. Never require is.matrix() as an input type.
+if(!(is.matrix(T)||is.data.frame(T))||
+   !(is.matrix(P)||is.data.frame(P))||
+   nrow(T)!=20356L||nrow(P)!=5585L||
    ncol(T)!=50L||ncol(P)!=50L||!identical(colnames(T),colnames(P)))
-  stop("source matrix dimensions/sample ordering changed")
+  stop("source quantitative layer geometry or sample order changed")
+T<-as.matrix(T);P<-as.matrix(P)
+if(!is.numeric(T)||!is.numeric(P))stop("source data not numeric")
 if(!all(pairs$gene%in%rownames(T))||!all(pairs$protein%in%rownames(P)))
   stop("mapped ID not present in source array")
 rna<-T[pairs$gene,,drop=FALSE]
