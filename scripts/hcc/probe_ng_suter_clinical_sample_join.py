@@ -56,6 +56,16 @@ def official_rows():
                     return rows[idx+1:],columns
     raise ValueError("no official sample metadata sheet")
 
+def categories(raw):
+    """Allowlist source etiology terms; do not misclassify non-alcoholic as ALD."""
+    value=str(raw).lower()
+    found=set()
+    if re.search(r"\bhcv\b|hepatitis c",value):found.add("HCV")
+    if re.search(r"\bhbv\b|hepatitis b",value):found.add("HBV")
+    if re.search(r"\bald\b|(?<!non-)\balcoholic liver disease\b",value):found.add("ALD")
+    if re.search(r"\bnafld\b|\bnash\b|\bmasld\b|\bmash\b|non-alcoholic",value):found.add("NAFLD")
+    return tuple(sorted(found)) if found else ("SOURCE_OTHER_OR_UNCLASSIFIED",)
+
 def compare(private_labels,rows,columns):
     if len(private_labels)!=SAMPLE_N or len(set(private_labels))!=SAMPLE_N:
         raise ValueError("RDS sample axis is not 50 unique labels")
@@ -81,16 +91,6 @@ def compare(private_labels,rows,columns):
     # Per-patient source-reported liver disease labels are preclinical candidate
     # grouping only. Overlapping etiologies are not merged into single-exposure.
     patient_source_group={}
-    def categories(raw):
-        value=raw.lower()
-        found=set()
-        if re.search(r"\bhcv\b|hepatitis c",value):found.add("HCV")
-        if re.search(r"\bhbv\b|hepatitis b",value):found.add("HBV")
-        # Explicit ALD tag is required: "Non-alcoholic liver disease (NAFLD)"
-        # must NEVER be misclassified as alcoholic liver disease.
-        if re.search(r"\bald\b|(?<!non-)\balcoholic liver disease\b",value):found.add("ALD")
-        if re.search(r"\bnafld\b|\bnash\b|\bmasld\b|\bmash\b|non-alcoholic",value):found.add("NAFLD")
-        return tuple(sorted(found)) if found else ("SOURCE_OTHER_OR_UNCLASSIFIED",)
     for key,(patient,flags) in matched:
         if patient:
             patient_source_group.setdefault(patient,set()).add(categories(etiology_by_biopsy.get(key,"")))
