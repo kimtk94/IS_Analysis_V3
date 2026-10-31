@@ -2,7 +2,7 @@
   "schema_version": "hcc-validation-1.0",
   "created_at": "2026-10-30",
   "protocol": "research/hcc/validation/HCC_VALIDATION_MASTER.md",
-  "current_claim_level": "PUBLIC_METADATA_FEASIBILITY_ONLY",
+  "current_claim_level": "PUBLIC_PROCESSED_OMICS_TECHNICAL_QC_ONLY",
   "allowed_statuses": [
     "NOT_STARTED",
     "PARTIAL",
@@ -179,7 +179,7 @@
         "L02",
         "L03"
       ],
-      "observation": "Source-pinned Suter HCCfull RDS T/P 50-biopsy numeric-layer QA verified; zero nonfinite values across 20,356 T and 5,585 P features, global negatives and zero patterns audited; exact T/P row-label overlap 0 due to Ensembl-versus-protein identifier namespaces. S5 Appendix imputation, normalization and exact feature gene mapping not yet reviewed. Suter public HCCinfo RDS source gene mapping directly verifies 188 reduced RNA, 116 reduced protein features and 114 one-to-one shared gene labels, but full feature ID crosswalk still missing and S5 normalization remains unreviewed.",
+      "observation": "Source-pinned Suter HCCfull RDS T/P 50-biopsy numeric-layer QA verified; zero nonfinite values across 20,356 T and 5,585 P features, global negatives and zero patterns audited; exact T/P row-label overlap 0 due to Ensembl-versus-protein identifier namespaces. S5 Appendix imputation, normalization and exact feature gene mapping not yet reviewed. Suter public HCCinfo RDS source gene mapping directly verifies 188 reduced RNA, 116 reduced protein features and 114 one-to-one shared gene labels, but full feature ID crosswalk still missing and S5 normalization remains unreviewed. Stage23 latest completed CI measured 5,390 mapped proteome features / 5,437 distinct Ensembl genes (union incl. ambiguous links), 43 multi-gene features and 5,343 one-to-one genes; 5,490 paper comparable count NOT exact reproduced mapping; JSON-vs-TSV provenance correction queued on feasibility branch.",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162144728",
@@ -188,6 +188,10 @@
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162706947",
           "level": "source_sha256_verified_selected_HCCinfo_gene_crosswalk_188T_116P_114_unambiguous_not_full_mapping"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41171170211",
+          "level": "measured_full_current_uniprot_5437_ambiguous_gene_union_not_exact_paper_gene_set"
         }
       ],
       "analysis_evidence": [],
@@ -195,7 +199,7 @@
       "independent_patient_n": null,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Reconcile full 20,356 Ensembl transcripts with 5,585 protein accessions using versioned independent annotation (track ambiguous isoforms); assess original imputation and batch correction and avoid selected-panel post-selection inference; retain PARTIAL until reviewed."
+      "next_action": "Verify corrected reviewed UniProt JSON-vs-TSV provenance Stage23 artifact, explicitly resolve 43 multi-gene features and isoforms, compare actual gene IDs to Ng 2022 GRCh37-era universe and verify S5 normalization/batch; retain PARTIAL."
     },
     {
       "id": "V04",
@@ -289,14 +293,14 @@
         "L02",
         "L03"
       ],
-      "observation": "",
+      "observation": "Whole-proteome ID mapping at a comparable feature count is engineering feasibility only. No same-patient mRNA-protein Spearman correlation, FDR or 95% CI was tested. Ng reported 5,481 correlated genes; baseline mapped union 5,437 is not that historical set.",
       "evidence": [],
       "analysis_evidence": [],
       "reviewer_approved": false,
       "independent_patient_n": null,
       "independent_event_n": null,
-      "last_updated": "2026-10-30",
-      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+      "last_updated": "2026-10-31",
+      "next_action": "After source-consistent one-to-one gene mapping and Suter preprocessing QC, assess patient-aware descriptive Spearman RNA–Protein correlation and missingness/precision; do not treat 50 biopsies as 50 independent patients or claim Ng 5,481 universe replicated."
     },
     {
       "id": "V08",
