@@ -76,8 +76,14 @@ def parse(b):
     # heading. Verify its meaning via the exact Figure2b workbook relation,
     # immutable source SHA, 5481 bounded coefficients, and independently
     # reproduced printed median (0.287059), not a brittle English header.
-    if len(header)!=4 or not header[0]:
-        raise ValueError("missing publisher Figure2b source header row")
+    # The first header cell is intentionally blank in the authoritative
+    # publisher Source Data. The numeric column is anchored by the immutable
+    # XLSX SHA256, the physical Fig2b workbook relationship, 5,481 unique
+    # Ensembl IDs with pinned set digest, valid rho bounds, and exact
+    # independently checked rho median. Requiring a nonblank A1/B1 title
+    # would reject a source whose semantics were otherwise verified.
+    if len(header)!=4:
+        raise ValueError("publisher Figure2b source header row malformed")
     return entries,{"schema":"hcc-stage29-original-fig2b-rho-extraction-v1",
         "source_xlsx_sha256":SHA,"source_sheet":"Fig2b",
         "physical_source_worksheet_index":8,
