@@ -65,9 +65,10 @@ def extract_table1(payload,version):
         name=m.group(1).upper()+m.group(2)
         if name in strains:raise ValueError("DUPLICATE_SOURCE_STRAIN")
         raw=cells[-1]
-        times=sorted(set("2Days" if t.replace(" ","").lower() in ("2d","2days","48h") else
-                   "1Hr" if t.replace(" ","").lower()=="1h" else "6Hrs"
-                   for t in re.findall(r"\b(?:2\s*d|2\s*days|48\s*h|1\s*h|6\s*h)\b",raw,re.I)))
+        units=re.findall(r"\b(?:2\s*(?:days?|d)|48\s*(?:hours?|h)|1\s*(?:hours?|h)|6\s*(?:hours?|h))\b",raw,re.I)
+        times=sorted(set("2Days" if (v.startswith("2d") or v.startswith("48")) else
+                         "1Hr" if v.startswith("1") else "6Hrs"
+                         for v in (re.sub(r"\s+","",t.lower()) for t in units)))
         strains[name]={"timepoints":times,"raw_exposure_text":raw[:120]}
     return {"status":"GO_PAPER_STRAIN_TABLE1_READ","detection":detection,"strains":strains,
             "TM_count":sum(x.startswith("TM") for x in strains),
@@ -92,13 +93,15 @@ def main():
         for id in ("TM151","TM155"):
             compared.append({"strain":id,"preprint":pre["strains"].get(id),
                              "journal":j["strains"].get(id),
-                             "changed":pre["strains"].get(id)!=j["strains"].get(id)})
+                             "changed":pre["strains"].get(id,{}).get("timepoints")!=j["strains"].get(id,{}).get("timepoints"),
+                             "raw_duration_phrase_changed_only":pre["strains"].get(id,{}).get("raw_exposure_text")!=j["strains"].get(id,{}).get("raw_exposure_text")})
     result={"status":"GO_PREPRINT_JOURNAL_TABLE1_COMPARISON" if compared else
                         "HOLD_PREPRINT_TABLE1_NOT_COMPARABLE",
             "sources":pages,
             "review_genes":["TM151","TM155"],
             "strain_timepoint_comparison":compared,
             "source_s003_6h_TM151_only":True,
+            "biological_duration_labels_compared_after_h_hour_days_d_normalization":True,
             "sample_specific_SRA_timepoint_evidence":False,
             "cannot_infer_journal_table_typos_without_author_confirmation":True,
             "no_private_or_raw_FASTQ_data":True}
