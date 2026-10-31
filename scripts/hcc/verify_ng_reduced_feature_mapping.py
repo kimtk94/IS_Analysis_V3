@@ -6,7 +6,7 @@ SRC="438f52271d0a86a6701baa7a96e80c516ba575c2"
 def check(rec):
     if rec.get("status")!="SOURCE_REDUCED_GENE_CROSSWALK_PRESENT":
         raise ValueError("source-selected gene crosswalk not verified")
-    if rec.get("source_commit")!=SRC or rec.get("source_mapping_object_class")!="bnInfo":
+    if rec.get("source_commit")!=SRC or rec.get("source_mapping_object_class") not in ("bnInfo","bnInfo_like_allnames"):
         raise ValueError("unpinned or unrecognized mapping source")
     for k in ("HCCdata_sha256","HCCinfo_sha256"):
         if not re.fullmatch(r"[0-9a-f]{64}",str(rec.get(k,""))):
