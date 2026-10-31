@@ -61,5 +61,18 @@ For **PRJEB74248**:
 
 **Decision:** GO file-type metadata and checksum manifest feasibility. **HOLD** raw-file download QC (e.g. representative HTTP HEAD/Range, gzip checksum), correct R1/R2 pairs, read-quality checks, controls, host depletion, phenotype crosswalk, actual differential-microbiome inference. The full submitted 529GB-scale dataset is not appropriate to download in an unbounded CI run.
 
+## P7d — official publication supplement vs 62 ENA aliases: computational audit PASS, clinical linkage HOLD
+
+The original [P7d run #41179721638](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41179721638) FAILED with `TimeoutError` while reading the Europe PMC published supplemental ZIP, **not** with a sample-discovery conclusion.
+
+We corrected the download logic to attempt a direct PMC supplement path first, fall back to Europe PMC with bounded transfer time, and write an **explicit HOLD** result rather than falsely passing sample mapping. [Corrected run #41180050136](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41180050136) **SUCCESS as an audit execution**, [artifact #13034413247](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41180050136/artifacts/13034413247) directly inspected:
+
+- `status=HOLD_OFFICIAL_SUPPLEMENT_REMOTE_ZIP_UNAVAILABLE`
+- Direct PMC route returned **non-ZIP response**; Europe PMC fallback **timed out** reading the archive.
+- All 62 ENA `sample_alias + sample_title` entries remain unclassifiable into cases and controls by explicit keywords (**0 case / 0 healthy / 62 unknown**).
+- No verified sample-to-patient crosswalk was obtained. The lack of a retrieved ZIP **does not prove** no supplementary clinical crosswalk exists.
+- The original publication describes **32 human donors (16 glaucoma, 16 control)**, compared with **62 ENA runs**. Never equate run count with clinical N.
+- Decision: **HOLD** independent differential taxa, paired tear proteome correlations, and clinical drug covariate analyses until exact sample↔patient mapping and low-biomass control metadata are obtained by a verified public or authorized source.
+
 ## Main research logic
 The DEX–TM experiment tests a human cultured meshwork glucocorticoid response (paired donors, but treatment-specific 10x prep). Ocular surface and oral microbiome studies are *different samples from different populations*, not steroid-exposed matched TM donors. Without patient-level steroid exposure or IOP response, no microbial mediation or steroid-induced glaucoma patient classifier can be validated. Preserve **GO computational QC; HOLD dose/batch and microbial clinical links; STOP causal microbial glaucoma risk or clinical prediction**.
