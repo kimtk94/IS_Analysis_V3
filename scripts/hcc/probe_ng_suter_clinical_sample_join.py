@@ -84,10 +84,10 @@ def compare(private_labels,rows,columns):
     def categories(raw):
         value=raw.lower()
         found=set()
-        if re.search(r"\\bhcv\\b|hepatitis c",value):found.add("HCV")
-        if re.search(r"\\bhbv\\b|hepatitis b",value):found.add("HBV")
-        if re.search(r"\\bald\\b|alcohol",value):found.add("ALD")
-        if re.search(r"\\bnafld\\b|\\bnash\\b|steato|metabolic",value):found.add("NAFLD")
+        if re.search(r"\bhcv\b|hepatitis c",value):found.add("HCV")
+        if re.search(r"\bhbv\b|hepatitis b",value):found.add("HBV")
+        if re.search(r"\bald\b|alcohol",value):found.add("ALD")
+        if re.search(r"\bnafld\b|\bnash\b|steato|metabolic",value):found.add("NAFLD")
         return tuple(sorted(found)) if found else ("SOURCE_OTHER_OR_UNCLASSIFIED",)
     for key,(patient,flags) in matched:
         if patient:
