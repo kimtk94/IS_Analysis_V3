@@ -175,6 +175,7 @@ def summarize(primary,official,candidates):
           "External FDR and primary FDR differ in gene universe and modeling method",
           "Direction agreement is not causal independence of technical treatment/library batches",
           "Not in supplementary table or not statistically significant there does NOT establish novelty",
+          "Missing published adjusted p-values must not be interpreted as non-significance",
           "No direct steroid-induced clinical intraocular-pressure phenotype in primary cells"]
     }
     annotated=[]
@@ -187,7 +188,9 @@ def summarize(primary,official,candidates):
             status="NOT_IN_PUBLISHED_TM_ALL_TESTS"
         elif paper_hi:
             status="ALREADY_IN_PUBLISHED_857_HIGH_CONF_TM"
-        elif paper["fdr"] is not None and paper["fdr"]<.05:
+        elif paper["fdr"] is None:
+            status="EXTERNAL_TM_ADJUSTED_P_UNAVAILABLE"
+        elif paper["fdr"]<.05:
             status="ALREADY_PUBLISHED_TM_FDR_SIGNIFICANT"
         else:
             status="EXTERNAL_TM_TESTED_NOT_SIGNIFICANT"
