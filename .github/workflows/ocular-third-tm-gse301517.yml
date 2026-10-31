@@ -1,9 +1,13 @@
 name: Ocular Third TM Cohort GSE301517 Official GEO Preflight
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-third-tm-gse301517.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   original-metadata-and-cpm:
@@ -21,7 +25,27 @@ jobs:
         run: |
           mkdir -p ocular-third-gse301517-public
           python -u scripts/ocular/ocular_gse301517_third_cohort_preflight.py --out ocular-third-gse301517-public
-      - name: Upload only public sample design and aggregate schema; no raw expression matrix
+      - name: Retrieve fixed original edgeR and EMT-gene public summary artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-third-primary" "$RUNNER_TEMP/ocular-third-emt"
+          gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-third-primary"
+          gh run download 41179413138 -n ocular-p7-emt-gate -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-third-emt"
+          test -s "$RUNNER_TEMP/ocular-third-primary/p5_all_gene_results.tsv.gz"
+          test -s "$RUNNER_TEMP/ocular-third-emt/P7a_194_emt_gene_concordance.tsv"
+      - name: Verify chronic 7d three-strain CPM signs vs frozen acute 48h edgeR evidence
+        run: |
+          python -m py_compile scripts/ocular/ocular_gse301517_crossstudy_cpm.py
+          python -u scripts/ocular/ocular_gse301517_crossstudy_cpm.py \
+            --primary "$RUNNER_TEMP/ocular-third-primary/p5_all_gene_results.tsv.gz" \
+            --emt "$RUNNER_TEMP/ocular-third-emt/P7a_194_emt_gene_concordance.tsv" \
+            --out ocular-third-gse301517-public
+      - name: Remove earlier aggregate source copies
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-third-primary" "$RUNNER_TEMP/ocular-third-emt"
+      - name: Upload only public third-cohort gene-level summaries and source schema
         if: always()
         uses: actions/upload-artifact@v4
         with:
