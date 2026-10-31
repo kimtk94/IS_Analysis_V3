@@ -1,9 +1,5 @@
 name: Ocular P5c External RNAseq Sample Metadata Audit
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5c_ena_attributes.py'
-      - '.github/workflows/ocular-p5c-ena-attributes.yml'
   workflow_dispatch:
 
 permissions:

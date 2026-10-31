@@ -1,9 +1,5 @@
 name: Ocular P4 Full-Cohort Barcode Preflight
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p4_prescan.py'
-      - '.github/workflows/ocular-p4-prescan.yml'
   workflow_dispatch:
 
 permissions:
