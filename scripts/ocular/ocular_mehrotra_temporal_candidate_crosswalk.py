@@ -25,6 +25,8 @@ def source_design(filename):
     source=next((x for x in audit if x["filename"]=="iovs-67-2-13_s003.xlsx"),None)
     if not source or source["source_status"]!="PASS_OFFICIAL_SUPPLEMENT_DOWNLOADED_AND_CRC":
         raise ValueError("S003_NOT_GENUINE_OFFICIAL_SOURCE_CRC")
+    if source["sha256"]!="3c30e93461812d05f42a1978b8e446235709f2283e11f620c212beb26478698d":
+        raise ValueError("S003_OFFICIAL_SUPPLEMENT_SHA256_CHANGED")
     sheets=source["audit"]["sheet_first_300_rows_summary"]
     sample_tables={}
     for name in (TM_SHEET,SC_SHEET):
