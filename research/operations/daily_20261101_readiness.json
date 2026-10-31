@@ -200,15 +200,23 @@
       "task": "perceived-age GWAS 공개 전체 요약통계의 원본 위치·표현형 적합성 확인",
       "audit_status": "PASS_PUBLIC_SOURCE_DISCOVERY",
       "scientific_gate": "HOLD",
-      "change": "Bristol 공개 1GiB GWAS 요약통계 저장소 확인; 실제 SNP 파일/allele 검증은 미실행",
+      "change": "Bristol 공개 1GiB GWAS 및 공식 readme 실제 열람: SNP/allele/frequency/LOG_OR/LOG_SE 확인; 원본 SNP 파일 미다운로드",
       "observations": {
         "trait": "self_reported_perceived_age",
         "ukb_participants": 423992,
         "reported_loci": 74,
-        "full_sumstats_downloaded": false
+        "full_sumstats_downloaded": false,
+        "readme_schema_verified": true,
+        "readme_effect_scale": "LOG_OR",
+        "readme_allele_columns": [
+          "ALLELE1",
+          "ALLELE0",
+          "A1FREQ"
+        ]
       },
       "evidence_urls": [
         "https://data.bris.ac.uk/data/dataset/21crwsnj4xwjm2g4qi8chathha",
+        "https://data.bris.ac.uk/datasets/21crwsnj4xwjm2g4qi8chathha/readme.txt",
         "https://www.ukbiobank.ac.uk/publications/genome-wide-association-study-identifies-genetic-associations-with-perceived-age/",
         "https://pubmed.ncbi.nlm.nih.gov/35421404/"
       ],
