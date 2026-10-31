@@ -74,26 +74,29 @@ def official_biospecimen(pid):
             val=r.get(k)
             if not val:continue
             key=str(val).strip()
-            if key in bynamespace[k]:
-                previous=bynamespace[k][key]
-                if previous["sample"]!=sample or previous["case"]!=case or previous["type"]!=label:
-                    raise ValueError("ambiguous namespace source ID")
-            bynamespace[k][key]={"case":case,"sample":sample,"aliquot":aliquot,"type":label}
+            # Case IDs legitimately occur in multiple tumour/normal samples.
+            # Retain ALL records per key; never infer that a case ID uniquely
+            # determines an aliquot.
+            record={"case":case,"sample":sample,"aliquot":aliquot,"type":label}
+            bynamespace[k].setdefault(key,[])
+            if record not in bynamespace[k][key]:
+                bynamespace[k][key].append(record)
     return bynamespace
 
 def score(header,namespace):
     rawset=set(header)
     common=rawset&set(namespace)
-    matches=[namespace[k] for k in common]
+    matches=[m for k in common for m in namespace[k]]
     ci={x.casefold() for x in header}&{x.casefold() for x in namespace}
     return {"exact_source_header_alias_n":len(common),
         "casefold_source_header_alias_n":len(ci),
         "distinct_exact_matched_cases_n":len({m["case"] for m in matches}),
         "distinct_exact_matched_samples_n":len({m["sample"] for m in matches}),
         "distinct_exact_matched_aliquots_n":len({m["aliquot"] for m in matches}),
-        "exact_matched_Tumor_n":sum(m["type"]=="Tumor" for m in matches),
-        "exact_matched_Normal_n":sum(m["type"]=="Normal" for m in matches),
-        "exact_matched_OtherOrUnknown_n":sum(m["type"]=="OtherOrUnknown" for m in matches)}
+        "exact_matched_Tumor_alias_n":sum(any(m["type"]=="Tumor" for m in namespace[k]) for k in common),
+        "exact_matched_Normal_alias_n":sum(any(m["type"]=="Normal" for m in namespace[k]) for k in common),
+        "exact_matched_OtherOrUnknown_alias_n":sum(any(m["type"]=="OtherOrUnknown" for m in namespace[k]) for k in common),
+        "alias_keys_with_multiple_biospecimen_records_n":sum(len(namespace[k])>1 for k in common)}
 
 def study(pid):
     out={"pdc_study_id":pid,"status":"ACCESS_HOLD",
