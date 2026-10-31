@@ -24,6 +24,7 @@ def verify(v):
         not 1<=x["small_data_feature_n"]<=1000):
       raise ValueError("small network source structure invalid")
     for key in ("small_data_source_numeric_matrix",
+                "small_data_original_sample_axis_is_rows",
                 "small_data_exact_50_biopsy_comparison_eligible"):
       if type(x.get(key)) is not bool:
         raise ValueError("source network matrix evidence missing: "+key)
@@ -51,6 +52,7 @@ def verify(v):
     summaries[x["modality"]]={
       "same_gene_compared_n":x["small_full_common_feature_n"],
       "source_numeric_matrix":x["small_data_source_numeric_matrix"],
+      "original_network_object_has_patient_rows":x["small_data_original_sample_axis_is_rows"],
       "source_50_biopsy_comparison_eligible":x["small_data_exact_50_biopsy_comparison_eligible"],
       "HCCdata_vs_full_same_label_rho_median":x["small_full_same_label_per_feature_rho_median"],
       "HCCdata_vs_fullz_same_label_rho_median":x["small_fullz_same_label_per_feature_rho_median"]}
