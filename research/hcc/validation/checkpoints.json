@@ -198,7 +198,7 @@
       "paper_refs": [
         "L03"
       ],
-      "observation": "Ng modality-positive patients: ALD13 HCV11 NAFLD7 HBV4 single etiology, mixed groups separately",
+      "observation": "Ng/Suter processed RNA+protein numeric matrices source-aligned in 50 biopsies/48 distinct patients (exact Ng Supplementary Data 1 sample-identity join). Source-reported exclusive labels ALD12 HCV11 NAFLD7, ALD+HCV7; other small source categories suppressed, any-exposure ALD24 HCV18 HBV7 NAFLD9. Prior invalid ALD31 corrected by explicit non-alcoholic-vs-alcoholic regex test; clinician-verified etiology codebook still pending.",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053421959",
@@ -207,14 +207,18 @@
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155985179",
           "level": "source_sha256_binary_code_imbalance_uninterpreted"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161332568",
+          "level": "strict_48_patient_source_label_exposure_counts__not_clinical_codebook"
         }
       ],
       "analysis_evidence": [],
       "reviewer_approved": false,
-      "independent_patient_n": null,
+      "independent_patient_n": 48,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Independently verify Xing HBV/HCV 0/1 codebook and true etiology count; HCV marker has just one code=1 among 138 numeric cases. Xing is HOLD for cross-etiology contrasts; validate etiology-diverse expression-level Ng or independent cohorts before scientific PASS."
+      "next_action": "Confirm source Ng 2022 underlying liver disease category meanings/exclusivity and clinical confounders on matched 48 independent patients; ALD12 vs HCV11 only exploratory, inspect age/stage/treatment/batch and the two duplicate-biopsy patients before pathway tests."
     },
     {
       "id": "V05",
