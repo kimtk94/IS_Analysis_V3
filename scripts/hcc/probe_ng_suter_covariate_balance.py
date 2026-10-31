@@ -84,9 +84,7 @@ def audit(private_labels,rows,columns):
         raise ValueError("source etiology header absent")
     for patient,patient_rows in by_patient.items():
         labels={categories(r.get(columns["underlyingliverdisease"],"")) for r in patient_rows}
-        patient_groups[patient]=labels.pop()[0] if len(labels)==1 and len(next(iter(labels)) if labels else ())==0 else None
         # Ensure multi-biopsy patient has one agreed exclusive source category.
-        labels={categories(r.get(columns["underlyingliverdisease"],"")) for r in patient_rows}
         if len(labels)==1:
             label=next(iter(labels))
             group=label[0] if len(label)==1 and label[0] in GROUPS else "MIXED_OTHER"
