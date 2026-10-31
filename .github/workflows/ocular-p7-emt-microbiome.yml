@@ -1,8 +1,5 @@
 name: Ocular P7 EMT Robustness and Microbiome Study QC
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-p7-emt-microbiome.yml'
   workflow_dispatch:
 
 permissions:
