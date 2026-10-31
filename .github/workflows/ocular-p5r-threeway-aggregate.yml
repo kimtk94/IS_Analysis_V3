@@ -1,8 +1,5 @@
 name: Ocular P5r Parallel Three-Way Public Aggregate Audits
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-p5r-threeway-aggregate.yml'
   workflow_dispatch:
 
 permissions:
