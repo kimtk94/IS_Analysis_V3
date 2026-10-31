@@ -59,6 +59,9 @@ class HCCResearchProtocolTests(unittest.TestCase):
     def test_paired_claim_requires_unique_patients(self):
         reg = copy.deepcopy(self.original)
         gate = reg["checkpoints"][2]
+        # Real Ng 2022 now has a verified source-linked n=48 in the PARTIAL gate.
+        # Test the missing-patient case explicitly without weakening PASS guards.
+        gate["independent_patient_n"] = None
         gate.update({"status": "PASS", "reviewer_approved": True,
                      "analysis_evidence": [{
                          "path": "results/hcc/biopsy_join.json",
