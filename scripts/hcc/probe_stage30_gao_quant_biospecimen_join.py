@@ -153,6 +153,18 @@ def review(v):
                     n=m.get(k,0)
                     if type(n) is not int or not 0<=n<=331:raise ValueError("source count impossible")
                 if m.get("sample_case_or_aliquot_IDs_exported") is True:raise ValueError("patient ID leak")
+                if m.get("status")=="HEADER_READ":
+                    keys={"aliquot_submitter_id","aliquot_id",
+                          "sample_submitter_id","sample_id",
+                          "case_submitter_id","case_id"}
+                    for fld in ("exact_PDC_case_sample_aliquot_alias_namespace_match_n",
+                                "casefold_PDC_alias_namespace_match_n"):
+                        counts=m.get(fld)
+                        if not isinstance(counts,dict) or set(counts)!=keys:
+                            raise ValueError("six source identity namespaces must be independently checked")
+                        for n in counts.values():
+                            if type(n) is not int or not 0<=n<=331:
+                                raise ValueError("source identifier alias count invalid")
     return {"schema":"hcc-stage30-header-vs-biospecimen-postflight-v1",
         "max_matched_proteome_PDC_aliquot_headers_n":max((m.get("exact_matched_PDC_aliquot_submitter_IDs_n",0) for m in v["studies"][0].get("per_candidate_aliquot_ID_overlap_counts",[])),default=0),
         "max_matched_phospho_PDC_aliquot_headers_n":max((m.get("exact_matched_PDC_aliquot_submitter_IDs_n",0) for m in v["studies"][1].get("per_candidate_aliquot_ID_overlap_counts",[])),default=0),
