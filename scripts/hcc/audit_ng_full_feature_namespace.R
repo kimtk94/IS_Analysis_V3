@@ -25,6 +25,15 @@ full<-obj$object
 if(!is.list(full)||!all(c("T","P","PP")%in%names(full)))stop("missing T/P/PP")
 tids<-rownames(full[["T"]]);pids<-rownames(full[["P"]])
 if(length(tids)!=20356||length(pids)!=5585)stop("unexpected full matrix")
+# When explicitly enabled by the isolated mapping CI, source feature IDs are
+# written to an ephemeral runner file. Never upload or print this file.
+feature_target<-Sys.getenv("NG_PRIVATE_FEATURE_IDS_OUT",unset="")
+if(nzchar(feature_target)) {
+  if(anyNA(tids)||anyNA(pids)||any(!nzchar(tids))||any(!nzchar(pids)))
+    stop("missing source identifier labels")
+  writeLines(c(paste0("T\t",tids),paste0("P\t",pids)),feature_target,useBytes=TRUE)
+  Sys.chmod(feature_target,mode="0600")
+}
 if(ncol(full[["T"]])!=50||ncol(full[["P"]])!=50||
    !identical(colnames(full[["T"]]),colnames(full[["P"]])))stop("source sample axis mismatch")
 normal<-function(z)sub("\\.[0-9]+$","",as.character(z))
