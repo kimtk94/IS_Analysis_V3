@@ -36,7 +36,7 @@ strict_sd_separation<-max(sdv[drop])<min(sdv[selected])
 strict_mean_separation<-max(mu[drop])<min(mu[selected])
 qstats<-function(v)list(min=min(v),med=median(v),max=max(v),q10=unname(quantile(v,.1)),q90=unname(quantile(v,.9)))
 put<-function(name,x)paste0('"',name,'":{',
- '"min":',num(x$min),',"median":',num(x$med),',"max":',num(x$max),',
+ '"min":',num(x$min),',"median":',num(x$med),',"max":',num(x$max),',',
  '"q10":',num(x$q10),',"q90":',num(x$q90),'}')
 str<-paste0('{"schema":"hcc-stage29-source-filter-588-transcripts-v1",',
  '"source_commit":"',commit,'",',
