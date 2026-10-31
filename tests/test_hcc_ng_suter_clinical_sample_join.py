@@ -33,6 +33,22 @@ class Tests(unittest.TestCase):
         self.assertEqual(r["matched_biopsies_with_both_assay_flags_n"],49)
         self.assertFalse(r["strict_same_biopsy_source_label_match"])
 
+    def test_exclusive_and_mixed_etiology_preflight_is_patient_based(self):
+        a,b=fixture()
+        clinical_cols={**COLS,"underlyingliverdisease":4}
+        for k,row in enumerate(b):
+            group=("ALD" if (k<15 or k>=48) else
+                   "HCV" if k<26 else
+                   "HCV + ALD" if k<34 else
+                   "NAFLD" if k<41 else "HBV")
+            row[4]=group
+        r=compare(a,b,clinical_cols)
+        self.assertEqual(r["source_etiology_candidate_patients_per_group_suppress_lt5"]["ALD"],15)
+        self.assertEqual(r["source_etiology_candidate_patients_per_group_suppress_lt5"]["ALD+HCV"],8)
+        self.assertEqual(r["source_etiology_candidate_any_exposure_suppress_lt5"]["HCV"],19)
+        self.assertEqual(r["conflicting_etiology_labels_across_biopsies_n"],0)
+        self.assertFalse(r["etiology_clinical_codebook_verified"])
+
     def test_alias_collision_fails(self):
         a,b=fixture()
         b.append({0:"SyntheticCase-0",1:"ConflictingPatient",2:"Y",3:"Y"})
