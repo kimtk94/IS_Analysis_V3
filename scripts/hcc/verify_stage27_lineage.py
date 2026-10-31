@@ -70,13 +70,63 @@ def ranks_review(v):
       "source_processing_code_reproduction":"HOLD",
       "original_Fig2b_gene_universe":"HOLD",
       "V03":"PARTIAL","V07":"PARTIAL"}
+def sample_review(v):
+    if v.get("schema")!="hcc-stage27b-paired-source-sample-match-v1":
+        raise ValueError("sample axis schema wrong")
+    if v.get("source_commit")!=COMMIT or v.get("source_full_sha256")!=FULL or v.get("source_fullz_sha256")!=FULLZ:
+        raise ValueError("sample source hash drift")
+    if v.get("synthetic_identity_permutation_controls_passed") is not True:
+        raise ValueError("permutation test not passed")
+    layers=v.get("layer_metrics")
+    if not isinstance(layers,list) or len(layers)!=5 or {x.get("modality") for x in layers}!={"M","CN","T","P","PP"}:
+        raise ValueError("five modality sample matching missing")
+    for m in layers:
+        if m.get("samples_n")!=50 or type(m.get("features_in_similarity_n"))!=int or m["features_in_similarity_n"]<20:
+            raise ValueError("source alignment not validated")
+        k=m.get("diagonal_wins_n")
+        if type(k)!=int or not 0<=k<=50:
+            raise ValueError("impossible best paired sample count")
+        if m.get("best_matches_form_one_to_one_permutation") not in (True,False):
+            raise ValueError("missing sample matching cardinality")
+        if m.get("no_sample_or_feature_identifiers_exported") is not True:
+            raise ValueError("source identifiers may have leaked")
+        for fld in ("diagonal_wins_fraction","best_similarity_gt_0_7_fraction"):
+            n=m.get(fld)
+            if type(n) not in (float,int) or not math.isfinite(n) or not 0<=n<=1:
+                raise ValueError("invalid sample overlap proportion")
+        if abs(m["diagonal_wins_fraction"]-k/50)>0.000001:
+            raise ValueError("inconsistent sample match fraction")
+        for fld in ("same_label_similarity_median","same_label_similarity_min",
+                    "same_label_similarity_max","best_offdiagonal_allowed_similarity_median"):
+            n=m.get(fld)
+            if type(n) not in (int,float) or not math.isfinite(n) or abs(n)>100:
+                raise ValueError("implausible source-column alignment score")
+        if not m["same_label_similarity_min"]<=m["same_label_similarity_median"]<=m["same_label_similarity_max"]:
+            raise ValueError("source column summary not ordered")
+    for k in ("reordering_feature_or_sample_identifiers_proven_as_cause",
+              "exact_original_preprocessing_code_reproduced",
+              "biological_or_clinical_significance_proven",
+              "all_source_patient_and_feature_identifiers_exported"):
+        if v.get(k) is not False:
+            raise ValueError("scientific or privacy overstatement")
+    return {
+       "schema":"hcc-stage27b-sample-match-postflight-v1",
+       "source_sample_identity_matching_review":"PASS_TECHNICAL_ONLY",
+       "RNA_protein_and_PP_diagonal_winners":{
+           x["modality"]:x["diagonal_wins_n"] for x in layers if x["modality"] in ("T","P","PP")},
+       "global_sample_permutation_proven":False,
+       "source_processing_reproduction":"HOLD",
+       "V03":"PARTIAL","V07":"PARTIAL"
+    }
+
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument("--kind",required=True,choices=("source-code","ranks"))
+    p.add_argument("--kind",required=True,choices=("source-code","ranks","sample-match"))
     p.add_argument("--input",required=True);p.add_argument("--out",required=True)
     a=p.parse_args()
     x=json.loads(pathlib.Path(a.input).read_text(encoding="utf8"))
-    y=code_review(x) if a.kind=="source-code" else ranks_review(x)
+    y=(code_review(x) if a.kind=="source-code" else
+       ranks_review(x) if a.kind=="ranks" else sample_review(x))
     f=pathlib.Path(a.out);f.parent.mkdir(parents=True,exist_ok=True)
     f.write_text(json.dumps(y,indent=2)+"\n",encoding="utf8")
     print(json.dumps(y,indent=2))
