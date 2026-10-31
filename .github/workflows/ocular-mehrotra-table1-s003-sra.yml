@@ -1,8 +1,5 @@
 name: Ocular Mehrotra Official Table1 versus Supplement and SRA Audit
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-mehrotra-table1-s003-sra.yml'
   workflow_dispatch:
 
 permissions:
