@@ -72,6 +72,8 @@ def summarize(t,pids,refs,rows,checksum):
     valid=[a for a in aliases.values() if a]
     matched={p:refs.get(a,set()) & t for p,a in aliases.items() if a}
     mapped={p:gs for p,gs in matched.items() if gs}
+    n_source_accessions_in_uniprot=sum(1 for a in aliases.values() if a in refs)
+    n_uniprot_records_with_ensg=sum(bool(gs) for gs in refs.values())
     unique={p:next(iter(gs)) for p,gs in mapped.items() if len(gs)==1}
     gene_protein_count={}
     for g in unique.values():gene_protein_count[g]=gene_protein_count.get(g,0)+1
@@ -87,6 +89,8 @@ def summarize(t,pids,refs,rows,checksum):
         "source_RNA_ENSG_n":len(t),
         "source_proteome_features_n":len(pids),
         "source_protein_features_with_recognized_UniProt_accession_n":len(valid),
+        "source_protein_accessions_found_in_uniprot_reviewed_n":n_source_accessions_in_uniprot,
+        "uniprot_reviewed_entries_with_gene_ENSG_in_TSV_field_n":n_uniprot_records_with_ensg,
         "protein_features_with_Ensembl_gene_in_source_RNA_n":len(mapped),
         "protein_features_with_unique_Ensembl_gene_n":len(unique),
         "distinct_Ensembl_genes_corresponding_to_proteins_n":comparable,
