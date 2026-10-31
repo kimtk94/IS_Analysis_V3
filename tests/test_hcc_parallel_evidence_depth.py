@@ -89,6 +89,6 @@ class Tests(unittest.TestCase):
             item=next(v for v in EVIDENCE_ITEMS if v[0]=="xing_etiology")
             p=pathlib.Path(tmp)/f"hcc-p0-{item[1]}"/item[2]
             p.write_text("{invalid",encoding="utf-8")
-            self.assertEqual(summarize(tmp)["source_reports_read"],7)
+            self.assertEqual(summarize(tmp)["source_reports_read"],8)
 
 if __name__=="__main__":unittest.main()
