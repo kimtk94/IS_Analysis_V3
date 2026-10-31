@@ -152,3 +152,14 @@ BeamA confidence 0.5/0.75, alternative cell label, donor당 적격 cell 수, 각
 5. **논문의 완료 조건**: 제3 코호트 GO, 원논문 완전 DEG 매핑, 선택/교란 한계의 정량화, 결과 해석을 뒷받침하는 그림, 선행 2026 문헌 대비 비중복 기여, 외부 원자료/실험 접근 여부에 맞는 주장 수준. 임상 예측과 novel causal mechanism은 현재 STOP/HOLD.
 
 *전략 수립 시 출처를 확인한 참고 논문 및 데이터: GSE313736; GSE301517; GSE301516; PMID 41636427, 41890121, 42396508, 42388255; dbGaP phs004037. GitHub CI 통과는 생물학적 결론 PASS와 다르다.*
+
+
+## 최신 실행 상태 갱신 — 2026-11-01: GSE313736 원 저자 근거 경로
+
+기존 이 문서의 2026-10-31 중간 실행 상태는 당시 시점의 기록이며, **아래 검증 결과가 우선**한다.
+
+- **2024 원 연구 선행 근거 3종 PASS**: AVR 2024 연차보고서, UTAS 2024 Showcase, 2024-02-16 ANZGS 공식 학회 *예정 프로그램*. [CI #41225021238](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41225021238) SUCCESS. 학회 프로그램은 발표 예정만 확인하며 63↑/17↓ 발표시점을 2월로 앞당기는 근거는 아님. AVR 보고서의 2024 coverage year와 2025/08 호스팅 경로를 동일한 공개 날짜로 혼동하지 않는다.
+- **원저자 80개 추가 공개자료 검색 CI 2/2 PASS**: [#41225415076](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41225415076). Europe PMC의 세 가지 엄격 질의 각각 **0 hits**, GEO **Series FTP**에서 후보 DEG 테이블명 **0개**. 공식 검색 호출 성공으로 판정한 것이지 저자의 개별 DEG 유전자 명단을 얻었다는 의미가 아니다. [검색·입력검증 게이트](GSE313736_AUTHOR80_PUBLIC_DISCOVERY_AND_SOURCE_GATE_20261101.md) 참조.
+- **원저자 DEG80 identity HOLD**: 원 저자 63↑/17↓와 우리의 edgeR 67↑/16↓(총 83개), 0.50 threshold 88개의 교집합은 **계산하지 못함**. 공개 서술의 감소 절단값 `>3` vs `<3` 모순을 `<-3`으로 임의 보정하지 않는다. 원 저자 Ensembl/FC/FDR 표와 대비·통계법을 공식 확보해야만 비교 GO.
+- **이미 완료된 자체 분석은 그대로 GO**: 동일 57 donor BeamA 0.50/0.75 원본-count 재적합 [#41199532259](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41199532259), matched 55 donor BeamA/scPred 비교 [검증 리뷰 #41207583296](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41207583296). 두 결과 모두 **within-cohort technical sensitivity**, 독립 코호트 외부 재현성이나 인과 증명은 아님.
+- **추가 연구비용 판단**: 원본 18개 10x 파일 수 GB 반복 다운로드 금지. 현재 유의미한 다음 경로는 [원저자 자료 요청 문서](ORIGINAL_AUTHOR_EVIDENCE_REQUEST_PACKET_20261101.md)의 공식 연구진 접촉 **승인 후** 실제 80 행 ID·FDR·모형 확인이다. 메일은 현재 미발송; 본 GitHub Actions는 외부 연락하지 않는다.
