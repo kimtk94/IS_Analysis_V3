@@ -1,6 +1,12 @@
-name: Ocular 2024 Author Source versus GSE313736 Audit
+name: Ocular 2024 Three-Source Original Study Provenance Audit
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feat/ocular-p0-data-access-audit-20261030
+    paths:
+      - scripts/ocular/ocular_gse313736_2024_original_source_audit.py
+      - .github/workflows/ocular-gse313736-2024-original-audit.yml
 
 permissions:
   contents: read
@@ -18,7 +24,7 @@ jobs:
         run: |
           python -m pip install 'pymupdf==1.26.5'
           python -m py_compile scripts/ocular/ocular_gse313736_2024_original_source_audit.py
-      - name: Audit original 2024 AVR and UTAS paper precursors
+      - name: Audit AVR and UTAS evidence plus Feb 2024 ANZGS schedule
         run: |
           mkdir -p ocular-original-author-evidence-public
           python -u scripts/ocular/ocular_gse313736_2024_original_source_audit.py \
