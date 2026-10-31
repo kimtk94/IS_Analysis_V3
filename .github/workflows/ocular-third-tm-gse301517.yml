@@ -1,5 +1,8 @@
 name: Ocular Third TM Cohort GSE301517 Official GEO Preflight
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-third-tm-gse301517.yml'
   workflow_dispatch:
 
 permissions:
@@ -37,6 +40,7 @@ jobs:
           python -u scripts/ocular/ocular_gse301517_crossstudy_cpm.py \
             --primary "$RUNNER_TEMP/ocular-third-primary/p5_all_gene_results.tsv.gz" \
             --emt "$RUNNER_TEMP/ocular-third-emt/P7a_194_emt_gene_concordance.tsv" \
+            --markers "$RUNNER_TEMP/ocular-third-emt/P7a_12_targets_and_TM_ECM_marker_panel.tsv" \
             --out ocular-third-gse301517-public
       - name: Remove earlier aggregate source copies
         if: always()
