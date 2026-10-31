@@ -1,0 +1,36 @@
+name: Ocular 2024 Author Source versus GSE313736 Audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-gse313736-2024-original-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-manifest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install public-PDF text parser
+        run: |
+          python -m pip install 'pymupdf==1.26.5'
+          python -m py_compile scripts/ocular/ocular_gse313736_2024_original_source_audit.py
+      - name: Audit original 2024 AVR and UTAS paper precursors
+        run: |
+          mkdir -p ocular-original-author-evidence-public
+          python -u scripts/ocular/ocular_gse313736_2024_original_source_audit.py \
+            --out ocular-original-author-evidence-public
+      - name: Preserve compact original source evidence, not raw copyrighted PDF
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gse313736-2024-original-author-sources
+          path: ocular-original-author-evidence-public/
+          retention-days: 60
+          if-no-files-found: warn
