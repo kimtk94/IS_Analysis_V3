@@ -2,6 +2,7 @@
 import copy,pathlib,sys,unittest
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]/"scripts"/"hcc"))
 from audit_stage27_public_code_lineage import summarize
+from audit_ng_stage27_original_figure2_source import header_type,SHEETS
 from verify_stage27_lineage import code_review,ranks_review,COMMIT,FULL,FULLZ
 
 def synthetic_rank():
@@ -32,6 +33,12 @@ def synthetic_rank():
        "gene_level_FDR_or_biological_significance_tested":False,
        "per_feature_rhos_or_patient_identifiers_exported":False}
 class TestStage27(unittest.TestCase):
+    def test_published_source_header_redaction(self):
+        self.assertEqual(header_type("ENSG00000141510"),"ENS_IDENTIFIER_REDACTED")
+        self.assertEqual(header_type("Spearman rho"),"CORRELATION_HEADER")
+        self.assertEqual(header_type("P-value"),"SIGNIFICANCE_HEADER")
+        self.assertEqual(header_type("TP53"),"UNCLASSIFIED_REDACTED")
+        self.assertEqual(SHEETS,{"Fig2a","Fig2b","SuppFig13f","SuppFig13g"})
     def test_raw_code_loader_is_not_generator(self):
         s=summarize('HCCfullz<-readRDS("HCCinputs/HCCfullz.rds")\n')
         self.assertTrue(s["HCCfullz_consumed_in_clustering_script"])
