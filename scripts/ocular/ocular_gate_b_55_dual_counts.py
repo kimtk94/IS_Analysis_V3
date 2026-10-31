@@ -19,7 +19,7 @@ LABELS=("BeamA_075","TM_Fibro")
 ARMS=("no-dex","dex")
 def get_meta(fp):
     maps={k:defaultdict(dict) for k in LABELS}
-    totals={k:defaultdict(Counter) for k in LABELS}
+    totals={k:Counter() for k in LABELS}
     source_libraries=Counter()
     by_pool=defaultdict(set)
     rows=0
@@ -60,14 +60,6 @@ def get_meta(fp):
         raise ValueError("EXPECTED_SHARED_55_METADATA_DONORS_CHANGED")
     return maps,common,by_pool,totals
 
-def stream_both(path,source_ncol,group_indices):
-    """One pass over coordinates; two bincount aggregations per chunk."""
-    n=len(group_indices["BeamA_075"])
-    if any(len(ix)!=n for ix in group_indices.values()):raise ValueError("BARCODE_IDX_LENGTH_MISMATCH")
-    n_donors=max((int(ix.max()) for ix in group_indices.values()),default=-1)+1
-    # The joined donor index vectors may not mention all donors in one specific library.
-    # Pass a caller-owned n_groups instead of inferring it.
-    raise AssertionError("DO_NOT_USE_INFERRED_DIMENSION")
 def matrix_onepass(path,source_ncol,mappings,n_genes,n_donors):
     outputs={name:np.zeros((n_genes,n_donors),dtype=np.int64) for name in LABELS}
     selected_umi={name:0 for name in LABELS}
