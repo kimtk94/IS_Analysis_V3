@@ -29,8 +29,9 @@ class TestCovariate(unittest.TestCase):
         self.assertEqual(report["groups"]["HCV"]["age"]["median"],70.0)
         self.assertEqual(report["ALD_minus_HCV_unadjusted_age_median_years"],-10.0)
         self.assertFalse(report["full_differential_omics_GO"])
-        self.assertAlmostEqual(report["absolute_standardized_mean_difference"]["male_sex"],2.121,places=3)
-        self.assertAlmostEqual(report["absolute_standardized_mean_difference"]["BCLC_early_0_A"],2.121,places=3)
+        self.assertIsNone(report["absolute_standardized_mean_difference"]["male_sex"])
+        self.assertTrue(report["complete_group_separation_no_finite_SMD"]["male_sex"])
+        self.assertTrue(report["complete_group_separation_no_finite_SMD"]["BCLC_early_0_A"])
         self.assertTrue(report["imbalance_attention_threshold_0_2"]["BCLC_early_0_A"])
         self.assertNotIn("patient0",str(report).lower())
 
