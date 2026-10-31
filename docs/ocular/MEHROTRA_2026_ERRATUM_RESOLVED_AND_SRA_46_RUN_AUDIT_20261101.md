@@ -1,6 +1,6 @@
 # Mehrotra 2026 Erratum Verified and Newly Disclosed Original RNA-seq Evidence
 
-**Audit date:** 2026-11-01 (KST). **Final official metadata audit:** [GitHub Actions #41214240628](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41214240628), **SUCCESS**, [artifact #13047557508](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41214240628/artifacts/13047557508), ZIP and individual JSON/TSV opened and checked.
+**Audit date:** 2026-11-01 (KST). **Final official metadata audit:** [GitHub Actions #41214240628](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41214240628), **SUCCESS**, [artifact #13047557508](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41214240628/artifacts/13047557508). **Latest 12-BioSample mapping:** [run #41214740781](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41214740781) **SUCCESS**, [artifact #13047522395](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41214740781/artifacts/13047522395), ZIP and individual JSON/TSV opened and checked.
 
 ## 1. Primary erratum full text — RESOLVED
 
@@ -31,8 +31,9 @@ The new study accession is linked from the **official published correction**, no
 | Aliased two-run sequencing groups | **23** |
 | TM annotated groups | **16** |
 | Schlemm canal endothelial annotated groups | **7** |
-| Group aliases explicitly Vehicle+DEX | **17 / 23** |
-| Groups labeled only `-1/-2` (arm unresolved) | **6 / 23** |
+| Treatment pairs explicitly labeled in sample aliases | **17 / 23** |
+| Additional `-1/-2` groups resolved from official BioSample treatment XML | **6 / 6** |
+| Vehicle/DEX paired groups after official BioSample XML | **23 / 23 treatment pairs mapped** |
 | Timepoint per run (1h, 6h, 48h) | **NOT verified** |
 | Unique biological donors/strains per 46-run file universe | **NOT independently verified** |
 
@@ -42,7 +43,7 @@ Official ENA response SHA256 **`8108331d9d9d836486591354503a4767d16f07920dbf6b3e
 - `MEHROTRA_PRJNA1243143_ENA_RUN_MANIFEST.tsv`
 - `MEHROTRA_PRJNA1243143_PAIRING_QC.tsv`
 
-**Important hierarchy:** Those are **23 sequencing-library candidate pairs**, **NOT 23 independent biological donors**. The same TM strain name can recur in multiple experimental groups. A `-1/-2` suffix is not, by itself, proof that record `-1` is Vehicle and `-2` DEX; 1h/6h/48h treatment assignment must come from original experiment records or author sample sheet. The external publication reports nine quality-passing TM strains and four SCE strains, not 23 independent strains. Whether all 46 runs correspond to QC-passing samples is not established by SRA availability.
+**Important hierarchy:** There are **23 matched sequencing-library candidate pairs, NOT 23 independent donors**. The same TM strain name recurs in distinct experimental groups. For six pairs originally named only `-1/-2` (TM96, TM151, TM123, SC91, SC89, SC86), **12 official BioSample XML records establish six Vehicle and six 100 nM DEX samples**. Therefore, adding the 17 explicitly labeled pairs, all **23/23 library-pair treatment assignments** have original-source evidence. This does **not** establish exposure duration, independent donor identities, or the 48h QC-eligible subset. The publication describes nine QC-passing TM and four SCE strains.
 
 ## 3. Research ramifications — important priority change
 
@@ -53,7 +54,7 @@ However, direct reprocessing of **~89.7 GB compressed FASTQ** with reference ali
 **Gates for a GO to independent raw-data reanalysis:**
 
 1. **P0 GO:** Official erratum resolved, 46 RNA-seq runs and 92 files with checksums metadata verified. No significant data-value correction reported by notice.
-2. **P1 HOLD — critical:** confirm 46-run `BioSample → tissue (TM/SCE) → strain → run → DEX/vehicle → 1h/6h/48h` crosswalk from actual ENA sample/experiment XML or official published sample table. The ambiguous six library pairs MUST NOT be assigned by unverified suffix.
+2. **P1 PARTIAL GO / HOLD TIMEPOINT:** confirm a 46-run `BioSample → tissue → strain → run → 1h/6h/48h` crosswalk from original sample metadata or publication. All 23 candidate paired treatment arms are now identified through 17 alias labels and six BioSample XML pairs, but the actual exposure duration, source culture-strain identity and QC-approved 48h subset remain unknown. Do not infer timepoint from `-1/-2`.
 3. **P2 HOLD:** isolate the **100nM 48h TM subset** (paper's nine QC-passing TM strains, subject to raw metadata). Determine whether raw gene-count tables are already deposited in an official secondary analysis resource; prefer published, auditable processed raw counts over unneeded 90GB FASTQ realignment.
 4. **P3 CONDITIONAL GO:** only after P1/P2 pass, choose low-cost primary validation with independent TM strains and proper donor pairing, negative/positive control panels, and the manuscript's fixed candidates MYOC/TGFBI/MMP2/ACTA2. Use original same-level integer gene counts and a paired contrast, not normalized CPM fitted as count data.
 5. **STOP:** treating these 23 groups as 23 independent donors, assuming all are 48h TM, or including SCE in TM evidence without stratification.
