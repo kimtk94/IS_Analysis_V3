@@ -33,17 +33,29 @@ class LinkFinder(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.links=[]
+        self.rows=[]
         self.current=None
+        self.current_row=None
     def handle_starttag(self,tag,attrs):
+        if tag=="tr":
+            self.current_row={"txt":[],"links":[]}
         if tag=="a":
             self.current={"href":dict(attrs).get("href",""),"txt":[]}
     def handle_data(self,data):
         if self.current is not None:
             self.current["txt"].append(data)
+        if self.current_row is not None:
+            self.current_row["txt"].append(data)
     def handle_endtag(self,tag):
         if tag=="a" and self.current is not None:
-            self.links.append((self.current["href"],"".join(self.current["txt"]).strip()))
+            link=(self.current["href"],"".join(self.current["txt"]).strip())
+            self.links.append(link)
+            if self.current_row is not None:
+                self.current_row["links"].append(link)
             self.current=None
+        if tag=="tr" and self.current_row is not None:
+            self.rows.append(self.current_row)
+            self.current_row=None
 
 def is_safe_page(url):
     try:
@@ -75,7 +87,9 @@ def page_inventory(raw,base,pid):
     parser.feed(txt)
     # A link is study-associated ONLY if the anchor text, relative href, or
     # its enclosing local document window contains the explicit accession.
-    matching=[(url,label) for url,label in parser.links if pid in url or pid in label]
+    direct_matching=[(url,label) for url,label in parser.links if pid in url or pid in label]
+    row_matching=[link for row in parser.rows if pid in "".join(row["txt"]) for link in row["links"]]
+    matching=list(set(direct_matching+row_matching))
     counts=collections.Counter(classify_anchor(href,label,base) for href,label in matching)
     # Requiring accession in the anchor prevents unrelated study links from
     # being misrepresented as an accessible source for the requested study.
