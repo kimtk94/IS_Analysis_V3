@@ -45,8 +45,8 @@ def extract_table1(payload,version):
                 cells=[text(x) for x in tr if x.tag in ("th","td")]
                 if len(cells)>1:source_rows.append(cells)
             whole=" ".join(" ".join(row) for row in source_rows)
-            has_strains=bool(re.search(r"TM\\s*151",whole,re.I)) and bool(re.search(r"TM\\s*155",whole,re.I))
-            has_time=bool(re.search(r"\\b(2\\s*d|6\\s*h|1\\s*h)\\b",whole,re.I))
+            has_strains=bool(re.search(r"TM\s*151",whole,re.I)) and bool(re.search(r"TM\s*155",whole,re.I))
+            has_time=bool(re.search(r"\b(2\s*d|6\s*h|1\s*h)\b",whole,re.I))
             if has_strains and has_time:results.append(wrapper)
         detection="SOURCE_STRAIN_AND_EXPOSURE_ROWS"
     if not results:
