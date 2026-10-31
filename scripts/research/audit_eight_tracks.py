@@ -66,6 +66,8 @@ def validate_track(t):
         code = (ROOT / "scripts/muscle_stage2a_gtex.py").read_text()
         for token in ("SKIPPED_NO_GTEX_VARIANT", "b37VariantId", "variantId", "Muscle_Skeletal", "gtex_v10"):
             require(token in code, "GTEx source token: " + token)
+        require('"snpId": rsid' in code, "GTEx dataset lookup must use source rsID")
+        require('"variantId": variant_id' in code, "GTEx association must use resolved variant ID")
         require(o["unresolved"] == "SKIPPED_NO_GTEX_VARIANT", "unresolved variants")
     elif k == "oral":
         require(o["accession"] == "GSE103322" and o["patients"] == 18 and o["cells"] == 5902, "oral cohort source")
