@@ -8,7 +8,7 @@ from probe_stage30_gao_quant_header import safe_public_https
 from audit_stage33_original_cdap_sample_bridge import discover,read_bytes,parse_sample_table,RATIO_PATTERN
 
 LIMIT=262144
-REPORT_PATTERN=re.compile(r"^(.*?)\\s+(Unshared )?Log Ratio$",re.I)
+REPORT_PATTERN=re.compile(r"^(.*?)\s+(Unshared )?Log Ratio$",re.I)
 
 def expected(rows,reporters):
     names=[]
@@ -58,7 +58,7 @@ def source_file(pid):
     files=[]
     for r in arr:
         name=str(r.get("file_name") or "").lower()
-        if not re.search(r"\\.(?:tmt\\d*|itraq)\\.tsv$",name):continue
+        if not re.search(r"\.(?:tmt\d*|itraq)\.tsv$",name):continue
         links=r.get("signedUrl") or []
         if isinstance(links,dict):links=[links]
         u=next((x.get("url") for x in links if isinstance(x,dict) and safe_public_https(x.get("url"))),None)
@@ -70,10 +70,10 @@ def header(url):
     req=urllib.request.Request(url,headers={"Range":"bytes=0-262143","User-Agent":"HCC-stage39-CDAP-TMT-header"})
     with urllib.request.urlopen(req,timeout=35) as resp:
         data=resp.read(LIMIT+1)
-    if len(data)>LIMIT or b"\\n" not in data:raise ValueError("bounded header incomplete")
-    first=data.split(b"\\n",1)[0].rstrip(b"\\r")
-    if len(first)<20 or b"\\x00" in first:raise ValueError("not source TSV header")
-    cols=[x.strip() for x in first.decode("utf-8-sig").split("\\t")]
+    if len(data)>LIMIT or b"\n" not in data:raise ValueError("bounded header incomplete")
+    first=data.split(b"\n",1)[0].rstrip(b"\r")
+    if len(first)<20 or b"\x00" in first:raise ValueError("not source TSV header")
+    cols=[x.strip() for x in first.decode("utf-8-sig").split("\t")]
     if not 10<len(cols)<=1500 or len(set(cols))!=len(cols):
         raise ValueError("invalid source header")
     return cols,hashlib.sha256(data).hexdigest()
@@ -126,7 +126,7 @@ def main():
              "biological_claims_allowed":False}
     for f,data in ((a.out,obj),(a.review_out,verdict)):
         path=pathlib.Path(f);path.parent.mkdir(parents=True,exist_ok=True)
-        path.write_text(json.dumps(data,indent=2)+"\\n")
+        path.write_text(json.dumps(data,indent=2)+"\n")
     print("HCC_STAGE39_ORIGINAL_SOURCE",json.dumps(obj))
     print("HCC_STAGE39_REVIEW",json.dumps(verdict))
 if __name__=="__main__":main()
