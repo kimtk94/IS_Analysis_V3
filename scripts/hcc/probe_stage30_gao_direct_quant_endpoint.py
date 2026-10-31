@@ -13,6 +13,76 @@ from probe_stage30_gao_catalog import PDC
 ENDPOINT="https://pdc.cancer.gov/graphql"
 MAX_BYTES=2*1024*1024
 
+def classify_nested_array_prefix(text, start, limit=12):
+    """Bounded anonymous shape of first completed values inside nested arrays.
+
+    Never export source strings/keys or numerical values. No raw sample or
+    protein identifier may leave this function.
+    """
+    decoder=json.JSONDecoder()
+    pos=start
+    depth=0
+    while depth<6:
+        while pos<len(text) and text[pos] in " \t\r\n,":
+            pos+=1
+        if pos<len(text) and text[pos]=="[":
+            pos+=1
+            depth+=1
+        else:break
+    counts={"NUMBER":0,"STRING":0,"OBJECT":0,"LIST":0,"BOOLEAN":0,"NULL":0}
+    numeric_field_n=0
+    anonymous_field_n=0
+    object_field_n=[]
+    list_item_n=[]
+    completed=0
+    for _ in range(limit):
+        while pos<len(text) and text[pos] in " \t\r\n,":
+            pos+=1
+        if pos>=len(text) or text[pos] in "]}":break
+        try:
+            obj,end=decoder.raw_decode(text,pos)
+        except json.JSONDecodeError:
+            break
+        completed+=1
+        if isinstance(obj,bool):
+            counts["BOOLEAN"]+=1
+        elif obj is None:
+            counts["NULL"]+=1
+        elif isinstance(obj,(int,float)):
+            counts["NUMBER"]+=1
+            if math.isfinite(obj):numeric_field_n+=1
+        elif isinstance(obj,str):
+            counts["STRING"]+=1
+        elif isinstance(obj,dict):
+            counts["OBJECT"]+=1
+            object_field_n.append(len(obj))
+            for value in obj.values():
+                anonymous_field_n+=1
+                if isinstance(value,bool) or value is None:continue
+                try:
+                    if math.isfinite(float(value)):numeric_field_n+=1
+                except (ValueError,TypeError,OverflowError):pass
+        elif isinstance(obj,list):
+            counts["LIST"]+=1
+            list_item_n.append(len(obj))
+            for value in obj[:1000]:
+                anonymous_field_n+=1
+                if isinstance(value,bool) or value is None:continue
+                try:
+                    if math.isfinite(float(value)):numeric_field_n+=1
+                except (ValueError,TypeError,OverflowError):pass
+        pos=end
+    return {
+        "nested_array_depth_from_first_element_n":depth,
+        "completed_first_nested_values_n":completed,
+        "completed_nested_value_type_counts":counts,
+        "max_first_object_field_count_n":max(object_field_n) if object_field_n else None,
+        "max_first_list_item_count_n":max(list_item_n) if list_item_n else None,
+        "finite_numeric_values_examined_n":numeric_field_n,
+        "anonymized_nested_fields_examined_n":anonymous_field_n,
+        "gene_sample_identifiers_exported":False,
+    }
+
 def inspect_oversized_matrix_prefix(raw):
     """Parse only first <=3 complete per-gene JSON objects from 2MiB prefix.
 
@@ -69,8 +139,10 @@ def inspect_oversized_matrix_prefix(raw):
                 if math.isfinite(number):numeric+=1
             except (ValueError,TypeError,OverflowError):pass
         pos+=consumed
+    nested=classify_nested_array_prefix(text,pos) if payload_kind=="NESTED_ARRAY" else {}
     return {"array_prefix_marker_observed":True,
             **structural,
+            "nested_matrix_prefix_shapes":nested,
             "first_complete_gene_records_seen_n":len(shapes),
             "sample_gene_field_present_in_partial_rows":gene_header_seen,
             "first_record_field_count_n":shapes[0] if shapes else None,
