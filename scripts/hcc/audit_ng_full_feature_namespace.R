@@ -33,7 +33,7 @@ ensg<-grepl("^ENSG[0-9]{11}(\\.[0-9]+)?$",tids)
 uniprot6<-"^[OPQ][0-9][A-Z0-9]{3}[0-9](-[0-9]+)?$"
 uniprot10<-"^[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){2}(-[0-9]+)?$"
 # Vectorized UniProt-like label screening (no identifier export).
-uniprot<-grepl(uniprot6,pids)|grepl(uniprot10,pids)
+uniprot<-grepl(uniprot6,pids)|grepl(uniprot10,pids,perl=TRUE)
 uniprot_pipe<-grepl("^(sp|tr)\\|[A-Z0-9]+\\|",pids)
 counts<-list(
   transcript_features=length(tids),proteome_features=length(pids),
