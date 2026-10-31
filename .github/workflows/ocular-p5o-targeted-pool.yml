@@ -1,9 +1,5 @@
 name: Ocular P5o Targeted 96-Gene Donor-Paired Pool Sensitivity
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5o_targeted_paired_pool.R'
-      - '.github/workflows/ocular-p5o-targeted-pool.yml'
   workflow_dispatch:
 
 permissions:
