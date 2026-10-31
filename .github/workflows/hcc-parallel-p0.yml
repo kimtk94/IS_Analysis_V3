@@ -1,19 +1,13 @@
-name: HCC Parallel P0 Evidence Audit
+name: HCC Parallel P0 Evidence Audit (Manual Backup)
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - '.github/workflows/hcc-parallel-p0.yml'
-      - 'scripts/hcc/**'
-      - 'tests/test_hcc_*.py'
-      - 'research/hcc/feasibility/**'
 
 permissions:
   contents: read
 
 concurrency:
-  group: hcc-p0-parallel-${{ github.event.pull_request.number || github.ref }}
+  group: hcc-p0-manual-backup-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
