@@ -1,5 +1,8 @@
 name: Ocular Erratum and Author DEG Official Source Audit
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-source-publication-audit.yml'
   workflow_dispatch:
 
 permissions:
@@ -8,7 +11,7 @@ permissions:
 jobs:
   bounded-official-source-check:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 22
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
