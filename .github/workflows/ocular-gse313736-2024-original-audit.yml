@@ -1,8 +1,5 @@
 name: Ocular 2024 Author Source versus GSE313736 Audit
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-gse313736-2024-original-audit.yml'
   workflow_dispatch:
 
 permissions:
