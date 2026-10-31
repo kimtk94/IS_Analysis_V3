@@ -11,10 +11,13 @@ def fixture():
         files[filename]={
             "status":"PUBLIC_PINNED_RDS_READ_IN_MEMORY",
             "sha256":"a"*64}
+        orientation="samples_by_features" if filename=="HCCdata.rds" else "features_by_samples"
         objs[filename]={
             "status":"PUBLIC_MULTIMODAL_RDS_SHAPES_AUDITED",
-            "transcript_protein_identical_sample_column_labels":True,
-            "layers":{k:{"feature_count":25,"sample_columns":49,
+            "transcript_protein_identical_sample_labels":True,
+            "transcript_protein_shared_sample_labels":49,
+            "layers":{k:{"feature_count":25,"sample_count":49,
+                         "orientation":orientation,
                          "numeric_matrix":True,
                          "raw_labels_or_values_exported":False} for k in MARKERS}}
     return {
@@ -31,7 +34,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(result["execution"],"VERIFIED_PUBLIC_QUANTITATIVE_RDS_STRUCTURE")
         self.assertEqual(result["V02"],"BLOCKED_CLINICAL_SAMPLE_PROVENANCE_AND_QUANT_UNITS")
         self.assertFalse(result["biological_claim_ready"])
-        self.assertEqual(result["files"]["HCCfull.rds"]["layers"]["T"]["sample_columns"],49)
+        self.assertEqual(result["files"]["HCCfull.rds"]["layers"]["T"]["samples"],49)
         self.assertNotIn("raw_ids",str(result))
 
     def test_missing_rna_or_protein_layer_fails(self):
@@ -41,7 +44,7 @@ class Tests(unittest.TestCase):
 
     def test_mismatch_of_sample_count_fails(self):
         v=fixture()
-        v["objects"]["HCCfull.rds"]["layers"]["T"]["sample_columns"]=42
+        v["objects"]["HCCfull.rds"]["layers"]["T"]["sample_count"]=42
         result=verify(v)
         self.assertFalse(result["files"]["HCCfull.rds"]["rna_protein_equal_column_counts"])
         self.assertEqual(result["files"]["HCCfull.rds"]["status"],"SOURCE_GEOMETRY_OR_LABEL_MISMATCH_REQUIRES_JOIN")
