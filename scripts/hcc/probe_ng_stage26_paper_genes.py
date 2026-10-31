@@ -48,16 +48,24 @@ def workbook_profile(payload, private_candidate_out=None):
         names=sorted(p for p in members
                      if re.fullmatch(r"xl/worksheets/sheet\d+\.xml",p))
         if not names:raise ValueError("no actual XLSX worksheets")
+        # Excel sheetId is NOT guaranteed to match sheetN.xml's N.
+        # Resolve workbook rel IDs via xl/_rels/workbook.xml.rels instead.
         sheet_names={}
-        if "xl/workbook.xml" in members:
-            root=ET.fromstring(z.read("xl/workbook.xml"))
-            for node in root.iter(NS+"sheet"):
-                try:
-                    sheet_index=int(node.get("sheetId","0"))
-                except ValueError:continue
-                name=node.get("name","")
-                if 0<sheet_index<=100 and len(name)<=100:
-                    sheet_names[sheet_index]=name
+        if "xl/workbook.xml" in members and "xl/_rels/workbook.xml.rels" in members:
+            rel_root=ET.fromstring(z.read("xl/_rels/workbook.xml.rels"))
+            relmap={}
+            for rel in rel_root:
+                target=rel.get("Target","")
+                if rel.get("Id") and re.search(r"(?:^|/)sheet[0-9]+\\.xml$",target):
+                    m=re.search(r"(?:^|/)sheet([0-9]+)\\.xml$",target)
+                    if m:relmap[rel.get("Id")]=int(m.group(1))
+            wb=ET.fromstring(z.read("xl/workbook.xml"))
+            for node in wb.iter(NS+"sheet"):
+                rid=node.get("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id")
+                number=relmap.get(rid)
+                label=node.get("name","")
+                if number is not None and len(label)<=100:
+                    sheet_names[number]=label
         shared=[]
         figure2_ids=None
         figure2_candidate_sheet=None
@@ -132,6 +140,10 @@ def workbook_profile(payload, private_candidate_out=None):
     if private_candidate_out is not None:
         if figure2_ids is None or not cna_15272_corrob:
             raise ValueError("the original 5481 IDs cannot be anchored to both figure panels")
+        # Prevent false Figure-2 claims from coincidental 5481 row counts.
+        if not re.fullmatch(r"fig(?:ure)?[ _.-]*2[ _.-]*b",sheet_names.get(28,""),re.I) or not re.fullmatch(
+             r"fig(?:ure)?[ _.-]*2[ _.-]*a",sheet_names.get(27,""),re.I):
+            raise ValueError("published sheet labels are not verified Figure2A/2B")
         # The output is STRICTLY runner temporary and is NEVER an artifact.
         destination=pathlib.Path(private_candidate_out)
         destination.parent.mkdir(parents=True,exist_ok=True)
