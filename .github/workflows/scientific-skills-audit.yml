@@ -82,10 +82,27 @@ jobs:
           with pathlib.Path(os.environ['GITHUB_STEP_SUMMARY']).open('a') as summary:
               summary.write('| Research | Skill | Skill audit | SHA256 prefix |\\n|---|---|---|---|\\n')
               summary.write(f"| {result['research']} | {result['skill']} | {result['status']} | {result['sha256'][:12]} |\\n")
+          gate_map = {
+              'IS': 'GWAS allele harmonization and ancestry-matched LD',
+              'glaucoma': 'independent DEX/TM replication and pool-aware statistics',
+              'HCC': 'unique official aliquot-to-quant-column mapping',
+              'radiomics': 'pre-treatment MRI and patient-level RNA linkage',
+              'ophthalmology': 'sample/patient metadata and omics pairing',
+              'muscle': 'variant-to-gene locus-level evidence audit',
+              'oral-cancer': 'patient-resolved expression and metadata',
+              'skin-mr': 'full GWAS allele, effect and SE QC',
+          }
+          gate = {'research': result['research'],
+                  'skill_audit_status': result['status'],
+                  'research_gate': gate_map[result['research']],
+                  'research_gate_status': 'HOLD_NOT_EVALUATED',
+                  'reason': 'Skill document checks do not validate study source data'}
+          (out / 'research_gate.json').write_text(json.dumps(gate, indent=2) + '\\n')
           print(json.dumps(result))
+          print(json.dumps(gate))
           PY
       - uses: actions/upload-artifact@v4
         with:
           name: scientific-skill-${{ matrix.research }}
-          path: audit/result.json
+          path: audit/
           retention-days: 30
