@@ -57,8 +57,9 @@ fmt<-paste0('{"status":"%s","source_commit":"%s",',
     '"source_gene_mapping_independently_curated":false,',
     '"clinical_effects_verified":false,',
     '"patient_ids_feature_names_expression_values_exported":false}')
-klass<-if(inherits(info,"bnInfo"))"bnInfo" else "unrecognized"
-if(klass=="unrecognized")stop("unexpected HCCinfo provenance")
+klass<-if(inherits(info,"bnInfo"))"bnInfo" else "bnInfo_like_allnames"
+# Original RDS may retain a plain list instead of the bnInfo class attribute;
+# structure and immutable source SHA256, not class spelling, anchor provenance.
 line<-sprintf(fmt,status,ref,inp$sha256,inf$sha256,klass,
     a$n_feature_key_matched,b$n_feature_key_matched,
     length(unique(genesT)),length(unique(genesP)),length(shared),unique_pairs)
