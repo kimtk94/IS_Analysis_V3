@@ -179,11 +179,15 @@
         "L02",
         "L03"
       ],
-      "observation": "Source-pinned Suter HCCfull RDS T/P 50-biopsy numeric-layer QA verified; zero nonfinite values across 20,356 T and 5,585 P features, global negatives and zero patterns audited; exact T/P row-label overlap 0 due to Ensembl-versus-protein identifier namespaces. S5 Appendix imputation, normalization and exact feature gene mapping not yet reviewed.",
+      "observation": "Source-pinned Suter HCCfull RDS T/P 50-biopsy numeric-layer QA verified; zero nonfinite values across 20,356 T and 5,585 P features, global negatives and zero patterns audited; exact T/P row-label overlap 0 due to Ensembl-versus-protein identifier namespaces. S5 Appendix imputation, normalization and exact feature gene mapping not yet reviewed. Suter public HCCinfo RDS source gene mapping directly verifies 188 reduced RNA, 116 reduced protein features and 114 one-to-one shared gene labels, but full feature ID crosswalk still missing and S5 normalization remains unreviewed.",
       "evidence": [
         {
           "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162144728",
           "level": "source_pinned_50_sample_numeric_distribution_QC_not_normalization_approved"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162706947",
+          "level": "source_sha256_verified_selected_HCCinfo_gene_crosswalk_188T_116P_114_unambiguous_not_full_mapping"
         }
       ],
       "analysis_evidence": [],
@@ -191,7 +195,7 @@
       "independent_patient_n": null,
       "independent_event_n": null,
       "last_updated": "2026-10-31",
-      "next_action": "Review Suter S5 preprocessing and original Ng normalized RNA/proteomic scale; implement source-checked Ensembl-to-protein/gene-symbol mapping and verify many-to-one/isoform duplicates before concordance."
+      "next_action": "Reconcile full 20,356 Ensembl transcripts with 5,585 protein accessions using versioned independent annotation (track ambiguous isoforms); assess original imputation and batch correction and avoid selected-panel post-selection inference; retain PARTIAL until reviewed."
     },
     {
       "id": "V04",
