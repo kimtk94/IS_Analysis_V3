@@ -138,7 +138,33 @@ def audit(private_labels,rows,columns):
                     "advanced_B_C_D" if x in ("B","C","D") else
                     "unclassified") for x in vals]
             result["bclc"]={"counts_suppress_lt5":safe_counter(stage)}
-        for field in ("edmondson","child_pugh","meld","cirrhosis","treatment","batch"):
+        if "child_pugh" in clinical:
+            vals=[str(patient_covariates[p].get("child_pugh") or "").upper().strip()
+                  for p in patients]
+            classes=[("A" if v=="A" else "B_C" if v in ("B","C") else
+                      "unclassified") for v in vals]
+            result["child_pugh"]={"present_n":sum(v!="unclassified" for v in classes),
+                                   "counts_suppress_lt5":safe_counter(classes)}
+        if "cirrhosis" in clinical:
+            vals=[str(patient_covariates[p].get("cirrhosis") or "").lower().strip()
+                  for p in patients]
+            status=[("yes" if v in ("yes","y","1","true") else
+                     "no" if v in ("no","n","0","false") else
+                     "unclassified") for v in vals]
+            result["cirrhosis"]={"present_n":sum(v!="unclassified" for v in status),
+                                  "counts_suppress_lt5":safe_counter(status)}
+        if "meld" in clinical:
+            nums=[]
+            for p in patients:
+                try:
+                    v=float(str(patient_covariates[p].get("meld") or ""))
+                    if math.isfinite(v) and 0<=v<=60: nums.append(v)
+                except (TypeError,ValueError):pass
+            result["meld"]={"numeric_present_n":len(nums),
+                            "median":qtile(nums,.5) if len(nums)>=8 else None,
+                            "q1":qtile(nums,.25) if len(nums)>=8 else None,
+                            "q3":qtile(nums,.75) if len(nums)>=8 else None}
+        for field in ("edmondson","treatment","batch"):
             if field in clinical:
                 result[field]={"present_n":sum(
                     patient_covariates[p].get(field) is not None for p in patients)}
@@ -161,7 +187,13 @@ def audit(private_labels,rows,columns):
     bclc_early={g:[v in ("0","A") for v in stage_values[g]
                   if v in ("0","A","B","C","D")] for g in GROUPS}
     bclc_smd=binary_abs_smd(bclc_early["ALD"],bclc_early["HCV"])
-    smds={"age":age_smd,"male_sex":sex_smd,"BCLC_early_0_A":bclc_smd}
+    child_values={g:[str(patient_covariates[p].get("child_pugh") or "").upper().strip()
+                     for p in groups[g]] for g in GROUPS}
+    child_binary={g:[v=="A" for v in child_values[g] if v in ("A","B","C")]
+                  for g in GROUPS}
+    child_smd=binary_abs_smd(child_binary["ALD"],child_binary["HCV"])
+    smds={"age":age_smd,"male_sex":sex_smd,"BCLC_early_0_A":bclc_smd,
+          "ChildPugh_A_vs_BC":child_smd}
     complete_separation={
         "age":len(age_obs["ALD"])>=2 and len(age_obs["HCV"])>=2
             and len(set(age_obs["ALD"]+age_obs["HCV"]))>1
@@ -169,6 +201,9 @@ def audit(private_labels,rows,columns):
         "male_sex":len(sex_male["ALD"])>0 and len(sex_male["HCV"])>0
             and len(set(sex_male["ALD"]))==len(set(sex_male["HCV"]))==1
             and sex_male["ALD"][0]!=sex_male["HCV"][0],
+        "ChildPugh_A_vs_BC":len(child_binary["ALD"])>0 and len(child_binary["HCV"])>0
+            and len(set(child_binary["ALD"]))==len(set(child_binary["HCV"]))==1
+            and child_binary["ALD"][0]!=child_binary["HCV"][0],
         "BCLC_early_0_A":len(bclc_early["ALD"])>0 and len(bclc_early["HCV"])>0
             and len(set(bclc_early["ALD"]))==len(set(bclc_early["HCV"]))==1
             and bclc_early["ALD"][0]!=bclc_early["HCV"][0]}
