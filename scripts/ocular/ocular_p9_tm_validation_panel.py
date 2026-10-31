@@ -263,7 +263,7 @@ def protocol(a):
        {"pmid":"41636427","url":"https://pubmed.ncbi.nlm.nih.gov/41636427/","claims":"independent TM 100nM DEX RNAseq at 1h,6h,48h"}]}
     write_json(a.out/"P9c_prospective_donor_randomized_TM_validation_design.json",plan)
     conditions=[{"study":"PRIMARY_RANDOMIZED_48H","timepoint_h":48,"dose_nM":dose,
-       "vehicle_matched":dose==0,"donor_assigned_all_three_doses":True,
+       "is_vehicle_arm":dose==0,"matched_vehicle_solvent_required_for_all_arms":True,"donor_assigned_all_three_doses":True,
        "planned_not_executed":True} for dose in (0,100,500)]
     write_tsv(a.out/"P9c_minimal_prospective_48h_condition_matrix.tsv",conditions)
     print("P9_PROTOCOL",json.dumps({"status":plan["status"],"conditions":len(conditions),"positive":PRIMARY_REFERENCE},ensure_ascii=False),flush=True)
