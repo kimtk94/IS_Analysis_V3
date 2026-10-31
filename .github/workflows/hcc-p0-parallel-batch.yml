@@ -22,7 +22,7 @@ permissions:
 
 concurrency:
   group: hcc-p0-evidence-batch-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   independent-probes:
