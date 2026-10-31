@@ -1,0 +1,40 @@
+name: HCC Stage30 PDC Direct Quant Header Aliquot Join
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-direct-quant-header-join.yml'
+      - 'scripts/hcc/probe_stage30_gao_quant_api_header_to_biospecimen.py'
+      - 'scripts/hcc/probe_stage30_gao_direct_quant_endpoint.py'
+      - 'tests/test_hcc_stage30_direct_quant_header_join.py'
+
+permissions:
+  contents: read
+
+jobs:
+  official-matrix-header-to-aliquot-namespace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test PDC sample/aliquot name matching without fuzzy aliases
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_direct_quant_header_join.py' -v
+      - name: Source official PDC quantDataMatrix header and biospecimen case/sample/aliquot namespace
+        run: |
+          python scripts/hcc/probe_stage30_gao_quant_api_header_to_biospecimen.py \
+            --out results/hcc/stage30/direct_quant_header_biospecimen.json \
+            --review-out results/hcc/stage30/direct_quant_header_biospecimen_review.json
+      - name: Upload anonymous source cohort counts, no sample names or signed URLs
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-PDC-direct-quant-header-to-aliquot-source-bridge
+          path: |
+            results/hcc/stage30/direct_quant_header_biospecimen.json
+            results/hcc/stage30/direct_quant_header_biospecimen_review.json
+          retention-days: 30
+          if-no-files-found: error
