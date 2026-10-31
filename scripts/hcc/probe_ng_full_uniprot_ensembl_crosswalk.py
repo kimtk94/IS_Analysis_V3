@@ -16,6 +16,8 @@ import pathlib
 import re
 import urllib.parse
 import urllib.request
+import urllib.error
+import time
 from concurrent.futures import ThreadPoolExecutor,as_completed
 
 COMMIT="438f52271d0a86a6701baa7a96e80c516ba575c2"
@@ -91,19 +93,28 @@ def fetch_json_batch(ids):
     url="https://rest.uniprot.org/uniprotkb/search?"+urllib.parse.urlencode({
         "query":query,"format":"json","fields":"accession,xref_ensembl","size":500})
     if len(url)>10000:raise ValueError("mapping query URL too long")
-    with urllib.request.urlopen(urllib.request.Request(url,headers={
-        "Accept":"application/json","User-Agent":"HCC-public-source-mapping-QC/1.0"
-    }),timeout=55) as rsp:
-        body=rsp.read(3*1024*1024+1)
+    body=None
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url,headers={
+                "Accept":"application/json","User-Agent":"HCC-public-source-mapping-QC/1.0"
+            }),timeout=40) as rsp:
+                body=rsp.read(3*1024*1024+1)
+            break
+        except urllib.error.HTTPError as e:
+            if e.code not in (429,500,502,503,504) or attempt==3:
+                raise ValueError("UniProt public mapping request failed HTTP "+str(e.code))
+            time.sleep(2*(attempt+1))
+    if body is None:raise ValueError("no public UniProt response")
     if len(body)>3*1024*1024:raise ValueError("batch exceeded JSON size limit")
     return parse_uniprot_json(json.loads(body)),hashlib.sha256(body).hexdigest()
 
 def supplement_from_json(protein_ids,refs):
     unique=sorted({canonical_protein(p) for p in protein_ids if canonical_protein(p)})
-    chunks=[unique[i:i+100] for i in range(0,len(unique),100)]
+    chunks=[unique[i:i+40] for i in range(0,len(unique),40)]
     # Bounded, read-only public API; individual accessions never logged.
     outcomes=[]
-    with ThreadPoolExecutor(max_workers=4) as pool:
+    with ThreadPoolExecutor(max_workers=2) as pool:
         futures=[pool.submit(fetch_json_batch,chunk) for chunk in chunks]
         for future in as_completed(futures):
             outcomes.append(future.result())
