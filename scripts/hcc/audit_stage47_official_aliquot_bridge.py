@@ -32,7 +32,8 @@ RATIO=re.compile(r"^(.+?) Log Ratio$",re.I)
 def numerical_bridge(p,c,source_header):
     if p.shape!=c.shape or p.shape[1]!=330 or p.shape[0]<24:
         raise ValueError("unexpected numeric source axes")
-    cols=[m.group(1).strip() for h in source_header if (m:=RATIO.fullmatch(h))]
+    cols=[m.group(1).strip() for h in source_header
+          if not re.search(r"Unshared Log Ratio$",h,re.I) and (m:=RATIO.fullmatch(h))]
     if len(cols)!=330 or len(set(cols))!=330:
         raise ValueError("CDAP biological ratio labels not unique")
     a=rowwise_rank_z(p);b=rowwise_rank_z(c)
