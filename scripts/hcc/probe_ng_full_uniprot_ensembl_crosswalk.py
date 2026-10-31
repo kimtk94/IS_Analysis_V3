@@ -170,6 +170,37 @@ def summarize(t,pids,refs,rows,checksum):
         "interpretation":"Current UniProt crossrefs vs GRCh37-era published Ng gene universe; replicate original mappings only with versioned source annotations and isoform policy."
     }
 
+def strict_gene_protein_pairs(t, pids, refs):
+    """Only source RNA ENSG ↔ one UniProt-feature pairs; reject ambiguous links.
+
+    A gene with two singly mapped protein features is excluded. Multi-ENSG
+    UniProt entries never enter this pilot even when a proposed ID is present.
+    """
+    candidates={}
+    for protein in pids:
+        accession=canonical_protein(protein)
+        if accession:
+            genes=refs.get(accession,set()) & t
+            if len(genes)==1:
+                candidates[protein]=next(iter(genes))
+    counts={}
+    for gene in candidates.values():
+        counts[gene]=counts.get(gene,0)+1
+    return sorted(((gene,protein) for protein,gene in candidates.items()
+                   if counts[gene]==1),key=lambda x:(x[0],x[1]))
+
+
+def write_ephemeral_strict_pairs(path, t, pids, refs, expected):
+    pairs=strict_gene_protein_pairs(t,pids,refs)
+    if len(pairs)!=expected or len(set(g for g,_ in pairs))!=len(pairs):
+        raise ValueError("strict pair cardinality/identity conflict")
+    dest=pathlib.Path(path)
+    dest.parent.mkdir(parents=True,exist_ok=True)
+    # File exists only in GitHub runner temporary directory; never an artifact.
+    dest.write_text("".join(g+"\\t"+p+"\\n" for g,p in pairs),encoding="utf-8")
+    dest.chmod(0o600)
+
+
 def request_mapping():
     req=urllib.request.Request(URL,headers={"Accept":"text/tab-separated-values",
                                             "User-Agent":"HCC-public-source-mapping-QC/1.0"})
@@ -189,6 +220,7 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--private-features",required=True)
     ap.add_argument("--out",required=True)
+    ap.add_argument("--private-strict-pairs-out",default=None)
     args=ap.parse_args()
     t,proteins=read_ids(args.private_features)
     data=request_mapping()
@@ -212,6 +244,10 @@ def main():
     path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(result,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(result,indent=2))
+    if args.private_strict_pairs_out:
+        write_ephemeral_strict_pairs(
+            args.private_strict_pairs_out,t,proteins,refs,
+            result["one_gene_one_protein_unambiguous_genes_n"])
     # A live-access/data schema error cannot silently become a biological PASS.
     if result["protein_features_with_Ensembl_gene_in_source_RNA_n"]==0:
         raise SystemExit("no source protein mapped to source RNA")
