@@ -12,10 +12,14 @@ def validate_lineage(r):
     if len(r.get("fullz_sha256",""))!=64:
         raise ValueError("source fullz not sha-pinned")
     for q in layers:
-        if q.get("samples")!=50 or q.get("row_and_column_names_identical") is not True:
-            raise ValueError("no matching 50 source biopsies")
-        if type(q.get("features"))!=int or q["features"]<20:
-            raise ValueError("missing features")
+        if q.get("samples")!=50 or q.get("sample_set_identical") is not True:
+            raise ValueError("no matching 50 source biopsy identities")
+        if q.get("source_full_samples_n")!=50 or q.get("source_fullz_samples_n")!=50:
+            raise ValueError("source 50 biopsy source cardinality changed")
+        if type(q.get("features"))!=int or q["features"]<20 or q.get("source_common_feature_n")!=q["features"]:
+            raise ValueError("insufficient common exact source feature identities")
+        if q["source_common_feature_n"]>min(q.get("source_full_features_n",0),q.get("source_fullz_features_n",0)):
+            raise ValueError("feature intersection impossible")
         if q.get("both_finite_n",0)<1000:
             raise ValueError("no source quantitative coverage")
         for k in ("row_z_frac_abs_lt_1e_5","col_z_frac_abs_lt_1e_5"):
@@ -33,9 +37,13 @@ def validate_lineage(r):
         raise ValueError("forbidden source or biological claim")
     return {"schema":"hcc-stage26-lineage-postflight-v1",
        "source_immutable_SHA_verified":True,
-       "matching_T_P_PP_feature_axes_verified":True,
+       "matching_T_P_PP_feature_overlap_verified":True,
        "source_z_matrix_numeric_relation_screened":True,
        "layer_diagnostic":[{"modality":x["modality"],
+           "full_features_n":x["source_full_features_n"],
+           "fullz_features_n":x["source_fullz_features_n"],
+           "shared_features_n":x["source_common_feature_n"],
+           "all_feature_id_memberships_identical":x["feature_set_identical"],
            "source_row_z_standardization_matches_abs_1e_5_95pct":x["row_z_frac_abs_lt_1e_5"]>=0.95,
            "row_z_median_abs_residual":x["row_z_median_abs_residual"],
            "col_z_median_abs_residual":x["col_z_median_abs_residual"]}
