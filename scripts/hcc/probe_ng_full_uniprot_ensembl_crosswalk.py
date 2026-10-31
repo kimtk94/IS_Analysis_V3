@@ -91,7 +91,7 @@ def fetch_json_batch(ids):
     # Keep URLs bounded and public. No source identifiers in output artifacts.
     query="("+ " OR ".join("accession:"+v for v in ids)+") AND organism_id:9606"
     url="https://rest.uniprot.org/uniprotkb/search?"+urllib.parse.urlencode({
-        "query":query,"format":"json","fields":"accession,xref_ensembl","size":500})
+        "query":query+" AND reviewed:true","format":"json","fields":"accession,xref_ensembl","size":500})
     if len(url)>10000:raise ValueError("mapping query URL too long")
     body=None
     for attempt in range(4):
@@ -139,6 +139,9 @@ def summarize(t,pids,refs,rows,checksum):
     for g in unique.values():gene_protein_count[g]=gene_protein_count.get(g,0)+1
     unambiguous_genes=sum(v==1 for v in gene_protein_count.values())
     comparable=len(set(g for gs in mapped.values() for g in gs))
+    canonical_counts={}
+    for alias in valid:canonical_counts[alias]=canonical_counts.get(alias,0)+1
+    accession_collapse_excess=sum(n-1 for n in canonical_counts.values() if n>1)
     return {
         "schema":"hcc-ng-full-uniprot-ensembl-live-audit-v1",
         "source_git_revision":COMMIT,
@@ -156,6 +159,7 @@ def summarize(t,pids,refs,rows,checksum):
         "distinct_Ensembl_genes_corresponding_to_proteins_n":comparable,
         "one_gene_one_protein_unambiguous_genes_n":unambiguous_genes,
         "multi_gene_protein_feature_count":sum(len(gs)>1 for gs in mapped.values()),
+        "canonical_accession_isoform_collapse_excess_features_n":accession_collapse_excess,
         "unmapped_or_noncanonical_source_protein_n":len(pids)-len(mapped),
         "source_paper_comparable_gene_benchmark_n":5490,
         "source_paper_correlated_gene_benchmark_n":5481,
@@ -189,10 +193,20 @@ def main():
     t,proteins=read_ids(args.private_features)
     data=request_mapping()
     refs,rows=parse_uniprot_tsv(data)
+    # Record TSV-only provenance before optional JSON enrichment. Previous
+    # output labelled post-JSON counts as "in TSV" (a provenance bug).
+    reviewed_tsv_accessions=set(refs)
+    reviewed_tsv_ensg_n=sum(bool(gs) for gs in refs.values())
     fallback=None
     if not any(refs.values()):
         fallback=supplement_from_json(proteins,refs)
     result=summarize(t,proteins,refs,rows,hashlib.sha256(data).hexdigest())
+    result["uniprot_reviewed_entries_with_gene_ENSG_in_TSV_field_n"]=reviewed_tsv_ensg_n
+    result["uniprot_reviewed_entries_with_gene_ENSG_after_json_n"]=sum(
+        bool(gs) for key,gs in refs.items() if key in reviewed_tsv_accessions)
+    result["source_protein_accessions_found_in_uniprot_reviewed_n"]=sum(
+        canonical_protein(p) in reviewed_tsv_accessions for p in proteins)
+    result["reviewed_only_annotation_policy"]=True
     result["accession_specific_json_enrichment"]=fallback
     path=pathlib.Path(args.out)
     path.parent.mkdir(parents=True,exist_ok=True)
