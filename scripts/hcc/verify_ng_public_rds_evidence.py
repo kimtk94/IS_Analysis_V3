@@ -38,20 +38,23 @@ def verify(doc):
         dimensions={}
         for k in MARKERS:
             t=layers[k]
-            n, m=t.get("feature_count"),t.get("sample_columns")
+            n, m=t.get("feature_count"),t.get("sample_count")
             if not isinstance(n,int) or not isinstance(m,int) or n<=0 or m<=0:
                 raise ValueError("nonpositive omics matrix dimensions")
             if not t.get("numeric_matrix"):
                 raise ValueError("layer is not numeric")
             if t.get("raw_labels_or_values_exported") is not False:
                 raise ValueError("privacy guardrail absent in layer")
-            dimensions[k]={"features":n,"sample_columns":m}
-        same_n=(dimensions["T"]["sample_columns"]==dimensions["P"]["sample_columns"])
-        names_equal=o.get("transcript_protein_identical_sample_column_labels") is True
+            expected_orientation="samples_by_features" if filename=="HCCdata.rds" else "features_by_samples"
+            if t.get("orientation")!=expected_orientation:
+                raise ValueError("source RDS modality axis orientation inconsistent")
+            dimensions[k]={"features":n,"samples":m,"orientation":expected_orientation}
+        same_n=(dimensions["T"]["samples"]==dimensions["P"]["samples"])
+        names_equal=o.get("transcript_protein_identical_sample_labels") is True
         report[filename]={
             "layers":dimensions,
             "rna_protein_equal_column_counts":same_n,
-            "rna_protein_shared_column_labels_count":o.get("transcript_protein_column_label_intersection_count"),
+            "rna_protein_shared_sample_labels_count":o.get("transcript_protein_shared_sample_labels"),
             "identical_RNA_protein_column_names":names_equal,
             "same_biopsy_quantitative_join_claimed":False,
             "status":"SOURCE_GEOMETRY_ALIGNABLE_NOT_CLINICALLY_VERIFIED" if same_n and names_equal
