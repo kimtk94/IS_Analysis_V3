@@ -23,73 +23,77 @@ sha256_file <- function(path) {
   if (length(x)!=1 || !grepl("^[0-9a-f]{64} ",x)) return(NA_character_)
   sub(" .*","",x)
 }
-audit_layer <- function(x) {
-  if (!(is.matrix(x)||is.data.frame(x))) {
-    return(list(type="NOT_A_MATRIX",numeric_matrix=FALSE))
-  }
-  # Avoid exposing sample or feature values and labels.
-  nc <- ncol(x); nr <- nrow(x)
-  sample_ids <- colnames(x)
-  feature_ids <- rownames(x)
-  sample_present <- !is.null(sample_ids) && length(sample_ids)==nc && all(nzchar(sample_ids))
-  feature_present <- !is.null(feature_ids) && length(feature_ids)==nr && all(nzchar(feature_ids))
-  mat <- as.matrix(x)
-  numeric_type <- is.numeric(mat)||is.integer(mat)
-  values <- if (numeric_type) as.numeric(mat) else numeric(0)
-  result <- list(
-    type=if(is.matrix(x)) "matrix" else "data.frame",
-    feature_count=as.integer(nr), sample_columns=as.integer(nc),
+audit_layer <- function(x,sample_axis="columns") {
+  if (!(is.matrix(x)||is.data.frame(x))) return(list(type="NOT_A_MATRIX",numeric_matrix=FALSE))
+  nc<-ncol(x); nr<-nrow(x)
+  sample_count<-if(sample_axis=="rows")nr else nc
+  feature_count<-if(sample_axis=="rows")nc else nr
+  sample_ids<-if(sample_axis=="rows")rownames(x) else colnames(x)
+  feature_ids<-if(sample_axis=="rows")colnames(x) else rownames(x)
+  sample_present<-!is.null(sample_ids)&&length(sample_ids)==sample_count&&all(nzchar(sample_ids))
+  feature_present<-!is.null(feature_ids)&&length(feature_ids)==feature_count&&all(nzchar(feature_ids))
+  mat<-as.matrix(x)
+  numeric_type<-is.numeric(mat)||is.integer(mat)
+  values<-if(numeric_type)as.numeric(mat) else numeric(0)
+  list(
+    type=if(is.matrix(x))"matrix" else "data.frame",
+    orientation=if(sample_axis=="rows")"samples_by_features" else "features_by_samples",
+    native_rows=as.integer(nr), native_cols=as.integer(nc),
+    feature_count=as.integer(feature_count),sample_count=as.integer(sample_count),
     numeric_matrix=as.logical(numeric_type),
-    finite_numeric_count=if(numeric_type) as.integer(sum(is.finite(values))) else NA_integer_,
-    missing_or_nonfinite_count=if(numeric_type) as.integer(sum(!is.finite(values))) else NA_integer_,
+    finite_numeric_count=if(numeric_type)as.integer(sum(is.finite(values))) else NA_integer_,
+    missing_or_nonfinite_count=if(numeric_type)as.integer(sum(!is.finite(values))) else NA_integer_,
     feature_labels_nonempty=as.logical(feature_present),
     sample_labels_nonempty=as.logical(sample_present),
-    unique_sample_labels=if(sample_present) as.integer(length(unique(sample_ids))) else NA_integer_,
-    duplicate_sample_label_count=if(sample_present) as.integer(nc-length(unique(sample_ids))) else NA_integer_,
+    unique_sample_labels=if(sample_present)as.integer(length(unique(sample_ids))) else NA_integer_,
+    duplicate_sample_label_count=if(sample_present)as.integer(sample_count-length(unique(sample_ids))) else NA_integer_,
     raw_labels_or_values_exported=FALSE
   )
-  result
 }
 audit_object <- function(obj, name) {
-  if (name=="info.rds") {
-    return(list(status="CLINICAL_OBJECT_STRUCTURE_ONLY",
-      container_class=class(obj)[1],
-      rows=if(!is.null(dim(obj))) as.integer(nrow(obj)) else NA_integer_,
-      columns=if(!is.null(dim(obj))) as.integer(ncol(obj)) else NA_integer_,
-      event_coding_verified=FALSE,
-      raw_case_or_clinical_values_exported=FALSE))
+  if(name=="info.rds") {
+    return(list(status="CLINICAL_OBJECT_STRUCTURE_ONLY",container_class=class(obj)[1],
+      rows=if(!is.null(dim(obj)))as.integer(nrow(obj)) else NA_integer_,
+      columns=if(!is.null(dim(obj)))as.integer(ncol(obj)) else NA_integer_,
+      event_coding_verified=FALSE,raw_case_or_clinical_values_exported=FALSE))
   }
-  wanted <- c("M","CN","T","P","PP")
+  wanted<-c("M","CN","T","P","PP")
   if(!is.list(obj)||!all(wanted %in% names(obj))) {
-    return(list(status="UNRECOGNIZED_MULTIMODAL_CONTAINER",
-      multimodal_names_verified=FALSE))
+    return(list(status="UNRECOGNIZED_MULTIMODAL_CONTAINER",multimodal_names_verified=FALSE))
   }
-  layers <- setNames(lapply(wanted,function(k)audit_layer(obj[[k]])),wanted)
-  getcol <- function(k) {
-    x <- obj[[k]]
-    if(is.matrix(x)||is.data.frame(x)) colnames(x) else NULL
+  # Suter clustering HCCdata.rds is samples x reduced features (50 x [24,292,188,116,158]).
+  # HCCfull/HCCfullz are features x samples. Never confuse feature columns with cases.
+  sample_axis<-if(name=="HCCdata.rds")"rows" else "columns"
+  layers<-setNames(lapply(wanted,function(k)audit_layer(obj[[k]],sample_axis)),wanted)
+  getsamples<-function(k) {
+    x<-obj[[k]]
+    if(!(is.matrix(x)||is.data.frame(x)))return(NULL)
+    if(sample_axis=="rows")rownames(x) else colnames(x)
   }
-  tcols<-getcol("T");pcols<-getcol("P");ppcols<-getcol("PP")
-  identical_tp <- !is.null(tcols)&&!is.null(pcols)&&identical(tcols,pcols)
-  intersect_tp <- if(!is.null(tcols)&&!is.null(pcols)) length(intersect(tcols,pcols)) else NA_integer_
-  same_all <- all(vapply(wanted,function(k) {
-    v<-getcol(k)
-    !is.null(v)&&!is.null(tcols)&&identical(v,tcols)
+  tnames<-getsamples("T");pnames<-getsamples("P")
+  identical_tp<-!is.null(tnames)&&!is.null(pnames)&&identical(tnames,pnames)
+  intersect_tp<-if(!is.null(tnames)&&!is.null(pnames))length(intersect(tnames,pnames)) else NA_integer_
+  same_all<-all(vapply(wanted,function(k) {
+    v<-getsamples(k)
+    !is.null(v)&&!is.null(tnames)&&identical(v,tnames)
   },logical(1)))
-  tfeat<-rownames(obj[["T"]]); pfeat<-rownames(obj[["P"]])
-  feat_intersect <- if(!is.null(tfeat)&&!is.null(pfeat)) length(intersect(tfeat,pfeat)) else NA_integer_
+  tf<-if(sample_axis=="rows")colnames(obj[["T"]]) else rownames(obj[["T"]])
+  pf<-if(sample_axis=="rows")colnames(obj[["P"]]) else rownames(obj[["P"]])
+  shared_feat<-if(!is.null(tf)&&!is.null(pf))length(intersect(tf,pf)) else NA_integer_
   list(
     status="PUBLIC_MULTIMODAL_RDS_SHAPES_AUDITED",
+    sample_axis=sample_axis,
     layers=layers,
-    transcript_protein_identical_sample_column_labels=identical_tp,
-    transcript_protein_column_label_intersection_count=as.integer(intersect_tp),
-    all_modality_exact_sample_column_order=same_all,
-    transcript_protein_shared_feature_label_count=as.integer(feat_intersect),
+    transcript_protein_identical_sample_labels=identical_tp,
+    transcript_protein_shared_sample_labels=as.integer(intersect_tp),
+    all_modality_exact_sample_order=same_all,
+    transcript_protein_shared_feature_label_count=as.integer(shared_feat),
     biological_patient_sample_provenance_verified=FALSE,
     quantitative_assay_normalization_approved=FALSE,
     same_biopsy_rna_protein_scientific_join_verified=FALSE
   )
 }
+
 for (fname in files) {
   tmp <- tempfile(fileext=".rds")
   item <- list(source_public_git_commit=ref,filename=fname,
