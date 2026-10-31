@@ -1,5 +1,8 @@
 name: Ocular Gate B BeamA Score050 Full Raw-Count QL Sensitivity
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/ocular-gate-b-050-raw-edger.yml'
   workflow_dispatch:
 
 permissions:
