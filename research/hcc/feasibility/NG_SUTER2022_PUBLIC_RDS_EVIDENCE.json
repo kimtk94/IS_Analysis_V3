@@ -62,10 +62,10 @@
     "source_layer_sample_label_alignment": "PASS",
     "exact_RDS_sample_to_Ng_clinical_biopsy_mapping": "PASS_50_OF_50_SOURCE_IDENTITY",
     "original_quantitation_units": "NOT_YET_VERIFIED",
-    "etiology_sample_group_counts": "NOT_YET_VERIFIED",
+    "etiology_sample_group_counts": "SOURCE_REPORTED_LABELS_DEDUPLICATED_48_PATIENTS__CODEBOOK_PARTIAL",
     "same_patient_omics_scientific_join": "PARTIAL_QUANTITATIVE_MATRIX_SAMPLE_JOIN_VERIFIED__NORMALIZATION_AND_CODEBOOK_PENDING",
     "V02": "PARTIAL_SOURCE_BIOPSY_PATIENT_JOIN_VERIFIED",
-    "V04": "PARTIAL",
+    "V04": "PARTIAL_SOURCE_LABELS_RECONCILED__CLINICAL_ADJUDICATION_PENDING",
     "V12": "PARTIAL",
     "independent_replication": "NOT_YET_VERIFIED",
     "source_cohort_sha256_verified": true,
@@ -84,12 +84,44 @@
       "raw_identifiers_logged": false,
       "ephemeral_sample_label_file_removed": true,
       "scientific_limitation": "Published preprocessed matrices (Suter 2022), not raw individual RNA/PRIDE quant re-derivation; imputation, batch correction and etiology category codebook still require review."
+    },
+    "etiology_preflight": {
+      "evidence_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161332568",
+      "denominator_distinct_patients": 48,
+      "source_biopsy_match_n": 50,
+      "source_exclusive_single_groups_unreviewed": {
+        "ALD": 12,
+        "HCV": 11,
+        "NAFLD": 7,
+        "HBV": null
+      },
+      "source_mixed_groups_unreviewed": {
+        "ALD+HCV": 7,
+        "ALD+HBV": null,
+        "ALD+NAFLD": null
+      },
+      "source_any_exposure_nonexclusive": {
+        "ALD": 24,
+        "HCV": 18,
+        "HBV": 7,
+        "NAFLD": 9
+      },
+      "source_unclassified_or_other_n": null,
+      "small_cell_threshold_n": 5,
+      "suppressed_source_categories_n": 4,
+      "multi_biopsy_source_label_conflicts_n": 0,
+      "correction": "Initial audit incorrectly classified non-alcoholic liver disease as ALD. Corrected explicit ALD regex with negative lookbehind and source 48-patient rerun passes synthetic and real CI.",
+      "scientific_etiology_codebook_verified": false,
+      "source_category_counts_are_diagnoses_verified_by_clinician": false,
+      "group_comparisons_permitted": "EXPLORATORY_FEASIBILITY_ONLY",
+      "confirmatory_multiomics_interaction_ready": false
     }
   },
   "evidence_runs": [
     "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160271015",
     "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160494201",
-    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160770924"
+    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160770924",
+    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161332568"
   ],
-  "next": "Use 50 matched biopsies/48 unique patients for descriptive feasibility. Audit normalization/imputation/missingness/batch; extract etiology group counts only from source-defined one-to-many biopsy-patient mapping, avoid pseudo-replication; retain V04/V12 holds."
+  "next": "Audit processed T/P value scales, missingness/imputation and technical batch; separately quantify confounder balance for 12 ALD-only vs 11 HCV-only patient groups; source etiology codebook and independent replication before scientific V02/V04 PASS."
 }
