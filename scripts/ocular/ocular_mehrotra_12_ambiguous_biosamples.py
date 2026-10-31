@@ -18,7 +18,7 @@ def direct(url):
     return data
 def candidate_treatment(snippets):
     string=" ".join(snippets).lower()
-    dex=bool(re.search(r"\b(dexamethasone|dex-treated|dex treatment)\b",string))
+    dex=bool(re.search(r"\b(dexamethasone|dex)\b",string))
     veh=bool(re.search(r"\b(vehicle|ethanol control|untreated control)\b",string))
     return "DEX_EXPLICIT" if dex and not veh else "VEHICLE_EXPLICIT" if veh and not dex else "UNKNOWN_OR_MIXED"
 def target_body(root):
