@@ -1,5 +1,17 @@
 # OCULAR MASTER — 연구 방향 재설정 (2026-10-31)
 
+## Gate B 공통 donor 기준 검증 완료 — 55명 BeamA/scPred raw UMI 이중 재분석
+
+2026-10-31 [공통 55명 두 주석 원시 UMI/edgeR run #41206289766](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41206289766)에서 **18개 원본 한 번 집계 및 두 edgeR paired model 적합이 실제 성공**했다. 다만 해당 run의 전체 결론은 **FAIL**: 마지막 비교 스크립트가 scPred에서 발현 필터로 제거된 `ERFE`를 반드시 양쪽에 있어야 하는 유전자로 간주했기 때문이다. 유전자별 결과를 다운로드하여 ERFE는 *untestable*로 표시하는 수정 후, **[집계된 결과만 다시 비교하는 CI #41207583296](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41207583296) SUCCESS**, [artifact #13045350639](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41207583296/artifacts/13045350639) 실제 TSV/JSON 점검 완료. [최종 검증 문서](GATE_B_MATCHED55_BEAMA_TM_FIBRO_ACTUAL_VERIFIED_20261031.md)에 전체 근거와 실패·수정 기록 보존.
+
+- 실제 유효한 **동일 55 biological donor pairs**를 BeamA score≥0.75와 scPred TM_Fibro 각각 분석 (55 vs 55로 donor가 다른 비교 아님).
+- BeamA **16,051개**, scPred TM_Fibro **14,003개** 유전자 검정; 공통 **13,975개**. 두 효과 log2FC 상관 **r=0.94990493**, 방향 **12,634/13,975**, 두 모델 모두 FDR<0.05 **10,255개**.
+- **MYOC (+4.006/+3.525), TGFBI (−1.868/−1.941), MMP2 (−0.591/−0.459)** 모두 같은 방향 및 두 모델 FDR<0.05로 computational **GO**. ACTA2는 두 주석에서 +/+로 안정적이나 기존 7일 독립 TM 연구에선 −라서 *3-study universal candidate*가 아니다.
+- 16개 후보 가운데 **15개 검정 가능하고 15개 방향·FDR 모두 일치**; ERFE는 scPred TM_Fibro에서 `filterByExpr`로 제외, FDR이 없으므로 비유의 또는 반대라고 해석하지 않는다.
+- 55명 2-arm×2-label cell 합계와 source UMI QC 확인, 원시 donor count 결과는 GitHub runner 내에서만 사용 후 제거하고 artifact에는 공개 aggregate만 보존.
+
+**논문의 새로운 강점:** 3개 별도 연구에서 MYOC/TGFBI/MMP2 발현 방향을 확인했고, 내부 동일 원본 57명 confidence 재적합 및 55명 고정 alternate-label 재분석까지 수행했다. 다만 여러 cell-label 분석은 **동일 donor·세포를 공유**하므로 독립적 복제 연구 2개를 추가한 것이 아니다. 처리 후 cell classification 및 DEX/10x library 준비 완전 교란은 여전히 남는다. 이후 작업은 추가 대형 workflow 확장보다 source provenance Figure·3-study comparison·독립 기능/임상 증거 계획 정리에 우선 집중한다.
+
 ## Gate B 최신 — full raw UMI cutoff 검증 완료 / 대체 주석 확장 결정
 
 [완료된 0.50 재집계 + 18개 10x gzip QC + 57 donor edgeR run #41199532259](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41199532259) **SUCCESS**, 원시파일 SHA/CRC와 실제 분석결과 [보고서](GATE_B_BEAMA_050_075_ACTUAL_RAW_EDGER_VERIFIED_20261031.md) 확인. 같은 57명, 16,050 공통 유전자 효과 상관 **r=0.99911597**, Δ|log2FC| 중앙값 **0.0112462**, MYOC/TGFBI/MMP2 **3/3 방향/FDR 안정**, ACTA2도 동일 연구 내 기준 간 안정이나 독립 7일 TM 연구와 방향 불일치. 고효과 내부 유전자 |log2FC|≥3은 0.75 기준 **83**, 0.50 기준 **88**, **81** 교집합. 기존 83의 2개 ACP5/HLF는 threshold 경계 이탈, 신규 7개 중 5개는 이전 0.75에서 검정되지 않았다. **원 저자 63 증가·17 감소 80개의 원본 명단 비교가 아니라 우리 내부 분석의 cutoff 민감도 결과**이다.
