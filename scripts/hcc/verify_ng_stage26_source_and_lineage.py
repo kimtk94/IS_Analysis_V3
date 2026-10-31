@@ -81,9 +81,9 @@ def validate_paper(r):
        "original_published_5481_genes_exact_membership":"HOLD",
        "source_2022_original_annotation_identity":"HOLD","V03":"PARTIAL","V07":"PARTIAL"}
 def validate_overlap(r):
-    if r.get("schema")!="hcc-stage26-published-5481-vs-current-5343-gene-membership-v1":
+    if r.get("schema")!="hcc-stage26-suppfig13g-5481-vs-current-5343-gene-membership-v2":
         raise ValueError("unexpected ID membership source")
-    if r.get("original_Ng_fig2b_ENSG_n")!=5481 or r.get("current_Suter_strict_1to1_ENSG_n")!=5343:
+    if r.get("published_suppfig13g_2022_ENSG_n")!=5481 or r.get("current_Suter_strict_1to1_ENSG_n")!=5343:
         raise ValueError("original/current gene cardinality changed")
     n=r.get("exact_Ensembl_gene_ID_overlap_n")
     u=r.get("original_2022_genes_not_in_current_strict_n")
@@ -97,14 +97,19 @@ def validate_overlap(r):
         "original_ng_2022_expression_RSEM_and_normal_reference_reproduced",
         "2022_Ensembl_vs_current_UniProt_mapping_versions_identical",
         "biological_significance_or_replication_tested",
-        "patient_feature_or_original_gene_ID_lists_exported"):
+        "patient_feature_or_original_gene_ID_lists_exported",
+        "original_Figure2b_5481_gene_membership_verified"):
         if r.get(key) is not False:raise ValueError("scientific claim overreach: "+key)
-    return {"schema":"hcc-stage26-published-gene-identity-postflight-v1",
+    if r.get("source_sheet_label")!="SuppFig13g" or r.get("suppfig13g_gene_list_may_differ_from_fig2b") is not True:
+        raise ValueError("original Figure2b gene universe must remain unverified")
+    return {"schema":"hcc-stage26-suppfig13g-gene-identity-postflight-v2",
         "source_gene_membership_intersection_audited":"PASS_AGGREGATE_ONLY",
         "published_gene_n":5481,"current_strict_gene_n":5343,
         "shared_gene_n":n,"original_only_gene_n":u,
         "current_only_gene_n":v,
-        "published_source_file_semantics_reviewer_verified":False,
+        "source_sheet_label":"SuppFig13g",
+        "published_source_file_semantics_reviewer_verified":True,
+        "original_Figure2b_5481_gene_set_verified":False,
         "original_Ng_gene_correlation_calculation_reproduced":False,
         "V03":"PARTIAL","V07":"PARTIAL"}
 
