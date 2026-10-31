@@ -1,9 +1,5 @@
 name: Ocular P5l Published Discordances Pool-Unit Audit
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5l_discordant_poolunit.py'
-      - '.github/workflows/ocular-p5l-discordant-poolunit.yml'
   workflow_dispatch:
 
 permissions:
