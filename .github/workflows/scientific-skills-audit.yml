@@ -1,0 +1,61 @@
+name: Scientific Agent Skills - pinned read-only audit
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/scientific-skills-audit.yml'
+      - 'docs/research/scientific_skills_integration.md'
+permissions:
+  contents: read
+jobs:
+  skills-audit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - research: IS
+            skill: database-lookup
+          - research: glaucoma
+            skill: ontology-term-resolution
+          - research: HCC
+            skill: depmap
+          - research: radiomics
+            skill: imaging-data-commons
+    steps:
+      - name: Checkout pinned upstream skills (never execute upstream code)
+        uses: actions/checkout@v4
+        with:
+          repository: K-Dense-AI/scientific-agent-skills
+          ref: 5f2bc0341354fd5590aef76a533ada1e1e5b4e62
+          path: upstream
+          persist-credentials: false
+      - name: Audit selected skill metadata
+        shell: bash
+        env:
+          RESEARCH: ${{ matrix.research }}
+          SKILL: ${{ matrix.skill }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib
+          name = os.environ['SKILL']
+          p = pathlib.Path('upstream/skills') / name / 'SKILL.md'
+          if not p.is_file():
+              raise SystemExit(f'MISSING_SKILL: {p}')
+          data = p.read_bytes()
+          if not data.strip() or len(data) > 2_000_000:
+              raise SystemExit('INVALID_SKILL_CONTENT')
+          result = {'research': os.environ['RESEARCH'], 'skill': name,
+                    'upstream_sha': '5f2bc0341354fd5590aef76a533ada1e1e5b4e62',
+                    'sha256': hashlib.sha256(data).hexdigest(),
+                    'bytes': len(data), 'status': 'PASS_METADATA_ONLY'}
+          out = pathlib.Path('audit')
+          out.mkdir(exist_ok=True)
+          (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+          print(json.dumps(result))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scientific-skill-${{ matrix.research }}
+          path: audit/result.json
+          retention-days: 30
