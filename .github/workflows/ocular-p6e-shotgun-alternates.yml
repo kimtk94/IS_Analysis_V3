@@ -1,8 +1,5 @@
 name: Ocular P6e Shotgun Alternative Archive Link Gate
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-p6e-shotgun-alternates.yml'
   workflow_dispatch:
 
 permissions:
