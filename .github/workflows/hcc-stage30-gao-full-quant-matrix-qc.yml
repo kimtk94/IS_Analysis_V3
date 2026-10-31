@@ -1,0 +1,39 @@
+name: HCC Stage30 Gao PDC Full Quant Numerical QC
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-full-quant-matrix-qc.yml'
+      - 'scripts/hcc/audit_stage30_gao_direct_quant_full_matrix.py'
+      - 'tests/test_hcc_stage30_full_quant_qc.py'
+
+permissions:
+  contents: read
+
+jobs:
+  full-public-PDC-198-199-numerical-QC:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test complete matrix numerical shape and forbid premature biological case join
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_full_quant_qc.py' -v
+      - name: Audit PDC198/PDC199 complete public log2 ratio matrix in memory with 48MiB cap
+        run: |
+          python scripts/hcc/audit_stage30_gao_direct_quant_full_matrix.py \
+            --out results/hcc/stage30/full_direct_quant_numeric_qc.json \
+            --review-out results/hcc/stage30/full_direct_quant_numeric_qc_review.json
+      - name: Upload anonymized source gene, sample and missingness aggregates only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-PDC-full-quant-matrix-anonymized-QC
+          path: |
+            results/hcc/stage30/full_direct_quant_numeric_qc.json
+            results/hcc/stage30/full_direct_quant_numeric_qc_review.json
+          if-no-files-found: error
+          retention-days: 30
