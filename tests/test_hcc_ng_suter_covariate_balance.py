@@ -44,6 +44,16 @@ class TestCovariate(unittest.TestCase):
         self.assertEqual(out["groups"]["ALD"]["child_pugh"]["present_n"],12)
         self.assertFalse(out["candidate_baseline_adjustment_ready"])
 
+    def test_child_pugh_low_coverage_prevents_misleading_smd(self):
+        a,b,c=synthetic()
+        c["child"]=9
+        for i,row in enumerate(b):
+            row[9]="A" if i<8 or i>=48 else ("B" if 12<=i<15 else "")
+        report=audit(a,b,c)
+        self.assertTrue(report["ChildPugh_effect_smd_withheld_for_low_coverage"])
+        self.assertIsNone(report["absolute_standardized_mean_difference"]["ChildPugh_A_vs_BC"])
+        self.assertFalse(report["candidate_baseline_adjustment_ready"])
+
     def test_missing_age_not_fabricated(self):
         a,b,c=synthetic()
         c.pop("age")
