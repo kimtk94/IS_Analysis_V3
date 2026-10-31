@@ -9,6 +9,8 @@ on:
       - 'scripts/hcc/probe_ng_stage26_paper_genes.py'
       - 'scripts/hcc/verify_ng_stage26_source_and_lineage.py'
       - 'tests/test_hcc_stage26_original_gene_lineage.py'
+      - 'scripts/hcc/compare_ng_stage26_gene_membership.py'
+      - 'scripts/hcc/probe_ng_full_uniprot_ensembl_crosswalk.py'
 
 permissions:
   contents: read
@@ -77,3 +79,66 @@ jobs:
             results/hcc/feasibility/stage26_full_fullz_review.json
           if-no-files-found: warn
           retention-days: 30
+
+  original-5481-vs-strict-5343-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test membership arithmetic and no original-paper reproduction shortcut
+        run: python -m unittest discover -s tests -p 'test_hcc_stage26_original_gene_lineage.py' -v
+      - name: Extract publisher Figure2B 5481 ENSG identities after Figure2A CNA 15272 cross-check
+        run: |
+          python scripts/hcc/probe_ng_stage26_paper_genes.py \
+            --private-gene-ids-out "${{ runner.temp }}/ng2022-fig2b-original-private.txt" \
+            --out results/hcc/feasibility/stage26_fig2_source_integrity.json
+      - name: Get immutable original 20356 RNA and 5585 P source features in private temp only
+        env:
+          NG_PRIVATE_FEATURE_IDS_OUT: ${{ runner.temp }}/suter-stage26-source-feature-ids.txt
+        run: |
+          Rscript scripts/hcc/audit_ng_full_feature_namespace.R \
+            results/hcc/feasibility/stage26_full_feature_source.json
+      - name: Review current UniProt mapping and write only strict 5343 pairs to runner-private temp
+        run: |
+          python scripts/hcc/probe_ng_full_uniprot_ensembl_crosswalk.py \
+            --private-features "${{ runner.temp }}/suter-stage26-source-feature-ids.txt" \
+            --private-strict-pairs-out "${{ runner.temp }}/suter-stage26-current-strict-pairs.txt" \
+            --out results/hcc/feasibility/stage26_current_uniprot_review.json
+      - name: Compare exact original and current ENSG identity intersection without exporting names
+        run: |
+          python scripts/hcc/compare_ng_stage26_gene_membership.py \
+            --published-private "${{ runner.temp }}/ng2022-fig2b-original-private.txt" \
+            --current-private "${{ runner.temp }}/suter-stage26-current-strict-pairs.txt" \
+            --out results/hcc/feasibility/stage26_original_vs_current_membership.json
+      - name: Fail-closed exact gene membership arithmetic and scientific status
+        run: |
+          python scripts/hcc/verify_ng_stage26_source_and_lineage.py \
+            --kind overlap \
+            --input results/hcc/feasibility/stage26_original_vs_current_membership.json \
+            --out results/hcc/feasibility/stage26_original_membership_review.json
+      - name: Delete original paper gene lists and all source identifiers
+        if: always()
+        run: |
+          rm -f "${{ runner.temp }}/ng2022-fig2b-original-private.txt" \
+            "${{ runner.temp }}/suter-stage26-source-feature-ids.txt" \
+            "${{ runner.temp }}/suter-stage26-current-strict-pairs.txt"
+      - name: Publish aggregate-only original 5481 vs current 5343 matched IDs
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage26-original-5481-vs-current-5343-gene-identity
+          path: |
+            results/hcc/feasibility/stage26_fig2_source_integrity.json
+            results/hcc/feasibility/stage26_full_feature_source.json
+            results/hcc/feasibility/stage26_current_uniprot_review.json
+            results/hcc/feasibility/stage26_original_vs_current_membership.json
+            results/hcc/feasibility/stage26_original_membership_review.json
+          retention-days: 30
+          if-no-files-found: error
