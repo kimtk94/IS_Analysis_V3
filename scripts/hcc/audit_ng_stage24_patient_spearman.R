@@ -6,7 +6,7 @@
 # only 48 biological patients. Multiple biopsies are explicitly sensitivity QC.
 
 args<-commandArgs(trailingOnly=TRUE)
-if(length(args)!=3L)stop("usage: Rscript audit_ng_stage24_patient_spearman.R PRIVATE_PAIRS PRIVATE_PATIENT_INDEX OUTPUT_JSON")
+if(!(length(args)%in%c(3L,4L)))stop("usage: Rscript audit_ng_stage24_patient_spearman.R PRIVATE_PAIRS PRIVATE_PATIENT_INDEX OUTPUT_JSON [STAGE25_INFLUENCE_JSON]")
 pairpath<-args[[1]];patientpath<-args[[2]];out<-args[[3]]
 if(!file.exists(pairpath)||!file.exists(patientpath))stop("missing ephemeral source mapping")
 pairs<-read.delim(pairpath,sep="\t",header=FALSE,quote="",stringsAsFactors=FALSE,
@@ -117,3 +117,60 @@ writeLines(line,out,useBytes=TRUE)
 cat(line,"\n")
 if(s48$finite_feature_n<5000L||s46$finite_feature_n<5000L)
   stop("too few informative mapped pairs for descriptive QC")
+
+# Stage25: optional leave-one-independent-patient-out and cluster/bootstrap
+# uncertainty. This is technical stability evidence, not a clinical CI or
+# claim about individual genes. All resampling is by *patient*, never biopsy.
+if(length(args)==4L){
+  influence_out<-args[[4]]
+  baseline<-s48$median
+  loo<-vapply(seq_len(48L),function(j){
+    keep<-seq_len(48L)!=j
+    v<-row_spearman(rna48[,keep,drop=FALSE],prot48[,keep,drop=FALSE])
+    if(sum(is.finite(v))<5000L)stop("too few defined LOO rho")
+    median(v,na.rm=TRUE)
+  },numeric(1))
+  if(anyNA(loo)||any(!is.finite(loo)))stop("nonfinite leave-one-out rho")
+  set.seed(20261031L)
+  B<-80L
+  boots<-vapply(seq_len(B),function(b){
+    indexes<-sample.int(48L,48L,replace=TRUE)
+    v<-row_spearman(rna48[,indexes,drop=FALSE],prot48[,indexes,drop=FALSE])
+    if(sum(is.finite(v))<5000L)stop("too few defined bootstrap rho")
+    median(v,na.rm=TRUE)
+  },numeric(1))
+  if(anyNA(boots)||any(!is.finite(boots)))stop("nonfinite bootstrap median")
+  qlo<-unname(quantile(boots,.025));qhi<-unname(quantile(boots,.975))
+  sorted<-sort(loo)
+  ldelta<-max(abs(loo-baseline))
+  # Flag is descriptive risk threshold; never infer gene-level confidence
+  # from a stable cohort-wide median.
+  influence_line<-paste0("{",
+    '"schema":"hcc-ng-stage25-patient-influence-v1",',
+    '"source_RDS_sha256":"',expected,'",',
+    '"mapping_scope":"source_RNA_x_current_UniProt_reviewed_strict_one_to_one",',
+    '"strict_gene_protein_pair_n":',nrow(pairs),",",
+    '"patient_n":48,',
+    '"leave_one_patient_out_iterations":48,',
+    '"primary_median_spearman_rho":',num(baseline),",",
+    '"leave_one_out_median_min":',num(min(loo)),",",
+    '"leave_one_out_median_max":',num(max(loo)),",",
+    '"leave_one_out_median_q05":',num(unname(quantile(loo,.05))),",",
+    '"leave_one_out_median_q95":',num(unname(quantile(loo,.95))),",",
+    '"leave_one_out_max_absolute_shift":',num(ldelta),",",
+    '"leave_one_out_max_shift_gt_0_05_review_flag":',tolower(as.character(ldelta>0.05)),",",
+    '"patient_bootstrap_resamples":',B,",",
+    '"patient_bootstrap_seed":20261031,',
+    '"patient_bootstrap_median_rho_q025":',num(qlo),",",
+    '"patient_bootstrap_median_rho_q975":',num(qhi),",",
+    '"bootstrap_interval_interpretation":"empirical_patient_resampling_descriptive_only",',
+    '"technical_preprocessing_robustness_proven":false,',
+    '"original_ng_correlation_reproduced":false,',
+    '"gene_level_FDR_or_per_gene_CI_calculated":false,',
+    '"clinical_or_causal_validity_proven":false,',
+    '"patient_gene_rho_or_expression_values_exported":false',
+    "}")
+  dir.create(dirname(influence_out),recursive=TRUE,showWarnings=FALSE)
+  writeLines(influence_line,influence_out,useBytes=TRUE)
+  cat(influence_line,"\n")
+}
