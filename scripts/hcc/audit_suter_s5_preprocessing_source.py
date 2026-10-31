@@ -72,12 +72,12 @@ def layer_method_keyword_sections(text):
     and keep provenance in the official final-S5 PDF. Derived flags are hints
     that still require a researcher's source-method interpretation.
     """
-    flat=re.sub(r"\\s+"," ",text)
+    flat=re.sub(r"\s+"," ",text)
     headings=[
-      ("transcriptome",r"for\\s+transcriptome\\s+data[^.]{0,70}"),
-      ("proteome",r"for\\s+proteome\\s+data[^.]{0,70}"),
-      ("phosphoproteome",r"for\\s+phosphoproteome\\s+data[^.]{0,70}"),
-      ("cna",r"(?:the\\s+)?CNA\\s+data[^.]{0,80}"),
+      ("transcriptome",r"for\s+transcriptome\s+data[^.]{0,70}"),
+      ("proteome",r"for\s+proteome\s+data[^.]{0,70}"),
+      ("phosphoproteome",r"for\s+phosphoproteome\s+data[^.]{0,70}"),
+      ("cna",r"(?:the\s+)?CNA\s+data[^.]{0,80}"),
     ]
     found=[]
     for name,regex in headings:
@@ -92,17 +92,17 @@ def layer_method_keyword_sections(text):
           "section_heading_detected":True,
           "segment_character_count":len(segment),
           "upper_quartile_mentioned":bool(re.search(r"upper[- ]quartile",segment,re.I)),
-          "normalization_to_1000_mentioned":bool(re.search(r"\\b1000\\b",segment,re.I)),
-          "log2_mentioned":bool(re.search(r"log\\s*2",segment,re.I)),
+          "normalization_to_1000_mentioned":bool(re.search(r"\b1000\b",segment,re.I)),
+          "log2_mentioned":bool(re.search(r"log\s*2",segment,re.I)),
           "median_subtraction_mentioned":bool(re.search(r"median.{0,30}subtract|subtract.{0,30}median",segment,re.I)),
-          "half_sample_detection_filter_mentioned":bool(re.search(r"50\\s*%|half.{0,15}sample",segment,re.I)),
+          "half_sample_detection_filter_mentioned":bool(re.search(r"50\s*%|half.{0,15}sample",segment,re.I)),
           "imputation_mentioned":bool(re.search(r"imput",segment,re.I)),
           "clustering_only_qualifier_mentioned":bool(re.search(
-              r"for\\s+clustering\\s+only|only\\s+for\\s+clustering",segment,re.I)),
+              r"for\s+clustering\s+only|only\s+for\s+clustering",segment,re.I)),
           "unimputed_differential_expression_mentioned":bool(re.search(
               r"unimputed.{0,60}differential|differential.{0,100}unimputed",segment,re.I)),
           "batch_correction_mentioned":bool(re.search(r"batch.{0,30}correct",segment,re.I)),
-          "edgeR_mentioned":bool(re.search(r"\\bedgeR\\b",segment,re.I)),
+          "edgeR_mentioned":bool(re.search(r"\bedgeR\b",segment,re.I)),
         }
     return result
 
