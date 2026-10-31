@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stage26 Ng 2022 publisher xlsx Figure2/Source Data gene-set provenance probe.
+"""Stage26 Ng 2022 publisher Source Data supplementary gene-ID provenance probe.
 
 Only aggregate source file SHA / sheet row counts and ENSG-like evidence.
 No patient, gene, protein IDs, row-level values or Excel payloads in artifact.
@@ -19,7 +19,9 @@ import zipfile
 
 BASE="https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-022-29960-8/MediaObjects/"
 PMC="https://pmc.ncbi.nlm.nih.gov/articles/PMC9068765/bin/"
-# Figure 2 has downloadable Source Data XLSX; Ng Supplementary Data 4 is
+# The published Figure 2 has Source Data; SuppFig13f/g also contain matching ID
+# cardinalities but must NOT be mislabeled as exact Fig2A/Fig2B universes.
+# Ng Supplementary Data 4 is
 # specifically referenced in main text for gene-correlation pathways.
 FILES={
     "publisher_Source_Data":"41467_2022_29960_MOESM19_ESM.xlsx",
@@ -141,9 +143,8 @@ def workbook_profile(payload, private_candidate_out=None):
         if figure2_ids is None or not cna_15272_corrob:
             raise ValueError("the original 5481 IDs cannot be anchored to both figure panels")
         # Prevent false Figure-2 claims from coincidental 5481 row counts.
-        if not re.fullmatch(r"fig(?:ure)?[ _.-]*2[ _.-]*b",sheet_names.get(28,""),re.I) or not re.fullmatch(
-             r"fig(?:ure)?[ _.-]*2[ _.-]*a",sheet_names.get(27,""),re.I):
-            raise ValueError("published sheet labels are not verified Figure2A/2B")
+        if sheet_names.get(28)!="SuppFig13g" or sheet_names.get(27)!="SuppFig13f":
+            raise ValueError("expected published Supplementary Figure 13 f/g source labels absent")
         # The output is STRICTLY runner temporary and is NEVER an artifact.
         destination=pathlib.Path(private_candidate_out)
         destination.parent.mkdir(parents=True,exist_ok=True)
@@ -155,6 +156,9 @@ def probe(private_genes_out=None):
        "checked_utc":dt.datetime.now(dt.timezone.utc).isoformat(),
        "paper_doi":"10.1038/s41467-022-29960-8",
        "source_5481_correlation_benchmark":5481,
+       "published_5481_ENSG_candidate_sheet_label":"SuppFig13g",
+       "published_15272_ENSG_candidate_sheet_label":"SuppFig13f",
+       "published_5481_suppfig13g_ids_are_exact_Fig2b_correlation_universe":False,
        "source_5490_comparable_gene_benchmark":5490,
        "sources":{},
        "exact_published_5481_gene_membership_verified":False,
