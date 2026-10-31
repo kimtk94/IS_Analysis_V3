@@ -1,9 +1,5 @@
 name: Ocular P5h Public IOVS Table4 Reference Verification
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5h_supplement_catalog.py'
-      - '.github/workflows/ocular-p5h-supplement-catalog.yml'
   workflow_dispatch:
 
 permissions:

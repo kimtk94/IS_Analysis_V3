@@ -1,11 +1,6 @@
 name: Ocular P5j Exact Published TM DEG Crosswalk
 
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5j_official_TM_overlap.py'
-      - 'scripts/ocular/ocular_p5g_candidate_screen.py'
-      - '.github/workflows/ocular-p5j-published-overlap.yml'
   workflow_dispatch:
 
 permissions:

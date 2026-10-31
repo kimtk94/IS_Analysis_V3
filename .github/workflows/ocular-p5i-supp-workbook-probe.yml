@@ -1,9 +1,5 @@
 name: Ocular P5i Official IOVS 2026 Supplement Workbook Probe
 on:
-  pull_request:
-    paths:
-      - 'scripts/ocular/ocular_p5i_supp_workbook_probe.py'
-      - '.github/workflows/ocular-p5i-supp-workbook-probe.yml'
   workflow_dispatch:
 
 permissions:
