@@ -3,7 +3,7 @@ import copy,pathlib,sys,unittest
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]/"scripts"/"hcc"))
 from audit_stage27_public_code_lineage import summarize
 from audit_ng_stage27_original_figure2_source import header_type,SHEETS
-from verify_stage27_lineage import code_review,ranks_review,COMMIT,FULL,FULLZ
+from verify_stage27_lineage import code_review,ranks_review,sample_review,COMMIT,FULL,FULLZ
 
 def synthetic_rank():
     layers=[]
@@ -32,6 +32,31 @@ def synthetic_rank():
        "original_Ng_2022_tumor_normal_relative_quantitation_reproduced":False,
        "gene_level_FDR_or_biological_significance_tested":False,
        "per_feature_rhos_or_patient_identifiers_exported":False}
+def synthetic_sample_match():
+    layers=[{
+       "modality":k,"features_in_similarity_n":100,"samples_n":50,
+       "diagonal_wins_n":50,"diagonal_wins_fraction":1.0,
+       "best_matches_form_one_to_one_permutation":True,
+       "same_label_similarity_median":1.0,
+       "same_label_similarity_min":0.9,
+       "same_label_similarity_max":1.1,
+       "best_offdiagonal_allowed_similarity_median":1.0,
+       "best_similarity_gt_0_7_fraction":1.0,
+       "no_sample_or_feature_identifiers_exported":True}
+       for k in ("M","CN","T","P","PP")]
+    return {
+        "schema":"hcc-stage27b-paired-source-sample-match-v1",
+        "source_commit":COMMIT,
+        "source_full_sha256":FULL,
+        "source_fullz_sha256":FULLZ,
+        "synthetic_identity_permutation_controls_passed":True,
+        "layer_metrics":layers,
+        "reordering_feature_or_sample_identifiers_proven_as_cause":False,
+        "exact_original_preprocessing_code_reproduced":False,
+        "biological_or_clinical_significance_proven":False,
+        "all_source_patient_and_feature_identifiers_exported":False,
+    }
+
 class TestStage27(unittest.TestCase):
     def test_published_source_header_redaction(self):
         self.assertEqual(header_type("ENSG00000141510"),"ENS_IDENTIFIER_REDACTED")
@@ -39,6 +64,16 @@ class TestStage27(unittest.TestCase):
         self.assertEqual(header_type("P-value"),"SIGNIFICANCE_HEADER")
         self.assertEqual(header_type("TP53"),"UNCLASSIFIED_REDACTED")
         self.assertEqual(SHEETS,{"Fig2a","Fig2b","SuppFig13f","SuppFig13g"})
+    def test_sample_alignment_contract_stays_partial(self):
+        self.assertEqual(sample_review(synthetic_sample_match())["V03"],"PARTIAL")
+    def test_sample_alignment_identity_guard(self):
+        x=synthetic_sample_match()
+        x["source_fullz_sha256"]="0"*64
+        with self.assertRaises(ValueError):sample_review(x)
+    def test_sample_alignment_exposure_guard(self):
+        x=synthetic_sample_match()
+        x["layer_metrics"][2]["no_sample_or_feature_identifiers_exported"]=False
+        with self.assertRaises(ValueError):sample_review(x)
     def test_raw_code_loader_is_not_generator(self):
         s=summarize('HCCfullz<-readRDS("HCCinputs/HCCfullz.rds")\n')
         self.assertTrue(s["HCCfullz_consumed_in_clustering_script"])
