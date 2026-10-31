@@ -217,6 +217,34 @@
       "biological_claim_ready": false,
       "raw_patient_identifiers_or_values_logged": false,
       "note": "Numbers refer to complete-case eligibility under simple completeness/numeric checks. They are not powered patient strata or clinical outcome events. All 0/1 counts are uninterpreted raw codes."
+    },
+    "etiology_codebook_preflight": {
+      "source_sha256_pinned": true,
+      "matched_protein_to_clinical_rows": 152,
+      "source": {
+        "HBV_related_col": "H",
+        "HCV_related_col": "M",
+        "underlying_liver_disease_col": "P"
+      },
+      "HBV_related_numeric_codes": {
+        "code_1": 131,
+        "code_0": 12,
+        "missing_or_non_numeric": 9
+      },
+      "HCV_related_numeric_codes": {
+        "code_1": 1,
+        "code_0": 137,
+        "missing_or_non_numeric": 14
+      },
+      "joint_two_markers_numeric_n": 132,
+      "raw_liver_disease_field_literal_groups": "NONE_RECOGNIZED_152_OF_152",
+      "interpretation": "Both fields have exclusively binary 0/1 among numeric records but positivity direction is not source-codebook-confirmed. The HCV code=1 count is ONE, so IF code=1 means positive, HCV-vs-HBV HCC proteotranscriptomic comparisons would be unpowered/unsuitable in this cohort. This is conditional, not a validated HCV patient count.",
+      "source_specific_multi_etiology_comparison": "HOLD_HIGH_IMBALANCE",
+      "clinical_codebook_0_1_mapping_confirmed": false,
+      "actual_etiology_patient_groups_confirmed": false,
+      "meta_analysis_eligible": false,
+      "independent_rna_protein_expression_join": false,
+      "original_xlsx_or_patient_ids_logged": false
     }
   },
   "transcriptome_source": {
@@ -235,7 +263,8 @@
     "clinical_sample_label_structural_join": "PASS_STRUCTURE",
     "clinical_covariate_completeness": "PARTIAL_SCHEMA_QC",
     "rfs_os_endpoint_codebook": "HOLD",
-    "clinical_complete_case_prescreen": "PASS_FORMAT_ONLY"
+    "clinical_complete_case_prescreen": "PASS_FORMAT_ONLY",
+    "etiology_group_sufficiency": "HOLD_CODEBOOK_PENDING_PROBABLE_IMBALANCE"
   },
   "evidence_runs": {
     "original_xlsx": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41075092093",
@@ -248,7 +277,8 @@
     "clinical_same_row_integrity": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41091622662",
     "clinical_covariate_completeness": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092590299",
     "clinical_candidate_endpoint_qc": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092972318",
-    "clinical_complete_case_prescreen": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155499877"
+    "clinical_complete_case_prescreen": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155499877",
+    "etiology_codebook_preflight": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155985179"
   },
   "restrictions": [
     "Do not upload original copyrighted xlsx to public GitHub",
