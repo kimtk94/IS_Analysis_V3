@@ -40,7 +40,7 @@ audit_layer <- function(x,sample_axis="columns") {
     round(as.numeric(quantile(finite_values,c(.05,.25,.5,.75,.95),names=FALSE)),4),
     c("p05","p25","p50","p75","p95"))) else list()
   feature_patterns<-if(feature_present)c(
-    ensembl_gene=sum(grepl("^ENSG[0-9]+(?:\\.[0-9]+)?$",feature_ids)),
+    ensembl_gene=sum(grepl("^ENSG[0-9]+(?:\\.[0-9]+)?$",feature_ids,perl=TRUE)),
     uniprot_swissprot=sum(grepl("^[A-NR-Z][0-9][A-Z0-9]{3}[0-9]$",feature_ids)),
     nonempty=sum(nzchar(feature_ids))
   ) else c(ensembl_gene=0,uniprot_swissprot=0,nonempty=0)
