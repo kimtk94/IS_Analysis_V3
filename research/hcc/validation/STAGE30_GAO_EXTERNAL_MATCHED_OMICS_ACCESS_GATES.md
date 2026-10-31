@@ -29,11 +29,12 @@ Created: 2026-10-31. **This is an access and scientific validation protocol, not
 
 Create independent, small **read-only** GitHub Actions jobs that report public source study/version/aliquot counts and access failures WITHOUT exporting patient IDs or quantitation. Do not download large raw mass spectra until a valid quantitation path, test matrices and biospecimen manifest are confirmed. If import/public API errors happen, distinguish API schema/network failures from true biological missingness; only conditional successful access may transition G30-A/B/C. Pin source metadata artifact digest and record retrieval timestamp. Once manifests/materialized quantitation confirmed, download to controlled Drive or research server with encrypted per-patient material (not public GitHub artifacts), and publish only aggregate QC.
 
-## Current status
+## Current status — updated from actual source CI 2026-10-31
 
-- `G30-A`: **PUBLIC_SOURCE_CATALOG_KNOWN**, live API counts/version not yet independently returned in this stage.
-- `G30-B`: **HOLD** numeric PDC gene×patient/aliquot matrix.
-- `G30-C`: **HOLD** actual OEP000321 RNA file, project page access can be unreliable.
-- `G30-D`: **STOP_INFERENCE** until actual matched cohort join is validated.
+- `G30-A`: **GO_CATALOG_TECHNICAL**. Official PDC GraphQL verified both study IDs PDC000198/199, each with **171 cases and 331 aliquots** in current catalog metadata. The Gao original article's **159 enrolled patients** is NOT the same denominator; technical QC needed. CI #41191160746 **3/3 SUCCESS**. PDC Protein Assembly actual listings 198=**8 files (3 TSV/5 TXT)**, 199=**9 (4 TSV/5 TXT)**, each with source MD5 metadata; CI #41191530087 SUCCESS.
+- `G30-B`: **PARTIAL_FILE_CONTENT_ACCESS; HOLD_FULL_MATRIX**. Official PDC signed download URL HTTP 206 Range only, with no permanent signed link: actual 111-column TSV source headers, 520/550 preview numeric cells in each study, and phospho 334-column tables; CI #41191748823 SUCCESS. Cross-assay file header comparison CI #41192003264 SUCCESS shows up to **331 shared source header tokens** across two studies and an identically hashed 111-column header. These are numeric **source-prefix** observations, not validated full gene×aliquot quantitative matrices; no phenotype/normalisation proof.
+- `G30-C`: **HOLD_NODE_RNA**. NODE OEP000321 returned HTTP 200 landing shell but the response did not contain the study ID/HCC actual project data; no RNA expression matrix, sample identifiers or permanent source digest verified.
+- `G30-D`: **STOP_INFERENCE** pending true same-case RNA + protein file/aliquot join. Independent PDC official `biospecimenPerStudy` protein/phospho **metadata-only** case/sample/aliquot overlap check in CI #41192179017 (pending as of this revision). Even source PDC Protein↔Phospho matched IDs are NOT independent RNA↔Protein case data.
 - `G30-E/F`: **NOT_STARTED**, no independent scientific, etiologic, prognostic, or clinical PASS.
-- Scientific/operational status across HCC project V03/V07 PARTIAL, PR #251/#252 DRAFT. Retain original Ng effect-vector result as an internal positive control, not novelty.
+- This project’s V02/V03/V07 remain PARTIAL; Stage29 source Ng Figure2b 5253-gene rho-vector Spearman 0.972556921 within the same Ng/Suter cohort is a *technical positive control*, not an independent validation. PR #251 / #252 remain Draft. See decisions D-045 through D-050.
+
