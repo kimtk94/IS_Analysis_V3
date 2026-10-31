@@ -45,7 +45,7 @@ jobs:
           SKILL: ${{ matrix.skill }}
         run: |
           python3 - <<'PY'
-          import hashlib, json, os, pathlib
+          import hashlib, json, os, pathlib, re
           name = os.environ['SKILL']
           p = pathlib.Path('upstream/skills') / name / 'SKILL.md'
           if not p.is_file():
@@ -53,10 +53,22 @@ jobs:
           data = p.read_bytes()
           if not data.strip() or len(data) > 2_000_000:
               raise SystemExit('INVALID_SKILL_CONTENT')
+          text = data.decode('utf-8')
+          match = re.match(r'\\A---\\s*\\n(.*?)\\n---\\s*\\n', text, re.S)
+          if not match:
+              raise SystemExit('MISSING_SKILL_FRONTMATTER')
+          header = match.group(1)
+          name_match = re.search(r'^name:\\s*[\"\\\']?([a-z0-9-]+)', header, re.M)
+          if not name_match or name_match.group(1) != name:
+              raise SystemExit('SKILL_NAME_MISMATCH')
+          if not re.search(r'^description:\\s*\\S', header, re.M):
+              raise SystemExit('MISSING_SKILL_DESCRIPTION')
+          if not re.search(r'^license:\\s*\\S', header, re.M):
+              raise SystemExit('MISSING_SKILL_LICENSE')
           result = {'research': os.environ['RESEARCH'], 'skill': name,
                     'upstream_sha': '5f2bc0341354fd5590aef76a533ada1e1e5b4e62',
                     'sha256': hashlib.sha256(data).hexdigest(),
-                    'bytes': len(data), 'status': 'PASS_METADATA_ONLY'}
+                    'bytes': len(data), 'status': 'PASS_SKILL_STRUCTURE_ONLY'}
           out = pathlib.Path('audit')
           out.mkdir(exist_ok=True)
           (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
