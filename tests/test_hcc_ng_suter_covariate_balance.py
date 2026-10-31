@@ -29,7 +29,19 @@ class TestCovariate(unittest.TestCase):
         self.assertEqual(report["groups"]["HCV"]["age"]["median"],70.0)
         self.assertEqual(report["ALD_minus_HCV_unadjusted_age_median_years"],-10.0)
         self.assertFalse(report["full_differential_omics_GO"])
+        self.assertAlmostEqual(report["absolute_standardized_mean_difference"]["male_sex"],2.121,places=3)
+        self.assertAlmostEqual(report["absolute_standardized_mean_difference"]["BCLC_early_0_A"],2.121,places=3)
+        self.assertTrue(report["imbalance_attention_threshold_0_2"]["BCLC_early_0_A"])
         self.assertNotIn("patient0",str(report).lower())
+
+    def test_real_child_column_is_recognized_but_no_treatment_assumption(self):
+        a,b,c=synthetic()
+        c["child"]=9
+        for row in b:row[9]="A"
+        out=audit(a,b,c)
+        self.assertTrue(out["source_child_pugh_header_detected"])
+        self.assertEqual(out["groups"]["ALD"]["child_pugh"]["present_n"],12)
+        self.assertFalse(out["candidate_baseline_adjustment_ready"])
 
     def test_missing_age_not_fabricated(self):
         a,b,c=synthetic()
