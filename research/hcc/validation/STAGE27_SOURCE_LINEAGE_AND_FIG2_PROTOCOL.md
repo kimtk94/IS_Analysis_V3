@@ -36,3 +36,18 @@ Actual workflows:
 - Stage27 code and rank runs: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185391498 ; updated three-job workflow https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185474022
 
 New source/quantitative evidence to be appended to D-037 after CI inspection and repeat successful execution, not anticipated here.
+
+## Definitive Figure 2 source correction — supersedes the previous premise (D-038)
+
+The original source XLSX was parsed twice with different notions of "sheet index." The earlier D-036 corrective report incorrectly identified the *lexicographically sorted 28th worksheet XML* (`sheet8.xml`) with the real physical `sheet28.xml`. These are **not the same file**. Verification must map `sheetN.xml` to workbook relationship IDs, **and numeric-sort the file paths** instead of comparing a loop index to physical sheet number.
+
+GitHub Stage27 #41185474022 successful independent original Figure 2 workbook inspection proves:
+- Real publisher **`Fig2a` = `sheet7.xml`**, 15,272 explicit Ensembl IDs and numerical Spearman median **0.203142**.
+- Real publisher **`Fig2b` = `sheet8.xml`**, 5,481 explicit Ensembl IDs and numerical Spearman median **0.287059**.
+- Real `SuppFig13f` = `sheet27.xml`, 122 data rows; real `SuppFig13g` = `sheet28.xml`, 117 data rows. They are NOT the original 15,272/5,481 gene universe sheets.
+- The older Stage26 ID overlap of **5,253** with current 5,343 strict one-to-one Ensembl IDs actually came from the *physical `sheet8.xml`*, so its true source is **Fig2b**. Numeric operation is valid; earlier source label in one intermediate output and D-036 is superseded.
+- Stage26 parser fixed to sort by physical numeric sheet value and affirm source panel labels; new original `Fig2b` membership v3 CI https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185931131 . The actual Figure 2b ID set is technically verified, but the original patient's per-gene rho and 2022 annotation process remain NOT reproduced.
+
+**Updated gates:** Original 5,481 Figure2b gene ID *source identification* GO_TECHNICAL; V07 remains PARTIAL_DESCRIPTIVE_ONLY, original Nguyen sample-level correlation effect replication HOLD. Full/fullz rank discrepancy still V03 PARTIAL.
+
+A parallel Stage27b 50×50 sample-axis identity/label-permutation test remains planned under https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185636861 and does NOT assume source numeric equivalence.
