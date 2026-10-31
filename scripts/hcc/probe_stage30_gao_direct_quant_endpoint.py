@@ -85,6 +85,61 @@ def classify_nested_array_prefix(text, start, limit=12):
         "gene_sample_identifiers_exported":False,
     }
 
+def inspect_first_complete_rows(text, start, max_rows=5):
+    """Read at most 5 whole first-level rows from capped JSON array prefix.
+
+    An early string-valued first row can be a header. No strings (including
+    gene/aliquot identifiers), individual values, or any raw row leave memory.
+    Subsequent rows' numeric cell fractions are evidence of tabular data,
+    NOT proof of correct case mapping or expression units.
+    """
+    decoder=json.JSONDecoder()
+    pos=start
+    rows=[]
+    for idx in range(max_rows):
+        while pos<len(text) and text[pos] in " \t\r\n,":
+            pos+=1
+        if pos>=len(text) or text[pos] in "]}":break
+        try:
+            item,end=decoder.raw_decode(text,pos)
+        except json.JSONDecodeError:
+            break
+        if not isinstance(item,list):break
+        n=len(item)
+        numeric=0;string_n=0;missing_n=0
+        for v in item:
+            if v is None or v=="":missing_n+=1;continue
+            if isinstance(v,bool):continue
+            if isinstance(v,str):string_n+=1
+            try:
+                if math.isfinite(float(v)):numeric+=1
+            except (TypeError,ValueError,OverflowError):pass
+        rows.append({
+            "column_n":n,
+            "string_cells_n":string_n,
+            "finite_numeric_cells_n":numeric,
+            "missing_cells_n":missing_n,
+            "numeric_cell_fraction":round(numeric/n,6) if n else 0})
+        pos=end
+    first_n=rows[0]["column_n"] if rows else None
+    return {
+      "complete_outer_array_rows_seen_n":len(rows),
+      "first_row_column_count_n":first_n,
+      "all_inspected_rows_same_width":all(r["column_n"]==first_n for r in rows) if rows else False,
+      "first_row_is_non_numeric_header_candidate":bool(
+          rows and rows[0]["string_cells_n"]>=max(1,first_n-1) and
+          rows[0]["finite_numeric_cells_n"]==0),
+      "first_data_rows_inspected_n":max(0,len(rows)-1),
+      "first_data_rows_finite_numeric_cells_n":sum(r["finite_numeric_cells_n"] for r in rows[1:]),
+      "first_data_rows_total_cells_n":sum(r["column_n"] for r in rows[1:]),
+      "first_data_rows_numeric_fraction":round(
+          sum(r["finite_numeric_cells_n"] for r in rows[1:])/
+          sum(r["column_n"] for r in rows[1:]),6)
+          if len(rows)>1 and sum(r["column_n"] for r in rows[1:]) else None,
+      "per_row_anonymous_counts":rows,
+      "per_cell_names_or_values_exported":False,
+    }
+
 def inspect_oversized_matrix_prefix(raw):
     """Parse only first <=3 complete per-gene JSON objects from 2MiB prefix.
 
@@ -142,9 +197,11 @@ def inspect_oversized_matrix_prefix(raw):
             except (ValueError,TypeError,OverflowError):pass
         pos+=consumed
     nested=classify_nested_array_prefix(text,pos) if payload_kind=="NESTED_ARRAY" else {}
+    outer_rows=inspect_first_complete_rows(text,pos) if payload_kind=="NESTED_ARRAY" else {}
     return {"array_prefix_marker_observed":True,
             **structural,
             "nested_matrix_prefix_shapes":nested,
+            "first_complete_matrix_rows_summary":outer_rows,
             "first_complete_gene_records_seen_n":len(shapes),
             "sample_gene_field_present_in_partial_rows":gene_header_seen,
             "first_record_field_count_n":shapes[0] if shapes else None,
@@ -226,7 +283,8 @@ def review(v):
           sum(x["status"]=="RESPONSE_OVER_BYTE_LIMIT" for x in v["studies"]),
        "studies_with_structural_gene_and_numeric_value_prefix_n":sum(
           x.get("first_gene_record_numeric_structure",{}).get("first_complete_gene_records_seen_n",0)>0 and
-          x.get("first_gene_record_numeric_structure",{}).get("numeric_cells_in_complete_first_records_n",0)>0
+          (x.get("first_gene_record_numeric_structure",{}).get("numeric_cells_in_complete_first_records_n",0)>0 or
+           x.get("first_gene_record_numeric_structure",{}).get("first_complete_matrix_rows_summary",{}).get("first_data_rows_finite_numeric_cells_n",0)>0)
           for x in v["studies"]),
        "G30_B":"HOLD_FULL_QUANTITATIVE_GENE_ALIQUOT_MATRIX_AND_UNITS_NOT_VERIFIED",
        "G30_C":"HOLD_EXTERNAL_NODE_RNA_MATRIX",
