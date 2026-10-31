@@ -79,9 +79,9 @@ def source_audit(key,cfg):
                 re.search(r"Fifty\s+nine\s+samples\s+passed",entire,re.I))
             record["original_eQTL_work_at_2024_presented_not_source_80_table"]=True
         else:
-            first_page=re.sub(r"\\s+"," ",doc[0].get_text())
+            first_page=re.sub(r"\s+"," ",doc[0].get_text())
             scheduled=all(re.search(pattern,first_page,re.I) for pattern in
-                [r"16\\s+FEBRUARY\\s+2024",r"17:00",r"17:15",
+                [r"16\s+FEBRUARY\s+2024",r"17:00",r"17:15",
                  r"Expression Quantitative Trait Mapping",r"Thomas Guinan"])
             record["ANZGS_Feb16_2024_1700_1715_talk_scheduled"]=bool(scheduled)
             record["conference_program_contains_original_80_DEG_IDs"]=False
