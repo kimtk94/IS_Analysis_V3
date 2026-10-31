@@ -1,0 +1,137 @@
+name: CKD Top3 SNP LD Read-only Audit
+on:
+  push:
+    branches: [research/thesis-evidence-freeze-20261015]
+    paths:
+      - 'scripts/audit_ckd_top3_snp_ld_readonly.py'
+      - 'scripts/audit_ckd_top3_effect_orientation.py'
+      - 'scripts/audit_ckd_top3_ld_frequency_screen.py'
+      - 'scripts/audit_ckd_top3_maf_outliers.py'
+      - 'scripts/audit_ckd_original_source_readiness.py'
+      - 'scripts/audit_ckd_original_pqtl_four_variants.py'
+      - 'scripts/audit_ckd_stanzick_four_variants.py'
+      - '.github/workflows/ckd-top3-snp-ld-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: is-research-readonly
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m py_compile scripts/audit_ckd_top3_snp_ld_readonly.py
+      - name: Prepare read-only SSH
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          for name in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then echo "::error::Missing SSH credential"; exit 1; fi
+          done
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/ckd_audit
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/ckd_audit ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/ckd_audit >/dev/null
+      - name: Inventory raw SNP LD matches without modifying server
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" \
+            'python3 - --stage2b /srv/is-analysis/results/ckd/stage2b_coloc/coloc_input --stage2c /srv/is-analysis/results/ckd/stage2c_susie/susie_input --lddir /srv/is-analysis/data/ckd/stage2c_ld/ld' \
+            < scripts/audit_ckd_top3_snp_ld_readonly.py
+      - name: Recheck aligned summary betas and LD effect-allele sign derivation
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" \
+            'python3 - --stage2b /srv/is-analysis/results/ckd/stage2b_coloc/coloc_input --stage2c /srv/is-analysis/results/ckd/stage2c_susie/susie_input --lddir /srv/is-analysis/data/ckd/stage2c_ld/ld' \
+            < scripts/audit_ckd_top3_effect_orientation.py
+      - name: Screen reference versus pQTL minor-allele frequencies
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" \
+            'python3 - --stage2c /srv/is-analysis/results/ckd/stage2c_susie/susie_input --lddir /srv/is-analysis/data/ckd/stage2c_ld/ld' \
+            < scripts/audit_ckd_top3_ld_frequency_screen.py
+      - name: Identify the four high-MAF-discordance SNPs
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" \
+            'python3 - --input /srv/is-analysis/results/ckd/stage2c_susie/susie_input --lddir /srv/is-analysis/data/ckd/stage2c_ld/ld' \
+            < scripts/audit_ckd_top3_maf_outliers.py
+      - name: Audit available original consortium source files
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" \
+            'python3 -' < scripts/audit_ckd_original_source_readiness.py
+      - name: Check CKD source headers
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_source_headers.py
+      - name: Lookup four SNPs in analysis-ready GWAS and ST16
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_four_outlier_analysis_ready.py
+      - name: Inventory full source candidates
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_primary_sources_inventory.py
+      - name: Locate source archive members
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_pqtl_archive_locations.py
+      - name: Compare original UKB-PPP archive records for four variants
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_original_pqtl_four_variants.py
+      - name: Trace original eGFRcrea provenance
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_egfr_original_provenance.py
+      - name: Locate original Stanzick eGFR source
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_stanzick_raw_location.py
+      - name: Audit four GWAS variants from original Stanzick data
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_stanzick_four_variants.py
+      - name: Remove identity
+        if: always()
+        run: rm -f ~/.ssh/ckd_audit
