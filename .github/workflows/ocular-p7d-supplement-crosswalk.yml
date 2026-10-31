@@ -1,8 +1,5 @@
 name: Ocular P7d Published Supplement Crosswalk Discovery
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/ocular-p7d-supplement-crosswalk.yml'
   workflow_dispatch:
 
 permissions:
