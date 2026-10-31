@@ -72,7 +72,7 @@ def parse(b):
     median=statistics.median(r for _,r in entries)
     if abs(median-0.287059)>1e-5:
         raise ValueError("published original Figure2b rho median changed")
-    if "spearman" not in header[1].lower() and "correl" not in header[1].lower():
+    if not any(w in header[1].lower() for w in ("spearman","correl","rho")):
         raise ValueError("Fig2b source correlation header not explicit")
     return entries,{"schema":"hcc-stage29-original-fig2b-rho-extraction-v1",
         "source_xlsx_sha256":SHA,"source_sheet":"Fig2b",
