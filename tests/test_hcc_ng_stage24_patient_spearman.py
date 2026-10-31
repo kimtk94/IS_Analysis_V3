@@ -2,9 +2,10 @@
 import copy
 import pathlib
 import sys
+import tempfile
 import unittest
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]/"scripts"/"hcc"))
-from probe_ng_full_uniprot_ensembl_crosswalk import strict_gene_protein_pairs
+from probe_ng_full_uniprot_ensembl_crosswalk import strict_gene_protein_pairs, write_ephemeral_strict_pairs
 from build_ng_stage24_patient_index import assign_patient_indexes
 from validate_ng_stage24_spearman import verify
 
@@ -63,6 +64,17 @@ class Tests(unittest.TestCase):
               "P67890":{"ENSG00000333333"}}
         self.assertEqual(strict_gene_protein_pairs(t,p,refs),
                          [("ENSG00000333333","P67890")])
+    def test_private_mapping_is_tab_delimited_one_pair_per_line(self):
+        t={"ENSG00000111111","ENSG00000222222"}
+        p=["P04637","Q14534"]
+        refs={"P04637":{"ENSG00000111111"},"Q14534":{"ENSG00000222222"}}
+        with tempfile.TemporaryDirectory() as tmp:
+            dest=pathlib.Path(tmp)/"mapping.tsv"
+            write_ephemeral_strict_pairs(dest,t,p,refs,2)
+            lines=dest.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(len(lines),2)
+            self.assertTrue(all(len(line.split("\t"))==2 for line in lines))
+            self.assertTrue(dest.read_bytes().endswith(b"\n"))
     def test_patient_index_preserves_order_and_two_repeats(self):
         names=["biopsy"+str(i) for i in range(50)]
         columns={"tumorbiopsyid":0,"patientid":1,"rnaseq":2,"proteomics":3}
