@@ -1,5 +1,13 @@
 # OCULAR MASTER — 연구 방향 재설정 (2026-10-31)
 
+## 2026-11-01 원저자 2024 발표 증거 및 Mehrotra 프리프린트 출판 이력 재감사
+
+**GSE313736 원 저자의 공개 최초 발표 근거를 확보했다.** [AVR 2024 연차보고서 20쪽](https://australianvisionresearch.org/wp-content/uploads/2025/08/2024_AVR-Annual-Report.pdf)에는 Alex W. Hewitt 연구진의 **74명/316,799 singlets/63↑+17↓** 결과가 이미 기재돼 있으며, [University of Tasmania 2024 연구 발표 초록 34쪽](https://mooc-media.utas.edu.au/files/7/5/171877818175/CoHM%20Research%20Showcase%202024%20-%20Presentation%20Abstracts%20Booklet.pdf)에는 Thomas Guinan 연구진이 **single-cell·genotype QC 59명**을 보고한다. [2개 기관 PDF 원문·페이지·SHA 검증 GitHub Actions #41220669040](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41220669040) **SUCCESS** ([보고서](GSE313736_2024_ORIGINAL_SOURCE_59_VS_57_AND_AUTHOR80_HOLD_20261101.md)). **59명은 저자 QC 단계의 값, 57명은 우리 BeamA≥0.75 및 Vehicle/DEX 각 30개 matrix-joined 세포 조건의 값**이므로 2명 차이의 원인을 특정하거나 같은 sample set이라고 추정하지 않는다. 2024 보고서의 감소 `log2FC>3`, 2026 GEO의 감소 `log2FC<3` 기준이 상충/모호하여 실제 원본 80개 유전자 ID와 부호 기준 확인 **HOLD**다. 2024 당시 연구가 *under review*라고 기록된 사실은 2026 현재 정식 출판 상태를 보증하지 않는다.
+
+**Mehrotra 6h 원문 불일치는 프리프린트부터 존재.** [preprint PMC12776393](https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12776393/fullTextXML)과 [peer-reviewed PMC12882097](https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12882097/fullTextXML) Table 1의 시간단위를 정규화하여 비교한 [최종 GitHub Actions #41221426210](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41221426210) **SUCCESS**: 두 원문 모두 **TM151=1h/2d, TM155=6h/2d**, 실제 실험시간 구성 변화 **0건**. 6h TM151이라고 적힌 저자 보충 XLSX Table 82와의 출처 충돌은 프리프린트 Table 1 단계부터 존재했지만, *어느 쪽이 잘못됐는지는 불명*. [출판 버전 간 검증](MEHROTRA_PREPRINT_JOURNAL_S003_CONFLICT_ORIGIN_20261101.md). **48h TM 후보 9쌍**은 여전히 양 원문과 보충표의 strain 명단이 같지만 원본 RUN별 시간 필드 0/23이므로 REVIEW 유지.
+
+남은 외부 증거 요청 2건을 [원 저자 공식자료 요청 패킷](ORIGINAL_AUTHOR_EVIDENCE_REQUEST_PACKET_20261101.md)에 정리했다. **요청 메시지는 작성/준비만 했으며 발송하지 않았다.** 우선순위는 (1) GSE313736 80개 유전자 ID·통계·down-regulation 정의, (2) Mehrotra 46 RUN의 시간대·strain·QC 시료 설계표와 원시 featureCounts 존재 여부다. 둘 모두 확인 전 인과성, 임상 IOP 예측, 32.71GB RNA FASTQ 무조건 다운로드는 **HOLD/STOP**.
+
 ## 2026-11-01 원논문 Table 1 ↔ Supplement S003 ↔ SRA의 불일치 확인
 
 [세 출처 감사 CI #41219957609](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41219957609) **SUCCESS**, [실제 원문-보충표-SRA 검증 문서](MEHROTRA_TABLE1_S003_SRA_TRIPLE_SOURCE_20261101.md). 최신 아티팩트 #13049965603 ZIP/JSON/TSV 직접 확인. 공식 논문 XML SHA256과 원 보충표 XLSX SHA256을 고정하고 6개 세포유형×시간 strata를 비교했더니 **5/6 일치, TM 6h 한 곳만 충돌**한다. 논문 Table 1에는 **TM155 6h**, Table 82의 6h control TPM 열에는 **TM151 6h**가 기록돼 있다. 해당 6h SRA 후보 `TM151.4` = `SRR32897704;SRR32897705`는 **HOLD 원문 상충**. 이를 저자 확인 없이 자동 수정하거나 배정하지 않는다.
