@@ -50,17 +50,18 @@ def main():
         supplements=tags(doc)
         out["n_supplement_nodes"]=len(supplements)
         out["supplements"]=supplements
-        candidates=[v for v in supplements if re.search(
-           r"\bsupp(?:lementary)?\s*(?:table|tbl)\s*4\b",v["label"],re.I)]
-        out["candidate_full_TM_all_gene_table4"]=candidates
-        out["status"]="PASS_SUPPLEMENT_TABLE4_REFERENCE" if candidates and any(x["references"] for x in candidates) else "HOLD_TABLE4_FILE_REFERENCE_MISSING"
+        candidates=[v for v in supplements if any(
+            x.lower()=="iovs-67-2-13_s003.xlsx" for x in v["references"])]
+        out["official_supplement_3_workbook"]=candidates
+        out["table4_sheet_identity"]="NOT_YET_VERIFIED"
+        out["status"]="PASS_OFFICIAL_XLSX_REFERENCE_CATALOG" if candidates else "HOLD_OFFICIAL_XLSX_MISSING"
         out["next_gate"]="Download only verified referenced Table 4 and parse actual per-gene log2FC/FDR; then compare on matching identifiers"
     except Exception as e:
         out["error"]=type(e).__name__+": "+str(e)[:250]
     dest=Path(p.output);dest.parent.mkdir(parents=True,exist_ok=True)
     dest.write_text(json.dumps(out,indent=2,ensure_ascii=False)+"\n")
     print("P5H",out["status"],"supplement_nodes",out.get("n_supplement_nodes"),
-          "table4",len(out.get("candidate_full_TM_all_gene_table4",[])),
+          "official_xlsx",len(out.get("official_supplement_3_workbook",[])),
           "error",out.get("error"))
-    if out["status"]!="PASS_SUPPLEMENT_TABLE4_REFERENCE":raise SystemExit(2)
+    if out["status"]!="PASS_OFFICIAL_XLSX_REFERENCE_CATALOG":raise SystemExit(2)
 if __name__=="__main__":main()
