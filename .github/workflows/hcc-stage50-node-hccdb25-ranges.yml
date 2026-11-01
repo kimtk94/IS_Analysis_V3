@@ -1,0 +1,68 @@
+name: HCC Stage50 NODE and HCCDB25 Public RNA Route Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/hcc/audit_stage50_node_hccdb25_range.py"
+      - "tests/test_hcc_stage50_node_hccdb25_range.py"
+      - ".github/workflows/hcc-stage50-node-hccdb25-ranges.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-range-unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test bounded source ranges, exact origins and RNA claim gates
+        run: python -m unittest discover -s tests -p "test_hcc_stage50_node_hccdb25_range.py" -v
+
+  node-official-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Probe NODE original public frontend asset ranges
+        run: |
+          python scripts/hcc/audit_stage50_node_hccdb25_range.py \
+            --site node \
+            --out results/hcc/stage50/node_public_source_ranges.json \
+            --review-out results/hcc/stage50/node_review.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-stage50-node-anonymous-aggregates
+          path: results/hcc/stage50/*.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  hccdb25-public-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Probe HCCDB25 documented public frontend asset ranges
+        run: |
+          python scripts/hcc/audit_stage50_node_hccdb25_range.py \
+            --site hccdb25 \
+            --out results/hcc/stage50/hccdb25_public_source_ranges.json \
+            --review-out results/hcc/stage50/hccdb25_review.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-stage50-hccdb25-anonymous-aggregates
+          path: results/hcc/stage50/*.json
+          if-no-files-found: warn
+          retention-days: 30
