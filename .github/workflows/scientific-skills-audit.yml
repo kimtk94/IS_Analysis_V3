@@ -1,0 +1,141 @@
+name: Scientific Agent Skills - pinned read-only audit
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/scientific-skills-audit.yml'
+      - 'docs/research/scientific_skills_integration.md'
+permissions:
+  contents: read
+jobs:
+  skills-audit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - research: IS
+            skill: database-lookup
+          - research: glaucoma
+            skill: ontology-term-resolution
+          - research: HCC
+            skill: depmap
+          - research: radiomics
+            skill: imaging-data-commons
+          - research: ophthalmology
+            skill: ontology-term-resolution
+          - research: muscle
+            skill: database-lookup
+          - research: oral-cancer
+            skill: depmap
+          - research: skin-mr
+            skill: database-lookup
+    steps:
+      - name: Checkout pinned upstream skills (never execute upstream code)
+        uses: actions/checkout@v4
+        with:
+          repository: K-Dense-AI/scientific-agent-skills
+          ref: 5f2bc0341354fd5590aef76a533ada1e1e5b4e62
+          path: upstream
+          persist-credentials: false
+      - name: Checkout independent eight-track evidence PR (read only)
+        uses: actions/checkout@v4
+        with:
+          repository: kimtk94/IS_Analysis_V3
+          ref: refs/pull/255/head
+          path: evidence
+          persist-credentials: false
+      - name: Audit selected skill metadata
+        shell: bash
+        env:
+          RESEARCH: ${{ matrix.research }}
+          SKILL: ${{ matrix.skill }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib
+          name = os.environ['SKILL']
+          p = pathlib.Path('upstream/skills') / name / 'SKILL.md'
+          if not p.is_file():
+              raise SystemExit(f'MISSING_SKILL: {p}')
+          data = p.read_bytes()
+          if not data.strip() or len(data) > 2_000_000:
+              raise SystemExit('INVALID_SKILL_CONTENT')
+          text = data.decode('utf-8')
+          lines = text.splitlines()
+          if not lines or lines[0].strip() != '---':
+              raise SystemExit('MISSING_SKILL_FRONTMATTER')
+          try:
+              end = lines.index('---', 1)
+          except ValueError:
+              raise SystemExit('UNCLOSED_SKILL_FRONTMATTER')
+          fields = {}
+          for line in lines[1:end]:
+              if ':' in line and not line.startswith((' ', '-')):
+                  key, value = line.split(':', 1)
+                  fields[key.strip()] = value.strip().strip('"').strip("'")
+          if fields.get('name') != name:
+              raise SystemExit('SKILL_NAME_MISMATCH')
+          if not fields.get('description'):
+              raise SystemExit('MISSING_SKILL_DESCRIPTION')
+          if not fields.get('license'):
+              raise SystemExit('MISSING_SKILL_LICENSE')
+          result = {'research': os.environ['RESEARCH'], 'skill': name,
+                    'upstream_sha': '5f2bc0341354fd5590aef76a533ada1e1e5b4e62',
+                    'sha256': hashlib.sha256(data).hexdigest(),
+                    'bytes': len(data), 'status': 'PASS_SKILL_STRUCTURE_ONLY'}
+          out = pathlib.Path('audit')
+          out.mkdir(exist_ok=True)
+          (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+          with pathlib.Path(os.environ['GITHUB_STEP_SUMMARY']).open('a') as summary:
+              summary.write('| Research | Skill | Skill audit | SHA256 prefix |\\n|---|---|---|---|\\n')
+              summary.write(f"| {result['research']} | {result['skill']} | {result['status']} | {result['sha256'][:12]} |\\n")
+          gate_map = {
+              'IS': 'GWAS allele harmonization and ancestry-matched LD',
+              'glaucoma': 'independent DEX/TM replication and pool-aware statistics',
+              'HCC': 'unique official aliquot-to-quant-column mapping',
+              'radiomics': 'pre-treatment MRI and patient-level RNA linkage',
+              'ophthalmology': 'sample/patient metadata and omics pairing',
+              'muscle': 'variant-to-gene locus-level evidence audit',
+              'oral-cancer': 'patient-resolved expression and metadata',
+              'skin-mr': 'full GWAS allele, effect and SE QC',
+          }
+          gate = {'research': result['research'],
+                  'skill_audit_status': result['status'],
+                  'research_gate': gate_map[result['research']],
+                  'research_gate_status': 'HOLD_NOT_EVALUATED',
+                  'reason': 'Skill document checks do not validate study source data'}
+          (out / 'research_gate.json').write_text(json.dumps(gate, indent=2) + '\\n')
+          print(json.dumps(result))
+          source = pathlib.Path('evidence/research/operations/daily_20261101_readiness.json')
+          if not source.is_file():
+              raise SystemExit('MISSING_EVIDENCE_MANIFEST')
+          manifest = json.loads(source.read_text())
+          aliases = {'IS': 'is', 'glaucoma': 'glaucoma', 'HCC': 'hcc',
+                     'radiomics': 'radiomics', 'ophthalmology': 'ocular',
+                     'muscle': 'muscle', 'oral-cancer': 'oral', 'skin-mr': 'skin'}
+          track = next((t for t in manifest.get('tracks', [])
+                        if t.get('id') == aliases[result['research']]), None)
+          if not track:
+              raise SystemExit('MISSING_TRACK_EVIDENCE')
+          if track.get('scientific_gate') not in ('HOLD', 'PASS', 'FAIL'):
+              raise SystemExit('INVALID_RESEARCH_GATE')
+          gate['source_evidence'] = 'PR255:research/operations/daily_20261101_readiness.json'
+          gate['evidence_commit'] = os.popen('git -C evidence rev-parse HEAD').read().strip()
+          gate['source_audit_status'] = track.get('audit_status')
+          gate['source_scientific_gate'] = track.get('scientific_gate')
+          pending = track.get('known_next_gates', [])
+          if not isinstance(pending, list) or not pending or not all(isinstance(x, str) and x.strip() for x in pending):
+              raise SystemExit('MISSING_ACTIONABLE_NEXT_GATES')
+          gate['pending_gates'] = pending
+          gate['next_action'] = pending[0]
+          gate['research_gate_status'] = ('HOLD_SOURCE_REVIEW' if track['scientific_gate'] == 'HOLD'
+                                        else 'HOLD_INDEPENDENT_REVIEW_REQUIRED')
+          gate['reason'] = 'Source manifest is a bounded audit; not a fresh biological rerun'
+          (out / 'research_gate.json').write_text(json.dumps(gate, indent=2) + '\\n')
+          print(json.dumps(gate))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scientific-skill-${{ matrix.research }}
+          path: audit/
+          retention-days: 30
