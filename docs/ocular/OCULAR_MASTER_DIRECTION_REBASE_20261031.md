@@ -163,3 +163,10 @@ BeamA confidence 0.5/0.75, alternative cell label, donor당 적격 cell 수, 각
 - **원저자 DEG80 identity HOLD**: 원 저자 63↑/17↓와 우리의 edgeR 67↑/16↓(총 83개), 0.50 threshold 88개의 교집합은 **계산하지 못함**. 공개 서술의 감소 절단값 `>3` vs `<3` 모순을 `<-3`으로 임의 보정하지 않는다. 원 저자 Ensembl/FC/FDR 표와 대비·통계법을 공식 확보해야만 비교 GO.
 - **이미 완료된 자체 분석은 그대로 GO**: 동일 57 donor BeamA 0.50/0.75 원본-count 재적합 [#41199532259](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41199532259), matched 55 donor BeamA/scPred 비교 [검증 리뷰 #41207583296](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41207583296). 두 결과 모두 **within-cohort technical sensitivity**, 독립 코호트 외부 재현성이나 인과 증명은 아님.
 - **추가 연구비용 판단**: 원본 18개 10x 파일 수 GB 반복 다운로드 금지. 현재 유의미한 다음 경로는 [원저자 자료 요청 문서](ORIGINAL_AUTHOR_EVIDENCE_REQUEST_PACKET_20261101.md)의 공식 연구진 접촉 **승인 후** 실제 80 행 ID·FDR·모형 확인이다. 메일은 현재 미발송; 본 GitHub Actions는 외부 연락하지 않는다.
+
+
+## 2026-11-02 next-step verification: official contact + author80 versus our 83 correct denominator
+
+[Source gate and exact CI results](GSE313736_AUTHOR80_PUBLIC_DISCOVERY_AND_SOURCE_GATE_20261101.md) has been updated after [parallel Actions SUCCESS #41324876650](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41324876650). Comparison now separates author genes present in the 16,050-gene P5 full test universe from those meeting our **83 = 67 up + 16 down** high-effect FDR/FC filter, with sign direction evaluated only for the filtered intersection. All these tests used **synthetic** inputs and validate the comparator only; the author 80 table has still **not** been obtained. Public search did not produce an authenticated original study article or supplementary gene list. Author institutional email is independently present on [official GSE313736-linked GSM9373290](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM9373290). [Requested data package](ORIGINAL_AUTHOR_EVIDENCE_REQUEST_PACKET_20261101.md) is prepared **but not sent**.
+
+**Next gate:** authenticated original 80-row Ensembl/log2FC/FDR table + actual statistical method, followed by read-only comparison. No 18-matrix raw source redownload needed; hold causal and clinical conclusions as before.
