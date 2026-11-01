@@ -120,8 +120,14 @@ jobs:
           if track.get('scientific_gate') not in ('HOLD', 'PASS', 'FAIL'):
               raise SystemExit('INVALID_RESEARCH_GATE')
           gate['source_evidence'] = 'PR255:research/operations/daily_20261101_readiness.json'
+          gate['evidence_commit'] = os.popen('git -C evidence rev-parse HEAD').read().strip()
           gate['source_audit_status'] = track.get('audit_status')
           gate['source_scientific_gate'] = track.get('scientific_gate')
+          pending = track.get('known_next_gates', [])
+          if not isinstance(pending, list) or not pending or not all(isinstance(x, str) and x.strip() for x in pending):
+              raise SystemExit('MISSING_ACTIONABLE_NEXT_GATES')
+          gate['pending_gates'] = pending
+          gate['next_action'] = pending[0]
           gate['research_gate_status'] = ('HOLD_SOURCE_REVIEW' if track['scientific_gate'] == 'HOLD'
                                         else 'HOLD_INDEPENDENT_REVIEW_REQUIRED')
           gate['reason'] = 'Source manifest is a bounded audit; not a fresh biological rerun'
