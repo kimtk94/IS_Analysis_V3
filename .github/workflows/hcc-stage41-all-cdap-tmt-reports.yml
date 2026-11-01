@@ -1,0 +1,37 @@
+name: HCC Stage41 Complete Original CDAP TMT Reports Cross-Assay
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage41-all-cdap-tmt-reports.yml'
+      - 'scripts/hcc/audit_stage41_all_cdp_tmt_reports.py'
+      - 'tests/test_hcc_stage41_all_cdp_tmt_reports.py'
+
+permissions:
+  contents: read
+
+jobs:
+  all-official-TMT-reports:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check candidate multiplicity and non-inferential science gates
+        run: python -m unittest discover -s tests -p 'test_hcc_stage41_all_cdp_tmt_reports.py' -v
+      - name: Read all TMT report candidates and compare original biological labels across both assays
+        run: |
+          python scripts/hcc/audit_stage41_all_cdp_tmt_reports.py \
+            --out results/hcc/stage41/all_TMT_candidate_sources.json \
+            --review-out results/hcc/stage41/all_TMT_candidate_review.json
+      - name: Upload only bounded aggregate source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage41-all-original-TMT-sources
+          path: results/hcc/stage41/*.json
+          retention-days: 30
+          if-no-files-found: error

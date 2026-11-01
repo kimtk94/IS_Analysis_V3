@@ -1,0 +1,37 @@
+name: HCC Stage33 Direct CDAP Sample to Quant Header Evidence
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage33-original-cdap-sample-bridge.yml'
+      - 'scripts/hcc/audit_stage33_original_cdap_sample_bridge.py'
+      - 'tests/test_hcc_stage33_cdap_sample_bridge.py'
+
+permissions:
+  contents: read
+
+jobs:
+  original-cdap-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify original CDAP reporter and source identity safety gates
+        run: python -m unittest discover -s tests -p 'test_hcc_stage33_cdap_sample_bridge.py' -v
+      - name: Inspect two PDC original CDAP sample tables and official aliquot namespaces
+        run: |
+          python scripts/hcc/audit_stage33_original_cdap_sample_bridge.py \
+            --out results/hcc/stage33/original_sample_bridge_aggregates.json \
+            --review-out results/hcc/stage33/original_sample_bridge_review.json
+      - name: Preserve anonymous evidence including source HOLD conditions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage33-cdap-original-sample-bridge
+          path: results/hcc/stage33/*.json
+          retention-days: 30
+          if-no-files-found: error

@@ -1,0 +1,37 @@
+name: HCC Stage37 All Official PDC Source File Categories
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage37-all-pdc-source-categories.yml'
+      - 'scripts/hcc/audit_stage37_all_pdc_file_categories.py'
+      - 'tests/test_hcc_stage37_all_pdc_file_categories.py'
+
+permissions:
+  contents: read
+
+jobs:
+  all-source-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test exhaustive all-category source discovery and no inferred biological joins
+        run: python -m unittest discover -s tests -p 'test_hcc_stage37_all_pdc_file_categories.py' -v
+      - name: Audit complete official PDC file category catalog for both HCC studies
+        run: |
+          python scripts/hcc/audit_stage37_all_pdc_file_categories.py \
+            --out results/hcc/stage37/official_all_categories.json \
+            --review-out results/hcc/stage37/all_categories_review.json
+      - name: Upload anonymous file category statistics and scientific HOLD
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage37-all-source-categories
+          path: results/hcc/stage37/*.json
+          retention-days: 30
+          if-no-files-found: error

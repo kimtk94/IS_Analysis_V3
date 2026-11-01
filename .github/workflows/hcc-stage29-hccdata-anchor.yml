@@ -1,0 +1,48 @@
+name: HCC Stage29 Small Network Omics Source Anchor
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage29-hccdata-anchor.yml'
+      - 'scripts/hcc/audit_ng_stage29_hccdata_anchor.R'
+      - 'scripts/hcc/verify_ng_stage29_hccdata_anchor.py'
+      - 'tests/test_hcc_stage29_hccdata_anchor.py'
+
+permissions:
+  contents: read
+
+jobs:
+  compare-independent-source-products:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: false
+      - name: Verify source fingerprint and no authoritative patient identity overclaim
+        run: python -m unittest discover -s tests -p 'test_hcc_stage29_hccdata_anchor.py' -v
+      - name: Compare immutable Suter full vs fullz to independent prebuilt HCCdata source
+        run: |
+          Rscript scripts/hcc/audit_ng_stage29_hccdata_anchor.R \
+            results/hcc/feasibility/stage29_hccdata_anchor.json
+      - name: Postflight source and aggregate metrics
+        run: |
+          python scripts/hcc/verify_ng_stage29_hccdata_anchor.py \
+            --input results/hcc/feasibility/stage29_hccdata_anchor.json \
+            --out results/hcc/feasibility/stage29_hccdata_anchor_review.json
+      - name: Upload aggregate and redacted source orientation evidence
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage29-HCCdata-author-prebuilt-source-label-anchor
+          path: |
+            results/hcc/feasibility/stage29_hccdata_anchor.json
+            results/hcc/feasibility/stage29_hccdata_anchor_review.json
+          retention-days: 30
+          if-no-files-found: error

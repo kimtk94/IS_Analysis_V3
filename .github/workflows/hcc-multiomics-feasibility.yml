@@ -1,0 +1,70 @@
+name: HCC Multi-omics Feasibility Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'research/hcc/feasibility/**'
+      - 'scripts/hcc/**'
+      - 'tests/test_hcc_*.py'
+      - '.github/workflows/hcc-multiomics-feasibility.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/hcc/feasibility/**'
+      - 'scripts/hcc/**'
+      - 'tests/test_hcc_*.py'
+      - '.github/workflows/hcc-multiomics-feasibility.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run HCC registry guardrail tests
+        run: python -m unittest discover -s tests -p 'test_hcc_*.py' -v
+      - name: Generate evidence-ranked HCC feasibility report
+        run: python scripts/hcc/feasibility_audit.py --out-dir results/hcc/feasibility
+      - name: Probe two small GEO public supplement schemas
+        run: python scripts/hcc/probe_public_metadata.py --output results/hcc/feasibility/geo_metadata_probe.json
+      - name: Inspect Ng supplement and Gao PDC public records
+        run: python scripts/hcc/probe_ng_gao_public.py --output results/hcc/feasibility/pair_sources_probe.json
+      - name: Inspect public quantitative matrix manifests (Ng/PDC/PRIDE)
+        run: python scripts/hcc/probe_quant_matrix_manifest.py --output results/hcc/feasibility/quant_matrix_manifest.json
+      - name: Index public PDC and PRIDE candidate files
+        run: python scripts/hcc/probe_quant_candidates.py --out results/hcc/feasibility/quant_candidates.json
+      - name: Inspect bounded PDC protein quantification headers
+        run: python scripts/hcc/probe_pdc_quant_headers.py --output results/hcc/feasibility/pdc_quant_headers.json
+      - name: Screen PDC quantitative headers against public sample metadata
+        run: python scripts/hcc/probe_pdc_sample_mapping.py --output results/hcc/feasibility/pdc_sample_mapping.json
+      - name: Audit public PDC case sample aliquot lineage
+        run: python scripts/hcc/probe_pdc_biospecimen_lineage.py --output results/hcc/feasibility/pdc_biospecimen_lineage.json
+      - name: Audit public PDC TMT experimental design
+        run: python scripts/hcc/probe_pdc_experimental_design.py --out results/hcc/feasibility/pdc_experimental_design.json
+      - name: Probe NODE OEP000321 public RNA landing access
+        run: python scripts/hcc/probe_node_oep000321.py --out results/hcc/feasibility/node_oep000321_access.json
+      - name: Probe official PDC gene-by-aliquot quantitative matrix schema (manual only)
+        if: github.event_name == 'workflow_dispatch'
+        run: python scripts/hcc/probe_pdc_quant_api_schema.py --out results/hcc/feasibility/pdc_quant_api_schema.json
+      - name: Probe HCCDB25 alternate Gao RNA data portal
+        run: python scripts/hcc/probe_hccdb25_access.py --out results/hcc/feasibility/hccdb25_access.json
+      - name: Inspect HCCDB25 public frontend download-route hints
+        run: python scripts/hcc/probe_hccdb25_assets.py --out results/hcc/feasibility/hccdb25_frontend_routes.json
+      - name: Verify public 2023 external 152-patient proteomic supplement
+        run: python scripts/hcc/probe_2023_hcc_proteome_supplement.py --out results/hcc/feasibility/2023_152patient_proteome_mmc3_manifest.json
+      - name: Verify 2026 PMC Cloud direct HCC proteomic supplement manifest
+        run: python scripts/hcc/probe_pmc2026_cloud_proteomics.py --out results/hcc/feasibility/pmc2026_cloud_mmc3_audit.json
+      - name: Upload HCC audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-feasibility-audit
+          path: results/hcc/feasibility/
+          if-no-files-found: warn

@@ -1,0 +1,39 @@
+name: HCC Stage31 PDC GCT and Sample Companion File Discovery
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage31-pdc-gct-sample-companion-catalog.yml'
+      - 'scripts/hcc/audit_stage31_pdc_nonassembly_mapping_catalog.py'
+      - 'tests/test_hcc_stage31_pdc_gct_catalog.py'
+
+permissions:
+  contents: read
+
+jobs:
+  source-file-category-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test catalog evidence cannot imply sample-to-patient mapping
+        run: python -m unittest discover -s tests -p 'test_hcc_stage31_pdc_gct_catalog.py' -v
+      - name: Check PDC original source GCT and CDAP design files in other metadata categories
+        run: |
+          python scripts/hcc/audit_stage31_pdc_nonassembly_mapping_catalog.py \
+            --out results/hcc/stage31/pdc_gct_companion_catalog.json \
+            --review-out results/hcc/stage31/pdc_gct_companion_catalog_review.json
+      - name: Archive anonymous file-type availability only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage31-pdc-GCT-sample-design-catalog
+          path: |
+            results/hcc/stage31/pdc_gct_companion_catalog.json
+            results/hcc/stage31/pdc_gct_companion_catalog_review.json
+          retention-days: 30
+          if-no-files-found: error

@@ -1,0 +1,39 @@
+name: HCC Stage30 Gao CDAP Sample ID Companion Evidence
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-cdap-sample-companion.yml'
+      - 'scripts/hcc/probe_stage30_gao_sample_design_companion.py'
+      - 'tests/test_hcc_stage30_sample_companion.py'
+
+permissions:
+  contents: read
+
+jobs:
+  find-official-PDC-CDAP-sample-design-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test exact source quant header companion ID bridge and conservative HOLD
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_sample_companion.py' -v
+      - name: Inspect PDC Protein Assembly sample.txt design companion on both Gao omics
+        run: |
+          python scripts/hcc/probe_stage30_gao_sample_design_companion.py \
+            --out results/hcc/stage30/cdap_sample_companion.json \
+            --review-out results/hcc/stage30/cdap_sample_companion_review.json
+      - name: Save metadata and aggregate source alias counts only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-PDC-CDAP-sample-txt-ID-bridge
+          path: |
+            results/hcc/stage30/cdap_sample_companion.json
+            results/hcc/stage30/cdap_sample_companion_review.json
+          retention-days: 30
+          if-no-files-found: error

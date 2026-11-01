@@ -1,0 +1,170 @@
+name: HCC Stage29 Original Effects RNA Filtering and Patient Groups
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage29-original-effects-rna-filter-patient-groups.yml'
+      - 'scripts/hcc/extract_ng_stage29_fig2b_rhos.py'
+      - 'scripts/hcc/audit_ng_stage29_fig2b_gene_effects.R'
+      - 'scripts/hcc/audit_ng_stage29_filtered_588.R'
+      - 'scripts/hcc/audit_ng_stage29_patient_label_orientation.R'
+      - 'scripts/hcc/verify_ng_stage29_parallel.py'
+      - 'tests/test_hcc_stage29_evidence.py'
+
+concurrency:
+  group: hcc-stage29-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  fig2b-original-gene-effects:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: false
+      - name: Synthetic source scientific safeguards
+        run: python -m unittest discover -s tests -p 'test_hcc_stage29_evidence.py' -v
+      - name: Extract official Fig2b 5481 original gene rho values into private runner memory
+        run: |
+          python scripts/hcc/extract_ng_stage29_fig2b_rhos.py \
+            --private-rhos-out "$RUNNER_TEMP/stage29-original-rhos.tsv" \
+            --out results/hcc/feasibility/stage29_fig2b_source.json
+          python scripts/hcc/verify_ng_stage29_parallel.py \
+            --kind fig2 --input results/hcc/feasibility/stage29_fig2b_source.json \
+            --out results/hcc/feasibility/stage29_fig2b_source_review.json
+      - name: Retrieve strict current 5343 UniProt to Ensembl mapping
+        run: |
+          export NG_PRIVATE_FEATURE_IDS_OUT="$RUNNER_TEMP/stage29-feature-labels.tsv"
+          Rscript scripts/hcc/audit_ng_full_feature_namespace.R \
+            results/hcc/feasibility/stage29_feature_namespaces.json
+          python scripts/hcc/probe_ng_full_uniprot_ensembl_crosswalk.py \
+            --private-features "$RUNNER_TEMP/stage29-feature-labels.tsv" \
+            --private-strict-pairs-out "$RUNNER_TEMP/stage29-gene-protein.tsv" \
+            --out results/hcc/feasibility/stage29_uniprot_current.json
+      - name: Match official Ng source biopsy to 48 independent patients
+        run: |
+          export NG_PRIVATE_KEYS_OUT="$RUNNER_TEMP/stage29-original-biopsy-labels.txt"
+          Rscript scripts/hcc/audit_ng_public_multiomics_rds.R \
+            results/hcc/feasibility/stage29_original_biopsy_source.json
+          python scripts/hcc/build_ng_stage24_patient_index.py \
+            --source-labels "$RUNNER_TEMP/stage29-original-biopsy-labels.txt" \
+            --private-patient-index-out "$RUNNER_TEMP/stage29-patients.txt"
+      - name: Original Fig2b gene effects compare 50 biopsy 48 patient and singleton 46
+        run: |
+          Rscript scripts/hcc/audit_ng_stage29_fig2b_gene_effects.R \
+            "$RUNNER_TEMP/stage29-original-rhos.tsv" \
+            "$RUNNER_TEMP/stage29-gene-protein.tsv" \
+            "$RUNNER_TEMP/stage29-patients.txt" \
+            results/hcc/feasibility/stage29_fig2b_5253_effects.json
+          python scripts/hcc/verify_ng_stage29_parallel.py \
+            --kind effects --input results/hcc/feasibility/stage29_fig2b_5253_effects.json \
+            --out results/hcc/feasibility/stage29_fig2b_5253_effects_review.json
+      - name: Delete all private per-gene and patient identifier records
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/stage29-original-rhos.tsv" \
+            "$RUNNER_TEMP/stage29-feature-labels.tsv" \
+            "$RUNNER_TEMP/stage29-gene-protein.tsv" \
+            "$RUNNER_TEMP/stage29-original-biopsy-labels.txt" \
+            "$RUNNER_TEMP/stage29-patients.txt"
+      - name: Upload aggregate gene effect comparison only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage29-original-fig2b-vs-current-5253-gene-rho
+          path: |
+            results/hcc/feasibility/stage29_fig2b_source.json
+            results/hcc/feasibility/stage29_fig2b_source_review.json
+            results/hcc/feasibility/stage29_feature_namespaces.json
+            results/hcc/feasibility/stage29_uniprot_current.json
+            results/hcc/feasibility/stage29_original_biopsy_source.json
+            results/hcc/feasibility/stage29_fig2b_5253_effects.json
+            results/hcc/feasibility/stage29_fig2b_5253_effects_review.json
+          retention-days: 30
+          if-no-files-found: error
+
+  original-588-omitted-rna-features:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: false
+      - name: Original RNA excluded feature numeric audit
+        run: |
+          python -m unittest discover -s tests -p 'test_hcc_stage29_evidence.py' -v
+          Rscript scripts/hcc/audit_ng_stage29_filtered_588.R \
+            results/hcc/feasibility/stage29_588_RNA_filter.json
+          python scripts/hcc/verify_ng_stage29_parallel.py \
+            --kind filter --input results/hcc/feasibility/stage29_588_RNA_filter.json \
+            --out results/hcc/feasibility/stage29_588_RNA_filter_review.json
+      - name: Upload aggregate feature filter distributions only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage29-RNA-588-feature-selection
+          path: |
+            results/hcc/feasibility/stage29_588_RNA_filter.json
+            results/hcc/feasibility/stage29_588_RNA_filter_review.json
+          retention-days: 30
+          if-no-files-found: error
+
+  original-biopsy-patient-label-alignment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: false
+      - name: Source verified 48 patient group and original 50 biopsy IDs
+        run: |
+          python -m unittest discover -s tests -p 'test_hcc_stage29_evidence.py' -v
+          export NG_PRIVATE_KEYS_OUT="$RUNNER_TEMP/stage29-biopsies.txt"
+          Rscript scripts/hcc/audit_ng_public_multiomics_rds.R \
+            results/hcc/feasibility/stage29_patient_label_source.json
+          python scripts/hcc/build_ng_stage24_patient_index.py \
+            --source-labels "$RUNNER_TEMP/stage29-biopsies.txt" \
+            --private-patient-index-out "$RUNNER_TEMP/stage29-patient-group.txt"
+      - name: Check inferred common permutation versus official 48-patient grouping
+        run: |
+          Rscript scripts/hcc/audit_ng_stage29_patient_label_orientation.R \
+            "$RUNNER_TEMP/stage29-patient-group.txt" \
+            results/hcc/feasibility/stage29_patient_label_orientation.json
+          python scripts/hcc/verify_ng_stage29_parallel.py \
+            --kind labels --input results/hcc/feasibility/stage29_patient_label_orientation.json \
+            --out results/hcc/feasibility/stage29_patient_label_review.json
+      - name: Delete private source identifiers
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/stage29-biopsies.txt" "$RUNNER_TEMP/stage29-patient-group.txt"
+      - name: Upload only aggregate matched patient group counts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage29-48patient-source-label-orientation
+          path: |
+            results/hcc/feasibility/stage29_patient_label_source.json
+            results/hcc/feasibility/stage29_patient_label_orientation.json
+            results/hcc/feasibility/stage29_patient_label_review.json
+          retention-days: 30
+          if-no-files-found: error
