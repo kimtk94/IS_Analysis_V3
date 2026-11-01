@@ -1,0 +1,40 @@
+name: Ocular P5l Published Discordances Pool-Unit Audit
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  discordant-pool-confirmation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Get previously verified aggregate-only evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/ocular/ocular_p5l_discordant_poolunit.py
+          mkdir -p "$RUNNER_TEMP/p5j" "$RUNNER_TEMP/p5d" ocular-p5l-aggregate
+          gh run download 41158343447 -n ocular-p5j-external-TM-gene-overlap -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5j"
+          gh run download 41090827791 -n ocular-p5d-nine-pool-unit -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5d"
+      - name: Verify all 96 direction conflicts against pooled-library-model FDR
+        run: |
+          python scripts/ocular/ocular_p5l_discordant_poolunit.py --discordant "$RUNNER_TEMP/p5j/P5j_sign_discordant_both_FDR_genes.tsv" --poolunit "$RUNNER_TEMP/p5d/p5d_poolunit_all_gene_results.tsv.gz" --output ocular-p5l-aggregate
+      - name: Clear temporary copies
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p5j" "$RUNNER_TEMP/p5d"
+      - name: Upload aggregate gene-level audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5l-discordant-poolunit
+          path: ocular-p5l-aggregate/
+          retention-days: 30
+          if-no-files-found: warn

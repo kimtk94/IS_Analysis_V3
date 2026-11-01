@@ -1,0 +1,32 @@
+name: Ocular P7d Published Supplement Crosswalk Discovery
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  look-for-public-run-sample-crosswalk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install workbook parser and syntax-check source
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+          python -m py_compile scripts/ocular/ocular_p7d_public_supplement_crosswalk.py
+      - name: Inspect published supplementary archive and ENA sample aliases, without raw data download
+        run: |
+          mkdir -p ocular-p7d-public
+          python -u scripts/ocular/ocular_p7d_public_supplement_crosswalk.py --out ocular-p7d-public
+      - name: Publish only summarized publication and ENA metadata crosswalk evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p7d-public-crosswalk-discovery
+          path: ocular-p7d-public/
+          if-no-files-found: warn
+          retention-days: 30

@@ -1,0 +1,62 @@
+name: Ocular P3 Complete 18 Matrix Validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-pool:
+    strategy:
+      fail-fast: false
+      matrix:
+        pool: [A, B, D, E, F, G, H, I]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile P1-P3 scripts
+        run: |
+          python -m py_compile scripts/ocular/ocular_p1_integrity.py scripts/ocular/ocular_p3_all_matrices.py
+      - name: Download and verify two full public 10x matrices
+        run: |
+          python scripts/ocular/ocular_p3_all_matrices.py --pool "${{ matrix.pool }}" --output "ocular-p3-${{ matrix.pool }}.json"
+      - name: Archive aggregate QC; never upload raw matrices
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p3-${{ matrix.pool }}
+          path: ocular-p3-${{ matrix.pool }}.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  aggregate:
+    needs: [validate-pool]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ocular-p3-?
+          path: p3-input
+          merge-multiple: true
+      - name: Enforce all 16 files and donor pool checks
+        run: |
+          python scripts/ocular/ocular_p3_all_matrices.py --aggregate p3-input/ocular-p3-*.json --output ocular-p3-all-summary.json
+      - name: Preserve aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p3-aggregate-evidence
+          path: ocular-p3-all-summary.json
+          if-no-files-found: warn
+          retention-days: 30

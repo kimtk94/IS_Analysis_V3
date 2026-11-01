@@ -1,0 +1,38 @@
+name: Ocular P5p Low-Abundance and Nine Adequate-Expression Candidates
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  expression-aware-rank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Audit primary and P5m aggregate-only evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/ocular/ocular_p5p_expression_aware.py
+          mkdir -p "$RUNNER_TEMP/p5b" "$RUNNER_TEMP/p5m" ocular-p5p-public
+          gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5b"
+          gh run download 41160429359 -n ocular-p5m-timecourse-96-tiering -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5m"
+          python scripts/ocular/ocular_p5p_expression_aware.py --primary "$RUNNER_TEMP/p5b/p5_all_gene_results.tsv.gz" --p5m "$RUNNER_TEMP/p5m/P5m_96_conflicts_timecourse_priorities.tsv" --output-dir ocular-p5p-public
+      - name: Purge intermediate artifact copies
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p5b" "$RUNNER_TEMP/p5m"
+      - name: Publish gene-level expression QC and ranking only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5p-expression-aware
+          path: ocular-p5p-public/
+          retention-days: 30
+          if-no-files-found: warn

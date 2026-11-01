@@ -1,0 +1,31 @@
+name: Ocular P2 All-Pool Barcode Donor Validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  all-pool-qc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile scripts
+        run: |
+          python -m py_compile scripts/ocular/ocular_p1_integrity.py scripts/ocular/ocular_p2_allpool.py
+      - name: Check all 18 library barcode and donor mappings
+        run: |
+          python scripts/ocular/ocular_p2_allpool.py --output ocular-p2-allpool-evidence.json
+      - name: Save aggregate-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p2-allpool-evidence
+          path: ocular-p2-allpool-evidence.json
+          retention-days: 30
+          if-no-files-found: warn

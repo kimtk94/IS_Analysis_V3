@@ -1,0 +1,28 @@
+name: Ocular P5f Dataset Attrition Reconciliation
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  describe-attrition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate syntax and compare GEO SOFT to final donor metadata
+        run: |
+          python -m py_compile scripts/ocular/ocular_p0_audit.py scripts/ocular/ocular_p5f_attrition.py
+          python scripts/ocular/ocular_p5f_attrition.py --out ocular-p5f-attrition.json
+      - name: Archive anonymous population counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5f-attrition
+          path: ocular-p5f-attrition.json
+          if-no-files-found: warn
+          retention-days: 30

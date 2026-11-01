@@ -1,0 +1,62 @@
+name: Ocular P7 EMT Robustness and Microbiome Study QC
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  independent-evidence-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [emt, samplemeta, formats]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile reproducible P7 public-data scripts
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          python -m py_compile scripts/ocular/ocular_p7_emt_and_microbiome_gates.py
+          if [ "$MODE" = "emt" ]; then
+            python -m pip install 'numpy==1.26.4' 'openpyxl==3.1.5'
+          fi
+      - name: Retrieve already verified 16050-gene public P5b artifact for EMT arm
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ matrix.mode }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/p7-source" "ocular-p7-${MODE}-public"
+          if [ "$MODE" = "emt" ]; then
+            gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p7-source"
+            test -s "$RUNNER_TEMP/p7-source/p5_all_gene_results.tsv.gz"
+          fi
+      - name: Run one independent gate and explicitly report qualified HOLDs
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          if [ "$MODE" = "emt" ]; then
+            python -u scripts/ocular/ocular_p7_emt_and_microbiome_gates.py --mode emt --primary "$RUNNER_TEMP/p7-source/p5_all_gene_results.tsv.gz" --out ocular-p7-emt-public
+          elif [ "$MODE" = "samplemeta" ]; then
+            python -u scripts/ocular/ocular_p7_emt_and_microbiome_gates.py --mode samplemeta --out ocular-p7-samplemeta-public
+          else
+            python -u scripts/ocular/ocular_p7_emt_and_microbiome_gates.py --mode formats --out ocular-p7-formats-public
+          fi
+      - name: Remove transient artifacts
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p7-source"
+      - name: Publish aggregate-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p7-${{ matrix.mode }}-gate
+          path: ocular-p7-${{ matrix.mode }}-public/
+          retention-days: 30
+          if-no-files-found: warn

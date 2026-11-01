@@ -1,0 +1,30 @@
+name: Ocular P6e Shotgun Alternative Archive Link Gate
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-shotgun-raw-archive-routes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile metadata-only parser
+        run: |
+          python -m py_compile scripts/ocular/ocular_p6e_shotgun_alternative_access.py
+      - name: Inspect ENA alternate FASTQ, SRA and submitted links for 62 shotgun runs
+        run: |
+          python scripts/ocular/ocular_p6e_shotgun_alternative_access.py --out ocular-p6e-public
+      - name: Save only aggregate route counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p6e-shotgun-alternative-archive
+          path: ocular-p6e-public/
+          retention-days: 30
+          if-no-files-found: warn
