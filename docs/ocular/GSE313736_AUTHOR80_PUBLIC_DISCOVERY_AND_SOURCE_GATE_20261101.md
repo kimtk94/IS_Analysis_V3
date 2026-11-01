@@ -45,3 +45,15 @@ python scripts/ocular/ocular_gse313736_author80_public_gate.py \
 
 ## Required next action and responsibility
 The original investigators' data request is prepared in [ORIGINAL_AUTHOR_EVIDENCE_REQUEST_PACKET_20261101.md](ORIGINAL_AUTHOR_EVIDENCE_REQUEST_PACKET_20261101.md). **Not sent.** Official GEO contact/affiliation must be checked before a user-approved outreach. Ask for the 80-row table with FDR and stable IDs, actual signed cutoff and model, anonymized QC eligibility counts, and any manuscript/preprint. There is no justification for repeating the 18 original raw 10x matrix downloads while author80 identity remains blocked.
+
+## Follow-up 2026-11-02 — strict 80 versus 83 structural comparison
+
+**CI PASS:** [Actions #41324876650](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41324876650), source commit `b88a6f1e49dd532ef0d0a5a473e0b7ecd95eb3f6`, two parallel jobs SUCCESS. Verified job log:
+- `AUTHOR80_GATE_SELF_TEST_PASS: 63/17, derived 67/16 high-effect 83, tested-vs-DEG separation, zero effect, provenance, duplicate`.
+- Three Europe PMC queries returned zero matching records; official GEO Series supplement directory yielded no candidate original author DEG table. This does not establish global absence.
+
+**Important analytical correction:** `ours-table` can be the **full P5 tested-gene table**, not merely a prefiltered 83-row file. The validator now derives our high-effect set explicitly using `FDR < 0.05 AND abs(log2FC) >= 3`, then requires **83 = 67 up + 16 down** before permitting a reviewable original-author comparison. It reports **both** (a) number of 80 author genes appearing anywhere in our full tested universe, and (b) number appearing in our own 83 high-effect genes, plus direction concordance in the *latter intersection*. This avoids falsely treating detectable but not differentially expressed genes as matched DEG hits. Exact zero `log2FC` can occur in the full tested universe and is now allowed in that input; author 80 DEG set requires nonzero effects.
+
+**Official author contact confirmed:** [NCBI GEO GSM9373290](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM9373290) lists Alex Hewitt, University of Tasmania / Menzies Institute, institutional e-mail `alex.hewitt@utas.edu.au`. The [author request packet](ORIGINAL_AUTHOR_EVIDENCE_REQUEST_PACKET_20261101.md) now names the official address. **No email has been sent.**
+
+**Decision:** structural CI capability **GO**; actual author original DEG80 **HOLD**; neither same-cohort sensitivity nor a synthetic self-test can be described as external gene-level replication. Prior source-analyzed technical confounding remains **HOLD**.
