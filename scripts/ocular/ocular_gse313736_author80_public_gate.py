@@ -115,23 +115,22 @@ def read_gene_table(path, *, source_author):
     gene_col = pick("ensembl_gene_id", "gene_id", "GeneID", "ensembl_id")
     fc_col = pick("log2FC", "logFC", "log2FoldChange", "log2fc")
     fdr_col = pick("FDR", "padj", "adj.P.Val", "fdr")
-    if not gene_col or not fc_col or (source_author and not fdr_col):
-        raise ValueError("MISSING_GENE_FC_OR_AUTHOR_FDR_COLUMNS")
+    if not gene_col or not fc_col or not fdr_col:
+        raise ValueError("MISSING_GENE_FC_OR_FDR_COLUMNS")
     genes = {}
     for idx, row in enumerate(rows, 2):
         gene = standard_gene(row[gene_col])
         if gene in genes:
             raise ValueError(f"DUPLICATE_GENE_ID_AT_LINE_{idx}")
         v = float(row[fc_col])
-        if not math.isfinite(v) or v == 0:
-            raise ValueError(f"INVALID_NONZERO_LOG2FC_AT_LINE_{idx}")
-        q = None
-        if fdr_col and row[fdr_col].strip():
-            q = float(row[fdr_col])
-            if not math.isfinite(q) or not (0 <= q <= 1):
-                raise ValueError(f"INVALID_FDR_AT_LINE_{idx}")
-        elif source_author:
-            raise ValueError(f"MISSING_AUTHOR_FDR_AT_LINE_{idx}")
+        if not math.isfinite(v) or (source_author and v == 0):
+            raise ValueError(f"INVALID_SOURCE_LOG2FC_AT_LINE_{idx}")
+        # An unfiltered test universe may legitimately contain exact zero effects.
+        if not row[fdr_col].strip():
+            raise ValueError(f"MISSING_FDR_AT_LINE_{idx}")
+        q = float(row[fdr_col])
+        if not math.isfinite(q) or not (0 <= q <= 1):
+            raise ValueError(f"INVALID_FDR_AT_LINE_{idx}")
         genes[gene] = {"log2FC": v, "FDR": q}
     return genes
 
@@ -146,21 +145,40 @@ def compare(source_path, ours_path, source_url, source_method):
         author_up = sum(z["log2FC"] > 0 for z in author.values())
         author_down = sum(z["log2FC"] < 0 for z in author.values())
         structural = len(author) == 80 and author_up == 63 and author_down == 17
-        shared = sorted(set(author) & set(ours))
-        concordant = sum(author[g]["log2FC"] * ours[g]["log2FC"] > 0 for g in shared)
+        # High-effect reanalysis is a FDR/FC-filtered SUBSET, not all tested genes.
+        ours_high = {g: z for g, z in ours.items()
+                     if z["FDR"] < 0.05 and abs(z["log2FC"]) >= 3}
+        high_up = sum(z["log2FC"] > 0 for z in ours_high.values())
+        high_down = sum(z["log2FC"] < 0 for z in ours_high.values())
+        our_expected = (len(ours_high), high_up, high_down) == (83, 67, 16)
+        shared_tested = sorted(set(author) & set(ours))
+        shared_high = sorted(set(author) & set(ours_high))
+        concordant = sum(author[g]["log2FC"] * ours_high[g]["log2FC"] > 0
+                         for g in shared_high)
+        status = ("HOLD_AUTHOR_COUNTS_DO_NOT_MATCH_63_17" if not structural else
+                  "HOLD_OUR_HIGH_EFFECT_COUNTS_DO_NOT_MATCH_83" if not our_expected else
+                  "REVIEW_AUTHOR_FILE_PROVENANCE_AND_THRESHOLD")
         return {
-            "status": "REVIEW_AUTHOR_FILE_PROVENANCE_AND_THRESHOLD" if structural else
-                      "HOLD_AUTHOR_COUNTS_DO_NOT_MATCH_63_17",
+            "status": status,
             "author_table_source_url_claimed_not_independently_verified": source_url,
             "author_method_claimed_not_independently_verified": source_method,
             "author_table_sha256": hashlib.sha256(Path(source_path).read_bytes()).hexdigest(),
             "our_table_sha256": hashlib.sha256(Path(ours_path).read_bytes()).hexdigest(),
             "author_gene_count": len(author), "author_up": author_up, "author_down": author_down,
-            "our_gene_count": len(ours), "shared_genes": len(shared),
-            "same_direction": concordant, "opposite_direction": len(shared) - concordant,
-            "coverage_of_author_80": len(shared) / 80,
-            "direction_concordance_among_shared": concordant / len(shared) if shared else None,
-            "caution": "Descriptive overlap only. Check published method, source identity and donor/library effects before GO.",
+            "our_total_tested_genes": len(ours),
+            "our_high_effect_filter": "FDR < 0.05 and abs(log2FC) >= 3",
+            "our_high_effect_count": len(ours_high),
+            "our_high_effect_up": high_up, "our_high_effect_down": high_down,
+            "author_genes_present_in_our_tested_universe": len(shared_tested),
+            "author_genes_present_in_our_high_effect_83": len(shared_high),
+            "direction_same_among_high_effect_shared": concordant,
+            "direction_opposite_among_high_effect_shared": len(shared_high) - concordant,
+            "author_high_effect_coverage_fraction": len(shared_high) / 80,
+            "direction_concordance_among_high_effect_shared": (
+                concordant / len(shared_high) if shared_high else None),
+            "caution": ("Author file ownership and actual original cutoff are not verified "
+                        "by the local CLI; high-effect overlap is descriptive only. "
+                        "Separate DEX/vehicle 10x libraries are a causal confounder."),
         }
     except (OSError, ValueError, KeyError) as exc:
         return {"status": "HOLD_INPUT_INVALID",
@@ -181,22 +199,45 @@ def self_test():
         src = base / "source.tsv"
         ours = base / "ours.tsv"
         names = [f"ENSG{i:011d}" for i in range(1, 81)]
+        extras = [f"ENSG{i:011d}" for i in range(81, 85)]
         src.write_text("gene_id\tlog2FC\tFDR\n" + "".join(
             f"{gene}\t{4 if idx < 63 else -4}\t0.01\n"
             for idx, gene in enumerate(names)), encoding="utf8")
-        ours.write_text("gene_id\tlogFC\tFDR\n" + "".join(
-            f"{gene}\t{4 if idx < 62 else -4}\t0.02\n"
-            for idx, gene in enumerate(names[:79])), encoding="utf8")
+        # 84 total-test-universe genes, 83 of which meet the independent 67/16 cutoff.
+        # Two intentional directional mismatches and one author gene non-significant.
+        observed = []
+        for idx, gene in enumerate(names):
+            effect = (4 if idx < 63 else -4)
+            fdr = 0.01
+            if idx in (62, 63):
+                effect = -effect
+            if idx == 79:
+                effect, fdr = -0.1, 0.5
+            observed.append(f"{gene}\t{effect}\t{fdr}\n")
+        observed.extend(f"{gene}\t4\t0.01\n" for gene in extras)
+        ours.write_text("gene_id\tlogFC\tFDR\n" + "".join(observed), encoding="utf8")
         a = compare(src, ours, "https://example.org/source", "specified contrast")
         assert a["status"] == "REVIEW_AUTHOR_FILE_PROVENANCE_AND_THRESHOLD", a
-        assert (a["shared_genes"], a["same_direction"], a["opposite_direction"]) == (79, 78, 1)
+        assert (a["author_genes_present_in_our_tested_universe"],
+                a["author_genes_present_in_our_high_effect_83"],
+                a["direction_same_among_high_effect_shared"],
+                a["direction_opposite_among_high_effect_shared"]) == (80, 79, 77, 2), a
+        assert (a["our_high_effect_count"], a["our_high_effect_up"],
+                a["our_high_effect_down"]) == (83, 67, 16), a
         b = compare(src, ours, "", "")
         assert b["status"] == "HOLD_SOURCE_PROVENANCE_OR_METHOD_UNSPECIFIED"
-        src.write_text(src.read_text() + f"{names[0]}\t3\t0.01\n", encoding="utf8")
+        # Input drift must NOT silently be interpreted as original 83.
+        ours.write_text(ours.read_text() + "ENSG00000000085\t0\t0.5\n", encoding="utf8")
         c = compare(src, ours, "https://example.org/source", "specified contrast")
-        assert c["status"] == "HOLD_INPUT_INVALID"
-    print("AUTHOR80_GATE_SELF_TEST_PASS: ID, duplicate, provenance, 63/17, overlap", flush=True)
-
+        assert c["our_total_tested_genes"] == 85 and c["our_high_effect_count"] == 83, c
+        ours.write_text(ours.read_text() + "ENSG00000000086\t4\t0.01\n", encoding="utf8")
+        d = compare(src, ours, "https://example.org/source", "specified contrast")
+        assert d["status"] == "HOLD_OUR_HIGH_EFFECT_COUNTS_DO_NOT_MATCH_83", d
+        src.write_text(src.read_text() + f"{names[0]}\t3\t0.01\n", encoding="utf8")
+        e = compare(src, ours, "https://example.org/source", "specified contrast")
+        assert e["status"] == "HOLD_INPUT_INVALID", e
+    print("AUTHOR80_GATE_SELF_TEST_PASS: 63/17, derived 67/16 high-effect 83, "
+          "tested-vs-DEG separation, zero effect, provenance, duplicate", flush=True)
 
 def main():
     p = argparse.ArgumentParser()
