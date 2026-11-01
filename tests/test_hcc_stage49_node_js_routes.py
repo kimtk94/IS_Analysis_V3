@@ -4,7 +4,7 @@ import sys
 import unittest
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]/"scripts"/"hcc"))
 from audit_stage49_node_js_routes import (PROJECT,ScriptParser,asset_url,inspect_js,review,
-                                          audit)
+                                          audit,bounded_get)
 
 class Response:
     def __init__(self,url,raw,mime):
@@ -50,6 +50,14 @@ class Tests(unittest.TestCase):
             return Response("https://attacker.invalid/",b"<html></html>","text/html")
         x=audit(opener=opener)
         self.assertEqual(x["status"],"SOURCE_ACCESS_HOLD")
+    def test_http_206_at_requested_cap_remains_partial(self):
+        def opener(req,timeout=None):
+            r=Response(PROJECT,b"0123456789","text/html")
+            r.status=206
+            return r
+        _,meta=bounded_get(PROJECT,10,opener=opener)
+        self.assertTrue(meta["truncated_prefix"])
+
     def test_unapproved_go_rejected(self):
         with self.assertRaises(ValueError):
             review({"status":"PUBLIC_JS_ROUTE_CENSUS_COMPLETED",
