@@ -39,7 +39,7 @@ def public_href(href):
     try:
         u=urllib.parse.urlsplit(href)
         if u.scheme and (u.scheme!="https" or u.hostname!="www.biosino.org"):return False
-        if not u.scheme and (href.startswith("//") or href.startswith("\\\")):return False
+        if not u.scheme and href.startswith("//"):return False
         return bool(PUBLIC_DOWNLOAD.fullmatch(u.path) and not u.query and not u.fragment)
     except ValueError:
         return False
