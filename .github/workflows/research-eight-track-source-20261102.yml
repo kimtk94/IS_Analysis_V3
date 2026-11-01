@@ -1,0 +1,48 @@
+name: MASTER DEGREE 8-track live source gates 2026-11-02
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/research-eight-track-source-20261102.yml"
+      - "scripts/research/probe_eight_tracks_20261102.py"
+      - "tests/test_eight_track_source_probe_20261102.py"
+permissions:
+  contents: read
+jobs:
+  official-source-probe:
+    name: "Official source — ${{ matrix.track }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run exactly one bounded official-source task
+        run: python scripts/research/probe_eight_tracks_20261102.py --track "${{ matrix.track }}"
+      - name: Upload status and bounded aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-20261102-${{ matrix.track }}
+          path: results/research_operations/20261102/${{ matrix.track }}_20261102.json
+          if-no-files-found: error
+          retention-days: 30
+  regression-tests:
+    name: Fail-closed research-gate tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m unittest discover -s tests -p "test_eight_track_source_probe_20261102.py" -v
