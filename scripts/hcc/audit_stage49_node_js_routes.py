@@ -75,6 +75,10 @@ def bounded_get(url,cap,opener=urllib.request.urlopen):
         truncated=True
     else:
         truncated=False
+    # A 206 response exactly at the requested cap can conceal a larger asset.
+    # Report it as a partial source prefix, not a complete JS audit.
+    if status==206 and len(data)>=cap:
+        truncated=True
     return data,{"http_status":status,"mime_type":mime,"bytes_inspected":len(data),
                  "truncated_prefix":truncated,
                  "prefix_sha256":hashlib.sha256(data).hexdigest()}
