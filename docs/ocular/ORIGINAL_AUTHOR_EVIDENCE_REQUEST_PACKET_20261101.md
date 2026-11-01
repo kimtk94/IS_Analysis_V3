@@ -38,7 +38,7 @@ No individual human-genotype/medical record data should be requested. Do not cla
 
 ## C. Ready-to-send inquiry to GSE313736 source investigators (UNSENT)
 
-**Official route:** GSE313736 GEO Series/GSM lists University of Tasmania contact Alex Hewitt; use the **official GEO record** to confirm the address immediately before sending, rather than an unverified contact scrape. Do not automatically send from CI.
+**Official route (verified 2026-11-02):** The [GSE313736-linked original GEO GSM record](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM9373290) lists University of Tasmania / Menzies Institute contact **Alex Hewitt**, institutional email **alex.hewitt@utas.edu.au** (also lists a personal email; prefer institutional). Address is sourced from the live official NCBI GEO record, not inferred from other publication authors. **Outreach remains UNSENT.** Do not automatically send from CI.
 
 **Suggested subject:** Request for original 80 DEX-responsive TM genes and methods (GSE313736)
 
@@ -56,3 +56,13 @@ No individual human-genotype/medical record data should be requested. Do not cla
 > [Researcher name / university affiliation]
 
 **Evidence receipt checklist (not assumed received):** (1) author-owned 80-row gene table with stable IDs; (2) directional cutoff and effect scale; (3) original sample/cell-state eligibility and contrast/model; (4) file or publication provenance and version. **Do not** promote overlap from HOLD to GO on the basis of the reply text alone unless the actual gene-level table is attached or linked and checked. **Sent:** NO. **Reply:** NONE.
+
+
+## D. Submission-ready minimal request — verified contact, not yet sent (2026-11-02)
+
+- To: `alex.hewitt@utas.edu.au` (verified from [NCBI GEO GSM9373290](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM9373290)).
+- Subject: `GSE313736 — request for original 63 up / 17 down DEG table and analysis methods`.
+- Requested artifact: exact author-owned 80-gene IDs, gene symbols, signed log2FC, adjusted p-values, contrast and 59-sample QC criteria; optionally R analysis script and paper/preprint DOI.
+- Correction to draft language: **do not claim** ANZGS conference talk in February 2024 disclosed the DEG 80 — its official program only provides a scheduled title and time. The 2024 AVR report provides the aggregate 63/17 numbers.
+- Source search status: targeted public indexing and official GEO Series table listing checked. No authenticated original 80-row table retrieved. Parallel baseline P5 57 donor and Gate B matched 55 donor remain separate reanalysis, not an author-specific reproduction.
+- Approval/sent/replied timestamps: **none**. Do not write to an author automatically from GitHub Actions or include genotype/clinical identifiers.
