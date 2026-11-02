@@ -204,3 +204,16 @@ BeamA confidence 0.5/0.75, alternative cell label, donor당 적격 cell 수, 각
 - 기존 3-source Figure와 후보 핵심 순위는 유지하되, 원 저자 80개 명단과 별개로 **외부 strain 기여의 이질성 및 기준 강화에 따른 후보 감소**를 논문 결과에 명시한다.
 
 **다음 과제:** 공개 후속 TM 연구의 strain/dose/timepoint·효과 추정량 비교 한계가 충분히 고정되었으므로 이후에는 **기술적 confounding/negative-control/selection-bias 한계의 직접 정량화 가능 여부** 또는 논문 투고 수준의 Figure/Source manifest 검토를 우선한다. 연구진 접촉 없이 이어간다.
+
+
+## 2026-11-02 — 원본 라이브러리별 교란 식별불가능성 및 BeamA 구성차 분해
+
+원 저자 문의 없이 공개된 기존 CI 집계 파일만 사용하여 **수학적 설계 식별성과 pool 가중치 조성 문제**를 검증했다. 실제 [GitHub Actions #41430965326](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41430965326) **2/2 SUCCESS**, [집계 보고서 아티팩트 #13133928461](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41430965326/artifacts/13133928461). [상세 출처/식/결정](GSE313736_LIBRARY_TREATMENT_ALIASING_AND_POOL_WEIGHT_DECOMPOSITION_20261102.md); 분석 스크립트 `ocular_p5_technical_confounding_identifiability_audit.py`.
+
+- **원본 소스 구조:** 9 source pools × (Vehicle, DEX) = **18 개별 10x library**. Model `~ pool+treatment`에 해당하는 행렬은 **10열/rank 10**으로 arm contrast 추정 가능. 단, 원본 **library별 독립 nuisance 18열 + DEX열 = 19열/rank18**이므로 DEX 열 rank 증가 **0**. DEX indicator 자체가 9개의 DEX-library indicator 합이다. **무제약 source-library 효과 대비 DEX 약물계수는 식별할 수 없다.** 약물 생물학적 효과가 전혀 없다는 주장도 아님.
+- **원본 P5e 실제 169,398 singlet / paired 59 donor:** 전체 BeamA≥0.75 비율 차이 **+2.406339 pp**를 원본 9 pool별 분자/분모 및 기존 6자리 비율로 다시 계산. 대칭 Kitagawa 분해: **within-pool fraction 변화 +0.868638 pp**, **arm별 pool 세포수 가중치 변화 +1.537701 pp** = 총 +2.406339 pp. 가중치 항은 기술적 효과 또는 약물효과의 인과 기여율이 아니라 **관측집계 차이의 수학적 분해**다.
+- **Donor-weight versus cell-weight 충돌:** paired 59 donor의 BeamA fraction median change **−0.421 pp**, 29 positive vs 30 negative, exact sign-test p=1; global cell-weighted +2.406 pp와 분석 단위가 다르다. 원 연구 cohort의 중요한 Simpson-like aggregation 경고다.
+- **원본 통계적 안정성 유지:** 57 paired donor vs 9 paired pool pooled-library edgeR 16,049 shared tested genes, 11,079/13,716 original FDR genes retained, Pearson 0.996245. 9 leave-one-pool refits minimum Pearson 0.997265. MDS dimension1의 단변량 treatment R²=0.955577은 **DEX causal explained variance 95.6%가 아님**.
+- **논문 초안** [Methods 2.3a/Results 3.4b/Discussion 4.3a](THESIS_MANUSCRIPT_METHODS_RESULTS_DISCUSSION_DRAFT_20261101.md)에 식별 불가능성을 독립 Result로 반영했다. 이 새로운 증거가 논문의 **주요 비중복 기여(설계·셀 집계/선택 편향 검증)** 중 하나다.
+
+**완료 기준 갱신:** 계산 가능한 GSE313736 연구의 구조적 교란 진단 **GO**, 특정 DEG의 순수 약물 인과효과와 라이브러리 효과 분리 **HOLD**, 원 저자 80 DEG 완전 매핑 **NON-BLOCKING HOLD**이며 연락은 추진하지 않음, 임상 steroid-induced ∆IOP **STOP**. 후속은 출처 재현성 검증과 외부 cohort별 비교가능성 요약으로 전환하고 비용 큰 10x 재다운로드는 피한다.
