@@ -149,7 +149,7 @@ BeamA confidence 0.5/0.75, alternative cell label, donor당 적격 cell 수, 각
 2. 159커밋/98파일 PR은 지나치게 거대하므로 병합 전에 실행 증거 인덱스·소스 해시·필수 재현 진입점·이전 실패와 수정 내역·GitHub 경량 CI 확인. 필요하면 향후 변경을 작은 독립 PR로 분리. 이 문서는 병합을 실행하지 않는다.
 3. 외부 독립 DEX-TM 자료를 우선하고 미생물 앰플리콘/shotgun은 **별도 녹내장 프로젝트로 보류**. 오염대조/환자군 매핑 없이 미생물 기전과 스테로이드 안압 상승을 연결하지 않는다.
 4. 연구 그림: (i) 데이터 계보/선택 편향 (ii) QC+모형 (iii) 3개 독립 실험의 동일 유전자 효과 방향 (iv) cell-state threshold sensitivity (v) ATAC/IOP 조건부 통합 (vi) 근거 수준별 GO/HOLD 표.
-5. **논문의 완료 조건**: 제3 코호트 GO, 원논문 완전 DEG 매핑, 선택/교란 한계의 정량화, 결과 해석을 뒷받침하는 그림, 선행 2026 문헌 대비 비중복 기여, 외부 원자료/실험 접근 여부에 맞는 주장 수준. 임상 예측과 novel causal mechanism은 현재 STOP/HOLD.
+5. **논문의 완료 조건 (2026-11-02 수정)**: 제3 독립 연구의 출처·통계량·생물학적 표본 단위 확인, 세포 분류/발현량/효과크기 민감도 및 라이브러리 교란 한계의 정량 보고, 출처 검증 Figure, 2022–2026 기출판 연구 대비 제한된 비중복 기여, 결과에 맞는 주장 수준. **원 저자 80개 유전자 ID 완전 매핑은 출처 부재로 NON-BLOCKING HOLD이며 논문 제출의 필수 선행조건이 아니다. 연구진에게 직접 요청하지 않는다.** 다만 실제 매핑 전에는 원 저자 결과를 완전 재현했다고 주장하지 않는다. 임상 예측 및 새로운 인과 기전은 STOP/HOLD.
 
 *전략 수립 시 출처를 확인한 참고 논문 및 데이터: GSE313736; GSE301517; GSE301516; PMID 41636427, 41890121, 42396508, 42388255; dbGaP phs004037. GitHub CI 통과는 생물학적 결론 PASS와 다르다.*
 
@@ -177,3 +177,17 @@ BeamA confidence 0.5/0.75, alternative cell label, donor당 적격 cell 수, 각
 실행된 [P5 공개 집계표 아카이브 감사 #41383491819](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41383491819)에서 자가 테스트와 **기존 57 paired donor edgeR 결과의 실제 gene-level 파일 재집계**가 모두 성공했다. [작은 감사 아티팩트 #13114356298](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41383491819/artifacts/13114356298)에 원본 gene-level 통계 파일 SHA-256와 수치·근거를 보존했다. 16,050개 검정, 13,717개 FDR<0.05, 83개 |log2FC|≥3 & FDR<0.05(67↑/16↓) **실제 재집계 값 일치**. 원본 10x raw 다운로드는 반복하지 않았다. 자세한 검증 조건은 [author80 source gate](GSE313736_AUTHOR80_PUBLIC_DISCOVERY_AND_SOURCE_GATE_20261101.md) 참조.
 
 **GO:** 우리 P5 기존 산출물 구조·수치 재현 및 출처 감사. **HOLD:** 원 저자의 63↑/17↓ 유전자 ID 80개·원저자 사용 모델/절단값·우리 83개와의 실제 overlap; 저자 요청서는 아직 미발송. **HOLD:** DEX/vehicle 10x 라이브러리 교란 및 세포 선택 교란. **STOP:** 임상 스테로이드 안압 상승 위험 예측 주장. 새 자료 없이 80개를 추측해서 재구성하거나 수치가 비슷하다고 일치한다고 판정하지 않는다.
+
+
+## 2026-11-02 — 연구진 연락 보류 이후의 실증 연구 전환
+
+원 저자에게 연구자료를 요청하기 어려우므로 **원저자 연락·80 DEG 원본 요청은 현재 추진하지 않는다**. 80개 명단은 출처가 확인되기 전까지 **NON-BLOCKING HOLD**로 둔다. 다른 연구를 억지로 이 단계에 종속시키지 않으며, 원 저자 목록을 추정해 재현율을 조작하지 않는다.
+
+실제 GitHub Actions [#41389639386](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41389639386) **2/2 SUCCESS**. 과거의 **실제 gene-level edgeR 결과 3개 archive**를 대상으로 추가 원자료 다운로드 없이 발현효과 크기 및 baseline logCPM 사분위수별 두 annotation/score 대비를 완료했다. 결과 Figure 및 통계표는 [아티팩트 #13116138830](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41389639386/artifacts/13116138830), 연구방법/해석의 정식 근거는 [Gate B stratification 문서](GATE_B_STRATIFIED_EFFECT_REPRODUCIBILITY_REAL_20261102.md) 및 [논문 초안 3.4a](THESIS_MANUSCRIPT_METHODS_RESULTS_DISCUSSION_DRAFT_20261101.md).
+
+- 정확히 동일한 57 biological donor의 BeamA score 0.75/0.50 대비: tested shared 16,050, Pearson r=0.99911597; 원본 abs(log2FC)<0.25 유전자 5,957개 중 96.659% 방향 일치, 0.25 이상 세 군에서 모두 100%.
+- 동일한 55 donor의 BeamA vs scPred TM_Fibro 대비: tested shared 13,975, Pearson r=0.94990493. **작은 효과 <0.25의 5,349개 가운데 78.258%만 방향 일치**; 0.25–1은 97.666%, 1–3은 99.898%, 3 이상은 100%(59개). 발현량 사분위 Q1에서 87.064%, Q4에서 93.389% 일치.
+- 큰 효과에서 높은 방향 일치율이란 baseline large-effect *선택 조건하의 기술적 안정성*일 뿐 독립 코호트 검증이 아니다. DEX/vehicle의 원본 10x 라이브러리별 분리·post-treatment cell label selection은 그대로 연구 주요 교란이다.
+- 결과를 **Supplementary Figure + 16 strata table**로 논문 초안에 포함했다. 기존 Figure를 중복 제작하지 않았다.
+
+**다음 계산 과제:** 독립 Mehrotra 100nM 48h TM과 GSE301517 500nM 7d TM 간 표본명·처리시간·유전자별 효과 추정량의 비교 가능성 보수적 감사, 가능할 때만 외부 방향 검증 확장. 원 저자 연락 없이 진행하는 연구로 재설계함.
