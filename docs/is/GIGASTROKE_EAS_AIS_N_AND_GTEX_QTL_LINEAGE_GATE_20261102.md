@@ -104,3 +104,26 @@ promotion.
 **Scientific conclusion: GWAS source crosswalk PASS (limited four-gene
 6,273-SNP universe); original molecular-QTL model equivalence and
 case/control N for coloc HOLD.**
+
+
+## Actual official source readout — completed 2026-11-02
+
+**Live GitHub Actions #41441107392: SUCCESS, 11/11 deterministic tests PASS.**
+
+Verified original GIGASTROKE AIS YAML directly from
+\`https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104545/GCST90104545_buildGRCh37.tsv.gz-meta.yaml\`:
+- YAML SHA-256: \`7383b859ce9bb4811c15bc634592ee1544788536797a5c663644e1aa648f1d3e\`.
+- Accession: \`GCST90104545\`, filename \`GCST90104545_buildGRCh37.tsv.gz\`, original data MD5 \`904e12e33ec3c2eeefe4dc93bec4995c\`, \`GRCh37\`, \`pre-GWAS-SSF\`, \`is_harmonised=false\`. Identity matches prior 260 MB whole-file source test.
+- **No \`case_count\`, \`control_count\` or \`sample_size\`** fields were present in the source YAML. Original GWAS 11-column data file also has no per-variant N. This is an empirical **N not documented** result, not a source-transfer failure.
+- The literature-reported 19,032 cases, 237,242 controls and illustrative s ≈0.074264, effective N ≈70,474 are **reference/sensitivity values**, not automatically valid for each SNP's original meta-analysis. Not adopted by this pipeline.
+
+eQTL Catalogue source lineage:
+- Official Studies and Release Notes HTML pages were actually read and hashed; QTS000015 GTEx reprocessed versus separately imported original GTEx_v8 were distinguished (**source category PASS**).
+- April 2023 release 6 documents complete cis gene expression \`.all.tsv.gz\` data, but September 2026 r8 pre-release notes **GTEx_v10 QTS000015 reprocessing with unchanged dataset IDs**.
+- Live QTD000161 gzip prefix accessible (prefix-only SHA-256 \`2e6295860e3c1bfae068167c6ceed1dd34e612da5b78385dd60b46473dc6f315\`). A prefix hash is **not a full original QTL byte hash** and cannot establish release 6 / 2023 exact file identity.
+- Original GTEx v8 FastQTL model, covariates, variants tested, effect-allele conventions and lineage-to-historical-coloc remain **HOLD**.
+
+Authoritative outcome JSON captured directly from successful CI job:
+[is_eas_ais_n_eqtl_lineage_20261102.json](../../research/is/evidence/is_eas_ais_n_eqtl_lineage_20261102.json).
+
+**Verdicts:** GWAS original-file SHA, 6,725,216-row numeric QC and four-gene 6,273-SNP source-to-Drive crosswalk PASS; GWAS original study N and SNP-wise case fraction HOLD; original molecular QTL model equivalence HOLD. No causal claim or coloc was promoted.
