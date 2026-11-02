@@ -38,7 +38,7 @@ TASKS = {
 }
 NEXT = {
     "is": "Complete source file SHA256, SNP effects and EUR/EAS allele/LD harmonization",
-    "glaucoma": "Re-fit leave-one-pool-out QL on donor-level integer counts and independently replicate",
+    "glaucoma": "Independent 100nM/7d TM replication and treatment-library confounding; causal drug effect not identified",
     "hcc": "Prove 330 quant columns uniquely map to official aliquots and RNA cases",
     "radiomics": "Measure registered PV NIfTI spacing for 14 cases and MRI-to-RNA patient join",
     "ocular": "Resolve 1h/6h/48h, strain and donor/timepoint pairing before raw-count analysis",
@@ -122,10 +122,10 @@ def glaucoma_task():
     if not folder.exists(): raise Hold("ARCHIVED_P5_ARTIFACT_NOT_ACCESSIBLE_IN_CI")
     candidates=[]
     for p in folder.rglob("*"):
-        if not p.is_file() or p.stat().st_size>25000000 or p.suffix.lower() not in (".tsv",".csv"):
+        if not p.is_file() or p.stat().st_size>25000000 or not (p.suffix.lower() in (".tsv",".csv") or p.name.endswith((".tsv.gz",".csv.gz"))):
             continue
         try:
-            with p.open(encoding="utf-8-sig") as f:
+            with (gzip.open(p,"rt",encoding="utf-8-sig") if p.name.endswith(".gz") else p.open(encoding="utf-8-sig")) as f:
                 first=f.readline()
             sep="\t" if "\t" in first else ","
             cols=[x.strip().lower() for x in next(csv.reader([first],delimiter=sep))]
@@ -140,7 +140,7 @@ def glaucoma_task():
     pi=next(cols.index(x) for x in ("pvalue","p_value","p.value","pval","p") if x in cols)
     qi=next(cols.index(x) for x in ("fdr","padj","adj.p.val","qvalue") if x in cols)
     values=[]
-    with p.open(encoding="utf-8-sig",newline="") as f:
+    with (gzip.open(p,"rt",encoding="utf-8-sig",newline="") if p.name.endswith(".gz") else p.open(encoding="utf-8-sig",newline="")) as f:
         reader=csv.reader(f,delimiter=sep); next(reader)
         for row in reader:
             if len(row)<=max(pi,qi): continue
@@ -149,7 +149,7 @@ def glaucoma_task():
             if not all(math.isfinite(v) and 0<=v<=1 for v in (a,b)):
                 raise IntegrityFail("P5_NONFINITE_OR_INVALID_PVALUES")
             values.append((a,b))
-    if len(values)<1000: raise Hold("P5_INSUFFICIENT_VALID_GENE_ROWS")
+    if len(values)<1000: return "HOLD_P5_INSUFFICIENT_VALID_GENE_ROWS",{"valid_gene_rows":len(values),"candidate_tables":len(candidates),"selected_table_compressed":p.name.endswith(".gz"),"table_sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
     recomputed=_bh([a for a,b in values])
     diffs=[abs(a-b) for a,(_,b) in zip(recomputed,values)]
     bad=sum(d>max(1e-5,1e-3*max(a,b)) for d,a,(_,b) in zip(diffs,recomputed,values))
