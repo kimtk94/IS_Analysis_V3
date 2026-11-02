@@ -46,6 +46,28 @@ class FullCisTests(unittest.TestCase):
         self.assertEqual(result["target_rows"],2)
         self.assertEqual(len(result["rows"]),2)
 
+    def test_non_snp_explicit_indel_and_mnv_included_without_symbolic(self):
+        class Mixed(MockTabix):
+            def fetch(self,c,start,end):
+                yield make_line("FGF5",c,start+50,ref="A",alt="ATG")
+                yield make_line("FGF5",c,start+60,ref="GGA",alt="G")
+                yield make_line("C4orf22",c,start+70,ref="AC",alt="GT")
+                yield make_line("FGF5",c,start+80,ref="A",alt="<DEL>")
+        out=m.read_source_rows(Mixed(m.BASE.ORIGINAL),HEAD,m.FULL_WINDOWS[0])
+        self.assertEqual(out["status"],"SCREEN_VALID")
+        self.assertEqual(len(out["rows"]),3)
+        self.assertEqual(out["counts"]["complex_indel_mnv_rows"],3)
+        self.assertEqual(out["counts"]["unsupported_allele_encoding_rows"],1)
+        self.assertNotIn(("ENSG00000138675","4",79000079,"A","<DEL>"),out["rows"])
+
+    def test_original_and_reprocessed_same_indel_exact_pair(self):
+        key=(GENES["FGF5"],"4",80010000,"A","AT")
+        a=source({key:(0.3,0.05,1e-5)})
+        b=source({key:(-0.1,0.06,1e-3)})
+        report=m.summarize_full_cis(a,b)
+        self.assertEqual(report["FGF5"]["matched_same_trait_and_exact_GRCh38_REF_ALT_pairs"],1)
+        self.assertEqual(report["FGF5"]["beta_sign_matches"],0)
+
     def test_source_scan_limit_is_fail_closed(self):
         h=MockTabix(m.BASE.ORIGINAL)
         result=m.read_source_rows(h,HEAD,m.FULL_WINDOWS[0],max_rows=1)
@@ -80,8 +102,8 @@ class FullCisTests(unittest.TestCase):
         b=source({opposite:(-0.3,0.05,1e-3)})
         out=m.summarize_full_cis(a,b)
         self.assertEqual(out["FGF5"]["matched_same_trait_and_exact_GRCh38_REF_ALT_pairs"],0)
-        self.assertEqual(out["FGF5"]["original_only_SNV"],1)
-        self.assertEqual(out["FGF5"]["reprocessed_only_SNV"],1)
+        self.assertEqual(out["FGF5"]["original_only_variant"],1)
+        self.assertEqual(out["FGF5"]["reprocessed_only_variant"],1)
 
     def test_mock_full_runner_produces_evidence_but_not_causal_claim(self):
         md5=(m.BASE.ORIGINAL_MD5+" Brain_Cerebellar_Hemisphere.tsv.gz\n").encode()
