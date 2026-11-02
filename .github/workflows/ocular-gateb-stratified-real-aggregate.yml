@@ -1,0 +1,71 @@
+name: Ocular Gate B Stratified Effect-Size and Expression Reproducibility
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/ocular-p0-data-access-audit-20261030
+    paths:
+      - scripts/ocular/ocular_gate_b_stratified_effect_reproducibility.py
+      - .github/workflows/ocular-gateb-stratified-real-aggregate.yml
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  check-stratification-logic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify computational stratum and input parser self-tests
+        run: |
+          python -m pip install 'numpy==1.26.4'
+          python -m py_compile scripts/ocular/ocular_gate_b_stratified_effect_reproducibility.py
+          python scripts/ocular/ocular_gate_b_stratified_effect_reproducibility.py --self-test
+
+  analyze-original-aggregate-gene-effects:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned plotting dependencies, no original RNA-seq raw data
+        run: |
+          python -m pip install 'numpy==1.26.4' 'matplotlib==3.9.2'
+      - name: Download three archived, aggregate-only edgeR sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-strata/source075" "$RUNNER_TEMP/ocular-strata/source050" "$RUNNER_TEMP/ocular-strata/dual55" ocular-strata-public
+          gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-strata/source075"
+          gh run download 41199532259 -n ocular-gate-b-050-full-ql-refit -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-strata/source050"
+          gh run download 41206289766 -n ocular-gate-b-dual55-public-results -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-strata/dual55"
+          test -s "$RUNNER_TEMP/ocular-strata/source075/p5_all_gene_results.tsv.gz"
+          test -s "$RUNNER_TEMP/ocular-strata/source050/p5_all_gene_results.tsv.gz"
+          test -s "$RUNNER_TEMP/ocular-strata/dual55/BeamA_075/p5_all_gene_results.tsv.gz"
+          test -s "$RUNNER_TEMP/ocular-strata/dual55/TM_Fibro/p5_all_gene_results.tsv.gz"
+      - name: Recompute signed concordance by effect-size/abundance and create Figure
+        run: |
+          python -u scripts/ocular/ocular_gate_b_stratified_effect_reproducibility.py \
+            --base57 "$RUNNER_TEMP/ocular-strata/source075/p5_all_gene_results.tsv.gz" \
+            --score050 "$RUNNER_TEMP/ocular-strata/source050/p5_all_gene_results.tsv.gz" \
+            --beam55 "$RUNNER_TEMP/ocular-strata/dual55/BeamA_075/p5_all_gene_results.tsv.gz" \
+            --fibro55 "$RUNNER_TEMP/ocular-strata/dual55/TM_Fibro/p5_all_gene_results.tsv.gz" \
+            --out ocular-strata-public
+      - name: Purge temporary original gene tables; retain aggregate metrics and figure only
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-strata"
+      - name: Archive reviewable stratum metrics + plot without donor or sample IDs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gateb-stratified-real-aggregate-figure
+          path: ocular-strata-public/
+          retention-days: 60
+          if-no-files-found: warn
