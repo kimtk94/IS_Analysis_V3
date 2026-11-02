@@ -1,0 +1,46 @@
+name: HCC Stage58 Browser-Proven Public Repository and Download Chunk Source
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/hcc/audit_stage58_download_chunk.py"
+      - "tests/test_hcc_stage58_download_chunk.py"
+      - ".github/workflows/hcc-stage58-public-download-chunks.yml"
+permissions:
+  contents: read
+jobs:
+  safe-source-identity-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate Stage57-observed source hash pins and biological HOLD gates
+        run: python -m unittest discover -s tests -p 'test_hcc_stage58_download_chunk.py' -v
+
+  source-pinned-api-structure-audit:
+    strategy:
+      fail-fast: false
+      matrix:
+        chunk: ['download','repository']
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Audit only SHA256-pinned public HCCDB route JavaScript
+        run: |
+          python scripts/hcc/audit_stage58_download_chunk.py \
+            --chunk '${{ matrix.chunk }}' \
+            --out 'results/hcc/stage58/${{ matrix.chunk }}_public_source_structure.json'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-stage58-${{ matrix.chunk }}-verified-public-module
+          path: results/hcc/stage58/*.json
+          if-no-files-found: warn
+          retention-days: 30
