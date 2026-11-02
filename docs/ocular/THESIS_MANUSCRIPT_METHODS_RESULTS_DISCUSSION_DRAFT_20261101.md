@@ -97,6 +97,14 @@ Under the restricted 55 donors eligible in both annotation schemes, BeamA and sc
 
 Because the alternative annotations reuse donors, libraries and potentially some individual cells, their p-values cannot be regarded as independent replication tests. The high number of jointly significant genes likewise does not eliminate correlated technical biases.
 
+### 3.4a Exploratory effect-magnitude and abundance-stratified annotation robustness (Supplementary Figure)
+
+To assess whether the high overall within-source model correlation concealed instability for weak or low-abundance genes, we reprocessed **only already fitted public aggregate gene-level edgeR statistics**, without repeating 10x raw-matrix downloads. Tested Ensembl genes shared between each pair of models were stratified by *baseline* absolute log2FC (less than 0.25, 0.25–1, 1–3 and 3 or greater) and baseline logCPM quartile. We computed sign agreement, the number of genes meeting BH-FDR<0.05 in both models and median absolute effect difference. These strata were exploratory and source-dependent, not independent validation sets.
+
+For the matched **55-donor BeamA/scPred** comparison, among genes with baseline abs(log2FC)<0.25, sign concordance was **78.26% (n=5,349)**, compared with **97.67% (n=7,583)** at 0.25–1, **99.90% (n=984)** at 1–3 and **100% (n=59)** at ≥3. Sign concordance across baseline expression quartiles increased from **87.06% in Q1** to **93.39% in Q4**. For the same-57-donor BeamA threshold comparison, sign concordance was **96.66% for baseline abs(log2FC)<0.25** and 100% in the three larger-effect strata. The matched-55 gene-level median absolute log2FC difference was **0.10190**, compared with **0.01125** under the 57-donor confidence threshold adjustment.
+
+These descriptive results limit general claims based solely on aggregate Pearson correlation and support prioritizing candidates that have sufficiently large, interpretable effects rather than significant but small changes. High agreement among genes *selected by large baseline effects* is not independent replication and cannot correct condition-confounded 10x library preparation. Source logs, SHA-256 manifests and exact subgroup denominators are preserved in [real CI #41389639386](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41389639386), [figure and table archive #13116138830](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41389639386/artifacts/13116138830), and [frozen stratum report](GATE_B_STRATIFIED_EFFECT_REPRODUCIBILITY_REAL_20261102.md).
+
 ### 3.5 Exploratory EMT direction stability across three experiments (Figure 3)
 
 Among 194 jointly mapped Hallmark EMT genes, **141** effect directions agreed between the two 48-hour sources, **156** between 500 nM 48-hour and 500 nM seven-day sources, and **145** between 100 nM 48-hour and 500 nM seven-day sources. Across all three settings, **124/194 (63.9%)** had the same direction. The set was selected in follow-up analysis and the constituent genes are correlated; these results are descriptive and do not establish pathway-level independent replication or actual TM fibrosis.
@@ -155,7 +163,7 @@ A donor-level reanalysis of public TM single-cell RNA-seq identified MYOC, TGFBI
 | Original 18×10x and 57 donor source provenance | **GO**: integrity/aggregation/model CI artifacts verified |
 | Classifier score 0.50/0.75 and fixed shared 55 scPred | **GO**: actual count-based refits, 3 core same signed/FDR |
 | Three-source transcript directions | **GO descriptive** using frozen publisher gene summary. **GO** October erratum content (Data Availability-only). **HOLD** independent raw-count corroboration until 46-run TM/SCE/timepoint/arm/donor metadata crosswalk |
-| Prove manuscript source's author-reported 63↑/17↓ gene-ID overlap | **HOLD**: exact 80-member list not verified |
+| Original authors' reported 63↑/17↓ exact gene-ID overlap | **HOLD, NON-BLOCKING**: 80-member original author table unavailable; explicitly limit claims to our reanalysis and do not require author correspondence for this paper |
 | Third-study independent DE p-values | **HOLD**: only normalized CPM and 3-strain direction data analyzed |
 | Biological independent protein/activity or functional ECM effects | **HOLD**: not measured |
 | Clinical steroid-response prediction | **STOP**: no clinical steroid challenge ∆IOP linked to these TM cell data |
