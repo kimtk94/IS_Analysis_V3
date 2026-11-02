@@ -170,3 +170,10 @@ BeamA confidence 0.5/0.75, alternative cell label, donor당 적격 cell 수, 각
 [Source gate and exact CI results](GSE313736_AUTHOR80_PUBLIC_DISCOVERY_AND_SOURCE_GATE_20261101.md) has been updated after [parallel Actions SUCCESS #41324876650](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41324876650). Comparison now separates author genes present in the 16,050-gene P5 full test universe from those meeting our **83 = 67 up + 16 down** high-effect FDR/FC filter, with sign direction evaluated only for the filtered intersection. All these tests used **synthetic** inputs and validate the comparator only; the author 80 table has still **not** been obtained. Public search did not produce an authenticated original study article or supplementary gene list. Author institutional email is independently present on [official GSE313736-linked GSM9373290](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM9373290). [Requested data package](ORIGINAL_AUTHOR_EVIDENCE_REQUEST_PACKET_20261101.md) is prepared **but not sent**.
 
 **Next gate:** authenticated original 80-row Ensembl/log2FC/FDR table + actual statistical method, followed by read-only comparison. No 18-matrix raw source redownload needed; hold causal and clinical conclusions as before.
+
+
+## 2026-11-02 — P5 원본 공개 통계표 재검증 완료
+
+실행된 [P5 공개 집계표 아카이브 감사 #41383491819](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41383491819)에서 자가 테스트와 **기존 57 paired donor edgeR 결과의 실제 gene-level 파일 재집계**가 모두 성공했다. [작은 감사 아티팩트 #13114356298](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41383491819/artifacts/13114356298)에 원본 gene-level 통계 파일 SHA-256와 수치·근거를 보존했다. 16,050개 검정, 13,717개 FDR<0.05, 83개 |log2FC|≥3 & FDR<0.05(67↑/16↓) **실제 재집계 값 일치**. 원본 10x raw 다운로드는 반복하지 않았다. 자세한 검증 조건은 [author80 source gate](GSE313736_AUTHOR80_PUBLIC_DISCOVERY_AND_SOURCE_GATE_20261101.md) 참조.
+
+**GO:** 우리 P5 기존 산출물 구조·수치 재현 및 출처 감사. **HOLD:** 원 저자의 63↑/17↓ 유전자 ID 80개·원저자 사용 모델/절단값·우리 83개와의 실제 overlap; 저자 요청서는 아직 미발송. **HOLD:** DEX/vehicle 10x 라이브러리 교란 및 세포 선택 교란. **STOP:** 임상 스테로이드 안압 상승 위험 예측 주장. 새 자료 없이 80개를 추측해서 재구성하거나 수치가 비슷하다고 일치한다고 판정하지 않는다.
