@@ -1,0 +1,50 @@
+name: HCC Stage59 AST Source-Verified Public Download Callsite Audit
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/hcc/audit_stage59_route_ast.mjs"
+      - "tests/test_hcc_stage59_route_ast.mjs"
+      - ".github/workflows/hcc-stage59-route-ast.yml"
+permissions:
+  contents: read
+jobs:
+  source-ast-guard-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned JavaScript parser and AST walker
+        run: npm install --no-save --ignore-scripts acorn@8.15.0 acorn-walk@8.3.4
+      - name: Verify exact source SHA, AST call-site classification and no biological GO
+        run: node --test tests/test_hcc_stage59_route_ast.mjs
+
+  exact-source-request-shapes:
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ['download','repository']
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned JavaScript parser and AST walker
+        run: npm install --no-save --ignore-scripts acorn@8.15.0 acorn-walk@8.3.4
+      - name: Parse only browser-observed and SHA256-pinned first-party JavaScript
+        run: |
+          node scripts/hcc/audit_stage59_route_ast.mjs \
+            --module '${{ matrix.module }}' \
+            --out 'results/hcc/stage59/${{ matrix.module }}_source_ast.json'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-stage59-${{ matrix.module }}-public-source-ast
+          path: results/hcc/stage59/*.json
+          if-no-files-found: warn
+          retention-days: 30
