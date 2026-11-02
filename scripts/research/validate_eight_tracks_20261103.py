@@ -7,6 +7,7 @@ identifiers, raw counts, private URLs or complete expression matrices.
 from __future__ import annotations
 import argparse
 import collections
+import concurrent.futures
 import csv
 import datetime as dt
 import gzip
@@ -31,7 +32,7 @@ TASKS = {
     "hcc": "Independently verify official PDC tumor/normal case pairing in both proteomics studies",
     "radiomics": "Check real public NIfTI voxel-spacing headers or verify 14-case CI result accessibility",
     "ocular": "Audit all 46 ENA runs for two FASTQ paths, byte sizes and published MD5 syntax",
-    "muscle": "Resolve nine independently archived Yang 2024 RT rsIDs against GTEx v10",
+    "muscle": "Resolve all 20 published RT lead rsIDs against GTEx v10 and record missingness",
     "oral": "Verify GSE103322 expression resource accessibility and clinical donor linkage prerequisites",
     "skin": "Validate the bounded actual perceived-age GWAS header/allele schema against official readme",
 }
@@ -268,22 +269,25 @@ def muscle_task():
     with p.open(encoding="utf-8-sig",newline="") as f:rows=list(csv.DictReader(f,delimiter="\t"))
     rt=[r for r in rows if r.get("cohort_type")=="RT"]
     rsids=sorted(set(r.get("rsid","") for r in rt))
-    if len(rsids)!=9 or any(not re.fullmatch(r"rs\d+",x) for x in rsids):
-        raise Hold("YANG_SEED_9_LOCI_NOT_REPRODUCIBLE")
-    resolved=0;not_found=0;errors=0
-    for rsid in rsids:
+    if len(rsids)!=20 or any(not re.fullmatch(r"rs\d+",x) for x in rsids):
+        raise Hold("RT_SEED_20_LOCI_NOT_REPRODUCIBLE")
+    def resolve(rsid):
         url="https://gtexportal.org/api/v2/dataset/variant?"+urllib.parse.urlencode(
             {"snpId":rsid,"datasetId":"gtex_v10","itemsPerPage":2000})
         try:
             data=json.loads(fetch(url,1000000)[0])
             rec=data.get("data")
-            if not isinstance(rec,list):errors+=1
-            elif rec:resolved+=1
-            else:not_found+=1
-        except Exception:errors+=1
-    return ("PASS_9_GTEX_VARIANT_RESOLUTION" if errors==0 else "HOLD_GTEX_PARTIAL_ACCESS"),{
+            if not isinstance(rec,list):return "error"
+            return "resolved" if rec else "not_found"
+        except Exception:return "error"
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
+        statuses=list(pool.map(resolve,rsids))
+    resolved=statuses.count("resolved")
+    not_found=statuses.count("not_found")
+    errors=statuses.count("error")
+    return ("PASS_20_GTEX_VARIANT_RESOLUTION" if errors==0 else "HOLD_GTEX_PARTIAL_ACCESS"),{
         "source_seed_sha256":hashlib.sha256(p.read_bytes()).hexdigest(),
-        "yang_RT_loci":9,"full_target_loci":20,"gtex_v10_resolved":resolved,
+        "published_RT_loci":20,"full_target_loci":20,"gtex_v10_resolved":resolved,
         "not_found":not_found,"api_errors":errors,"eQTL_verified":False}
 
 def oral_task():
