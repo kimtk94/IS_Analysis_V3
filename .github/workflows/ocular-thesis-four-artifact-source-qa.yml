@@ -1,13 +1,6 @@
 name: Ocular Thesis Four-Artifact Source and Figure Claim QA
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feat/ocular-p0-data-access-audit-20261030
-    paths:
-      - scripts/ocular/ocular_thesis_final_evidence_qa.py
-      - .github/workflows/ocular-thesis-four-artifact-source-qa.yml
-      - docs/ocular/THESIS_MANUSCRIPT_METHODS_RESULTS_DISCUSSION_DRAFT_20261101.md
 
 permissions:
   contents: read
