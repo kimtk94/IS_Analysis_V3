@@ -45,7 +45,8 @@ def audit(path=None, *, expected_sha256=None, max_rows=MAX_ROWS):
         "historical_overlap_target": TARGET_VARIANTS,
         "archive_bytes_available": False,
         "archive_sha256": None,
-        "source_sha256_trusted_independent_pin": False,
+        "provided_expected_sha256_matched": False,
+        "expected_sha256_independently_authenticated": False,
         "original_build_and_ref_alt_independently_verified": False,
         "BBJ_effect_allele_independently_verified": False,
         "EAS_AIS_source_approved": False,
@@ -111,7 +112,7 @@ def audit(path=None, *, expected_sha256=None, max_rows=MAX_ROWS):
         result["file_gate"] = "HOLD_SOURCE_ELIGIBLE_VARIANT_COUNT_MISMATCH"
     else:
         result["file_gate"] = "FILE_BYTES_AND_HISTORICAL_ELIGIBLE_KEY_COUNT_MATCH_REVIEW"
-        result["source_sha256_trusted_independent_pin"] = True
+        result["provided_expected_sha256_matched"] = True
     return result
 
 def main():
