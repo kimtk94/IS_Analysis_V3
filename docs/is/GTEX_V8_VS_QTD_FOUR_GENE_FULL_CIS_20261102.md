@@ -43,3 +43,30 @@ A full pairwise mapping is **not a replication**: the GTEx-v8 original and EBI Q
 - Actual CI result, proven source run and per-gene counters: [research/is/evidence/gtex_v8_vs_qtd_four_gene_fullcis_20687_live_20261102.json](../../research/is/evidence/gtex_v8_vs_qtd_four_gene_fullcis_20687_live_20261102.json)
 
 **Next most targeted work:** identify two QTD-only variant keys, determine if original source has the same genomic position with different REF/ALT representation, and independently authenticate source-specific cis tested variant boundaries and QTL/LD study model before allowing formal coloc. Keep draft PR unmerged.
+
+
+## Actual two-unmatched-QTD-variant provenance screen — 2026-11-02
+
+[GitHub Actions #41455461447](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41455461447) **SUCCESS**, 16/16 deterministic regression tests PASS. The runner re-read the original and reprocessed official GRCh38 indexed source files across the original four-gene cis windows. Total source/QTD/matched gene–variant counts are unchanged at **24,963 / 20,689 / 20,687**.
+
+| Gene | QTD-only SNP (GRCh38 position REF:ALT) | β | SE | p-value | Original same-gene exact position | Original same-gene positions ±5bp |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| FGF5 | chr4:81,266,618 T:G | -0.102885 | 0.0912328 | 0.261125 | 0 | 0 |
+| NEURL / NEURL1 | chr10:102,493,750 T:C | -0.0133939 | 0.0899905 | 0.881870 | 0 | 0 |
+
+Both unmatched records are **single-nucleotide variants, not indel/MNV discrepancies**. There was no eligible same-gene original source variant with a matching exact position, reversed REF/ALT order at that position, or a nearby position within ±5 bp. This supports a **source tested-variant set difference**, not a simple coordinate/allele notation change. However, the precise upstream reason (minor allele frequency, variant QC, missing genotype call, donor inclusion, original file mapping) was **not** proven by this test. The QTD-only p-values are non-significant in this dataset; they should not be called negative causal results.
+
+Of the original-only **4,276** gene–variant records, **3,959 are single-nucleotide variants** and **317 are explicit indel/MNV records**, counted separately in the live audit. As another separate source QC observation, the official original-imported source contained **41 target-gene records with p=1, β=0 and a nonfinite SE encoded as -nan** (6 chr4 + 35 chr10); these were excluded from the strict valid-effect comparison. Their positions do not match either of the two above QTD-only variants in the bounded diagnostic. Therefore these source-QC exclusions are not evidence of a simple repair for the two unmatched QTD records.
+
+### Effect allele interpretation
+
+The [official eQTL Catalogue nominal association column definitions](https://github.com/eQTL-Catalogue/eQTL-Catalogue-resources/blob/master/tabix/Columns.md) state explicitly that `alt` is the **effect allele**, and `ref` is the GRCh38 reference allele. The [official GTEx v8 methods](https://gtexportal.org/home/methods) likewise define normalized effect size `NES` / slope with respect to **ALT** relative to REF. Thus the original/reprocessed comparison uses documented matching effect-allele definitions, and large differences in β sign among exact REF/ALT matched variants **cannot simply be explained by swapping effect allele labels in one source**. This is not proof that raw-model coefficients have the same normalization/covariate scale: inherited pipelines remain scientifically distinct and LD-correlated gene-variant rows do not supply independent replication.
+
+### Remaining boundaries
+
+1. Original GTEx v8 *independent full-cis tested-variant interval boundaries* and source-specific `n_variants` metadata are not yet independently corroborated by the original eGene/permute tables.
+2. Exact original source full-file hash, historical EBI release-6 file bytes and inherited local GTEx-QTL source identity are unverified; verify before promoting reproductions to definitive.
+3. FGF5 and NEURL source-specific variant filtering mechanisms are unverified; no correction should synthesize or impute the two missing original QTL associations.
+4. GWAS outcome-specific N/case fraction, ancestry-matched LD, independent EAS outcome replication and formal MR/colocalization remain scientific HOLD.
+
+Actual diagnostic JSON: [research/is/evidence/gtex_v8_vs_qtd_2_unmatched_source_diagnostics_20261102.json](../../research/is/evidence/gtex_v8_vs_qtd_2_unmatched_source_diagnostics_20261102.json). The source-audit code includes exact/nearby variation and bounded discarded-row audit with negative controls.
