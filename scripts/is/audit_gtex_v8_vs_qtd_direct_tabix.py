@@ -15,6 +15,8 @@ import json
 import math
 import re
 import statistics
+import subprocess
+import os
 import time
 import urllib.request
 from pathlib import Path
@@ -161,6 +163,42 @@ def extract_region(tabix,url,region,*,sleep_seconds=2.25):
                          tabix.fetch(indexed,start-1,end))
     return data
 
+
+class SystemTabixFile:
+    """Use distribution htslib/libcurl with the system trust store, not bundled wheel."""
+    def __init__(self,url):
+        if url not in (ORIGINAL,REPROCESSED):
+            raise ValueError("Tabix source not allowlisted")
+        self.url=url
+        self.header=self._call(["tabix","-H",url],cap=200_000).splitlines()
+        self.contigs=self._call(["tabix","-l",url],cap=20_000).splitlines()
+    def _call(self,args,cap):
+        env=os.environ.copy()
+        env["CURL_CA_BUNDLE"]="/etc/ssl/certs/ca-certificates.crt"
+        try:
+            completed=subprocess.run(args,capture_output=True,check=False,
+                                      timeout=110,env=env)
+        except (OSError,subprocess.TimeoutExpired) as exc:
+            raise OSError("system tabix invocation failed: "+type(exc).__name__) from exc
+        if completed.returncode:
+            tail=completed.stderr.decode("utf-8","replace")[-220:]
+            raise OSError("system tabix command failed: "+str(completed.returncode)+": "+tail)
+        if len(completed.stdout)>cap:
+            raise ValueError("tabix output exceeded strict capture cap")
+        return completed.stdout.decode("utf-8","replace")
+    def fetch(self,chrom,start,end):
+        if end-start>6000:
+            raise ValueError("interval too broad")
+        region=f"{chrom}:{start+1}-{end}"
+        return iter(self._call(["tabix",self.url,region],cap=8_000_000).splitlines())
+    def close(self):
+        return None
+
+class SystemTabix:
+    @staticmethod
+    def TabixFile(url):
+        return SystemTabixFile(url)
+
 def live_audit(tabix_module=None,md5_fetcher=None,wait_seconds=2.25):
     report={"schema":"IS_GTExv8_OriginalVsQTD000161_BoundedTabix_v1",
         "tissue":"Brain_Cerebellar_Hemisphere","GTEx_original_ftp":ORIGINAL,
@@ -179,11 +217,7 @@ def live_audit(tabix_module=None,md5_fetcher=None,wait_seconds=2.25):
             "original_tissue_file_md5_in_official_manifest":False,
             "failure_class":type(exc).__name__}
     if tabix_module is None:
-        try:
-            import pysam as tabix_module
-        except ImportError:
-            report["source_region_gate"]="HOLD_PYSAM_UNAVAILABLE"
-            return report
+        tabix_module=SystemTabix
     handles=[]
     try:
         for url in (ORIGINAL,REPROCESSED):
@@ -192,6 +226,8 @@ def live_audit(tabix_module=None,md5_fetcher=None,wait_seconds=2.25):
             except (OSError,ValueError) as exc:
                 report["source_region_gate"]="HOLD_REMOTE_TABIX_SOURCE_UNAVAILABLE"
                 report["failure_class"]=type(exc).__name__
+                report["failure_reason_bounded"]=str(exc)[-250:]
+                report["failure_url_type"]="original" if url==ORIGINAL else "reprocessed"
                 return report
             handles.append(h)
         report["source_headers"]={
