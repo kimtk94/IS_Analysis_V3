@@ -36,6 +36,10 @@ def inspect_source_html(source_name, page):
     text = PlainText()
     text.feed(page)
     val = text.value()
+    if source_name == "opengwas" and "Loading..." in val and "GCST90018644" not in val:
+        return {"source": source_name, "source_url": SOURCES[source_name][0],
+                "status": "HOLD", "reason": "CLIENT_RENDERED_PAGE_NO_ACCESSION_METADATA",
+                "public_page_only": True}
     if source_name == "pheweb":
         checks = {
             "correct_phenotype": bool(re.search(r"\b(?:IS:\s*)?Ischemic stroke\b", val, re.I)),
@@ -66,7 +70,10 @@ def fetch_public_html(name, max_bytes=750000):
     request = urllib.request.Request(url, headers={"User-Agent": "IS-Research-Metadata-Audit/1.0"})
     with urllib.request.urlopen(request, timeout=18) as response:
         final = urllib.parse.urlsplit(response.url)
-        if final.scheme != "https" or final.hostname != host:
+        allowed_hosts = {host}
+        if name == "opengwas":
+            allowed_hosts.add("opengwas.io")  # official successor, still HTML only
+        if final.scheme != "https" or final.hostname not in allowed_hosts:
             raise ValueError("Redirect changed trusted origin")
         content = response.read(max_bytes + 1)
         if len(content) > max_bytes:
@@ -113,7 +120,7 @@ def main():
         {k: v for k, v in result.items() if k != "source_results"}, sort_keys=True))
     print("BBJ_PUBLIC_SOURCE_STATUS=" + json.dumps(
         {key: {"status":val["status"],"checks":val.get("checks",{}),
-               "failure_class":val.get("failure_class")}
+               "failure_class":val.get("failure_class"), "reason":val.get("reason")}
          for key,val in result["source_results"].items()}, sort_keys=True))
 
 
