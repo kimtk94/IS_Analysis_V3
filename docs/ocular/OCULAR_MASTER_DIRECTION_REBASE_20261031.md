@@ -191,3 +191,16 @@ BeamA confidence 0.5/0.75, alternative cell label, donor당 적격 cell 수, 각
 - 결과를 **Supplementary Figure + 16 strata table**로 논문 초안에 포함했다. 기존 Figure를 중복 제작하지 않았다.
 
 **다음 계산 과제:** 독립 Mehrotra 100nM 48h TM과 GSE301517 500nM 7d TM 간 표본명·처리시간·유전자별 효과 추정량의 비교 가능성 보수적 감사, 가능할 때만 외부 방향 검증 확장. 원 저자 연락 없이 진행하는 연구로 재설계함.
+
+## 2026-11-02 — GSE301517 7일 세포주별 외부 재현성 검증
+
+원저자 연락을 보류하고도 독립 TM 연구의 **공개된 정량 원본 기반 소스별 민감도**를 확장했다. GitHub Actions [#41423487666](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41423487666) 실제 데이터 검사 + synthetic self-test **2/2 SUCCESS**. [3 세포주·16 후보·194 EMT 전체 결과 아티팩트 #13130831706](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41423487666/artifacts/13130831706), [상세 문서](GSE301517_7DAY_STRAIN_LOO_AND_EMT_STRICT_REPLICATION_20261102.md), [논문 결과 3.5a](THESIS_MANUSCRIPT_METHODS_RESULTS_DISCUSSION_DRAFT_20261101.md).
+
+- 7일 연구 GSE301517은 TM62, TM70, TM72 **3개 strain**에 기술반복을 각각 4/2/1로 제공한다. **반복 횟수 7을 공여자 N=7로 해석하지 않는다**. 세 strain이 실제 독립 공여자에서 유래했는지 원자료로 확정하지 않았다. 7일 효과는 **CPM+1 log2 비율**, GSE313736 edgeR log2FC와 같은 모수 아님.
+- MYOC ↑, TGFBI ↓, MMP2 ↓는 7일 연구 **세 strain에서 각각** 동일한 발현 방향. 각 strain 1개 제외 평균에서도 3/3 동일. MMP2 TM72=−0.162는 magnitude 작음: 방향 일치만 GO.
+- ACTA2는 7일 strain별 +0.005/−0.760/−0.442로 외부에서 일관된 ↑가 아님. 48h vs 7d **인과적 시간 반전**은 추정할 수 없음.
+- 16개 후보 중 원본 48h와 같은 7d 3-strain 평균 부호 **10개**, 3 strain 각각 동일 부호 **7개**, 세 가지 leave-one-out에서 동일 부호 **8개**. 서로 다른 통과 기준으로 구분.
+- 194개 Hallmark EMT 중 **124/194**가 3 연구 평균 방향 일치, 그중 **90/194 (46.4%)**만 7일 3 strain 모두 방향까지 일치. EMT 194 유전자는 서로 연관되며 사후 선택: 경로 p값/섬유화 기능검증으로 승격 불가.
+- 기존 3-source Figure와 후보 핵심 순위는 유지하되, 원 저자 80개 명단과 별개로 **외부 strain 기여의 이질성 및 기준 강화에 따른 후보 감소**를 논문 결과에 명시한다.
+
+**다음 과제:** 공개 후속 TM 연구의 strain/dose/timepoint·효과 추정량 비교 한계가 충분히 고정되었으므로 이후에는 **기술적 confounding/negative-control/selection-bias 한계의 직접 정량화 가능 여부** 또는 논문 투고 수준의 Figure/Source manifest 검토를 우선한다. 연구진 접촉 없이 이어간다.
