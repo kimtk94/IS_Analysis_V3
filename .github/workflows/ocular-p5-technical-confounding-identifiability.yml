@@ -1,0 +1,70 @@
+name: Ocular GSE313736 Technical Confounding Identifiability and Pool Composition
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/ocular-p0-data-access-audit-20261030
+    paths:
+      - scripts/ocular/ocular_p5_technical_confounding_identifiability_audit.py
+      - .github/workflows/ocular-p5-technical-confounding-identifiability.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  rank-and-decomposition-selftest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify exact design aliasing and symmetric decomposition on synthetic fixture
+        run: |
+          python -m pip install 'numpy==1.26.4'
+          python -m py_compile scripts/ocular/ocular_p5_technical_confounding_identifiability_audit.py
+          python scripts/ocular/ocular_p5_technical_confounding_identifiability_audit.py --self-test
+
+  validate-original-aggregates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned linear algebra without raw RNA-seq
+        run: |
+          python -m pip install 'numpy==1.26.4'
+      - name: Download three previously verified aggregate-only public source results
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/p5confound/e" "$RUNNER_TEMP/p5confound/b" "$RUNNER_TEMP/p5confound/d" ocular-technical-confounding-public
+          gh run download 41091146021 -n ocular-p5e-selection -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5confound/e"
+          gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5confound/b"
+          gh run download 41090827791 -n ocular-p5d-nine-pool-unit -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5confound/d"
+          test -s "$RUNNER_TEMP/p5confound/e/ocular-p5e-selection.json"
+          test -s "$RUNNER_TEMP/p5confound/b/p5b_pool_sensitivity.json"
+          test -s "$RUNNER_TEMP/p5confound/d/p5d_poolunit_model_summary.json"
+      - name: Audit real source design rank, P5e cell pool decomposition, P5b and P5d
+        run: |
+          python -u scripts/ocular/ocular_p5_technical_confounding_identifiability_audit.py \
+            --selection "$RUNNER_TEMP/p5confound/e/ocular-p5e-selection.json" \
+            --pool-loo "$RUNNER_TEMP/p5confound/b/p5b_pool_sensitivity.json" \
+            --pool-model "$RUNNER_TEMP/p5confound/d/p5d_poolunit_model_summary.json" \
+            --out ocular-technical-confounding-public
+      - name: Remove transient copies of prior aggregates
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p5confound"
+      - name: Archive public model rank, pool decomposition and source SHA256 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gse313736-technical-confounding-identifiability
+          path: ocular-technical-confounding-public/
+          retention-days: 60
+          if-no-files-found: warn
