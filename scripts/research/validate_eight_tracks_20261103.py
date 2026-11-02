@@ -344,7 +344,7 @@ def execute(track):
         r.update(probe_status="HOLD_SOURCE_OR_INPUT",blocker=type(exc).__name__+": "+str(exc)[:130],evidence={})
     OUT.mkdir(parents=True,exist_ok=True)
     (OUT/(track+".json")).write_text(json.dumps(r,indent=2,ensure_ascii=False)+"\n")
-    print(json.dumps({k:r.get(k) for k in ("track","probe_status","scientific_gate","blocker")},ensure_ascii=False))
+    print(json.dumps({k:r.get(k) for k in ("track","probe_status","scientific_gate","blocker","evidence")},ensure_ascii=False))
     return 1 if r["probe_status"].startswith("FAIL") else 0
 
 if __name__=="__main__":
