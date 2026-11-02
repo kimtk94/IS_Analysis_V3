@@ -83,6 +83,29 @@ def diagnostic_unmatched_qtd(og,reprocessed, *, limit=10):
     }
 
 
+def optional_source_qc(fields, index):
+    # Optional genotype attributes are direct source measurements. AN/2 is
+    # diploid allele observation count, not necessarily full GTEx donor N.
+    out={}
+    for field in ("maf","r2","an","ac","ma_samples"):
+        if field in index:
+            value=fields[index[field]].strip()
+            try:
+                n=float(value)
+            except (ValueError,OverflowError):
+                n=None
+            out[field]=(n if n is not None and math.isfinite(n) else None)
+        else:
+            out[field]=None
+    an=out["an"]
+    ac=out["ac"]
+    out["an_diploid_observed_genotype_equivalent_not_cohort_N"]=(
+        an/2 if an is not None and an>=0 else None)
+    out["an_ac_valid"]=bool(
+        an is not None and ac is not None and 0<=ac<=an and an>=0)
+    return out
+
+
 def read_source_rows(tabix,header,region, *, max_rows=MAX_ROWS_PER_QUERY):
     chrom,start,end=region
     contig=BASE.known_index_contig(tabix.contigs,chrom)
@@ -93,6 +116,7 @@ def read_source_rows(tabix,header,region, *, max_rows=MAX_ROWS_PER_QUERY):
     ix={k:i for i,k in enumerate(header)}
     allowed=set(BASE.TARGET_GENES.values())
     parsed={}
+    genotype_qc_by_key={}
     counts=Counter()
     invalid_source_rows_bounded=[]
     try:
@@ -149,6 +173,7 @@ def read_source_rows(tabix,header,region, *, max_rows=MAX_ROWS_PER_QUERY):
                                 "target_rows":counts["target_seen"]}
                 else:
                     parsed[key]=value
+                    genotype_qc_by_key[key]=optional_source_qc(fields,ix)
             except (KeyError,TypeError,ValueError,OverflowError):
                 counts["invalid_statistic_rows"]+=1
                 if len(invalid_source_rows_bounded)<40:
@@ -167,7 +192,8 @@ def read_source_rows(tabix,header,region, *, max_rows=MAX_ROWS_PER_QUERY):
               else "HOLD_TOO_MANY_INVALID_TARGET_ROWS",
             "rows":parsed,"scanned":counts["region_total"],
             "target_rows":counts["target_seen"],"counts":dict(counts),
-            "invalid_source_rows_bounded":invalid_source_rows_bounded}
+            "invalid_source_rows_bounded":invalid_source_rows_bounded,
+            "genotype_qc_by_key":genotype_qc_by_key}
         return outcome
     except (OSError,ValueError,RuntimeError) as exc:
         return {"status":"HOLD_TABIX_REMOTE_FETCH", "rows":{},
@@ -185,6 +211,16 @@ def summarize_full_cis(original,reprocessed):
             {"status":reprocessed["status"],"rows":b,"observed":len(b)})
         orig=set(a)
         reprs=set(b)
+        diag=diagnostic_unmatched_qtd(a,b)
+        qtd_meta=reprocessed.get("genotype_qc_by_key",{})
+        for item in diag["qtd_only_diagnostics"]:
+            key=(item["gene_id"],item["chr"],item["qtd_GRCh38_pos"],
+                 item["qtd_REF"],item["qtd_ALT"])
+            item["QTD_source_genotype_QC"]=qtd_meta.get(key)
+            item["QTD_MAF_is_less_than_0_01"]=(
+                (qtd_meta[key]["maf"]<0.01)
+                if key in qtd_meta and qtd_meta[key]["maf"] is not None else None)
+            item["QTD_MAF_does_not_establish_GTEx_original_full_cohort_filter"]=True
         obj.update({
             "gene":name,"gene_id":gene,
             "original_unique_tested_variant":len(a),
@@ -193,7 +229,7 @@ def summarize_full_cis(original,reprocessed):
             "reprocessed_only_variant":len(reprs-orig),
             "original_only_SNP_count":sum(variant_type(k)=="SNP" for k in orig-reprs),
             "original_only_indel_mnv_count":sum(variant_type(k)!="SNP" for k in orig-reprs),
-            "reprocessed_only_diagnostic":diagnostic_unmatched_qtd(a,b),
+            "reprocessed_only_diagnostic":diag,
             "is_complete_full_cis_only_if_separate_cis_interval_confirmed":False,
             "reprocessed_expected_previous_QTD_n_variants":EXPECTED_REPROCESSED_CIS[name],
             "reprocessed_variant_denominator_matches_prior_QTD_fullcis_audit":
@@ -204,7 +240,7 @@ def summarize_full_cis(original,reprocessed):
 
 
 def run(tabix=None,header_fetcher=None,md5_fetcher=None,wait=WAIT_SECONDS):
-    result={"schema":"is-GTExv8-original-vs-QTD000161-four-gene-full-cis-v3-unmatched-exact-variant-audit",
+    result={"schema":"is-GTExv8-original-vs-QTD000161-four-gene-full-cis-v4-unmatched-variant-QC",
        "original":BASE.ORIGINAL,"reprocessed":BASE.REPROCESSED,
        "GRCh38_predeclared_windows":[f"{c}:{s}-{e}" for c,s,e in FULL_WINDOWS],
        "QTL_source_tissue":"Brain_Cerebellar_Hemisphere",
@@ -249,8 +285,8 @@ def run(tabix=None,header_fetcher=None,md5_fetcher=None,wait=WAIT_SECONDS):
             x,y=current
             chrom_results[chrom]={
                 "region":f"{region[0]}:{region[1]}-{region[2]}",
-                "original_source_scan":{k:v for k,v in x.items() if k!="rows"},
-                "reprocessed_source_scan":{k:v for k,v in y.items() if k!="rows"},
+                "original_source_scan":{k:v for k,v in x.items() if k not in ("rows","genotype_qc_by_key")},
+                "reprocessed_source_scan":{k:v for k,v in y.items() if k not in ("rows","genotype_qc_by_key")},
                 "four_genes":summarize_full_cis(x,y),
             }
         result["chromosomes"]=chrom_results
