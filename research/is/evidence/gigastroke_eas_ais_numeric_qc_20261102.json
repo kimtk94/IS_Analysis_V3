@@ -1,0 +1,69 @@
+{
+  "record_type": "GIGASTROKE_EAS_AIS_FULL_FILE_NUMERIC_QC_FROM_LIVE_CI",
+  "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41436048672",
+  "job_id": 125245946881,
+  "official_file_md5": "904e12e33ec3c2eeefe4dc93bec4995c",
+  "full_gwas_numeric_qc": {
+    "accession": "GCST90104545",
+    "coloc_performed": false,
+    "column_presence": {
+      "any_effect_estimate": true,
+      "mandatory_position_and_allele_and_p": true,
+      "standard_error": true
+    },
+    "compressed_content_length": 260689208,
+    "directory_html_sha256": "10a5c5631c81f258ab6b1cea94ae032f7acca55bad71dbf34dd4eaae0e7ec4b0",
+    "directory_url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104545/",
+    "discovered_asset_names": [
+      "GCST90104545_buildGRCh37.tsv.gz",
+      "GCST90104545_buildGRCh37.tsv.gz-meta.yaml"
+    ],
+    "full_compressed_bytes": 260689208,
+    "full_compressed_md5": "904e12e33ec3c2eeefe4dc93bec4995c",
+    "full_compressed_sha256": "c521d5695414bdedcc84d2ea21d588e330c75a672f36a87c3fd092b4c55687a3",
+    "full_file_gate": "ORIGINAL_FILE_MD5_AND_GZIP_ROWS_PASS_REVIEW_REQUIRED",
+    "full_gwas_data_rows": 6725216,
+    "gwas_numeric_qc": {
+      "finite_beta_se_p_positive_se_rows": 6725216,
+      "palindromic_at_or_cg_rows": 1028002,
+      "valid_eaf_rows": 6725216,
+      "wald_two_sided_comparable_rows": 66586
+    },
+    "metadata_checks": "COMPLETE_PROBE",
+    "metadata_gate": "METADATA_HEADER_SCREEN_PASS",
+    "numeric_qc_status": "BASIC_NUMERIC_FIELDS_SCREEN_PASS",
+    "original_GRCh37_reference_mapping_approved": false,
+    "original_file_byte_hash_verified": true,
+    "original_gwas_N_SE_effect_allele_approved": false,
+    "original_gwas_header": [
+      "chromosome",
+      "base_pair_location",
+      "effect_allele_frequency",
+      "beta",
+      "standard_error",
+      "p_value",
+      "odds_ratio",
+      "ci_lower",
+      "ci_upper",
+      "effect_allele",
+      "other_allele"
+    ],
+    "prefix_bytes_read": 262144,
+    "prefix_response_status": 206,
+    "raw_filename": "GCST90104545_buildGRCh37.tsv.gz",
+    "schema": "is-gigastroke-ais-original-ftp-gate-v1",
+    "scientific_status": "HOLD",
+    "source_to_local_EAS5_canonical_allele_alignment_verified": false,
+    "yaml_filename": "GCST90104545_buildGRCh37.tsv.gz-meta.yaml",
+    "yaml_selected_fields": {
+      "data_file_md5sum": "904e12e33ec3c2eeefe4dc93bec4995c",
+      "data_file_name": "GCST90104545_buildGRCh37.tsv.gz",
+      "file_type": "pre-GWAS-SSF",
+      "genome_assembly": "GRCh37",
+      "gwas_id": "GCST90104545",
+      "is_harmonised": "false",
+      "trait_description": ""
+    },
+    "yaml_sha256": "7383b859ce9bb4811c15bc634592ee1544788536797a5c663644e1aa648f1d3e"
+  }
+}
