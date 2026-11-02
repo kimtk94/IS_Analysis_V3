@@ -34,6 +34,17 @@ Gate statuses: **PASS real scientific task**, **PARTIAL source/engineering**, **
 | OSCC oral cancer | **Download actual 86MB GSE103322 processed matrix**, hash and inspect matrix orientation/shape; connect original patient/cell annotations, then patient-aware one predeclared hypothesis and independently accessible bulk cohort | Verified patient pseudobulk ≥2 biological cohorts with real cohort IDs and independent test; raw FASTQs aren't needed for all analyses | If no reliable patient mapping, HOLD. If patient mapping real, upgrade beyond prior simple GEO accession-only gate |
 | Skin aging MR | **Inspect original Bristol ~1GB perceived-age GWAS header and numeric rows**, then full allele/build/phenotype QC; identify independent exposure instruments and distinct outcome GWAS | Exact effect alleles, LOG_OR/LOG_SE, true coded phenotype and N, independent validated MR data, pleiotropy sensitivity | Perceived age may not validly measure *skin-specific photoaging*; absence of appropriate phenotype -> change question, not force a false cosmetic claim |
 
+## Actual first discrimination CI result (2026-11-02)
+
+[Run #41440909058](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41440909058) completed **3/3 jobs SUCCESS** (fixture + real source skin + real source oral). Note that job success is **not** scientific PASS, since source-level HOLD is recorded inside result JSON when blocked.
+
+| Track | Actual observed outcome | Next decisive gate |
+|---|---|---|
+| Skin | **35,497 complete authentic GWAS prefix records sampled; 35,497/35,497 pass basic allele/frequency/LOG_OR/LOG_SE/P numerical checks** (4MB bounded prefix; 4,590 palindromic allele pairs, orientation uncertainty; header has SNP, CHR, BP, ALLELE1/0, A1FREQ, INFO, P_BOLT_LMM_INF, LOG_OR, LOG_SE, N_0/N_0.5/N_1, N_EFFECTIVE). This confirms an independently retrievable **real numeric dataset**, not just a readme; whole 1GiB file not fetched. | Original whole-file hash, genome build and logged perceived-age case/intermediate phenotype coding, MR target phenotype validation, valid independent genetic instruments and pleiotropy controls. |
+| Oral | Direct **GEO FTP GSE103322_HNSCC_all_data.txt.gz returns HTTP 403** from this GitHub runner; scientific status stays HOLD. This is an access-route failure, **not evidence that processed tumor scRNA is absent**. | Try the officially documented Bioconductor ExperimentHub `EH5419` / GSE103322 SingleCellExperiment data through R/Bioconductor, authenticate 18-patient/cell biological-unit mapping, then choose a patient-aware test; raw FASTQ need not be required. |
+
+**Decision consequence:** both remain candidates. In particular, skin's measured source status is materially stronger than last week's readme-only label, while OSCC requires a different public access route and must not be retired due to one runner's 403. The actual 2026-11-02 job results can be retrieved from per-track artifact JSON; the job fixture does not justify biological or MR promotion.
+
 ## Actual underway
 
 - [GitHub CI real oral/skin source decision](https://github.com/kimtk94/IS_Analysis_V3/actions/workflows/research-decision-oral-skin-real-data-20261102.yml): distinct real-data jobs for full GEO processed matrix stream (bounded 125 MB compressed), and 4 MB authentic Bristol numeric GWAS prefix (Range, no large full download). All external access failures are **HOLD** with cause, not biological failure. No raw cell identities, genotypes, variant IDs or full expression matrices are exported to CI artifacts.
