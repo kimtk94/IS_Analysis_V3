@@ -30,7 +30,7 @@ class Response:
 
 def fake_provider(original=ORIG, yaml_overrides="", header_only=False,
                   missing_yaml=False, invalid_host=False, extra_yaml=False):
-    data=gzip.compress(original)
+    data=gzip.compress(original,mtime=0)
     md5=hashlib.md5(data).hexdigest()
     yaml=f"gwas_id: GCST90104545\ndata_file_name: {FILE}\ndata_file_md5sum: {md5}\nfile_type: GWAS-SSF v1.0\ncase_count: 19032\ncontrol_count: 237242\n"+yaml_overrides
     names=[FILE]
