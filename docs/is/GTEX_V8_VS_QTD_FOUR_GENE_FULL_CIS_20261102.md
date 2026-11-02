@@ -96,3 +96,29 @@ Official source and observed distances saved in
 Further progress without paid sources can use the [official GTEx Portal v2 API](https://gtexportal.org/api/v2/redoc) endpoint `/dataset/collapsedGeneModelExon` with `datasetId=gtex_v8`, plus an authenticated GENCODE v26 versioned gene ID. Explicit API-derived collapsed-exon TSS should be independently compared with the two positions before upgrading the original cis-boundary gate.
 
 **Scientific boundary:** Two-source QTL gene–variant mappings and full QTD screened counts PASS; original FastQTL exact collapsed TSS, historical release byte identity, original complete per-gene test boundaries, GWAS case fraction, ancestry LD, MR/coloc remain HOLD.
+
+
+## Exact GTEx v8 collapsed gene-model TSS independently confirmed — 2026-11-02
+
+Source: official [GTEx Portal API v2 collapsedGeneModelExon](https://gtexportal.org/api/v2/redoc), **explicit datasetId=gtex_v8** (the current API default is gtex_v10), with versioned GENCODE v26 identifiers extracted from the official GENCODE v26 GTF. The official API requests were performed **sequentially**, not in parallel. Real [GitHub Actions #41460057633](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41460057633): **SUCCESS, 9/9 deterministic tests PASS**.
+
+| Gene | GENCODE v26 versioned ID | GTEx v8 API collapsed exons | GTEx v8 collapsed-exon strand-aware TSS (GRCh38) | Difference to regular GENCODE v26 gene-feature TSS |
+| --- | --- | ---: | ---: | ---: |
+| FGF5 | ENSG00000138675.16 | 6 | chr4:80,266,599 | 0bp |
+| C4orf22 / CFAP299 | ENSG00000197826.11 | 12 | chr4:80,335,720 | 0bp |
+| CALHM2 | ENSG00000138172.10 | 5 | chr10:103,452,402 (−) | 0bp |
+| NEURL / NEURL1 | ENSG00000107954.10 | 9 | chr10:103,493,979 | 0bp |
+
+**Key independently checked boundary evidence**:
+
+- FGF5 QTD-only `chr4:81,266,618:T:G` lies **19bp beyond** the v8 collapsed TSS+1Mb upper limit `chr4:81,266,599`.
+- NEURL QTD-only `chr10:102,493,750:T:C` lies **229bp below** the v8 collapsed TSS−1Mb lower limit `chr10:102,493,979`.
+- Neither has an original-imported GTEx v8 gene–SNP association at the same position or ±5bp in the actual original indexed data, independently verified by [#41455461447](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41455461447).
+- GTEx v8 original models and GENCODE v26 standard gene features agree in the TSS for **all four genes**, removing the model-TSS-drift concern as a plausible explanation for the two outside-window positions.
+
+This confirms the exact **GTEx API collapsed exon model TSS**, not the separately stored **original FastQTL tested cis gene BED**. The evidence is therefore much stronger for a **cis window definition difference** than for an unexplained REF/ALT swap or low MAF in reprocessed QTD, but source-genotype/QC differential mechanisms and original FastQTL BED provenance are still not directly authenticated.
+
+Evidence frozen under
+[research/is/evidence/gtex_v8_official_api_collapsed_tss_qtd_exclusions_20261102.json](../../research/is/evidence/gtex_v8_official_api_collapsed_tss_qtd_exclusions_20261102.json). Reproducible CI `.github/workflows/is-gtex-v8-api-collapsed-tss.yml`, tested script `scripts/is/audit_gtex_v8_api_collapsed_exons.py` and tests `tests/test_is_gtex_v8_api_collapsed_exons.py`. Old direct public cloud file URL returned 403; this separate official GTEx API provided the necessary reference geometry without requester-pays downloads.
+
+**Result gate:** GTEx-v8 API collapsed TSS agreement: PASS; 2 QTD-only variant outside-boundary location: PASS; exact original FastQTL tested cis BED and all other MR/coloc scientific gates: HOLD.
