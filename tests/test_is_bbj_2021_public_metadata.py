@@ -32,6 +32,11 @@ class BbjPublicMetadataTests(unittest.TestCase):
         x=mod.check_sources(lambda name: PHEWEB if name=="pheweb" else OPENGWAS.replace("152,022","152,023"))
         self.assertEqual(x["public_source_metadata_agreement"], "HOLD")
 
+    def test_client_rendered_successor_page_is_hold_not_contradiction(self):
+        x=mod.inspect_source_html("opengwas", "<html><h1>Loading...</h1><p>OpenGWAS ID: Loading...</p></html>")
+        self.assertEqual(x["status"], "HOLD")
+        self.assertEqual(x["reason"], "CLIENT_RENDERED_PAGE_NO_ACCESSION_METADATA")
+
     def test_unreachable_source_remains_hold(self):
         def fetch(name):
             if name=="opengwas":
