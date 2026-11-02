@@ -30,7 +30,7 @@ TARGET_FILES=("HCCDB25_mRNA_level3.txt","HCCDB25.sample.txt","HCCDB25.patient.tx
 ROUTE_MARKERS=("/repository","/download","HCCDB25")
 BULK_MARKERS=("buke","bulk","transcriptome","repository","download")
 API_PATH=re.compile(r"""['"]((?:/|https?://lifeome[.]net:809/)(?:api|[A-Za-z0-9_.-]+/api|download|repository)/[A-Za-z0-9_./{}:$-]{1,130})['"]""",re.I)
-DYNAMIC_MARKER=re.compile(r"""(?:chunk[-_][A-Za-z0-9_-]{3,70}|webpackChunkName|__webpack_require__|\\.e\\(|\\.u\\(|import\\()""")
+DYNAMIC_MARKER=re.compile(r"""(?:chunk[-_][A-Za-z0-9_-]{3,70}|webpackChunkName|__webpack_require__|\.e\(|\.u\(|import\()""")
 JS_PATH=re.compile(r"""(?<![A-Za-z0-9])(?:/static/js/|static/js/)[A-Za-z0-9_./-]+[.]js""")
 SENSITIVE=re.compile(r"(?:OES|OED|OEZ|OEP)[0-9]{5,}|[?&#]|token|secret|bearer|/private/",re.I)
 
