@@ -68,6 +68,51 @@ class FullCisTests(unittest.TestCase):
         self.assertEqual(report["FGF5"]["matched_same_trait_and_exact_GRCh38_REF_ALT_pairs"],1)
         self.assertEqual(report["FGF5"]["beta_sign_matches"],0)
 
+    def test_report_qtd_missing_exact_variant_and_nearby_original(self):
+        gene=GENES["FGF5"]
+        x=(gene,"4",80000000,"A","AT")
+        y=(gene,"4",80000000,"AT","A")
+        z=(gene,"4",80000002,"G","GT")
+        a=source({y:(0.2,0.05,1e-3),z:(0.1,0.04,1e-2)})
+        q=source({x:(0.3,0.06,1e-4)})
+        result=m.summarize_full_cis(a,q)["FGF5"]
+        d=result["reprocessed_only_diagnostic"]
+        self.assertEqual(d["qtd_only_variant_count"],1)
+        self.assertEqual(len(d["qtd_only_diagnostics"]),1)
+        self.assertTrue(d["qtd_only_diagnostics"][0]["ref_alt_reversed_same_position"])
+        self.assertEqual(d["qtd_only_diagnostics"][0]["original_same_gene_same_position_row_count"],1)
+        self.assertFalse(d["qtd_only_diagnostics"][0]["independent_ref_fasta_indel_normalization_checked"])
+        self.assertFalse(d["qtd_only_diagnostics"][0]["matched_after_liftover_or_strand_reversal"])
+        self.assertEqual(result["original_only_indel_mnv_count"],2)
+
+    def test_qtd_missing_without_nearby_original_keeps_hold(self):
+        key=(GENES["NEURL"],"10",103000000,"A","C")
+        d=m.diagnostic_unmatched_qtd({}, {key:(0.2,0.03,0.001)})
+        self.assertEqual(d["qtd_only_variant_count"],1)
+        self.assertEqual(d["qtd_only_diagnostics"][0]["original_nearby_plusminus5bp_row_count"],0)
+        self.assertTrue(d["qtd_only_diagnostics"][0]["diagnostic_only_not_harmonized"])
+
+    def test_qtd_only_diagnostics_are_bounded(self):
+        gene=GENES["FGF5"]
+        qtd={(gene,"4",79001000+i,"A","C"):(0.2,0.05,0.01) for i in range(30)}
+        d=m.diagnostic_unmatched_qtd({},qtd,limit=3)
+        self.assertEqual(d["qtd_only_variant_count"],30)
+        self.assertTrue(d["qtd_only_diagnostics_truncated"])
+        self.assertEqual(len(d["qtd_only_diagnostics"]),3)
+
+    def test_invalid_original_rows_reported_but_not_matched(self):
+        class BadSample(MockTabix):
+            def fetch(self,c,start,end):
+                yield make_line("FGF5",c,start+50,se="-1",p="0.01")
+                yield make_line("FGF5",c,start+60,se="0.04",p="0.02")
+        out=m.read_source_rows(BadSample(m.BASE.ORIGINAL),HEAD,m.FULL_WINDOWS[0])
+        self.assertEqual(out["status"],"SCREEN_VALID")
+        self.assertEqual(out["counts"]["invalid_statistic_rows"],1)
+        self.assertEqual(len(out["invalid_source_rows_bounded"]),1)
+        self.assertEqual(out["invalid_source_rows_bounded"][0]["reason"],
+                         "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P")
+        self.assertEqual(len(out["rows"]),1)
+
     def test_source_scan_limit_is_fail_closed(self):
         h=MockTabix(m.BASE.ORIGINAL)
         result=m.read_source_rows(h,HEAD,m.FULL_WINDOWS[0],max_rows=1)
