@@ -76,3 +76,20 @@ validation of full genome-wide beta/SE/allele source files.
    source/QTL allele/LD intersection; no PP.H4 or causal gene claim.
 
 **Scientific status: HOLD.**
+
+
+## Actual official metadata CI results
+
+Verified [GitHub Actions #41433562541](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41433562541) completed SUCCESS. Nine of nine synthetic regression tests PASS. Real v2 study and ancestry requests independently matched **all five** expected study accession / reported phenotype / East Asian group combinations.
+
+| ID | Exact study accession | Trait | East Asian ancestry |
+|---|---|---|---|
+| GCST90104544 (AS) | PASS | PASS | PASS |
+| GCST90104545 (AIS) | PASS | PASS | PASS |
+| GCST90104546 (CE) | PASS | PASS | PASS |
+| GCST90104547 (LAA) | PASS | PASS | PASS |
+| GCST90104548 (SVD) | PASS | PASS | PASS |
+
+Actual official JSON payload SHA-256 values (study and ancestry) and the explicit **scientific_status=HOLD** flags are preserved in [the source evidence ledger](../../research/is/evidence/gigastroke_eas_catalog_v2_20261102.json), copied from the CI job logs with workflow/artifact identifiers. This is stronger than literature-only accession naming, but is still only metadata provenance.
+
+Study-level N and case fraction listed above remain **published reference expectations**, not original file-level validated coloc inputs. Official API v2 does not return the genome-wide association summary statistics; verifying exact downloaded source file SHA, effect/other allele definitions and GWAS standard errors remains the next scientific gate.
