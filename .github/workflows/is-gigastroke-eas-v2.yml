@@ -1,0 +1,40 @@
+name: IS GIGASTROKE EAS Five Phenotypes GWAS Catalog v2
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "scripts/is/audit_gigastroke_eas_v2.py"
+      - "tests/test_is_gigastroke_eas_v2.py"
+      - ".github/workflows/is-gigastroke-eas-v2.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_gigastroke_eas_v2.py"
+      - "tests/test_is_gigastroke_eas_v2.py"
+      - ".github/workflows/is-gigastroke-eas-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  accession-ancestry-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test source/trait/ancestry negative controls
+        run: python3 -m unittest discover -s tests -p 'test_is_gigastroke_eas_v2.py' -v
+      - name: Official GWAS Catalog v2 study & ancestry metadata
+        run: python3 scripts/is/audit_gigastroke_eas_v2.py --output ci_reports/is_gigastroke_eas_v2.json
+      - name: Upload aggregated public provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gigastroke-eas-five-v2-provenance
+          path: ci_reports/is_gigastroke_eas_v2.json
+          if-no-files-found: ignore
+          retention-days: 30
