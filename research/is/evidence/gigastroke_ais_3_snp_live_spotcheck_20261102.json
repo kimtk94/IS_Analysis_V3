@@ -1,0 +1,43 @@
+{
+  "record_type": "LIVE_ORIGINAL_GWAS_TO_DRIVE_THREE_POSITION_ALLELE_P_SPOTCHECK",
+  "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41436840036",
+  "job_id": 125248611161,
+  "md5": "904e12e33ec3c2eeefe4dc93bec4995c",
+  "sha256": "c521d5695414bdedcc84d2ea21d588e330c75a672f36a87c3fd092b4c55687a3",
+  "source_rows": 6725216,
+  "gate": "THREE_POSITION_ALLELE_AND_P_SCREEN_PASS_NOT_FULL_CANONICAL_VERIFICATION",
+  "three_anchors": [
+    {
+      "base_pair_location_GRCh37": 81182554,
+      "candidate_alleles_unordered": "CT",
+      "chromosome_GRCh37": "4",
+      "gene": "FGF5",
+      "published_crosswalk_expected_p": 2.888e-8,
+      "source_original_p": 2.888e-8,
+      "source_rows_at_exact_position": 1,
+      "unordered_alleles_and_p_match": true
+    },
+    {
+      "base_pair_location_GRCh37": 105447782,
+      "candidate_alleles_unordered": "AG",
+      "chromosome_GRCh37": "10",
+      "gene": "CALHM2",
+      "published_crosswalk_expected_p": 0.000001332,
+      "source_original_p": 0.000001332,
+      "source_rows_at_exact_position": 1,
+      "unordered_alleles_and_p_match": true
+    },
+    {
+      "base_pair_location_GRCh37": 105459834,
+      "candidate_alleles_unordered": "CT",
+      "chromosome_GRCh37": "10",
+      "gene": "CALHM2",
+      "published_crosswalk_expected_p": 7.792e-7,
+      "source_original_p": 7.792e-7,
+      "source_rows_at_exact_position": 1,
+      "unordered_alleles_and_p_match": true
+    }
+  ],
+  "scientific_status": "HOLD",
+  "full_canoncial_alignment_approved": false
+}
