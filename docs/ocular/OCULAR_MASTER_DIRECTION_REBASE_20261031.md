@@ -231,3 +231,14 @@ BeamA confidence 0.5/0.75, alternative cell label, donor당 적격 cell 수, 각
 [최종 근거 인덱스 및 주석별 GO/HOLD](THESIS_PUBLICATION_READINESS_EVIDENCE_INDEX_20261102.md)와 [최신 선행연구별 비중복 기여 검토](THESIS_NOVELTY_CLAIM_OVERLAP_AND_ERRATUM_AUDIT_20261101.md)를 본 연구의 후속 참조 우선순위로 사용한다. **석사 논문 계산적 재현성 결과 초안 GO**, **저널 투고 준비 HOLD**: 남은 실제 필수 작업 **2개**는 (1) PNG/SVG/보조그림 최종 시각 편집 검수, (2) 인용·본문·제출 형식·차별성의 편집 검수. 이 상태는 새로운 실험이나 원 저자 DEG80 연락을 필수조건으로 강요하지 않는다.
 
 원래 source Figure 및 최신 요약 데이터의 GitHub Actions 아티팩트는 만료될 수 있다. Git에는 근거 SHA, ID, 코드와 문서를 보존했으나 **원본 binary figure/표를 장기보관 위치에 별도로 복사했다는 증거는 아직 없음**. 투고·학위심사 전에 실제 파일 보존 확인 필요.
+
+
+## 2026-11-02 — 실제 시각검수·수정 Figure·논문 인용 CI 완료 (원고 조립 1개 잔여)
+
+**시각 검수 실제 진행:** 메인 Fig1 2,598×1,471 / Fig2 2,956×1,424 / Fig3 2,517×1,125 PNG를 직접 열어 확인한 결과 눈에 띄는 텍스트 충돌이나 그림 잘림 없이 **시각 GO**. 최초 supplemental effect-stratum Figure에서는 거의 100%에 위치한 두 계열의 `n=` 표기가 겹쳐 **시각 FAIL**을 발견했다. 캡션/표본 수를 별도 표와 하단 텍스트로 분리한 최종 Figure S1(2,957×1,333)은 [GitHub CI #41435268815](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41435268815) **2/2 SUCCESS**, 실제 그림 다시 확인해 **GO**. 원래 보조그림과 수정본 **두 통계 TSV는 바이트 단위 동일**, 분석 결과 변경 없음. [수정 Figure S1 최종 ZIP #13135314010](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41435268815/artifacts/13135314010).
+
+**별도 논문 참조자료 CI:** [#41436138351](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41436138351) **2/2 SUCCESS**, 7개 문서의 상대 Markdown 링크 15개 모두 존재, 외부 URL 문법 90개, 공식 논문·정정공고 등 참고문헌 필수 6개 출처 기재, 수정 S1 그림과 124/194 vs 90/194 및 rank18 DEX alias 논문 문구를 검사했다. 외부 링크의 최신 LIVE 응답 및 학술 리뷰를 보증하는 검사는 아님. [최종 보고 #13136980302](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41436138351/artifacts/13136980302).
+
+**Drive 원본 바이너리 백업 실제 완료:** [MASTER DEGREE / GSE313736 TM Thesis Figures Evidence](https://drive.google.com/drive/folders/1LjrbN9Lzr6DUXX0h8yaEXQNPLpHTm7Ye)에 메인 PNG+SVG/S1, 수정된 Supplemental Figure, 교란 연구/3-strain 연구 TSV, 인용/출처 CI 보고 등 저장. 5개 원본 ZIP 백업은 Drive metadata 재조회로 크기를 확인했고 수정본/참조자료 ZIP도 Drive 업로드 성공. 출처 SHA·Visual gate·각 파일 링크는 [시각검수+장기보관 보고서](FIGURE_VISUAL_REVIEW_AND_DURABLE_DRIVE_ARCHIVE_20261102.md) 및 [논문 증거 인덱스](THESIS_PUBLICATION_READINESS_EVIDENCE_INDEX_20261102.md) 참조.
+
+**잔여 필수업무 1개:** 실제 최종 Word/PDF 학위논문 또는 저널 대상 형식으로 문서와 최신 그림/표를 조립해 print-size 가독성 및 인용 세부 표기, 편집 검수. 완료 전에는 저널 제출 준비 상태를 GO로 전환하지 않는다. 원 저자 80개 목록 확보·연구진 직접 연락은 **비필수 HOLD**로 남긴다.
