@@ -8,7 +8,7 @@ spec=importlib.util.spec_from_file_location("gtex_v8_discover",PATH)
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 
 QTD_HTML=b'<html><a href="QTD000161.all.tsv.gz">all</a><a href="QTD000161.all.tsv.gz.tbi">index</a></html>'
-IMP_HTML=b'<html><a href="GTEx_v8/">GTEx v8</a></html>'
+IMP_HTML=b'<html><a href="GTEx_V8/">GTEx v8</a></html>'
 CHILD_HTML=b'<html><a href="Brain_Cerebellar_Hemisphere.all.tsv.gz">original</a></html>'
 HEADER=b"molecular_trait_id\tvariant\tpvalue\tbeta\nENSG0\tchr1_42_A_C\t1e-2\t0.3\n"
 
@@ -16,7 +16,7 @@ class GTExImportedDiscoveryTests(unittest.TestCase):
     def mock(self,url):
         value={
             m.QTL_DIR:QTD_HTML,m.IMPORTED:IMP_HTML,
-            m.IMPORTED+"GTEx_v8/":CHILD_HTML,
+            m.IMPORTED+"GTEx_V8/":CHILD_HTML,
             m.QTL_URL:gzip.compress(HEADER,mtime=0),
         }
         return value[url]
@@ -70,7 +70,7 @@ class GTExImportedDiscoveryTests(unittest.TestCase):
     def test_imported_multiple_folders_does_not_guess_source(self):
         def two(url):
             if url==m.IMPORTED:
-                return b'<a href="GTEx_v8/">GTEx v8</a><a href="Other/">Other</a>'
+                return b'<a href="GTEx_V8/">GTEx v8</a><a href="Other/">Other</a>'
             return self.mock(url)
         out=m.audit(two)
         self.assertNotIn("GTEx_v8_imported_child_index",out)
