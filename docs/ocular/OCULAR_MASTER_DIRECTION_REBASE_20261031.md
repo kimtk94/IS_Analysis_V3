@@ -217,3 +217,17 @@ BeamA confidence 0.5/0.75, alternative cell label, donor당 적격 cell 수, 각
 - **논문 초안** [Methods 2.3a/Results 3.4b/Discussion 4.3a](THESIS_MANUSCRIPT_METHODS_RESULTS_DISCUSSION_DRAFT_20261101.md)에 식별 불가능성을 독립 Result로 반영했다. 이 새로운 증거가 논문의 **주요 비중복 기여(설계·셀 집계/선택 편향 검증)** 중 하나다.
 
 **완료 기준 갱신:** 계산 가능한 GSE313736 연구의 구조적 교란 진단 **GO**, 특정 DEG의 순수 약물 인과효과와 라이브러리 효과 분리 **HOLD**, 원 저자 80 DEG 완전 매핑 **NON-BLOCKING HOLD**이며 연락은 추진하지 않음, 임상 steroid-induced ∆IOP **STOP**. 후속은 출처 재현성 검증과 외부 cohort별 비교가능성 요약으로 전환하고 비용 큰 10x 재다운로드는 피한다.
+
+
+## 2026-11-02 — 논문 Figure 4개 아티팩트 통합 근거 QA 및 제출 게이트
+
+현재 가장 최신 연구 우선순위는 **기존 연구 수치 재생산이나 원저자 연락이 아닌 논문 출처 검증·편집 마감**이다. 실제 [4개 집계 아티팩트 교차 QA #41432752451](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41432752451) 2/2 SUCCESS, [출처 SHA 및 검증 보고서 #13134578619](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41432752451/artifacts/13134578619). 첫 QA CI #41432621959는 TSV 숫자 문자열/실수 비교에서 코드 오류로 실패했고 `8116da3b48cd55d052dce5574cdb181fee68f6b7`에서 수정되어 최종 실제 데이터 검증 성공.
+
+- 원본 3개 메인 Figure의 PNG chunk CRC/크기, SVG XML, legends 및 16-gene S1, 고정 원본 4개 figure source SHA256을 검사했다. **이것은 시각적 디자인/겹침 검증과 다르며**, 최종 그림 visual gate는 미완료.
+- 최신 보조 검증과 manuscript 추적: 저효과(<0.25) 55 paired donor 5,349 tested gene에서 방향 일치 **78.258%**; 외부 7일 연구에서 3개 코어 후보 3-strain 방향 유지, EMT 194개 중 3연구 평균 일치 **124**와 3연구 평균 + 7일 strain 각각까지 엄격하게 일치한 **90**을 명확히 구분한다.
+- 구조 교란 + 구성 차이: 9 original pools ×2 arms, 18 source libraries. **19열/rank18** DEX indicator 별도 식별 불가. cell-count-weighted BeamA +2.406339pp는 **+0.868638pp within pool +1.537701pp pool-weight composition**으로 정확히 분해되나 batch/약물 인과 비율로 해석하지 않는다.
+- 논문 초록이 검증 이후 90/194 및 18 library 식별불가능성을 반영한 것을 확인했다. 현 시점 수치/출처 정합성 **PASS**, 과학적 기전/임상 예측 **HOLD/STOP**이다.
+
+[최종 근거 인덱스 및 주석별 GO/HOLD](THESIS_PUBLICATION_READINESS_EVIDENCE_INDEX_20261102.md)와 [최신 선행연구별 비중복 기여 검토](THESIS_NOVELTY_CLAIM_OVERLAP_AND_ERRATUM_AUDIT_20261101.md)를 본 연구의 후속 참조 우선순위로 사용한다. **석사 논문 계산적 재현성 결과 초안 GO**, **저널 투고 준비 HOLD**: 남은 실제 필수 작업 **2개**는 (1) PNG/SVG/보조그림 최종 시각 편집 검수, (2) 인용·본문·제출 형식·차별성의 편집 검수. 이 상태는 새로운 실험이나 원 저자 DEG80 연락을 필수조건으로 강요하지 않는다.
+
+원래 source Figure 및 최신 요약 데이터의 GitHub Actions 아티팩트는 만료될 수 있다. Git에는 근거 SHA, ID, 코드와 문서를 보존했으나 **원본 binary figure/표를 장기보관 위치에 별도로 복사했다는 증거는 아직 없음**. 투고·학위심사 전에 실제 파일 보존 확인 필요.
