@@ -413,6 +413,11 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
             try:
                 extended_panel=load_extended_panel()
                 extended_hits={key:[] for key in extended_panel}
+            except (OSError,ValueError,KeyError,TypeError) as exc:
+                extended_panel=None
+                extended_hits={}
+                result["extended_panel_gate"]="HOLD_PANEL_INPUT_OR_SCHEMA"
+                result["extended_panel_failure_class"]=type(exc).__name__
             try:
                 fullcis_panel=load_fullcis_source_panel()
                 fullcis_hits={key:[] for key in fullcis_panel}
@@ -421,11 +426,6 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
                 fullcis_hits={}
                 result["fullcis_drive_source_gate"]="HOLD_PANEL_INPUT_OR_SCHEMA"
                 result["fullcis_drive_panel_failure_class"]=type(exc).__name__
-            except (OSError,ValueError,KeyError,TypeError) as exc:
-                extended_panel=None
-                extended_hits={}
-                result["extended_panel_gate"]="HOLD_PANEL_INPUT_OR_SCHEMA"
-                result["extended_panel_failure_class"]=type(exc).__name__
             with gzip.open(dest,"rt",encoding="utf-8-sig",newline="") as f:
                 reader=csv.reader(f,delimiter="\t")
                 first=next(reader)
