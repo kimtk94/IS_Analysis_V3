@@ -64,9 +64,35 @@ class OriginalGIGASTROKEFTPTests(unittest.TestCase):
         self.assertEqual(out["full_file_gate"],"ORIGINAL_FILE_MD5_AND_GZIP_ROWS_PASS_REVIEW_REQUIRED")
         self.assertTrue(out["original_file_byte_hash_verified"])
         self.assertEqual(out["full_gwas_data_rows"],2)
+        self.assertEqual(out["gwas_numeric_qc"]["finite_beta_se_p_positive_se_rows"],2)
+        self.assertEqual(out["numeric_qc_status"],"BASIC_NUMERIC_FIELDS_SCREEN_PASS")
         self.assertFalse(out["original_gwas_N_SE_effect_allele_approved"])
         self.assertFalse(out["source_to_local_EAS5_canonical_allele_alignment_verified"])
         self.assertFalse(out["coloc_performed"])
+
+    def test_negative_standard_error_is_not_numerically_approved(self):
+        data=ORIG.replace(b"0.03",b"-0.03")
+        opener=fake_provider(original=data)
+        out=m.verify_full(m.probe(opener),opener)
+        self.assertTrue(out["original_file_byte_hash_verified"])
+        self.assertEqual(out["gwas_numeric_qc"]["finite_beta_se_p_positive_se_rows"],1)
+        self.assertEqual(out["numeric_qc_status"],"HOLD_NUMERIC_OR_ALLELE_QC_REVIEW")
+        self.assertFalse(out["original_gwas_N_SE_effect_allele_approved"])
+
+    def test_malformed_eaf_is_not_approved(self):
+        data=ORIG.replace(b"effect_allele\\tother_allele", b"effect_allele\\tother_allele")
+        data=data.replace(b"effect_allele_frequency",b"effect_allele_frequency")
+        # EAF column absent from this original synthetic fixture; tested separately by schema.
+        opener=fake_provider(original=data)
+        out=m.verify_full(m.probe(opener),opener)
+        self.assertEqual(out["full_file_gate"],"HOLD_NUMERIC_QC_COLUMNS_MISSING")
+        self.assertFalse(out["original_file_byte_hash_verified"])
+
+    def test_gzip_row_scan_limit_is_fail_closed(self):
+        opener=fake_provider()
+        out=m.verify_full(m.probe(opener),opener,max_rows=1)
+        self.assertEqual(out["full_file_gate"],"HOLD_EXCEEDS_ROW_SCAN_BOUND")
+        self.assertFalse(out["original_file_byte_hash_verified"])
 
     def test_expected_md5_wrong_fails_source_verification(self):
         opener=fake_provider(yaml_overrides="data_file_md5sum: "+"0"*32+"\n")
