@@ -30,7 +30,7 @@ TASKS = {
     "is": "Inspect a real GIGASTROKE EAS AIS summary-statistics source header and allele/effect schema",
     "glaucoma": "Independently recalculate BH-FDR for the archived 57-pair edgeR gene-level output",
     "hcc": "Independently verify official PDC tumor/normal case pairing in both proteomics studies",
-    "radiomics": "Check real public NIfTI voxel-spacing headers or verify 14-case CI result accessibility",
+    "radiomics": "Independently revalidate cross-repository 14-case 168-row MRI factorial artifact against frozen source SHA256",
     "ocular": "Audit all 46 ENA runs for two FASTQ paths, byte sizes and published MD5 syntax",
     "muscle": "Resolve all 20 published RT lead rsIDs against GTEx v10 and record missingness",
     "oral": "Verify GSE103322 expression resource accessibility and clinical donor linkage prerequisites",
@@ -214,26 +214,49 @@ def _nifti_header(raw,compressed):
 
 def radiomics_task():
     folder=pathlib.Path("/tmp/research-radiomics-source")
-    local=[p for p in folder.rglob("*") if p.is_file()] if folder.exists() else []
-    # Source artifact is preferred but its schema cannot be assumed.
-    source_artifact={"available":bool(local),"file_count":len(local),
-                     "contains_tabular_result":any(p.suffix.lower() in (".csv",".tsv") for p in local)}
-    obj=json.loads(fetch("https://zenodo.org/api/records/8179129",3000000)[0])
-    files=obj.get("files") or []
-    nifti=[f for f in files if str(f.get("key","")).lower().endswith((".nii",".nii.gz"))]
-    if not nifti:
-        return "HOLD_ZENODO_NO_DIRECT_NIFTI",{
-            "zenodo_record_id":8179129,"files_listed":len(files),
-            "direct_nifti_files":0,"prior_14_case_artifact":source_artifact}
-    f=nifti[0]; url=(f.get("links") or {}).get("self")
-    if not url:raise Hold("ZENODO_NIFTI_DOWNLOAD_LINK_MISSING")
-    part,meta=fetch(url,65536,{"Range":"bytes=0-65535","Accept-Encoding":"identity"})
-    if meta["http"]!=206 and not meta["content_range"]:raise Hold("ZENODO_NIFTI_RANGE_UNSUPPORTED")
-    spacing=_nifti_header(part,str(f["key"]).endswith(".gz"))
-    return "PASS_ONE_PUBLIC_NIFTI_SPACING_ONLY",{
-        "zenodo_record_id":8179129,"nifti_file_count":len(nifti),
-        "one_nifti_spacing_mm":spacing,"prefix_sha256":meta["sha256"],
-        "prior_14_case_artifact":source_artifact,"registered_PV_14_verified":False}
+    expected={
+      "hcc_registered_pv_14x2_2x3_glcm_extraction_rows.csv":
+        ("66286993a268a177ed663d8d328a5f9b5048d3630e897132b6c503bb44a94911",168),
+      "hcc_registered_pv_24_feature_condition_metrics.csv":
+        ("ac65f81c2be42021a3a77f7752145f329b2e9fd694a7a7850d58e8c3a0387784",24),
+      "hcc_registered_pv_112_patient_reader_feature_profiles.csv":
+        ("44d6a22d4e80f9135a3f0cd267d24eafc639b4aa5d2b1dbde5913533a356d98f",112),
+      "hcc_registered_pv_2x3_factorial_summary.json":
+        ("638d4f91c530da2e30ffdadcc56f28bd8b459f7a3528fe55077ac1cc7e755a82",None),
+    }
+    if not folder.exists():raise Hold("PRIOR_14_CASE_ARTIFACT_UNAVAILABLE")
+    actual={p.name:p for p in folder.rglob("*") if p.is_file()}
+    if not set(expected).issubset(actual):raise Hold("PRIOR_14_CASE_ARTIFACT_FILES_MISSING")
+    row_counts={};nonfinite=0;empty=0;numeric=0
+    for name,(sha,expected_rows) in expected.items():
+        p=actual[name]
+        if hashlib.sha256(p.read_bytes()).hexdigest()!=sha:
+            raise IntegrityFail("PINNED_RAD_SOURCE_HASH_MISMATCH")
+        if name.endswith(".csv"):
+            with p.open(encoding="utf-8-sig",newline="") as f:
+                reader=csv.DictReader(f);rows=list(reader)
+            row_counts[name]=len(rows)
+            if len(rows)!=expected_rows:raise IntegrityFail("RAD_SOURCE_ROW_COUNT_MISMATCH")
+            if not reader.fieldnames or len(reader.fieldnames)!=len(set(reader.fieldnames)):
+                raise IntegrityFail("RAD_SOURCE_HEADER_COLLISION")
+            for row in rows:
+                for value in row.values():
+                    if value is None or not value.strip():empty+=1;continue
+                    try:v=float(value)
+                    except ValueError:continue
+                    numeric+=1
+                    if not math.isfinite(v):nonfinite+=1
+        else:
+            try:json.loads(p.read_text())
+            except ValueError:raise IntegrityFail("RAD_SOURCE_SUMMARY_JSON_INVALID")
+    if nonfinite:raise IntegrityFail("RAD_SOURCE_NONFINITE_FEATURE_VALUES")
+    return "PASS_PINNED_14_CASE_FACTORIAL_ARTIFACT_INTEGRITY",{
+        "source_run":"kimtk94/Codex/actions/runs/41208617950",
+        "source_files_sha256_matched":len(expected),
+        "source_rows":row_counts,"numeric_cells_checked":numeric,
+        "empty_cells_observed":empty,"nonfinite_numeric_cells":nonfinite,
+        "original_nifti_spacing_14_verified":False,
+        "MRI_RNA_patient_join_verified":False}
 
 def ocular_task():
     url=("https://www.ebi.ac.uk/ena/portal/api/filereport?"
