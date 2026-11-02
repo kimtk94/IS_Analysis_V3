@@ -40,7 +40,8 @@ class EAS5OriginalArchiveTests(unittest.TestCase):
             self.assertEqual(result["archive_sha256"], mod.sha256_file(path))
             self.assertEqual(result["bounded_qc"]["distinct_source_eligible_variant_keys"], 1)
             self.assertEqual(result["file_gate"], "HOLD_NO_TRUSTED_EXPECTED_SHA256")
-            self.assertFalse(result["source_sha256_trusted_independent_pin"])
+            self.assertFalse(result["provided_expected_sha256_matched"])
+            self.assertFalse(result["expected_sha256_independently_authenticated"])
 
     def test_wrong_sha_fails_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
