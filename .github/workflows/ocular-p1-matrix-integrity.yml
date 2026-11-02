@@ -1,0 +1,31 @@
+name: Ocular P1 Paired Count Matrix Integrity
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  paired-pool-c:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile P1 script
+        run: |
+          python -m py_compile scripts/ocular/ocular_p1_integrity.py
+          python scripts/ocular/ocular_p1_integrity.py --help
+      - name: Download and check both full count matrices
+        run: |
+          python scripts/ocular/ocular_p1_integrity.py --output ocular-p1-integrity.json
+      - name: Upload aggregate QC only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p1-integrity
+          path: ocular-p1-integrity.json
+          retention-days: 30
+          if-no-files-found: warn

@@ -1,0 +1,48 @@
+name: Ocular Mehrotra Frozen Supplement Candidate Timepoint Crosswalk
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  source-validated-candidate-pairs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile deterministic source-only crosswalk
+        run: |
+          python -m py_compile scripts/ocular/ocular_mehrotra_temporal_candidate_crosswalk.py
+      - name: Retrieve frozen official supplement and ENA manifest source audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-mehrotra-source" ocular-mehrotra-timepoint-public
+          gh run download 41218079101 -n ocular-official-erratum-author80-source-audit -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-mehrotra-source"
+          test -s "$RUNNER_TEMP/ocular-mehrotra-source/MEHROTRA_4_SUPPLEMENT_OFFICIAL_ACCESS_QC.json"
+          test -s "$RUNNER_TEMP/ocular-mehrotra-source/MEHROTRA_PRJNA1243143_ENA_RUN_MANIFEST.tsv"
+          test -s "$RUNNER_TEMP/ocular-mehrotra-source/MEHROTRA_23_PAIR_BIOSAMPLE_TIMEPOINT_QC.json"
+      - name: Make 48h TM candidate map without falsely granting per-run time evidence
+        run: |
+          python -u scripts/ocular/ocular_mehrotra_temporal_candidate_crosswalk.py \
+            --supp-qc "$RUNNER_TEMP/ocular-mehrotra-source/MEHROTRA_4_SUPPLEMENT_OFFICIAL_ACCESS_QC.json" \
+            --manifest "$RUNNER_TEMP/ocular-mehrotra-source/MEHROTRA_PRJNA1243143_ENA_RUN_MANIFEST.tsv" \
+            --biosample-qc "$RUNNER_TEMP/ocular-mehrotra-source/MEHROTRA_23_PAIR_BIOSAMPLE_TIMEPOINT_QC.json" \
+            --out ocular-mehrotra-timepoint-public
+      - name: Remove intermediate source metadata copies
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-mehrotra-source"
+      - name: Upload 23 candidate classifications and nine TM 48h candidate run pairs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-mehrotra-23-pair-temporal-candidates
+          path: ocular-mehrotra-timepoint-public/
+          retention-days: 45
+          if-no-files-found: warn

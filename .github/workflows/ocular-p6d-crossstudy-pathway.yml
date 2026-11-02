@@ -1,0 +1,43 @@
+name: Ocular P6d Independent 100nM Cross-Study Hallmark Direction Gate
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  pathway-direction-external:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned public source readers
+        run: |
+          python -m pip install 'numpy==1.26.4' 'openpyxl==3.1.5'
+          python -m py_compile scripts/ocular/ocular_p6d_crossstudy_pathway_concordance.py scripts/ocular/ocular_p5m_timecourse_and_tiers.py
+      - name: Obtain verified P5b primary all-gene public aggregate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/p6d-primary" ocular-p6d-public
+          gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p6d-primary"
+          test -s "$RUNNER_TEMP/p6d-primary/p5_all_gene_results.tsv.gz"
+      - name: Read official independent 100nM 48h supplement and compute nine signed pathway comparisons
+        run: |
+          python -u scripts/ocular/ocular_p6d_crossstudy_pathway_concordance.py --primary "$RUNNER_TEMP/p6d-primary/p5_all_gene_results.tsv.gz" --out ocular-p6d-public
+      - name: Remove downloaded prior aggregate copy
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p6d-primary"
+      - name: Publish gene-level aggregate pathway comparison and interpretation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p6d-crossstudy-pathway
+          path: ocular-p6d-public/
+          retention-days: 30
+          if-no-files-found: warn

@@ -1,0 +1,31 @@
+name: Ocular Mehrotra Preprint vs Journal Table 1 Provenance
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-version-comparison:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm source parser syntax
+        run: |
+          python -m py_compile scripts/ocular/ocular_mehrotra_preprint_vs_journal_table1.py
+      - name: Compare official original preprint and published article table definitions
+        run: |
+          mkdir -p ocular-version-table-public
+          python -u scripts/ocular/ocular_mehrotra_preprint_vs_journal_table1.py --out ocular-version-table-public
+      - name: Save source provenance only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-mehrotra-table1-original-version-provenance
+          path: ocular-version-table-public/
+          retention-days: 45
+          if-no-files-found: warn

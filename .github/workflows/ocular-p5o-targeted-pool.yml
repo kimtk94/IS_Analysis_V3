@@ -1,0 +1,49 @@
+name: Ocular P5o Targeted 96-Gene Donor-Paired Pool Sensitivity
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  targeted-paired-pools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned Python and Bioconductor packages
+        run: |
+          python -m pip install 'numpy==1.26.4'
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends r-base-core r-bioc-edger r-cran-jsonlite r-cran-statmod
+      - name: Verify inputs and script syntax before full raw transfer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          Rscript -e 'invisible(parse(file="scripts/ocular/ocular_p5o_targeted_paired_pool.R"));cat("P5O_R_PARSE_PASS\n")'
+          python -m py_compile scripts/ocular/ocular_p4_fullcohort.py
+          mkdir -p "$RUNNER_TEMP/ocular-p5o-input" "$RUNNER_TEMP/ocular-p5o-private" ocular-p5o-public
+          gh run download 41158660082 -n ocular-p5l-discordant-poolunit -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-p5o-input"
+          test -s "$RUNNER_TEMP/ocular-p5o-input/P5l_96_discordant_poolunit_crosscheck.tsv"
+      - name: Stream all 18 10x matrices into transient paired raw-counts once
+        run: |
+          python -u scripts/ocular/ocular_p4_fullcohort.py --score 0.75 --min-cells 30 --internal-export-dir "$RUNNER_TEMP/ocular-p5o-private" --output ocular-p5o-public/source_qc.json
+      - name: Compute 96-gene donor-paired and pool exclusion descriptives
+        run: |
+          Rscript scripts/ocular/ocular_p5o_targeted_paired_pool.R "$RUNNER_TEMP/ocular-p5o-private" "$RUNNER_TEMP/ocular-p5o-input/P5l_96_discordant_poolunit_crosscheck.tsv" ocular-p5o-public
+      - name: Clear confidential donor counts and internal mappings
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-p5o-private" "$RUNNER_TEMP/ocular-p5o-input"
+      - name: Publish only aggregate 96-gene evidence and anonymized pool figure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5o-96-targeted-pool-sensitivity
+          path: ocular-p5o-public/
+          retention-days: 30
+          if-no-files-found: warn

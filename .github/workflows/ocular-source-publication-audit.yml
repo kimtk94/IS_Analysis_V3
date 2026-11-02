@@ -1,0 +1,48 @@
+name: Ocular Erratum and Author DEG Official Source Audit
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-official-source-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check audit parser syntax and external-source-only limits
+        run: |
+          python -m py_compile scripts/ocular/ocular_erratum_and_author80_public_source_audit.py scripts/ocular/ocular_mehrotra_erratum_ena_manifest.py scripts/ocular/ocular_mehrotra_12_ambiguous_biosamples.py scripts/ocular/ocular_mehrotra_timepoint_source_inventory.py scripts/ocular/ocular_mehrotra_four_pmc_supplements.py
+      - name: Audit IOVS correction fulltext and deposited source paper
+        run: |
+          mkdir -p ocular-source-audit-public
+          python -u scripts/ocular/ocular_erratum_and_author80_public_source_audit.py --out ocular-source-audit-public
+      - name: Confirm erratum adds raw RNA-seq accession and audit official ENA reads
+        run: |
+          python -u scripts/ocular/ocular_mehrotra_erratum_ena_manifest.py --out ocular-source-audit-public
+      - name: Inspect 12 ambiguous SRA BioSample attributes, never assume dash1/dash2 arm assignment
+        run: |
+          python -u scripts/ocular/ocular_mehrotra_12_ambiguous_biosamples.py \
+            --manifest ocular-source-audit-public/MEHROTRA_PRJNA1243143_ENA_RUN_MANIFEST.tsv \
+            --out ocular-source-audit-public
+      - name: Check original IOVS supplemental source links and all 23 pair-level timepoint metadata
+        run: |
+          python -u scripts/ocular/ocular_mehrotra_timepoint_source_inventory.py \
+            --manifest ocular-source-audit-public/MEHROTRA_PRJNA1243143_ENA_RUN_MANIFEST.tsv \
+            --out ocular-source-audit-public
+      - name: Inspect four official DOCX XLSX supplements for sample design and sample count availability
+        run: |
+          python -u scripts/ocular/ocular_mehrotra_four_pmc_supplements.py \
+            --out ocular-source-audit-public
+      - name: Publish compact provenance with raw journal text excluded
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-official-erratum-author80-source-audit
+          path: ocular-source-audit-public/
+          retention-days: 45
+          if-no-files-found: warn

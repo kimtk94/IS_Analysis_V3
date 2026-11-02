@@ -1,0 +1,39 @@
+name: Ocular 2024 Three-Source Original Study Provenance Audit
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/ocular-p0-data-access-audit-20261030
+    paths:
+      - scripts/ocular/ocular_gse313736_2024_original_source_audit.py
+      - .github/workflows/ocular-gse313736-2024-original-audit.yml
+
+permissions:
+  contents: read
+
+jobs:
+  source-manifest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install public-PDF text parser
+        run: |
+          python -m pip install 'pymupdf==1.26.5'
+          python -m py_compile scripts/ocular/ocular_gse313736_2024_original_source_audit.py
+      - name: Audit AVR and UTAS evidence plus Feb 2024 ANZGS schedule
+        run: |
+          mkdir -p ocular-original-author-evidence-public
+          python -u scripts/ocular/ocular_gse313736_2024_original_source_audit.py \
+            --out ocular-original-author-evidence-public
+      - name: Preserve compact original source evidence, not raw copyrighted PDF
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gse313736-2024-original-author-sources
+          path: ocular-original-author-evidence-public/
+          retention-days: 60
+          if-no-files-found: warn

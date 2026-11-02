@@ -1,0 +1,61 @@
+name: Ocular P8 EMT Specificity and BioSample/Shotgun QC
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  three-distinct-public-evidence-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [emt, biosample, range]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile scripts and install only mode-specific statistical dependency
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          python -m py_compile scripts/ocular/ocular_p8_specificity_biosample_fastq.py
+          if [ "$MODE" = "emt" ]; then
+            python -m pip install 'scipy==1.14.1'
+          fi
+      - name: Retrieve original P7a public EMT aggregate only when needed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ matrix.mode }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-p8-source" "ocular-p8-${MODE}-public"
+          if [ "$MODE" = "emt" ]; then
+            gh run download 41179413138 -n ocular-p7-emt-gate -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-p8-source"
+            test -s "$RUNNER_TEMP/ocular-p8-source/P7a_194_emt_gene_concordance.tsv"
+            test -s "$RUNNER_TEMP/ocular-p8-source/P7a_emt_gene_sign_and_robustness.json"
+          fi
+      - name: Audit P8 independently; never save public raw sequence snippets or sample labels
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          python -u scripts/ocular/ocular_p8_specificity_biosample_fastq.py \
+            --mode "$MODE" \
+            --p7-emt "$RUNNER_TEMP/ocular-p8-source/P7a_194_emt_gene_concordance.tsv" \
+            --p7-summary "$RUNNER_TEMP/ocular-p8-source/P7a_emt_gene_sign_and_robustness.json" \
+            --out "ocular-p8-${MODE}-public"
+      - name: Delete original P7a aggregate copy
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-p8-source"
+      - name: Save aggregate reports only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p8-${{ matrix.mode }}-gate
+          path: ocular-p8-${{ matrix.mode }}-public/
+          retention-days: 30
+          if-no-files-found: warn

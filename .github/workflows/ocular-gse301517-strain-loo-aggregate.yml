@@ -1,0 +1,55 @@
+name: Ocular GSE301517 7d Strain Leave-One-Out and EMT Reproducibility
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  strain-loo-selftest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify the mean-versus-LOO masking edge case with fixture
+        run: |
+          python -m py_compile scripts/ocular/ocular_gse301517_strain_loo_aggregate_audit.py
+          python scripts/ocular/ocular_gse301517_strain_loo_aggregate_audit.py --self-test
+
+  actual-third-study-aggregate-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Retrieve prior source-verified 7d three-strain aggregate only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-third-public-aggregate" ocular-third-strain-loo
+          gh run download 41186736618 -n ocular-third-gse301517-preflight -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-third-public-aggregate"
+          test -s "$RUNNER_TEMP/ocular-third-public-aggregate/GSE301517_16_p9_panel_3strain_vs_48h.tsv"
+          test -s "$RUNNER_TEMP/ocular-third-public-aggregate/GSE301517_EMT_shared_3strain_direction.tsv"
+      - name: Freeze 3-strain exact sign effects, leave-one-out, and EMT audit
+        run: |
+          python -u scripts/ocular/ocular_gse301517_strain_loo_aggregate_audit.py \
+            --source "$RUNNER_TEMP/ocular-third-public-aggregate" \
+            --out ocular-third-strain-loo
+      - name: Erase temporary publication source copy; no human donor IDs
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-third-public-aggregate"
+      - name: Save compact gene-level review and source provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gse301517-three-strain-loo-review
+          path: ocular-third-strain-loo/
+          retention-days: 60
+          if-no-files-found: warn

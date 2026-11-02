@@ -1,0 +1,46 @@
+name: Ocular P5 Paired edgeR Differential Expression
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  donor-paired-edger:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned Python and system-packaged Bioconductor edgeR
+        run: |
+          python -m pip install 'numpy==1.26.4'
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends r-base-core r-bioc-edger r-cran-statmod r-cran-jsonlite
+          Rscript -e 'stopifnot(requireNamespace("edgeR",quietly=TRUE),requireNamespace("jsonlite",quietly=TRUE));cat("edgeR",as.character(packageVersion("edgeR")),"\\n")'
+      - name: Validate P4/P5 source and raw-count fixture
+        run: |
+          python -m py_compile scripts/ocular/ocular_p4_fullcohort.py scripts/ocular/ocular_p4_pseudobulk_pilot.py
+          python scripts/ocular/ocular_p4_pseudobulk_pilot.py --self-test
+          Rscript -e 'invisible(parse(file="scripts/ocular/ocular_p5_edger.R"));cat("P5_R_PARSE_PASS\\n")'
+      - name: Stream all public 10x matrices and export runner-private paired raw counts
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-p5-private" ocular-p5-public
+          python -u scripts/ocular/ocular_p4_fullcohort.py --score 0.75 --min-cells 30 --internal-export-dir "$RUNNER_TEMP/ocular-p5-private" --output ocular-p5-public/p5_source_qc.json
+      - name: Fit edgeR donor-blocked negative-binomial quasi-likelihood model
+        run: |
+          Rscript scripts/ocular/ocular_p5_edger.R "$RUNNER_TEMP/ocular-p5-private" ocular-p5-public
+      - name: Delete runner-private donor count table and sample pair map
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-p5-private"
+      - name: Archive public gene-level statistics and aggregate QC only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5-edger-inference
+          path: ocular-p5-public/
+          if-no-files-found: warn
+          retention-days: 30

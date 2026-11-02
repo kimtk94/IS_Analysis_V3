@@ -1,0 +1,35 @@
+name: Ocular PR Lightweight CI
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular/**'
+      - 'docs/ocular/**'
+      - '.github/workflows/ocular-*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ocular-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile all ocular audit scripts
+        run: |
+          python -m py_compile scripts/ocular/*.py
+      - name: Install fixture-test workbook dependency
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+      - name: Run repository smoke test
+        run: |
+          bash scripts/codex_smoke_test.sh
+      - name: Check P3/P3b help and CLI
+        run: |
+          python scripts/ocular/ocular_p3_all_matrices.py --help
+          python scripts/ocular/ocular_p3b_features.py --help
+          python scripts/ocular/ocular_p3_cellstate_readiness.py --help

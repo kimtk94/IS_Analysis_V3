@@ -1,0 +1,60 @@
+name: Ocular Thesis Four-Artifact Source and Figure Claim QA
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  offline-source-gate-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile and test fail-closed image and claim validators
+        run: |
+          python -m py_compile scripts/ocular/ocular_thesis_final_evidence_qa.py
+          python scripts/ocular/ocular_thesis_final_evidence_qa.py --self-test
+
+  inspect-existing-real-results:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Retrieve four source-verified aggregate artifacts (NO 10x or FASTQ)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-thesis-qa/figures" "$RUNNER_TEMP/ocular-thesis-qa/strata" "$RUNNER_TEMP/ocular-thesis-qa/strain" "$RUNNER_TEMP/ocular-thesis-qa/design" ocular-final-evidence-qa
+          gh run download 41208972011 -n ocular-thesis-frozen-figures -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-thesis-qa/figures"
+          gh run download 41389639386 -n ocular-gateb-stratified-real-aggregate-figure -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-thesis-qa/strata"
+          gh run download 41423487666 -n ocular-gse301517-three-strain-loo-review -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-thesis-qa/strain"
+          gh run download 41430965326 -n ocular-gse313736-technical-confounding-identifiability -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-thesis-qa/design"
+      - name: Independently cross-check publication assets, S1, original manifests, latest results and abstract
+        run: |
+          python -u scripts/ocular/ocular_thesis_final_evidence_qa.py \
+            --figures "$RUNNER_TEMP/ocular-thesis-qa/figures" \
+            --strata "$RUNNER_TEMP/ocular-thesis-qa/strata" \
+            --strain "$RUNNER_TEMP/ocular-thesis-qa/strain" \
+            --design "$RUNNER_TEMP/ocular-thesis-qa/design" \
+            --manuscript docs/ocular/THESIS_MANUSCRIPT_METHODS_RESULTS_DISCUSSION_DRAFT_20261101.md \
+            --out ocular-final-evidence-qa
+      - name: Destroy temporary downloaded artifacts after audit
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-thesis-qa"
+      - name: Preserve audit index and file-hashes only; do not republish all figures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-thesis-real-four-artifact-evidence-qa
+          path: ocular-final-evidence-qa/
+          if-no-files-found: warn
+          retention-days: 60

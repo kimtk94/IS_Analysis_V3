@@ -1,0 +1,35 @@
+name: Ocular P4 Pool C Pseudobulk Pilot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stream-pool-c:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned computational dependency
+        run: |
+          python -m pip install 'numpy==1.26.4'
+      - name: Run syntactic and synthetic raw-count tests
+        run: |
+          python -m py_compile scripts/ocular/ocular_p1_integrity.py scripts/ocular/ocular_p4_pseudobulk_pilot.py
+          python scripts/ocular/ocular_p4_pseudobulk_pilot.py --self-test
+      - name: Stream genuine 10x raw UMI matrices and evaluate paired BeamA pseudobulk
+        run: |
+          python scripts/ocular/ocular_p4_pseudobulk_pilot.py --confidence 0.75 --min-cells 30 --output ocular-p4-pool-c-qc.json
+      - name: Archive aggregate-only QC, not expression data or donor identifiers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p4-pool-c-qc
+          path: ocular-p4-pool-c-qc.json
+          retention-days: 30
+          if-no-files-found: warn
