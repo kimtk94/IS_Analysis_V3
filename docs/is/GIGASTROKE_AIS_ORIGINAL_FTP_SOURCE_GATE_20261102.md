@@ -154,3 +154,30 @@ full GWAS case N, independent BBJ replication, or colocalization.
 In particular 32 nonpalindromic examples do not automatically
 disambiguate the previously flagged 1,028,002 palindromic original rows.
 **Scientific status HOLD** until full reference, cohort and QTL/LD evidence gates.
+
+
+## Actual complete four-gene EBI cis × official AIS GWAS source reconciliation
+
+The independently generated Drive source from 2026-10-11 has **20,689 gene–SNP records** (4 genes; not 20,689 unique SNPs), including **12,223 gene–SNP GWAS intersection rows**. After deduplicating repeated variant positions across genes with *zero conflicting repeated statistics*, the exact GIGASTROKE EAS-AIS comparison universe is **6,273 unique GRCh37 SNPs**:
+
+- chromosome 4: **3,227**; chromosome 10: **3,046**.
+- nonpalindromic: **5,326**; palindromic A/T and C/G: **947**.
+- input freeze: [chr4](../../research/is/evidence/gigastroke_ais_drive_fullcis_chr4_20261102.tsv) and [chr10](../../research/is/evidence/gigastroke_ais_drive_fullcis_chr10_20261102.tsv), derived from connected Drive TSV SHA-256 `2ddd5e80e84f2798200d2c926bb8833210dbc50fd4c2178edf8f2626bc097571`.
+- actual live verification: [GitHub Actions #41439023099](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41439023099) **SUCCESS**, 23/23 unit tests PASS, original FTP file SHA-256 `c521d5695414bdedcc84d2ea21d588e330c75a672f36a87c3fd092b4c55687a3` independently rechecked on the 6,725,216-source-row original file.
+
+**Result of full-locus original-vs-Drive GWAS numeric test:**
+
+| Stratum | Verified | Failed |
+| --- | ---: | ---: |
+| Nonpalindromic SNP position, allele pair, p, ALT-signed beta, ALT-AF | 5,326/5,326 | 0 |
+| Palindromic SNP numeric matching, orientation NOT independently resolved | 947/947 | 0 |
+| **Combined source-to-Drive crosswalk** | **6,273/6,273** | **0** |
+
+All comparisons obeyed preset numerical tolerances, not byte-for-byte floating-point equality. The 947 palindromic SNPs matched the archived numeric encoding, **but this does not establish independent DNA strand resolution**. Their effect/REF/ALT strand orientation remains REVIEW until reference-genome and frequency-aware confirmation.
+
+Result artifact:
+[research/is/evidence/gigastroke_ais_original_drive_fullcis_6273_live_result_20261102.json](../../research/is/evidence/gigastroke_ais_original_drive_fullcis_6273_live_result_20261102.json).
+
+**Scientific boundaries:** This validates the *GWAS* source lineage for all 6,273 SNPs intersecting the **separate EBI-reprocessed GTEx QTD000161 cis tested universe of four genes**. It is not proof that (a) this is the original GTEx v8 FastQTL model used by historic 646 coloc entries, (b) the other 6.7 million source GWAS rows or the entire 2,225-gene universe underwent full canonical equivalence tests, (c) GWAS case fraction/effective N is file-specific and approved, (d) appropriate LD is available, or (e) any causal target has been established.
+
+**Final scientific status remains HOLD** for full P3A / MR / coloc; **source-to-historical-GWAS numerical crosswalk PASS** within explicitly defined 6,273 SNP universe.
