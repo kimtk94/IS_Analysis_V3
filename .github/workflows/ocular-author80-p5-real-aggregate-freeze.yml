@@ -1,12 +1,6 @@
 name: Ocular Author80 Gate - Actual P5 Aggregate Baseline Freeze
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feat/ocular-p0-data-access-audit-20261030
-    paths:
-      - scripts/ocular/ocular_author80_p5_reference_freeze.py
-      - .github/workflows/ocular-author80-p5-real-aggregate-freeze.yml
 
 permissions:
   contents: read
