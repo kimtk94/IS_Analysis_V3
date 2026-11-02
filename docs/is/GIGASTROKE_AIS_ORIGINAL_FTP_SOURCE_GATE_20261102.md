@@ -93,3 +93,35 @@ YAML has an MD5 and genome assembly, but the originally selected YAML metadata k
 The original whole-file stream was extended to compute a **quantitative** summary while reading all rows already verified by MD5: count finite beta / positive SE / valid p, EAF within [0,1], non-A/C/G/T or identical allele pairs, A/T and C/G palindromic SNPs, and a 1-in-101 deterministic two-sided Wald p-value consistency sample. An invalid/missing numeric result produces a separate QC HOLD; the checksum verification remains a distinct proof of original bytes.
 
 Inspect the newer CI run's true logs before citing these quantitative diagnostics. Their implementation is not proof that the 6.7M-row values have already passed. Original original-file effect allele / original REF/ALT orientation, exact N, ancestral LD and downstream colocalization are **HOLD**.
+
+
+## Actual whole-genome numeric GWAS audit — 2026-11-02
+
+The updated source audit [Actions #41436048672](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41436048672) completed **SUCCESS** with all tests passing. It re-fetched and independently rechecked the same public MD5 and SHA-256 original source file; 6,725,216 rows processed.
+
+| Measurement | Actual scanned count |
+| --- | ---: |
+| Finite beta, finite positive SE, valid p between 0 and 1 | 6,725,216 |
+| Valid effect-allele frequency in [0,1] | 6,725,216 |
+| A/T and C/G palindromic allele pairs (all SNP rows) | 1,028,002 |
+| Non-palindromic or other allele pairs | 5,697,214 |
+| Every 101st source row tested for Wald p consistency where p values nonzero | 66,586 |
+| Wald log10(p) differences greater than 0.2 in comparable sampled rows | 0 |
+
+A palindromic allele-pair flag is a **strand orientation risk**, not a discovery or proof of incorrectly mapped variants; reference FASTA and study allele-frequency semantics must be used before any ALT-normalized source harmonization. Exactly matching 6,725,216 source and historical canonical row counts is strong lineage evidence, **not** per-variant equality proof. Original file-specific study N, case fraction and ancestry-matched LD remain unapproved.
+
+The observed numeric QC log is pinned without individual-level data in [research/is/evidence/gigastroke_eas_ais_numeric_qc_20261102.json](../../research/is/evidence/gigastroke_eas_ais_numeric_qc_20261102.json).
+
+## Three-locus SNP-level source-to-Drive anchor check
+
+A separate small, pre-specified set of positional anchors was taken from the connected [2026-10-11 four-gene QTL–GWAS report](https://drive.google.com/file/d/1sIko_lf94xHcENl-CUSYT_RmYbHjZN4N/view):
+
+| Gene | GRCh37 position | Unordered base alleles from report | Prior EAS AIS p |
+| --- | --- | --- | --- |
+| FGF5 | 4:81,182,554 | T/C | 2.888e-8 |
+| CALHM2 | 10:105,447,782 | A/G | 1.332e-6 |
+| CALHM2 | 10:105,459,834 | T/C | 7.792e-7 |
+
+The pipeline now checks whether the official public raw file contains **exactly one** row with each coordinate and allele set, with p-value within the original source-log tolerance (0.05 log10 p). This is a small independent source-to-historical-crosswalk spot check — **not a full mapping, GTEx QTL validation, independent replication or colocalization**.
+
+The updated CI containing the spot-check must complete before promoting the spot-check result beyond HOLD. If p or alleles disagree, the appropriate interpretation is a source-lineage/variant-normalization blocker, not automatically a negative biological association.
