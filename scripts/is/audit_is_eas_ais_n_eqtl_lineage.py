@@ -60,9 +60,13 @@ def metadata_fetch(url, *, fetcher=None):
         if prefix:
             if not data.startswith(b"\x1f\x8b"):
                 raise ValueError("QTL source prefix is not gzip")
-        elif content_type not in ("text/plain","text/html","application/x-yaml",
-                                  "text/x-yaml","application/octet-stream"):
-            raise ValueError("Unexpected source metadata MIME")
+        elif url in (EQTL_STUDIES, EQTL_RELEASE) and content_type not in (
+                "text/plain","text/html","application/xhtml+xml"):
+            raise ValueError("Unexpected official HTML metadata MIME")
+        # GWAS Catalog serves the exact allowlisted companion YAML with
+        # several legacy vendor-specific content types. Its accession,
+        # filename, source MD5 and assembly are checked separately below;
+        # do not mistake a MIME-label change for missing cohort metadata.
         return data
 
 def scalar_yaml(raw):
@@ -174,6 +178,7 @@ def audit(fetcher=metadata_fetch):
         out["gwas_yaml"]={"N_gate":"HOLD_GWAS_YAML_UNAVAILABLE",
                           "source_file_identity_and_yaml_digest":"HOLD",
                           "failure_class":type(exc).__name__,
+                          "failure_reason":str(exc)[:150],
                           "association_level_N_or_case_fraction_approved":False}
     try:
         out["qtl_provenance"]=inspect_qtl_metadata(
