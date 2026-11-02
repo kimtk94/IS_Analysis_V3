@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isAllowedPublicResource, sourceSafePath, sourceLiteralPath,
+import { blockedScriptSourceClass, isAllowedPublicResource, sourceSafePath, sourceLiteralPath,
   auditJavaScript, postflight } from '../scripts/hcc/audit_stage56_hccdb_browser_chunks.mjs';
 
 test('source allows only official static JS and exact public origin', () => {
@@ -52,4 +52,14 @@ test('source-only hints never open clinical and biology GO', () => {
   assert.match(verdict.G30_D, /^STOP/);
   assert.equal(verdict.biological_claims_allowed, false);
   assert.throws(() => postflight({ ...base, rna_matrix_downloaded: true }));
+});
+
+test('blocked scripts expose only origin classification and safe public asset paths', () => {
+  const a = blockedScriptSourceClass('https://remote.invalid/private/OED000111.js?secret=yes');
+  assert.equal(a.origin_class, 'external');
+  assert.equal(a.official_static_js_path, null);
+  const b = blockedScriptSourceClass('http://lifeome.net:809/static/js/vendor.js?v=1');
+  assert.equal(b.origin_class, 'source_website');
+  assert.equal(b.official_static_js_path, '/static/js/vendor.js');
+  assert.equal(b.query_present, true);
 });

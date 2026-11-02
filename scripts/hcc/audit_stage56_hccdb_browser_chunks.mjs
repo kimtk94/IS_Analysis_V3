@@ -47,6 +47,22 @@ export function isAllowedPublicResource(value, type) {
   }
 }
 
+export function blockedScriptSourceClass(value) {
+  try {
+    const u = new URL(value);
+    const local = u.origin === SITE;
+    // No external URL, query value, user ID or non-static path is exported.
+    return {
+      origin_class: local ? 'source_website' : 'external',
+      official_static_js_path: local && /^\/static\/js\/[A-Za-z0-9_.-]+\.js$/.test(u.pathname)
+        ? u.pathname : null,
+      query_present: Boolean(u.search)
+    };
+  } catch {
+    return { origin_class: 'malformed', official_static_js_path: null, query_present: false };
+  }
+}
+
 export function sourceSafePath(value) {
   if (!isAllowedPublicResource(value, 'script')) return null;
   return new URL(value).pathname;
@@ -125,6 +141,7 @@ export async function inspectRoute(browser, def) {
     blocked_backend_api_requests_n: 0,
     blocked_third_party_or_nonessential_requests_n: 0,
     blocked_resource_type_counts: {},
+    blocked_script_source_classes: [],
     attempted_downloads_n: 0,
     scripts_observed_n: 0,
     script_source_errors_n: 0
@@ -139,6 +156,9 @@ export async function inspectRoute(browser, def) {
     }
     if (!isAllowedPublicResource(req.url(), rt)) {
       result.blocked_resource_type_counts[rt] = (result.blocked_resource_type_counts[rt] || 0) + 1;
+      if (rt === 'script' && result.blocked_script_source_classes.length < 12) {
+        result.blocked_script_source_classes.push(blockedScriptSourceClass(req.url()));
+      }
       result.blocked_third_party_or_nonessential_requests_n += 1;
       return route.abort('blockedbyclient');
     }
@@ -188,7 +208,9 @@ export async function inspectRoute(browser, def) {
     if (size > MAX_TOTAL_JS_PER_ROUTE) {
       result.status = 'SCRIPT_TOTAL_BYTES_OVER_LIMIT_HOLD';
     } else {
-      result.status = sorted.length ? 'PUBLIC_BROWSER_ROUTE_JS_OBSERVED' : 'NO_PUBLIC_ROUTE_JS_OBSERVED';
+      result.status = result.document_ready_state === 'loading'
+        ? 'BROWSER_DOCUMENT_LOAD_INCOMPLETE_HOLD'
+        : (sorted.length ? 'PUBLIC_BROWSER_ROUTE_JS_OBSERVED' : 'NO_PUBLIC_ROUTE_JS_OBSERVED');
     }
     result.assets = sorted;
     result.script_bytes_inspected_n = size;
