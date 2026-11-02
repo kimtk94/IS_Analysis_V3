@@ -1,0 +1,56 @@
+name: Ocular Author80 Gate - Actual P5 Aggregate Baseline Freeze
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/ocular-p0-data-access-audit-20261030
+    paths:
+      - scripts/ocular/ocular_author80_p5_reference_freeze.py
+      - .github/workflows/ocular-author80-p5-real-aggregate-freeze.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  baseline-self-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check parser with synthetic fixture, not biological verification
+        run: |
+          python -m py_compile scripts/ocular/ocular_author80_p5_reference_freeze.py
+          python scripts/ocular/ocular_author80_p5_reference_freeze.py --self-test
+
+  recheck-actual-p5-public-artifact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download archived public gene results from previous successful P5 CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/p5-aggregate-source"
+          gh run download 41074586446 --repo "$GITHUB_REPOSITORY" --name ocular-p5-edger-inference --dir "$RUNNER_TEMP/p5-aggregate-source"
+      - name: Recheck exact 16050/13717/83 counts and source SHA256
+        run: |
+          mkdir -p ocular-author80-p5-aggregate-freeze
+          python -u scripts/ocular/ocular_author80_p5_reference_freeze.py \
+            --artifact-dir "$RUNNER_TEMP/p5-aggregate-source" \
+            --out ocular-author80-p5-aggregate-freeze
+      - name: Archive compact proof not donor-level counts nor 10x input
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-author80-p5-actual-aggregate-proof
+          path: ocular-author80-p5-aggregate-freeze/
+          retention-days: 60
+          if-no-files-found: warn
