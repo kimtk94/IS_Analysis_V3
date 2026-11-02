@@ -172,45 +172,63 @@ def validate_frozen(a, b, c, d, r1, r2):
 
 
 def figure(rows, output):
+    """Draw caption-safe plots: per-bin n values belong in dedicated tables.
+
+    The archived 2026-11-02 initial plot placed n labels at y≈100 in both
+    models and visibly overlapped at the top. New layout has no in-plot count
+    labels; transparent source counts are fixed in tabular areas beneath plots.
+    """
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    fig, axes = plt.subplots(1, 2, figsize=(12.5, 4.8), constrained_layout=True)
+    fig, axes = plt.subplots(1, 2, figsize=(14.0, 5.8))
+    fig.subplots_adjust(left=.085, right=.985, top=.84, bottom=.36, wspace=.24)
     for ax, kind, xlabel, labels in [
         (axes[0], "baseline_abs_log2FC", "Baseline |log2 fold-change|",
          [x[2] for x in EFFECT_CUTS]),
         (axes[1], "baseline_logCPM_quartile", "Baseline logCPM quartile",
          [f"Q{i}" for i in range(1, 5)]),
     ]:
+        counts=[]
         for key, name, fmt in [
             ("score", "57 paired: BeamA 0.75 vs 0.50", "o-"),
             ("label", "55 paired: BeamA vs TM_Fibro", "s--"),
         ]:
-            data = [x for x in rows if x["comparison"] == key and x["stratum_type"] == kind]
-            order = {label: i for i, label in enumerate(labels)}
+            data=[x for x in rows if x["comparison"] == key and x["stratum_type"] == kind]
+            order={label: i for i, label in enumerate(labels)}
             data.sort(key=lambda x: order[x["stratum"]])
-            assert len(data) == 4
-            y = [d["sign_concordance_percent"] for d in data]
+            if len(data)!=4: raise ValueError("EXPECTED_FOUR_STRATA")
+            y=[d["sign_concordance_percent"] for d in data]
+            if any(v is None for v in y): raise ValueError("STRATUM_EMPTY_SIGN")
             ax.plot(range(4), y, fmt, markersize=6, linewidth=2, label=name)
-            for i, d in enumerate(data):
-                ax.annotate(f"n={d['n_shared_tested']:,}", (i, y[i]),
-                            xytext=(0, -17 if key == "score" else 10),
-                            textcoords="offset points", ha="center", fontsize=7)
-        ax.set_ylim(0, 108)
+            counts.append([f"{d['n_shared_tested']:,}" for d in data])
+        ax.set_ylim(0, 105)
         ax.set_yticks([0, 25, 50, 75, 100])
         ax.set_ylabel("Same-sign log2FC (%)")
         ax.set_xticks(range(4))
-        ax.set_xticklabels(labels, fontsize=8, rotation=12 if kind == "baseline_abs_log2FC" else 0)
-        ax.set_xlabel(xlabel)
+        ax.set_xticklabels(labels, fontsize=8, rotation=10 if kind=="baseline_abs_log2FC" else 0)
+        ax.set_xlabel(xlabel, labelpad=9)
         ax.grid(axis="y", alpha=.2)
         ax.spines["right"].set_visible(False)
         ax.spines["top"].set_visible(False)
+        # Dedicated n table: avoids annotation collisions when sign agreement
+        # is 98–100% in two series. Each plotted point has an explicit n.
+        table=ax.table(cellText=counts, rowLabels=["57 donor n", "55 donor n"],
+                       cellLoc="center", rowLoc="center", bbox=[.015,-.59,.97,.27])
+        table.auto_set_font_size(False)
+        table.set_fontsize(8)
+        for (r,c),cell in table.get_celld().items():
+            cell.set_linewidth(.35)
+            if c==-1: cell.set_facecolor("#f2f4f7")
     axes[0].legend(frameon=False, loc="lower right", fontsize=8)
-    fig.suptitle("GSE313736 — descriptive within-cohort sensitivity by expression/effect stratum",
-                 fontsize=11)
-    fig.savefig(output, dpi=220, bbox_inches="tight")
+    fig.suptitle("GSE313736 — within-cohort sign sensitivity by baseline effect/expression",
+                 y=.965, fontsize=12)
+    fig.text(.5, .065,
+             "N values are shared tested genes in each baseline-defined bin. "
+             "Both comparisons reuse original 10x libraries and are NOT independent biological replication.",
+             ha="center", va="center", fontsize=9, color="#4b5563")
+    fig.savefig(output, dpi=220, bbox_inches="tight", facecolor="white")
     plt.close(fig)
-
 
 def selftest():
     a = {}
