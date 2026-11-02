@@ -261,6 +261,116 @@ def compare_extended_panel(expected, observed):
     }
 
 
+
+FULL_CIS_SOURCES = {
+    "4": "research/is/evidence/gigastroke_ais_drive_fullcis_chr4_20261102.tsv",
+    "10": "research/is/evidence/gigastroke_ais_drive_fullcis_chr10_20261102.tsv",
+}
+FULL_CIS_DRIVE_TSV_SHA256 = "2ddd5e80e84f2798200d2c926bb8833210dbc50fd4c2178edf8f2626bc097571"
+
+def load_fullcis_source_panel(root=None):
+    root = root or Path(__file__).resolve().parents[2]
+    entries={}
+    classes=Counter()
+    for chrom,relpath in FULL_CIS_SOURCES.items():
+        with (root/relpath).open("rt",encoding="utf-8",newline="") as handle:
+            reader=csv.DictReader(handle,delimiter="\t")
+            needed={"SNP_GRCh37","GIGA_EAS_AIS_p","GIGA_EAS_AIS_beta_ALT",
+                    "GIGA_EAS_AIS_AF_ALT","GIGA_EAS_AIS_allele_order_provenance",
+                    "palindromic_review","linked_genes"}
+            if not needed.issubset(reader.fieldnames or []):
+                raise ValueError("Missing frozen Drive crosswalk columns")
+            for row in reader:
+                parts=row["SNP_GRCh37"].split(":")
+                if len(parts)!=4:
+                    raise ValueError("Incorrect SNP key")
+                c,pos,ref,alt=parts
+                if c!=chrom or not pos.isdigit() or int(pos)<1:
+                    raise ValueError("Wrong chromosome/coordinate")
+                if len(ref)!=1 or len(alt)!=1 or ref not in "ACGT" or alt not in "ACGT" or ref==alt:
+                    raise ValueError("Only normalized biallelic SNPs supported")
+                pal={ref,alt} in ({"A","T"},{"C","G"})
+                if row["palindromic_review"]!=str(pal):
+                    raise ValueError("Mismatch between source allele flags and SNP bases")
+                order=row["GIGA_EAS_AIS_allele_order_provenance"]
+                if order not in ("FASTA_REF_ALT","OTHER_EFFECT_ORDER"):
+                    raise ValueError("Unapproved historical allele order")
+                key=(c,int(pos))
+                if key in entries:
+                    raise ValueError("Duplicate source SNP after Drive deduplication")
+                p,beta,af=(float(row[k]) for k in
+                    ("GIGA_EAS_AIS_p","GIGA_EAS_AIS_beta_ALT","GIGA_EAS_AIS_AF_ALT"))
+                if not(all(map(math.isfinite,(p,beta,af))) and 0<=p<=1 and 0<=af<=1):
+                    raise ValueError("Invalid frozen Drive source numbers")
+                entries[key]={"ref":ref,"alt":alt,"p":p,"beta_ALT":beta,
+                              "AF_ALT":af,"palindromic":pal,"order":order,
+                              "genes":row["linked_genes"]}
+                classes["palindromic" if pal else "nonpalindromic"]+=1
+                classes["chrom_"+chrom]+=1
+                classes["order_"+order]+=1
+    if len(entries)!=6273 or classes["nonpalindromic"]!=5326 or classes["palindromic"]!=947:
+        raise ValueError("Unexpected frozen source variant counts")
+    if classes["chrom_4"]!=3227 or classes["chrom_10"]!=3046:
+        raise ValueError("Unexpected chromosome split")
+    return entries
+
+
+def compare_fullcis_panel(expected, observed):
+    counters=Counter()
+    failures=[]
+    by_class={}
+    for key,ref in expected.items():
+        cases=observed.get(key,[])
+        pal=ref["palindromic"]
+        group="palindromic_review" if pal else "nonpalindromic"
+        counters[group+"_total"]+=1
+        checks={"unique_at_source_position":len(cases)==1}
+        if len(cases)==1:
+            src=cases[0]
+            pair=(src["ea"],src["oa"])
+            checks["allele_pair_matches"]=frozenset(pair)==frozenset((ref["ref"],ref["alt"]))
+            effect_alt=src["ea"]==ref["alt"] and src["oa"]==ref["ref"]
+            effect_ref=src["ea"]==ref["ref"] and src["oa"]==ref["alt"]
+            checks["effect_is_ref_or_alt"]=effect_alt or effect_ref
+            beta_alt=src["beta"] if effect_alt else -src["beta"] if effect_ref else None
+            af_alt=src["eaf"] if effect_alt else 1-src["eaf"] if effect_ref else None
+            p_val=src["p"]
+            checks["p_value_agrees"]=(p_val==ref["p"] if p_val<=0 or ref["p"]<=0
+              else abs(math.log10(p_val)-math.log10(ref["p"]))<=0.05)
+            checks["beta_ALT_agrees"]=(beta_alt is not None and
+              math.isclose(beta_alt,ref["beta_ALT"],rel_tol=0.015,abs_tol=0.00015))
+            checks["AF_ALT_agrees"]=(af_alt is not None and
+              math.isclose(af_alt,ref["AF_ALT"],rel_tol=0.001,abs_tol=0.0002))
+        ok=all(checks.values())
+        counters[group+"_pass" if ok else group+"_fail"]+=1
+        for label,passed in checks.items():
+            if not passed:
+                counters["failed_"+label]+=1
+        if not ok and len(failures)<30:
+            failures.append({"snp_GRCh37":f"{key[0]}:{key[1]}:{ref['ref']}:{ref['alt']}",
+                             "palindromic_review":pal,"historical_allele_order":ref["order"],
+                             "failed_checks":[k for k,v in checks.items() if not v]})
+    n_good=counters["nonpalindromic_pass"]+counters["palindromic_review_pass"]
+    np_good=counters["nonpalindromic_pass"]==counters["nonpalindromic_total"]==5326
+    pal_good=counters["palindromic_review_pass"]==counters["palindromic_review_total"]==947
+    return {
+        "screen_total_expected":len(expected),
+        "screen_pass":n_good,
+        "screen_fail":len(expected)-n_good,
+        "by_stratum":dict(counters),
+        "failure_examples_bounded":failures,
+        "nonpalindromic_numerical_gate":"PASS" if np_good else "HOLD",
+        "palindromic_numeric_screen":"PASS_ORIENTATION_STILL_REVIEW" if pal_good else "HOLD",
+        "full_reprocessed_ebi_cis_gwas_lineage_gate":(
+            "6273_SOURCE_VARIANT_NUMERICAL_CONCORDANCE_PASS_NOT_COLOC"
+            if np_good and pal_good else "HOLD_SOURCE_TO_DRIVE_DISCORDANCE"),
+        "original_GTEx_V8_QTL_lineage_verified":False,
+        "palindromic_strand_orientation_independently_resolved":False,
+        "full_studywide_6725216_GWAS_canonical_equivalence_verified":False,
+        "sample_size_case_fraction_approved":False,
+        "scientific_status":"HOLD",
+    }
+
 def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_DATA_ROWS):
     result=dict(probed)
     if result.get("metadata_gate") != "METADATA_HEADER_SCREEN_PASS":
@@ -303,6 +413,14 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
             try:
                 extended_panel=load_extended_panel()
                 extended_hits={key:[] for key in extended_panel}
+            try:
+                fullcis_panel=load_fullcis_source_panel()
+                fullcis_hits={key:[] for key in fullcis_panel}
+            except (OSError,ValueError,KeyError,TypeError,csv.Error) as exc:
+                fullcis_panel=None
+                fullcis_hits={}
+                result["fullcis_drive_source_gate"]="HOLD_PANEL_INPUT_OR_SCHEMA"
+                result["fullcis_drive_panel_failure_class"]=type(exc).__name__
             except (OSError,ValueError,KeyError,TypeError) as exc:
                 extended_panel=None
                 extended_hits={}
@@ -354,6 +472,10 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
                             extended_hits[locus].append({
                                 "ea":ea,"oa":oa,"beta":beta,"p":p,"eaf":eaf,
                             })
+                        if locus in fullcis_hits:
+                            fullcis_hits[locus].append({
+                                "ea":ea,"oa":oa,"beta":beta,"p":p,"eaf":eaf,
+                            })
                         if not math.isfinite(eaf) or not 0<=eaf<=1:
                             qc["invalid_eaf_rows"]+=1
                         else:
@@ -396,6 +518,11 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
                     extended_panel,extended_hits)
                 result["extended_panel_gate"]=result[
                     "extended_32_snp_drive_reference_comparison"]["gate"]
+            if fullcis_panel is not None:
+                result["fullcis_6273_drive_reference_comparison"]=compare_fullcis_panel(
+                    fullcis_panel,fullcis_hits)
+                result["fullcis_drive_source_gate"]=result[
+                    "fullcis_6273_drive_reference_comparison"]["full_reprocessed_ebi_cis_gwas_lineage_gate"]
             result["numeric_qc_status"]=(
                 "BASIC_NUMERIC_FIELDS_SCREEN_PASS" if
                 qc["finite_beta_se_p_positive_se_rows"]==rows
