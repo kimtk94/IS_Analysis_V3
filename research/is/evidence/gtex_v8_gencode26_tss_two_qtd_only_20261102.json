@@ -1,0 +1,101 @@
+{
+  "record_type": "LIVE_OFFICIAL_GENCode26_STANDARD_GENE_TSS_1MB_VS_QTD_2_UNMATCHED_SOURCE",
+  "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41456646711",
+  "job_id": 125314899091,
+  "unit_tests_passed": 7,
+  "original_gencode_source": {
+    "GTEx_original_collapsed_gene_model_independently_verified": false,
+    "QTD2023_release6_bytes_identified": false,
+    "coloc_performed": false,
+    "compressed_SHA256": "e84157bb3ddfe6b1dd0b8816ec71b553074ed162ab0940ac48b80375f6cb18bd",
+    "compressed_bytes": 37607127,
+    "four_gene_TSS_windows_covered": true,
+    "gene_boundary_screen": {
+      "C4orf22": {
+        "GENCODE_v26_gene_TSS_plusminus1Mb_end": 81335720,
+        "GENCODE_v26_gene_TSS_plusminus1Mb_start": 79335720,
+        "TSS_GRCh38": 80335720,
+        "both_ends_inside_predeclared_interval": true,
+        "chromosome_GRCh38": "4",
+        "end": 80963756,
+        "final_original_GTEx_cis_bed_boundaries_approved": false,
+        "gene_id": "ENSG00000197826",
+        "gene_model_is_confirmed_original_GTEx_collapsed_model": false,
+        "left_margin_bp": 335720,
+        "previous_screen_region": "4:79000000-81500000",
+        "right_margin_bp": 164280,
+        "start": 80335720,
+        "strand": "+"
+      },
+      "CALHM2": {
+        "GENCODE_v26_gene_TSS_plusminus1Mb_end": 104452402,
+        "GENCODE_v26_gene_TSS_plusminus1Mb_start": 102452402,
+        "TSS_GRCh38": 103452402,
+        "both_ends_inside_predeclared_interval": true,
+        "chromosome_GRCh38": "10",
+        "end": 103452402,
+        "final_original_GTEx_cis_bed_boundaries_approved": false,
+        "gene_id": "ENSG00000138172",
+        "gene_model_is_confirmed_original_GTEx_collapsed_model": false,
+        "left_margin_bp": 952402,
+        "previous_screen_region": "10:101500000-106500000",
+        "right_margin_bp": 2047598,
+        "start": 103446786,
+        "strand": "-"
+      },
+      "FGF5": {
+        "GENCODE_v26_gene_TSS_plusminus1Mb_end": 81266599,
+        "GENCODE_v26_gene_TSS_plusminus1Mb_start": 79266599,
+        "TSS_GRCh38": 80266599,
+        "both_ends_inside_predeclared_interval": true,
+        "chromosome_GRCh38": "4",
+        "end": 80336680,
+        "final_original_GTEx_cis_bed_boundaries_approved": false,
+        "gene_id": "ENSG00000138675",
+        "gene_model_is_confirmed_original_GTEx_collapsed_model": false,
+        "left_margin_bp": 266599,
+        "previous_screen_region": "4:79000000-81500000",
+        "right_margin_bp": 233401,
+        "start": 80266599,
+        "strand": "+"
+      },
+      "NEURL": {
+        "GENCODE_v26_gene_TSS_plusminus1Mb_end": 104493979,
+        "GENCODE_v26_gene_TSS_plusminus1Mb_start": 102493979,
+        "TSS_GRCh38": 103493979,
+        "both_ends_inside_predeclared_interval": true,
+        "chromosome_GRCh38": "10",
+        "end": 103592552,
+        "final_original_GTEx_cis_bed_boundaries_approved": false,
+        "gene_id": "ENSG00000107954",
+        "gene_model_is_confirmed_original_GTEx_collapsed_model": false,
+        "left_margin_bp": 993979,
+        "previous_screen_region": "10:101500000-106500000",
+        "right_margin_bp": 2006021,
+        "start": 103493979,
+        "strand": "+"
+      }
+    },
+    "gene_model_source": "GENCODE release 26 gene GTF",
+    "geometry_gate": "GENCODE26_TSS_1MB_PROXY_INSIDE_SCREENS_NOT_ORIGINAL_GENE_MODEL_CERTIFIED",
+    "official_gencode_url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_26/gencode.v26.annotation.gtf.gz",
+    "original_GTExv8_tss_1Mb_method_documented": true,
+    "schema": "IS_GTExV8_GENCode26_gene_TSS_screen_v1",
+    "scientific_status": "HOLD",
+    "source_specific_GTEx_original_n_variants_independently_verified": false,
+    "whole_GTEx_original_3_4GB_source_checksum_verified": false
+  },
+  "proven_QTD_only_variants_origin": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41455461447",
+  "derived_QTD_outside_proxy_cis": {
+    "FGF5": {
+      "snp": "4:81266618:T:G",
+      "bp_after_upper": 19
+    },
+    "NEURL": {
+      "snp": "10:102493750:T:C",
+      "bp_before_lower": 229
+    }
+  },
+  "independent_GTEx_original_collapsed_model_verified": false,
+  "scientific_status": "HOLD"
+}
