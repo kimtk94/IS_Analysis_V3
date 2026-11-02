@@ -129,7 +129,7 @@ export function sourceCooccurrenceAnalysis(source,kind) {
   const ast=acorn.parse(Buffer.isBuffer(source)?source.toString('utf8'):source,
     {ecmaVersion:'latest',sourceType:'script',allowReturnOutsideFunction:true});
   const creates=[],calls=[];
-  walk.fullAncestor(ast,(n,a)=>{
+  walk.fullAncestor(ast,(n,_state,ancestors)=>{
     if(n.type!=='CallExpression')return;
     const m=n.callee?.type==='MemberExpression'?propName(n.callee.property):null;
     for(const arg of n.arguments){
@@ -137,13 +137,13 @@ export function sourceCooccurrenceAnalysis(source,kind) {
       if(!props)continue;
       const base=stringValue(props.baseURL);
       if(m==='create'&&base==='/api'){
-        creates.push({context:moduleContext(a),verified_invoked_create_config:true});
+        creates.push({context:moduleContext(ancestors),verified_invoked_create_config:true});
       }
       const url=stringValue(props.url);
       const method=stringValue(props.method);
       if(method?.toUpperCase()==='GET' &&
          ['/conf/download','/conf/download2','/conf/download3'].includes(url)) {
-        calls.push({path:'/api'+url,method:'GET',context:moduleContext(a),
+        calls.push({path:'/api'+url,method:'GET',context:moduleContext(ancestors),
           client_binding_proved:false});
       }
     }
