@@ -24,7 +24,7 @@ SITES={
 }
 FILES=("HCCDB25_mRNA_level3.txt","HCCDB25.sample.txt","HCCDB25.patient.txt")
 CAP_HTML=65536
-CAP_JS=1100000
+CAP_JS=3800000
 MAX_STATIC=8
 ROUTE_LITERAL=re.compile(r"""(?:(?:'|"))(/(?:node/)?(?:api|download|repository|project|data|sample|analysis|metadata)(?:/[A-Za-z0-9_./:-]{1,125})?)(?:(?:'|"))""",re.I)
 CHUNK_LITERAL=re.compile(r"""(?:chunk[-_][A-Za-z0-9_-]{4,65})""")
