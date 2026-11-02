@@ -63,3 +63,33 @@ and do not override older GIGASTROKE EAS5 archived provenance automatically.
   canonical GIGASTROKE EAS-AIS: HOLD until exact original file bytes and
   source-to-canonical transformation rules verified independently.
 - MR, SuSiE/coloc, case fraction, and independent EAS replication remain HOLD.
+
+
+## Observed completed official original file audit — 2026-11-02
+
+[GitHub Actions #41434867406](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41434867406) completed SUCCESS and actually downloaded and scanned the **entire** 260,689,208-byte official public file. These are actual data-derived results, not merely fixture tests.
+
+| Verified source fact | Actual log |
+| --- | --- |
+| Exact filename | GCST90104545_buildGRCh37.tsv.gz |
+| Official original file data MD5 | 904e12e33ec3c2eeefe4dc93bec4995c |
+| Independently computed compressed file SHA-256 | c521d5695414bdedcc84d2ea21d588e330c75a672f36a87c3fd092b4c55687a3 |
+| Full original data rows | 6,725,216 |
+| Compressed bytes | 260,689,208 |
+| Filename companion YAML SHA-256 | 7383b859ce9bb4811c15bc634592ee1544788536797a5c663644e1aa648f1d3e |
+| Original genome assembly according to YAML | GRCh37 |
+| YAML file_type | pre-GWAS-SSF |
+| YAML is_harmonised | false |
+| Source file effect estimate and uncertainty | beta and standard_error columns present |
+| Allele columns | effect_allele, other_allele, effect_allele_frequency |
+| Additional numerical columns | chromosome, base_pair_location, p_value, odds_ratio, ci_lower, ci_upper |
+
+This **row count exactly matches** the 2026-10-11 separate Drive full-cis study's GIGASTROKE EAS-AIS canonical GWAS count (6,725,216). It does **not** establish row-for-row data equality, canonical variant ID equivalence, signed beta normalization, or source-to-canonical transformation identity without an independent SNP-level original/canonical comparison.
+
+YAML has an MD5 and genome assembly, but the originally selected YAML metadata keys did **not include file-specific case_count or control_count fields**, so the reported phenotype study N and case fraction remain reference-only. In particular, do not claim that SE numeric availability alone proves proper effective N for coloc.
+
+### Added whole-file scientific diagnostics
+
+The original whole-file stream was extended to compute a **quantitative** summary while reading all rows already verified by MD5: count finite beta / positive SE / valid p, EAF within [0,1], non-A/C/G/T or identical allele pairs, A/T and C/G palindromic SNPs, and a 1-in-101 deterministic two-sided Wald p-value consistency sample. An invalid/missing numeric result produces a separate QC HOLD; the checksum verification remains a distinct proof of original bytes.
+
+Inspect the newer CI run's true logs before citing these quantitative diagnostics. Their implementation is not proof that the 6.7M-row values have already passed. Original original-file effect allele / original REF/ALT orientation, exact N, ancestral LD and downstream colocalization are **HOLD**.
