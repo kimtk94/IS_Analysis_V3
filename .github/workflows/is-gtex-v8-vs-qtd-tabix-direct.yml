@@ -28,13 +28,14 @@ jobs:
           python-version: "3.11"
       - name: Unit tests for direct original-vs-reprocessed effects and fail-closed limits
         run: python3 -m unittest discover -s tests -p 'test_is_gtex_v8_vs_qtd_direct_tabix.py' -v
-      - name: Install system htslib Tabix linked to Ubuntu CA trust store
+      - name: Install libcurl-enabled pysam and ensure system CA bundle
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends tabix ca-certificates
-          tabix --version
+          python3 -m pip install --disable-pip-version-check 'pysam==0.23.3'
           test -f /etc/ssl/certs/ca-certificates.crt
-      - name: Remote tabix exact-allele gene-variant comparison in two small GRCh38 windows
+      - name: Verify curl SSL trust in pysam HTSlib
+        env:
+          CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+          SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
         run: python3 scripts/is/audit_gtex_v8_vs_qtd_direct_tabix.py --output ci_reports/is_gtexv8_vs_qtd_smallregion.json
       - name: Preserve aggregate-only research provenance and explicit HOLD
         if: always()
