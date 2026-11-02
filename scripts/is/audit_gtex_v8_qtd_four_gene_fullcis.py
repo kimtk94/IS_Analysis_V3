@@ -35,6 +35,54 @@ MAX_TARGET_GENE_VARIANTS_PER_QUERY=30000
 MAX_INVALID_TARGET_ROWS=100
 WAIT_SECONDS=2.5
 
+def variant_type(key):
+    _gene,_chr,_pos,ref,alt=key
+    return "SNP" if len(ref)==len(alt)==1 else "INDEL_MNV"
+
+
+def diagnostic_unmatched_qtd(og,reprocessed, *, limit=10):
+    # The exact source key is (stable_gene, chr, GRCh38 position, REF, ALT).
+    # Nearby or trimmed-equivalent alleles are only candidates, never used
+    # as proof of identity without source-specific normalization/ref FASTA.
+    original_by_gene={}
+    for key in og:
+        original_by_gene.setdefault((key[0],key[1]),[]).append(key)
+    unmatched=sorted(set(reprocessed)-set(og))
+    reports=[]
+    for key in unmatched[:limit]:
+        gene,chrom,pos,ref,alt=key
+        near=[candidate for candidate in original_by_gene.get((gene,chrom),[])
+              if abs(candidate[2]-pos)<=5]
+        near.sort(key=lambda candidate:(abs(candidate[2]-pos),candidate))
+        exact_position=[candidate for candidate in near if candidate[2]==pos]
+        reverse_at_position=any(candidate[3]==alt and candidate[4]==ref
+                                for candidate in exact_position)
+        candidate_rows=[{
+            "original_GRCh38_pos":c[2],"original_ref":c[3],"original_alt":c[4],
+            "bp_distance_from_qtd":c[2]-pos,
+            "reversed_REF_ALT_at_same_position":(c[2]==pos and c[3]==alt and c[4]==ref),
+        } for c in near[:10]]
+        reports.append({
+            "gene_id":gene,"chr":chrom,"qtd_GRCh38_pos":pos,
+            "qtd_REF":ref,"qtd_ALT":alt,
+            "qtd_variant_type":variant_type(key),
+            "qtd_beta":reprocessed[key][0],"qtd_se":reprocessed[key][1],
+            "qtd_p":reprocessed[key][2],
+            "original_same_gene_same_position_row_count":len(exact_position),
+            "original_nearby_plusminus5bp_row_count":len(near),
+            "ref_alt_reversed_same_position":reverse_at_position,
+            "original_candidate_variants_nearby_bounded":candidate_rows,
+            "independent_ref_fasta_indel_normalization_checked":False,
+            "matched_after_liftover_or_strand_reversal":False,
+            "diagnostic_only_not_harmonized":True,
+        })
+    return {
+        "qtd_only_variant_count":len(unmatched),
+        "qtd_only_diagnostics_truncated":len(unmatched)>limit,
+        "qtd_only_diagnostics":reports,
+    }
+
+
 def read_source_rows(tabix,header,region, *, max_rows=MAX_ROWS_PER_QUERY):
     chrom,start,end=region
     contig=BASE.known_index_contig(tabix.contigs,chrom)
@@ -46,6 +94,7 @@ def read_source_rows(tabix,header,region, *, max_rows=MAX_ROWS_PER_QUERY):
     allowed=set(BASE.TARGET_GENES.values())
     parsed={}
     counts=Counter()
+    invalid_source_rows_bounded=[]
     try:
         for line in tabix.fetch(contig,start-1,end):
             counts["region_total"]+=1
@@ -80,6 +129,15 @@ def read_source_rows(tabix,header,region, *, max_rows=MAX_ROWS_PER_QUERY):
                 if not (math.isfinite(beta) and math.isfinite(se) and se>0 and
                         math.isfinite(p) and 0<=p<=1 and pos>=1):
                     counts["invalid_statistic_rows"]+=1
+                    if len(invalid_source_rows_bounded)<40:
+                        invalid_source_rows_bounded.append({
+                            "gene_id":gene,"chromosome":c,"position":pos,
+                            "ref":ref,"alt":alt,
+                            "p_raw":fields[ix["pvalue"]],
+                            "beta_raw":fields[ix["beta"]],
+                            "se_raw":fields[ix["se"]],
+                            "reason":"NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+                        })
                     continue
                 key=(gene,c,pos,ref,alt)
                 value=(beta,se,p)
@@ -93,11 +151,23 @@ def read_source_rows(tabix,header,region, *, max_rows=MAX_ROWS_PER_QUERY):
                     parsed[key]=value
             except (KeyError,TypeError,ValueError,OverflowError):
                 counts["invalid_statistic_rows"]+=1
+                if len(invalid_source_rows_bounded)<40:
+                    invalid_source_rows_bounded.append({
+                        "gene_id":gene,
+                        "position_raw":fields[ix["position"]],
+                        "ref_raw":fields[ix["ref"]],
+                        "alt_raw":fields[ix["alt"]],
+                        "p_raw":fields[ix["pvalue"]],
+                        "beta_raw":fields[ix["beta"]],
+                        "se_raw":fields[ix["se"]],
+                        "reason":"UNPARSEABLE_ROW",
+                    })
         outcome={
             "status":"SCREEN_VALID" if counts["invalid_statistic_rows"]<=MAX_INVALID_TARGET_ROWS
               else "HOLD_TOO_MANY_INVALID_TARGET_ROWS",
             "rows":parsed,"scanned":counts["region_total"],
-            "target_rows":counts["target_seen"],"counts":dict(counts)}
+            "target_rows":counts["target_seen"],"counts":dict(counts),
+            "invalid_source_rows_bounded":invalid_source_rows_bounded}
         return outcome
     except (OSError,ValueError,RuntimeError) as exc:
         return {"status":"HOLD_TABIX_REMOTE_FETCH", "rows":{},
@@ -121,6 +191,9 @@ def summarize_full_cis(original,reprocessed):
             "reprocessed_unique_tested_variant":len(b),
             "original_only_variant":len(orig-reprs),
             "reprocessed_only_variant":len(reprs-orig),
+            "original_only_SNP_count":sum(variant_type(k)=="SNP" for k in orig-reprs),
+            "original_only_indel_mnv_count":sum(variant_type(k)!="SNP" for k in orig-reprs),
+            "reprocessed_only_diagnostic":diagnostic_unmatched_qtd(a,b),
             "is_complete_full_cis_only_if_separate_cis_interval_confirmed":False,
             "reprocessed_expected_previous_QTD_n_variants":EXPECTED_REPROCESSED_CIS[name],
             "reprocessed_variant_denominator_matches_prior_QTD_fullcis_audit":
@@ -131,7 +204,7 @@ def summarize_full_cis(original,reprocessed):
 
 
 def run(tabix=None,header_fetcher=None,md5_fetcher=None,wait=WAIT_SECONDS):
-    result={"schema":"is-GTExv8-original-vs-QTD000161-four-gene-full-cis-v2",
+    result={"schema":"is-GTExv8-original-vs-QTD000161-four-gene-full-cis-v3-unmatched-exact-variant-audit",
        "original":BASE.ORIGINAL,"reprocessed":BASE.REPROCESSED,
        "GRCh38_predeclared_windows":[f"{c}:{s}-{e}" for c,s,e in FULL_WINDOWS],
        "QTL_source_tissue":"Brain_Cerebellar_Hemisphere",
