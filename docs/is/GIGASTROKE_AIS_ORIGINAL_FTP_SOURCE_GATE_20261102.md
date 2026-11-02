@@ -125,3 +125,32 @@ A separate small, pre-specified set of positional anchors was taken from the con
 The pipeline now checks whether the official public raw file contains **exactly one** row with each coordinate and allele set, with p-value within the original source-log tolerance (0.05 log10 p). This is a small independent source-to-historical-crosswalk spot check — **not a full mapping, GTEx QTL validation, independent replication or colocalization**.
 
 The updated CI containing the spot-check must complete before promoting the spot-check result beyond HOLD. If p or alleles disagree, the appropriate interpretation is a source-lineage/variant-normalization blocker, not automatically a negative biological association.
+
+
+## Actual 32/32 signed-ALT crosswalk validation — 2026-11-02
+
+[GitHub Actions #41437991270](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41437991270) completed the actual raw-file verification and full original GWAS scan. All 19 CI regression tests PASS; historical original file SHA-256 reproduced exactly:
+c521d5695414bdedcc84d2ea21d588e330c75a672f36a87c3fd092b4c55687a3.
+
+The independently selected 32 **nonpalindromic** SNPs came from the connected original
+[Drive four-gene full-cis SNP evidence table](https://drive.google.com/file/d/1eGY5PmwevFTCVcBTP9lqvXOprCAxZ7NU/view)
+(Drive TSV SHA-256 2ddd5e80e84f2798200d2c926bb8833210dbc50fd4c2178edf8f2626bc097571, 6,363,722 bytes).
+Selection is 4 genes × 2 historical allele-order categories
+(FASTA_REF_ALT, OTHER_EFFECT_ORDER) × 4 positional quantiles.
+The 32 positions are unique, with no palindromic A/T or C/G alleles.
+**All 32/32** present exactly once in original public GCST90104545; all
+have the correct unordered REF/ALT pair, same signed beta after orienting
+the original raw effect allele to ALT, same ALT allele frequency and same
+p-value (prespecified numeric tolerances).
+
+The actual per-SNP check predicates and aggregate counters were captured in
+[research/is/evidence/gigastroke_ais_original_drive_32_snp_live_result_20261102.json](../../research/is/evidence/gigastroke_ais_original_drive_32_snp_live_result_20261102.json).
+The reference panel itself is stored in
+[research/is/evidence/gigastroke_ais_drive_32_nonpal_snp_panel_20261102.json](../../research/is/evidence/gigastroke_ais_drive_32_nonpal_snp_panel_20261102.json).
+
+These outcomes support **sampled allele/sign source-to-archive linkage**,
+not whole-GWAS canonical equivalence, original molecular QTL model identity,
+full GWAS case N, independent BBJ replication, or colocalization.
+In particular 32 nonpalindromic examples do not automatically
+disambiguate the previously flagged 1,028,002 palindromic original rows.
+**Scientific status HOLD** until full reference, cohort and QTL/LD evidence gates.
