@@ -88,6 +88,33 @@ class DirectQTLTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             m.original_bgzf_first_line(m.REPROCESSED,lambda _:b"not a gzip")
 
+    def test_four_known_genes_split_source_pair_statistics(self):
+        original=m.select_qtl_rows(HEAD,[
+            line(trait="ENSG00000138675.14",beta="0.31"),
+            line(trait="ENSG00000197826.7",beta="-0.17"),
+            line(trait="ENSG00000138172.10",chrom="10",beta="0.24"),
+            line(trait="ENSG00000107954.5",chrom="10",beta="-0.13"),
+            line(trait="ENSG00000000000.1",beta="0.05")
+        ])
+        reprocessed=m.select_qtl_rows(HEAD,[
+            line(trait="ENSG00000138675",beta="-0.40"),
+            line(trait="ENSG00000197826",beta="-0.19"),
+            line(trait="ENSG00000138172",chrom="10",beta="0.23"),
+            line(trait="ENSG00000107954",chrom="10",beta="0.12"),
+            line(trait="ENSG00000000000",beta="0.01")
+        ])
+        d=m.target_gene_breakdown(original,reprocessed)
+        self.assertEqual(set(d),{"FGF5","C4orf22","CALHM2","NEURL"})
+        self.assertEqual(sum(v["matched_same_trait_and_exact_GRCh38_REF_ALT_pairs"] for v in d.values()),4)
+        self.assertEqual(d["FGF5"]["beta_sign_fraction"],0)
+        self.assertEqual(d["C4orf22"]["beta_sign_fraction"],1)
+        self.assertEqual(d["NEURL"]["beta_sign_fraction"],0)
+
+    def test_gene_ids_are_stable_and_not_symbol_only(self):
+        self.assertEqual(m.TARGET_GENES["C4orf22"],"ENSG00000197826")
+        self.assertEqual(m.TARGET_GENES["NEURL"],"ENSG00000107954")
+        self.assertEqual(len(set(m.TARGET_GENES.values())),4)
+
     def test_two_remote_bounded_regions_fake(self):
         source=(m.ORIGINAL_MD5+" Brain_Cerebellar_Hemisphere.tsv.gz\n").encode()
         result=m.live_audit(FakePysam(),lambda _:source,wait_seconds=0)
