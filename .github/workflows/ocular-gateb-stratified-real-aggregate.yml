@@ -1,12 +1,6 @@
 name: Ocular Gate B Stratified Effect-Size and Expression Reproducibility
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feat/ocular-p0-data-access-audit-20261030
-    paths:
-      - scripts/ocular/ocular_gate_b_stratified_effect_reproducibility.py
-      - .github/workflows/ocular-gateb-stratified-real-aggregate.yml
 permissions:
   contents: read
   actions: read
