@@ -1,4 +1,5 @@
 import importlib.util
+import gzip
 from pathlib import Path
 import unittest
 
@@ -76,6 +77,17 @@ class DirectQTLTests(unittest.TestCase):
         x=m.compare_rows(a,b)
         self.assertEqual(x["matched_same_trait_and_exact_GRCh38_REF_ALT_pairs"],0)
         self.assertEqual(x["comparison_status"],"HOLD_NO_EXACT_GENE_VARIANT_OVERLAP")
+    def test_unmarked_gzip_header_read_from_real_byte_pattern(self):
+        first=("\\t".join(HEAD)+"\\n"+line()+"\\n").encode()
+        src=gzip.compress(first,mtime=0)
+        r=m.original_bgzf_first_line(m.ORIGINAL,lambda _:src)
+        self.assertEqual(r["header"],HEAD)
+        self.assertTrue(r["header_from_first_bgzf_block"])
+
+    def test_wrong_gzip_header_bytes_are_rejected(self):
+        with self.assertRaises(ValueError):
+            m.original_bgzf_first_line(m.REPROCESSED,lambda _:b"not a gzip")
+
     def test_two_remote_bounded_regions_fake(self):
         source=(m.ORIGINAL_MD5+" Brain_Cerebellar_Hemisphere.tsv.gz\n").encode()
         result=m.live_audit(FakePysam(),lambda _:source,wait_seconds=0)
