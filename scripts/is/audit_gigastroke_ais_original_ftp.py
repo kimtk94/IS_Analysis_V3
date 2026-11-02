@@ -33,6 +33,10 @@ REQUIRED_COLUMNS = {"chromosome", "base_pair_location", "effect_allele",
 SE_ALIASES = {"standard_error", "se", "beta_se", "sebeta"}
 EFFECT_ALIASES = {"beta", "effect_size", "odds_ratio", "hazard_ratio"}
 UA = "IS-Source-ReadOnly-Audit/20261102"
+EXTENDED_PANEL_PATH = (Path(__file__).resolve().parents[2] /
+    "research/is/evidence/gigastroke_ais_drive_32_nonpal_snp_panel_20261102.json")
+PINNED_DRIVE_PANEL_SHA256 = "2ddd5e80e84f2798200d2c926bb8833210dbc50fd4c2178edf8f2626bc097571"
+
 # Frozen from user's 2026-10-11 separate four-gene Drive crosswalk report.
 # These are PUBLIC association-level p-value anchors, not original QTL lineage
 # or a canonical-wide SNP-wise equivalence certification.
@@ -186,6 +190,77 @@ def probe(opener=None):
         result["failure_type"]=type(e).__name__
     return result
 
+def load_extended_panel(path=EXTENDED_PANEL_PATH):
+    # A manifest-derived bounded test: source file checksum is separate from
+    # independent evidence of the downstream original GWAS allele convention.
+    obj=json.loads(path.read_text(encoding="utf-8"))
+    if obj.get("schema")!="is-giga-eas-ais-drive-32-snp-lineage-v1":
+        raise ValueError("Unexpected crosswalk panel schema")
+    if obj.get("source_drive_sha256")!=PINNED_DRIVE_PANEL_SHA256:
+        raise ValueError("Different reference Drive TSV provenance")
+    if obj.get("official_GWAS_accession")!=ACCESSION or len(obj.get("entries",[]))!=32:
+        raise ValueError("Unverified panel identity/count")
+    source={}
+    for row in obj["entries"]:
+        items=row["snp_GRCh37"].split(":")
+        if len(items)!=4 or items[0] not in ("4","10"):
+            raise ValueError("Invalid panel genomic key")
+        chrom,pos,ref,alt=items
+        if ref not in "ACGT" or alt not in "ACGT" or ref==alt or {ref,alt} in ({"A","T"},{"C","G"}):
+            raise ValueError("Panel must be nonpalindromic biallelic SNP")
+        if row["archive_allele_order_provenance"] not in ("FASTA_REF_ALT","OTHER_EFFECT_ORDER"):
+            raise ValueError("Unknown historical allele-order category")
+        key=(chrom,int(pos))
+        if key in source:
+            raise ValueError("Duplicate panel genomic key")
+        for numeric in ("p","beta_ALT","AF_ALT"):
+            if not math.isfinite(float(row[numeric])):
+                raise ValueError("Invalid panel metric")
+        if not (0<float(row["p"])<=1 and 0<=float(row["AF_ALT"])<=1):
+            raise ValueError("Panel p/EAF out of bounds")
+        source[key]=row
+    return source
+
+
+def compare_extended_panel(expected, observed):
+    rows=[]
+    for key,ref_row in expected.items():
+        hits=observed.get(key,[])
+        checks={"single_source_row":len(hits)==1}
+        effect_on_alt=None
+        if len(hits)==1:
+            item=hits[0]
+            _,_,ref,alt=ref_row["snp_GRCh37"].split(":")
+            checks["unordered_ref_alt_pair"]=frozenset((item["ea"],item["oa"]))==frozenset((ref,alt))
+            effect_on_alt=item["ea"]==alt and item["oa"]==ref
+            effect_on_ref=item["ea"]==ref and item["oa"]==alt
+            checks["effect_allele_is_ref_or_alt"]=bool(effect_on_alt or effect_on_ref)
+            beta_alt=(item["beta"] if effect_on_alt else -item["beta"] if effect_on_ref else None)
+            af_alt=(item["eaf"] if effect_on_alt else 1-item["eaf"] if effect_on_ref else None)
+            checks["p_log10_within_tolerance"]=bool(item["p"]>0 and
+                abs(math.log10(item["p"])-math.log10(ref_row["p"]))<=0.05)
+            checks["alt_oriented_beta_close"]=bool(beta_alt is not None and
+                math.isclose(beta_alt,ref_row["beta_ALT"],rel_tol=0.015,abs_tol=0.00015))
+            checks["alt_oriented_af_close"]=bool(af_alt is not None and
+                math.isclose(af_alt,ref_row["AF_ALT"],rel_tol=0.001,abs_tol=0.0002))
+        rows.append({
+            "gene":ref_row["gene"],"snp_GRCh37":ref_row["snp_GRCh37"],
+            "archive_allele_order_provenance":ref_row["archive_allele_order_provenance"],
+            "source_rows":len(hits),"checks":checks,
+            "passes_all":all(checks.values()),
+        })
+    return {
+        "n_expected":len(expected),
+        "n_pass":sum(row["passes_all"] for row in rows),
+        "n_fail":sum(not row["passes_all"] for row in rows),
+        "rows":rows,
+        "gate":("32_SNPS_EXACT_REF_ALT_P_BETA_AF_SCREEN_PASS_NOT_FULL_ALIGNMENT"
+                if all(row["passes_all"] for row in rows)
+                else "HOLD_32_SNP_ORIENTATION_OR_SOURCE_MISMATCH"),
+        "scientific_approved":False,
+    }
+
+
 def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_DATA_ROWS):
     result=dict(probed)
     if result.get("metadata_gate") != "METADATA_HEADER_SCREEN_PASS":
@@ -225,6 +300,14 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
             rows=0
             qc=Counter()
             panel_hits={key:[] for key in CANONICAL_PANEL}
+            try:
+                extended_panel=load_extended_panel()
+                extended_hits={key:[] for key in extended_panel}
+            except (OSError,ValueError,KeyError,TypeError) as exc:
+                extended_panel=None
+                extended_hits={}
+                result["extended_panel_gate"]="HOLD_PANEL_INPUT_OR_SCHEMA"
+                result["extended_panel_failure_class"]=type(exc).__name__
             with gzip.open(dest,"rt",encoding="utf-8-sig",newline="") as f:
                 reader=csv.reader(f,delimiter="\t")
                 first=next(reader)
@@ -267,6 +350,10 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
                                 "allele_pair_match":frozenset((ea,oa))==CANONICAL_PANEL[locus]["alleles"],
                                 "source_p":p,
                             })
+                        if locus in extended_hits:
+                            extended_hits[locus].append({
+                                "ea":ea,"oa":oa,"beta":beta,"p":p,"eaf":eaf,
+                            })
                         if not math.isfinite(eaf) or not 0<=eaf<=1:
                             qc["invalid_eaf_rows"]+=1
                         else:
@@ -304,6 +391,11 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
                 "THREE_POSITION_ALLELE_AND_P_SCREEN_PASS_NOT_FULL_CANONICAL_VERIFICATION"
                 if all(x["unordered_alleles_and_p_match"] for x in panel)
                 else "HOLD_ORIGINAL_TO_DRIVE_3_POSITION_ANCHOR_MISMATCH")
+            if extended_panel is not None:
+                result["extended_32_snp_drive_reference_comparison"]=compare_extended_panel(
+                    extended_panel,extended_hits)
+                result["extended_panel_gate"]=result[
+                    "extended_32_snp_drive_reference_comparison"]["gate"]
             result["numeric_qc_status"]=(
                 "BASIC_NUMERIC_FIELDS_SCREEN_PASS" if
                 qc["finite_beta_se_p_positive_se_rows"]==rows
