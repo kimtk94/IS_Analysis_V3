@@ -19,6 +19,7 @@ import subprocess
 import os
 import time
 import urllib.request
+import zlib
 from pathlib import Path
 
 ROOT="https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/"
@@ -55,6 +56,32 @@ def read_md5_list(fetcher=None):
     return {"source_md5_manifest_sha256":hashlib.sha256(raw).hexdigest(),
             "original_tissue_file_md5_in_official_manifest":
                 verify_manifest(raw.decode("utf-8","replace"))}
+
+
+def original_bgzf_first_line(url, fetcher=None):
+    """Only read a bounded official BGZF prefix; Tabix headers may be unmarked."""
+    if url not in (ORIGINAL,REPROCESSED):
+        raise ValueError("QTL URL not allowlisted")
+    if fetcher is None:
+        req=urllib.request.Request(url, headers={
+            "User-Agent":"IS-GTExv8-QTD-Header-Read/1.0",
+            "Range":"bytes=0-131071"})
+        with urllib.request.urlopen(req,timeout=30) as res:
+            if res.url!=url:
+                raise ValueError("Unexpected cross-origin or version redirect")
+            prefix=res.read(131073)
+    else:
+        prefix=fetcher(url)
+    if len(prefix)>131072 or not prefix.startswith(b"\x1f\x8b"):
+        raise ValueError("Unexpected source BGZF prefix")
+    first=zlib.decompressobj(wbits=16+zlib.MAX_WBITS).decompress(prefix,262144)
+    if b"\n" not in first:
+        raise ValueError("Incomplete BGZF header first line")
+    first_line=first.split(b"\n",1)[0].decode("utf-8-sig","replace").strip()
+    header=first_line.lstrip("#").split("\t")
+    return {"header":header,
+            "gzip_prefix_sha256_not_full_file":hashlib.sha256(prefix).hexdigest(),
+            "header_from_first_bgzf_block":True}
 
 def normalize_header(lines):
     raw=[x.lstrip("#").strip() for x in lines]
@@ -256,9 +283,26 @@ def live_audit(tabix_module=None,md5_fetcher=None,wait_seconds=2.25):
         report["original_source_tabix_transport"]=handles[0].transport.split("://")[0] if hasattr(handles[0],"transport") else "mock"
         report["reprocessed_tabix_transport"]=handles[1].transport.split("://")[0] if hasattr(handles[1],"transport") else "mock"
         report["remote_transport_cryptographic_integrity_verified"]=False
-        report["source_headers"]={
-            "original":normalize_header(handles[0].header),
-            "reprocessed":normalize_header(handles[1].header)}
+        report["source_headers"]={}
+        report["source_header_provenance"]={}
+        for kind,handle,url in zip(("original","reprocessed"),handles,(ORIGINAL,REPROCESSED)):
+            head=normalize_header(handle.header)
+            if head is None:
+                try:
+                    source=original_bgzf_first_line(url)
+                    head=source["header"]
+                    report["source_header_provenance"][kind]={
+                        "origin":"actual_original_gzip_Bgzf_prefix",
+                        "prefix_sha256_not_full_file":source["gzip_prefix_sha256_not_full_file"],
+                    }
+                except (OSError,ValueError,zlib.error) as exc:
+                    report["source_header_provenance"][kind]={
+                        "origin":"HOLD_BGZF_HEADER_UNAVAILABLE",
+                        "failure_type":type(exc).__name__}
+            else:
+                report["source_header_provenance"][kind]={"origin":"tabix_comment_header"}
+            report["source_headers"][kind]=head
+            handle.header=(["#"+"\t".join(head)] if head is not None else [])
         report["source_contigs"]={
             "original_count":len(handles[0].contigs),
             "reprocessed_count":len(handles[1].contigs),
