@@ -119,7 +119,7 @@ Verified original GIGASTROKE AIS YAML directly from
 
 eQTL Catalogue source lineage:
 - Official Studies and Release Notes HTML pages were actually read and hashed; QTS000015 GTEx reprocessed versus separately imported original GTEx_v8 were distinguished (**source category PASS**).
-- April 2023 release 6 documents complete cis gene expression \`.all.tsv.gz\` data, but September 2026 r8 pre-release notes **GTEx_v10 QTS000015 reprocessing with unchanged dataset IDs**.
+- April 2023 release 6 documents complete cis gene expression \`.all.tsv.gz\` data, but January 2026 r8 pre-release notes **GTEx_v10 QTS000015 reprocessing with unchanged dataset IDs**.
 - Live QTD000161 gzip prefix accessible (prefix-only SHA-256 \`2e6295860e3c1bfae068167c6ceed1dd34e612da5b78385dd60b46473dc6f315\`). A prefix hash is **not a full original QTL byte hash** and cannot establish release 6 / 2023 exact file identity.
 - Original GTEx v8 FastQTL model, covariates, variants tested, effect-allele conventions and lineage-to-historical-coloc remain **HOLD**.
 
@@ -127,3 +127,20 @@ Authoritative outcome JSON captured directly from successful CI job:
 [is_eas_ais_n_eqtl_lineage_20261102.json](../../research/is/evidence/is_eas_ais_n_eqtl_lineage_20261102.json).
 
 **Verdicts:** GWAS original-file SHA, 6,725,216-row numeric QC and four-gene 6,273-SNP source-to-Drive crosswalk PASS; GWAS original study N and SNP-wise case fraction HOLD; original molecular QTL model equivalence HOLD. No causal claim or coloc was promoted.
+
+
+## 2026-11-02 original GTEx v8 full-nominal accessibility gate
+
+Official GTEx Portal lists the original **Brain_Cerebellar_Hemisphere.allpairs.txt.gz** at approximately **3.6 GB** in a Google Cloud **requester-pays** bucket. The regular GTEx v8 eQTL permutation/significant-pairs tar is approximately **1.5 GB**, but its significant-only hits cannot establish the complete nominal cis universe required for coloc.
+
+The eQTL Catalogue [Studies index](https://www.ebi.ac.uk/eqtl/Studies/) separately hosts *imported GTEx_v8* summary statistics on its FTP, whereas QTD000161 is the separately reprocessed GTEx brain_cerebellar_hemisphere **gene expression** eQTL with **175** samples.
+
+CI-only asset-discovery implementation:
+- `scripts/is/audit_gtex_v8_original_imported_discovery.py`
+- `tests/test_is_gtex_v8_original_imported_discovery.py`
+- `.github/workflows/is-gtex-v8-original-vs-ebi-qtl-discovery.yml`
+- [GitHub Actions #41442187211](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41442187211)
+
+This bounded, free discovery locates official imported original and reprocessed source assets and tests the QTD gzip header. **It does not compare GTEx v8 vs QTD statistical rows until an actual original FastQTL source is validated.** Requester-pays download is deliberately not attempted without authorization. Full original cis QTL, per-gene tested-SNP universe, beta/SE model, and genuine harmonization remain HOLD.
+
+Release date correction: official [eQTL Catalogue Release Notes](https://www.ebi.ac.uk/eqtl/Release_notes/) label r8 pre-release **January 2026**, not September 2026. The original release-6 note is April 2023.
