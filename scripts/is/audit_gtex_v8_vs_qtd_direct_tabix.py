@@ -170,8 +170,22 @@ class SystemTabixFile:
         if url not in (ORIGINAL,REPROCESSED):
             raise ValueError("Tabix source not allowlisted")
         self.url=url
-        self.header=self._call(["tabix","-H",url],cap=200_000).splitlines()
-        self.contigs=self._call(["tabix","-l",url],cap=20_000).splitlines()
+        # The EBI eQTL Catalogue data-access documentation explicitly supports
+        # FTP Tabix. The official HTTPS root is retained for provenance.
+        # Only switch transport, never hostname or exact published path.
+        failures=[]
+        for transport in (url,url.replace("https://","ftp://",1)):
+            try:
+                header=self._call(["tabix","-H",transport],cap=200_000).splitlines()
+                contigs=self._call(["tabix","-l",transport],cap=20_000).splitlines()
+                self.transport=transport
+                self.header=header
+                self.contigs=contigs
+                break
+            except (OSError,ValueError) as exc:
+                failures.append(str(exc)[-160:])
+        else:
+            raise OSError("HTTPS and documented EBI FTP Tabix failed: "+" | ".join(failures))
     def _call(self,args,cap):
         env=os.environ.copy()
         env["CURL_CA_BUNDLE"]="/etc/ssl/certs/ca-certificates.crt"
@@ -190,7 +204,7 @@ class SystemTabixFile:
         if end-start>6000:
             raise ValueError("interval too broad")
         region=f"{chrom}:{start+1}-{end}"
-        return iter(self._call(["tabix",self.url,region],cap=8_000_000).splitlines())
+        return iter(self._call(["tabix",self.transport,region],cap=8_000_000).splitlines())
     def close(self):
         return None
 
@@ -230,6 +244,9 @@ def live_audit(tabix_module=None,md5_fetcher=None,wait_seconds=2.25):
                 report["failure_url_type"]="original" if url==ORIGINAL else "reprocessed"
                 return report
             handles.append(h)
+        report["original_source_tabix_transport"]=handles[0].transport.split("://")[0] if hasattr(handles[0],"transport") else "mock"
+        report["reprocessed_tabix_transport"]=handles[1].transport.split("://")[0] if hasattr(handles[1],"transport") else "mock"
+        report["remote_transport_cryptographic_integrity_verified"]=False
         report["source_headers"]={
             "original":normalize_header(handles[0].header),
             "reprocessed":normalize_header(handles[1].header)}
