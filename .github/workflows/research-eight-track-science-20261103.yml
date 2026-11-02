@@ -1,0 +1,74 @@
+name: MASTER DEGREE eight scientific evidence tasks 2026-11-03
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/research-eight-track-science-20261103.yml"
+      - "scripts/research/validate_eight_tracks_20261103.py"
+      - "tests/test_eight_track_scientific_evidence_20261103.py"
+      - "config/muscle/stage1_seed_loci.tsv"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-science:
+    name: "Scientific evidence — ${{ matrix.track }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Retrieve prior edgeR P5 gene-level artifact inside CI only
+        if: matrix.track == 'glaucoma'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/research-p5-source
+          if gh run download 41074586446 --repo kimtk94/IS_Analysis_V3 --name ocular-p5-edger-inference --dir /tmp/research-p5-source; then
+            echo "Prior P5 gene-level evidence available"
+          else
+            echo "Prior P5 artifact inaccessible; fail-closed HOLD will be reported"
+          fi
+      - name: Retrieve prior 14-case radiomics aggregate inside CI only
+        if: matrix.track == 'radiomics'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/research-radiomics-source
+          if gh run download 41208617950 --repo kimtk94/Codex --name hcc-mri14-official-registered-pv-2x3-factorial-168-rows-and-24-condition-metrics --dir /tmp/research-radiomics-source; then
+            echo "Prior aggregate radiomics artifact available"
+          else
+            echo "Prior Codex artifact inaccessible; scientific gate remains HOLD"
+          fi
+      - name: Execute exactly one source-bound research task
+        run: python scripts/research/validate_eight_tracks_20261103.py --track "${{ matrix.track }}"
+      - name: Preserve only aggregate evidence and explicit blockers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-20261103-${{ matrix.track }}
+          path: results/research_operations/20261103/${{ matrix.track }}.json
+          if-no-files-found: warn
+          retention-days: 30
+  safety-tests:
+    name: Scientific source contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m unittest discover -s tests -p 'test_eight_track_scientific_evidence_20261103.py' -v
