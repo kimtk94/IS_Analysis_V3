@@ -62,6 +62,19 @@ class Checks(unittest.TestCase):
         x=inspect_node(fake_open(routes))
         self.assertEqual(x["status"],"NODE_PROJECT_IDENTITY_UNCONFIRMED")
         self.assertFalse(x["source_authorized_project_identity"])
+    def test_exact_documented_accession_can_resolve_when_search_id_mismatches(self):
+        browse={"data":{"pageInfo":{"totalPages":1,"content":[{"id":"55"}]}}}
+        routes={key(SEARCH,search_payload()):browse,
+                key(project_general_url("55")):{"data":{"projectNo":"OEP555555"}},
+                key(project_general_url(PROJECT)):{"data":{"projectNo":PROJECT}},
+                key(DATA_LIST,datalist_payload(PROJECT,1)):{"data":{"total":1,"list":[
+                    {"datNo":"OED000123","security":"public","name":"HCCDB25.patient.txt"}]}}}
+        x=inspect_node(fake_open(routes))
+        self.assertEqual(x["status"],"NODE_SOURCE_AUTHORIZED_DATALIST_COMPLETE")
+        self.assertEqual(x["exact_general_info_matches_n"],1)
+        self.assertEqual(len(x["general_info_schema_audits"]),2)
+        self.assertEqual(x["official_datalist"]["public_OED_ids_verified_n"],1)
+
     def test_missing_data_body_is_source_hold(self):
         routes={key(SEARCH,search_payload()):{"code":500,"msg":"transient"}}
         x=inspect_node(fake_open(routes))
