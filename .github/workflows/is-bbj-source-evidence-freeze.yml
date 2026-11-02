@@ -1,6 +1,13 @@
 name: IS BBJ 2021 EAS5 Historical Evidence Freeze (CI only)
 
 on:
+  push:
+    branches: [feat/is-bbj-2021-source-evidence-freeze-20261102]
+    paths:
+      - "research/is/evidence/bbj2021_eas5_source_comparison_log_20261018.json"
+      - "scripts/is/audit_bbj_2021_source_freeze.py"
+      - "tests/test_is_bbj_2021_source_freeze.py"
+      - ".github/workflows/is-bbj-source-evidence-freeze.yml"
   pull_request:
     paths:
       - "research/is/evidence/bbj2021_eas5_source_comparison_log_20261018.json"
