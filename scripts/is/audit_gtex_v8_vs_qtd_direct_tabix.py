@@ -31,6 +31,14 @@ REGIONS=[("4",79759900,79764900),("10",103079000,103084000)]
 MAX_ROWS_EACH_REGION=25000
 MAX_META_BYTES=20000
 REQUIRED={"molecular_trait_id","chromosome","position","ref","alt","pvalue","beta","se"}
+# Verified human stable IDs; old names C4orf22=CFAP299 and NEURL=NEURL1.
+TARGET_GENES = {
+    "FGF5": "ENSG00000138675",
+    "C4orf22": "ENSG00000197826",
+    "CALHM2": "ENSG00000138172",
+    "NEURL": "ENSG00000107954",
+}
+
 
 def verify_manifest(text):
     lines=text.splitlines()
@@ -179,6 +187,22 @@ def compare_rows(original,reprocessed):
         "coloc_performed":False,
     }
 
+def target_gene_breakdown(original,reprocessed):
+    groups={}
+    for name,gene in TARGET_GENES.items():
+        a=dict(original)
+        b=dict(reprocessed)
+        a["rows"]={k:v for k,v in original["rows"].items() if k[0]==gene}
+        b["rows"]={k:v for k,v in reprocessed["rows"].items() if k[0]==gene}
+        a["observed"]=len(a["rows"])
+        b["observed"]=len(b["rows"])
+        report=compare_rows(a,b)
+        report["gene"]=name
+        report["ensembl_id"]=gene
+        groups[name]=report
+    return groups
+
+
 def extract_region(tabix,url,region,*,header=None,sleep_seconds=2.25):
     chrom,start,end=region
     indexed=known_index_contig(set(tabix.contigs),chrom)
@@ -319,11 +343,18 @@ def live_audit(tabix_module=None,md5_fetcher=None,wait_seconds=2.25):
                 kind="original" if url==ORIGINAL else "reprocessed"
                 entries.append(extract_region(handle,url,region,header=report["source_headers"][kind]))
             record=compare_rows(*entries)
+            record["target_four_gene_breakdown"]=target_gene_breakdown(*entries)
             record["region_GRCh38"]="%s:%d-%d"%region
             record["original_extract_status"]=entries[0]["status"]
             record["reprocessed_extract_status"]=entries[1]["status"]
             stats.append(record)
         report["sampled_regions"]=stats
+        report["target_gene_ID_mapping"]=TARGET_GENES
+        report["target_gene_exact_pairs_by_name"]={
+            name:sum(z["target_four_gene_breakdown"][name][
+                "matched_same_trait_and_exact_GRCh38_REF_ALT_pairs"] for z in stats)
+            for name in TARGET_GENES
+        }
         sum_matched=sum(x["matched_same_trait_and_exact_GRCh38_REF_ALT_pairs"] for x in stats)
         report["total_exact_pairs_two_small_regions"]=sum_matched
         report["source_region_gate"]=(
