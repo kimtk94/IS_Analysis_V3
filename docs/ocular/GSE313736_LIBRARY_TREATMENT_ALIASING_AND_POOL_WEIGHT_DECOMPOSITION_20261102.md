@@ -25,11 +25,11 @@ The source P5e metadata had **169,398 SNG cells**, 59 donors with both arms, a B
 
 Using *the original published pool-arm SNG counts* and BeamA pool proportions (rounded to six decimals in P5e), the new audit reconstructs the global difference to within the required source-precision tolerance and applies an **exact symmetric Kitagawa arithmetic decomposition** on the published rounded rates:
 
-[
+\[
 \sum_p w_{DEX,p}r_{DEX,p}-\sum_p w_{Veh,p}r_{Veh,p}
 =\sum_p \frac{w_{DEX,p}+w_{Veh,p}}{2}(r_{DEX,p}-r_{Veh,p})
 +\sum_p \frac{r_{DEX,p}+r_{Veh,p}}{2}(w_{DEX,p}-w_{Veh,p}).
-]
+\]
 
 | Term | Measured percentage-point contribution |
 |---|---:|
