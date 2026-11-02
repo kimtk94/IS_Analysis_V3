@@ -120,8 +120,9 @@ def audit(fetcher=None):
     folder=result.get("GTEx_v8_imported_root",{}).get("assets",[])
     directories=[i["name"] for i in folder if i["directory"]]
     # Never guess filename from a tissue label; inspect only an observed link.
-    if len(directories)==1:
-        folder_url=IMPORTED+urllib.parse.quote(directories[0],safe="._-")+"/"
+    exact_original_folder=[name for name in directories if name=="GTEx_V8"]
+    if len(exact_original_folder)==1:
+        folder_url=IMPORTED+urllib.parse.quote(exact_original_folder[0],safe="._-")+"/"
         try:
             raw=fetch(folder_url,MAX_INDEX,fetcher=fetcher)
             listed=assets(raw)
