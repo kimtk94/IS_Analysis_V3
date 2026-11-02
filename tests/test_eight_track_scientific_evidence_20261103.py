@@ -51,7 +51,7 @@ class Contracts(unittest.TestCase):
         with patch.dict("os.environ",{"GITHUB_ACTIONS":"false"}):
             with self.assertRaises(SystemExit):gate.execute("is")
     def test_source_manifest_never_claims_full_raw_qc(self):
-        self.assertIn("whole_file_checksum_verified",gate.is_task.__code__.co_consts)
+        self.assertIn('"whole_file_checksum_verified":False', (ROOT/"scripts/research/validate_eight_tracks_20261103.py").read_text())
         self.assertEqual(gate.NEXT["skin"].startswith("Whole-file checksum"),True)
 
 if __name__=="__main__":unittest.main()
