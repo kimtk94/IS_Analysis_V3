@@ -1,12 +1,6 @@
 name: Ocular GSE301517 7d Strain Leave-One-Out and EMT Reproducibility
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feat/ocular-p0-data-access-audit-20261030
-    paths:
-      - scripts/ocular/ocular_gse301517_strain_loo_aggregate_audit.py
-      - .github/workflows/ocular-gse301517-strain-loo-aggregate.yml
 
 permissions:
   contents: read
