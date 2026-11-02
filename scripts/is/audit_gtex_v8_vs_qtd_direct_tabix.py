@@ -231,7 +231,16 @@ def live_audit(tabix_module=None,md5_fetcher=None,wait_seconds=2.25):
             "original_tissue_file_md5_in_official_manifest":False,
             "failure_class":type(exc).__name__}
     if tabix_module is None:
-        tabix_module=SystemTabix
+        # pysam wheel htslib has libcurl, but some Linux distributions need
+        # an explicit CA bundle to avoid libcurl error 77 on HTTPS sources.
+        os.environ["CURL_CA_BUNDLE"]="/etc/ssl/certs/ca-certificates.crt"
+        os.environ["SSL_CERT_FILE"]="/etc/ssl/certs/ca-certificates.crt"
+        try:
+            import pysam as tabix_module
+            report["source_tabix_backend"]="pysam_libcurl_explicit_system_CA"
+        except ImportError:
+            report["source_region_gate"]="HOLD_PYSAM_UNAVAILABLE"
+            return report
     handles=[]
     try:
         for url in (ORIGINAL,REPROCESSED):
