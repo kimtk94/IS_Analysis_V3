@@ -124,6 +124,7 @@ export async function inspectRoute(browser, def) {
     status: 'BROWSER_ROUTE_SOURCE_HOLD',
     blocked_backend_api_requests_n: 0,
     blocked_third_party_or_nonessential_requests_n: 0,
+    blocked_resource_type_counts: {},
     attempted_downloads_n: 0,
     scripts_observed_n: 0,
     script_source_errors_n: 0
@@ -132,10 +133,12 @@ export async function inspectRoute(browser, def) {
     const req = route.request();
     const rt = req.resourceType();
     if (rt === 'xhr' || rt === 'fetch' || rt === 'websocket') {
+      result.blocked_resource_type_counts[rt] = (result.blocked_resource_type_counts[rt] || 0) + 1;
       result.blocked_backend_api_requests_n += 1;
       return route.abort('blockedbyclient');
     }
     if (!isAllowedPublicResource(req.url(), rt)) {
+      result.blocked_resource_type_counts[rt] = (result.blocked_resource_type_counts[rt] || 0) + 1;
       result.blocked_third_party_or_nonessential_requests_n += 1;
       return route.abort('blockedbyclient');
     }
@@ -173,9 +176,13 @@ export async function inspectRoute(browser, def) {
     tasks.push(task);
   });
   try {
-    await page.goto(SITE + '/' + def.hash, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForTimeout(4500);
-    await Promise.allSettled(tasks);
+    // DOMContentLoaded waits on every slow upstream script; commit captures the
+    // official document response without upgrading a partial SPA render to GO.
+    const nav = await page.goto(SITE + '/' + def.hash, { waitUntil: 'commit', timeout: 30000 });
+    result.document_http_status = nav?.status() ?? null;
+    await page.waitForTimeout(8500);
+    result.document_ready_state = await page.evaluate(() => document.readyState).catch(() => 'unknown');
+    await Promise.race([Promise.allSettled(tasks), page.waitForTimeout(6000)]);
     const sorted = [...assets.values()].sort((a, b) => a.public_js_path.localeCompare(b.public_js_path));
     const size = sorted.reduce((a, v) => a + v.inspected_bytes, 0);
     if (size > MAX_TOTAL_JS_PER_ROUTE) {

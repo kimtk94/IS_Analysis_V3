@@ -15,6 +15,8 @@ test('source allows only official static JS and exact public origin', () => {
 test('other resource categories are blocked before any network access', () => {
   const root = 'http://lifeome.net:809/';
   assert.equal(isAllowedPublicResource(root, 'document'), true);
+  assert.equal(isAllowedPublicResource(root+'#/repository?type=buke', 'document'), true);
+  assert.equal(isAllowedPublicResource(root+'#/download', 'document'), true);
   assert.equal(isAllowedPublicResource(root, 'fetch'), false);
   assert.equal(isAllowedPublicResource(root, 'xhr'), false);
   assert.equal(isAllowedPublicResource('http://lifeome.net:809/api/private', 'document'), false);
