@@ -179,15 +179,15 @@ def compare_rows(original,reprocessed):
         "coloc_performed":False,
     }
 
-def extract_region(tabix,url,region,*,sleep_seconds=2.25):
+def extract_region(tabix,url,region,*,header=None,sleep_seconds=2.25):
     chrom,start,end=region
     indexed=known_index_contig(set(tabix.contigs),chrom)
     if indexed is None:
         return {"status":"HOLD_CHROMOSOME_ABSENT","columns":[],
                 "rows":{},"observed":0}
     # One bounded indexed fetch per original and reprocessed region.
-    data=select_qtl_rows(normalize_header(tabix.header) or [], 
-                         tabix.fetch(indexed,start-1,end))
+    cols=header if header is not None else (normalize_header(tabix.header) or [])
+    data=select_qtl_rows(cols,tabix.fetch(indexed,start-1,end))
     return data
 
 
@@ -302,7 +302,7 @@ def live_audit(tabix_module=None,md5_fetcher=None,wait_seconds=2.25):
             else:
                 report["source_header_provenance"][kind]={"origin":"tabix_comment_header"}
             report["source_headers"][kind]=head
-            handle.header=(["#"+"\t".join(head)] if head is not None else [])
+            # Do not mutate pysam.TabixFile.header (read-only extension property).
         report["source_contigs"]={
             "original_count":len(handles[0].contigs),
             "reprocessed_count":len(handles[1].contigs),
@@ -316,7 +316,8 @@ def live_audit(tabix_module=None,md5_fetcher=None,wait_seconds=2.25):
             entries=[]
             for handle,url in zip(handles,(ORIGINAL,REPROCESSED)):
                 time.sleep(wait_seconds)
-                entries.append(extract_region(handle,url,region))
+                kind="original" if url==ORIGINAL else "reprocessed"
+                entries.append(extract_region(handle,url,region,header=report["source_headers"][kind]))
             record=compare_rows(*entries)
             record["region_GRCh38"]="%s:%d-%d"%region
             record["original_extract_status"]=entries[0]["status"]
