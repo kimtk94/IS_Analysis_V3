@@ -1,0 +1,40 @@
+name: IS EAS-AIS N and GTEx Original-vs-Reprocessed eQTL Provenance
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "scripts/is/audit_is_eas_ais_n_eqtl_lineage.py"
+      - "tests/test_is_eas_ais_n_eqtl_lineage.py"
+      - ".github/workflows/is-eas-ais-n-eqtl-lineage.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_is_eas_ais_n_eqtl_lineage.py"
+      - "tests/test_is_eas_ais_n_eqtl_lineage.py"
+      - ".github/workflows/is-eas-ais-n-eqtl-lineage.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-source-lineage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify 11 negative controls and version-identity criteria
+        run: python3 -m unittest discover -s tests -p 'test_is_eas_ais_n_eqtl_lineage.py' -v
+      - name: Inspect actual official AIS original YAML and eQTL Catalogue source release
+        run: python3 scripts/is/audit_is_eas_ais_n_eqtl_lineage.py --output ci_reports/is_eas_ais_N_qtl_lineage.json
+      - name: Archive aggregate source metadata and scientific HOLD status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-eas-ais-n-qtl-source-lineage
+          path: ci_reports/is_eas_ais_N_qtl_lineage.json
+          if-no-files-found: ignore
+          retention-days: 30
