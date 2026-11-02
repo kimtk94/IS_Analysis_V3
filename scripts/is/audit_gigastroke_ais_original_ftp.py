@@ -11,7 +11,9 @@ import gzip
 import hashlib
 from html.parser import HTMLParser
 import json
+import math
 import re
+from collections import Counter
 import tempfile
 import urllib.error
 import urllib.parse
@@ -213,9 +215,16 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
                 result["full_file_gate"]="HOLD_YAML_MD5_MISMATCH"
                 return result
             rows=0
+            qc=Counter()
             with gzip.open(dest,"rt",encoding="utf-8-sig",newline="") as f:
                 reader=csv.reader(f,delimiter="\t")
                 first=next(reader)
+                cols={name.lower():i for i,name in enumerate(first)}
+                needed=("beta","standard_error","p_value","effect_allele",
+                        "other_allele","effect_allele_frequency")
+                if not set(needed).issubset(cols):
+                    result["full_file_gate"]="HOLD_NUMERIC_QC_COLUMNS_MISSING"
+                    return result
                 for row in reader:
                     rows+=1
                     if rows>max_rows:
@@ -224,7 +233,44 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
                     if len(row)!=len(first):
                         result["full_file_gate"]="HOLD_MALFORMED_GWAS_ROW"
                         return result
+                    ea=row[cols["effect_allele"]].strip().upper()
+                    oa=row[cols["other_allele"]].strip().upper()
+                    if not (ea in ("A","C","G","T") and oa in ("A","C","G","T") and ea!=oa):
+                        qc["non_acgt_or_equal_allele_rows"]+=1
+                    elif {ea,oa} in ({"A","T"},{"C","G"}):
+                        qc["palindromic_at_or_cg_rows"]+=1
+                    try:
+                        beta=float(row[cols["beta"]])
+                        se=float(row[cols["standard_error"]])
+                        p=float(row[cols["p_value"]])
+                        eaf=float(row[cols["effect_allele_frequency"]])
+                        if not (math.isfinite(beta) and math.isfinite(se) and se>0
+                                and math.isfinite(p) and 0<=p<=1):
+                            raise ValueError("invalid beta/se/p")
+                        qc["finite_beta_se_p_positive_se_rows"]+=1
+                        if not math.isfinite(eaf) or not 0<=eaf<=1:
+                            qc["invalid_eaf_rows"]+=1
+                        else:
+                            qc["valid_eaf_rows"]+=1
+                        if rows%101==0:
+                            z=abs(beta/se)
+                            p_wald=math.erfc(z/math.sqrt(2))
+                            if p>0 and p_wald>0:
+                                qc["wald_two_sided_comparable_rows"]+=1
+                                if abs(math.log10(p)-math.log10(p_wald))>0.2:
+                                    qc["wald_p_log10_discordant_sample_rows"]+=1
+                            else:
+                                qc["wald_p_underflow_or_zero_sample_rows"]+=1
+                    except (ValueError,OverflowError):
+                        qc["missing_or_invalid_beta_se_p_or_eaf_rows"]+=1
             result["full_gwas_data_rows"]=rows
+            result["gwas_numeric_qc"]=dict(qc)
+            result["numeric_qc_status"]=(
+                "BASIC_NUMERIC_FIELDS_SCREEN_PASS" if
+                qc["finite_beta_se_p_positive_se_rows"]==rows
+                and qc["non_acgt_or_equal_allele_rows"]==0
+                and qc["invalid_eaf_rows"]==0
+                else "HOLD_NUMERIC_OR_ALLELE_QC_REVIEW")
             result["original_file_byte_hash_verified"]=True
             result["full_file_gate"]="ORIGINAL_FILE_MD5_AND_GZIP_ROWS_PASS_REVIEW_REQUIRED"
     except (OSError,ValueError,EOFError,csv.Error,StopIteration) as e:
