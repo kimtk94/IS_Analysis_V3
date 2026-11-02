@@ -1,0 +1,41 @@
+name: IS EAS5 Original Archive Provenance Gate (CI only)
+
+on:
+  push:
+    branches: [feat/is-bbj-2021-source-evidence-freeze-20261102]
+    paths:
+      - "scripts/is/audit_eas5_original_archive_gate.py"
+      - "tests/test_is_eas5_original_archive_gate.py"
+      - ".github/workflows/is-eas5-original-archive-provenance.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_eas5_original_archive_gate.py"
+      - "tests/test_is_eas5_original_archive_gate.py"
+      - ".github/workflows/is-eas5-original-archive-provenance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-archive-gate:
+    name: EAS5 archive scientific HOLD unless actual bytes provided
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run bounded source-gate regression tests
+        run: python3 -m unittest discover -s tests -p 'test_is_eas5_original_archive_gate.py' -v
+      - name: Check original archive availability without SSH or synthetic promotion
+        run: python3 scripts/is/audit_eas5_original_archive_gate.py --output ci_reports/is_eas5_original_archive_gate.json
+      - name: Upload fail-closed archive availability evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-eas5-original-archive-scientific-hold
+          path: ci_reports/is_eas5_original_archive_gate.json
+          if-no-files-found: ignore
+          retention-days: 30
