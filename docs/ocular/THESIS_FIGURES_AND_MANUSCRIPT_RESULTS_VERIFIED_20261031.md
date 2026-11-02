@@ -55,8 +55,25 @@ Exploratory interrogation of 194 Hallmark EMT-annotated genes revealed broadly s
 ## Immediate next research tasks
 
 1. **Manuscript top-level structure**, not more exploratory bulk figure automation: Introduction (clinical steroid-response context and TM), datasets and unit-of-analysis methods, data-provenance and biases, 3-study direction evidence, paired annotation sensitivity, Discussion with limitations.
-2. **Original study author 80-gene table access:** contact primary authors or locate legitimate publication supplements when available. Do not guess identity from summary counts.
+2. **Original author DEG80 mapping is non-blocking HOLD:** the authentic identity table has not been verified and the user cannot readily contact investigators. **Do not initiate author outreach.** Omit any claim of exact 80-vs-83 gene identity replication; focus on independently accessible public source audits.
 3. **Novelty gate:** compare each claim to the original sc-eQTL/GSE313736 paper, Mehrotra 2026 bulk TM qPCR, and Singh 2026 ATAC/IOP sources. Add an exact claim-by-claim overlap table before submitting.
 4. **Optional mechanistic extension** requires randomized same-donor vehicle/100/500nM at matching 48h and other timepoints, appropriate culture batch balance, qPCR MYOC/TGFBI/MMP2 and MMP2 zymography/secreted ECM assays. If unavailable, frame the work as computational transcriptomic reproducibility only.
 
 The Figures 1–3 in the CI artifact are **ready for use as accurately labeled computational figures**, not complete manuscript proof or an article-ready mechanistic claim.
+
+## 2026-11-02 final four-archive evidence QA and revised figure caption rule
+
+**Latest actual CI [#41432752451](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41432752451) SUCCESS 2/2**. Read-only, separate inspector downloaded four already-produced source-result artifacts, not raw 10x or FASTQ files:
+
+1. Original three completed figures and 16-gene Supplementary Table S1 [#41208972011](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41208972011), artifact #13045363678.
+2. New same-cohort effect and expression-stratified sensitivity Figure [#41389639386](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41389639386), artifact #13116138830.
+3. Original 7-day GSE301517 3-strain leave-one-out and 194 EMT strict marker audit [#41423487666](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41423487666), artifact #13130831706.
+4. Original nine-pool source library–DEX rank and BeamA pooled composition decomposition [#41430965326](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41430965326), artifact #13133928461.
+
+[QA manifest, cross-archive source SHA and evidence decisions #13134578619](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41432752451/artifacts/13134578619). This verified **all original 3 main PNG files' PNG chunk CRC, sizes; 3 SVG files' XML parse; legends, 16-gene S1, pinned four original figure source SHA256 values**, stratified analysis denominator, 90/194 strict EMT result, the correct 19-column/rank-18 original-library proof, pool-weight arithmetic and manuscript abstract/Methods/Results/Limitations numeric mention. Source **file integrity and machine-checkable label/provenance PASS; visual inspection of layout/legibility still editorial HOLD**. The preliminary run #41432621959 failed in the newly added QA parser because it compared a float with a string originating in archived TSV; conversion fixed in commit `8116da3b48cd55d052dce5574cdb181fee68f6b7`, and the subsequent real-source run passed.
+
+**Figure 3 remains a valid *mean effect* description at 124/194.** Its standalone caption should add (or link a clearly labeled supplementary figure/table documenting) the subsequent much more stringent **90/194 (46.4%)** all-three-study plus all-three-GSE301517-strain signed consistency. Do **not** silently relabel the source Figure 3's original bar as 90, or describe 124/194 as full strain-level reproducibility.
+
+The new low-effect annotation Figure should be a **supplement** rather than overwriting Figure 2. The original three-source Figure 1 is unchanged because MYOC↑, TGFBI↓, MMP2↓ each has **3/3** 7-day strain-level directions and all leave-one-out directions agreeing with the two acute sources; GSE301517 ratios are still not inferential edgeR fold changes and TM62/TM70/TM72 are not established as three independent donor subjects.
+
+**Evidence scope:** source-linked manuscript computational numerical QA **GO**; exact source-author 80 gene IDs **non-blocking HOLD**; treatment-vs-library pharmacologic causality **HOLD**; journal-submission-readiness **HOLD** pending editorial/visual references and independently validated biological interpretation, rather than a GitHub Actions success badge.
