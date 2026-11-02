@@ -67,13 +67,14 @@ class GTExImportedDiscoveryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             m.fetch(m.QTL_DIR,4,fetcher=lambda _:b"123456")
 
-    def test_imported_multiple_folders_does_not_guess_source(self):
+    def test_imported_multiple_folders_still_follow_exact_verified_gtex_folder(self):
         def two(url):
             if url==m.IMPORTED:
                 return b'<a href="GTEx_V8/">GTEx v8</a><a href="Other/">Other</a>'
             return self.mock(url)
         out=m.audit(two)
-        self.assertNotIn("GTEx_v8_imported_child_index",out)
+        self.assertEqual(out["GTEx_v8_imported_child_index"]["gate"],
+                         "OFFICIAL_IMPORTED_CHILD_INDEX_FOUND")
         self.assertFalse(out["original_GTEx_v8_FastQTL_effects_compared"])
 
 if __name__=="__main__":
