@@ -70,3 +70,29 @@ The [official eQTL Catalogue nominal association column definitions](https://git
 4. GWAS outcome-specific N/case fraction, ancestry-matched LD, independent EAS outcome replication and formal MR/colocalization remain scientific HOLD.
 
 Actual diagnostic JSON: [research/is/evidence/gtex_v8_vs_qtd_2_unmatched_source_diagnostics_20261102.json](../../research/is/evidence/gtex_v8_vs_qtd_2_unmatched_source_diagnostics_20261102.json). The source-audit code includes exact/nearby variation and bounded discarded-row audit with negative controls.
+
+
+## Independent GTEx-v8 GENCODE v26 TSS geometry — 2026-11-02
+
+Actual source job [#41456646711](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41456646711), **SUCCESS, 7/7 tests PASS**, downloaded the official **GENCODE v26 gene GTF** (37,607,127 gzip bytes, SHA-256 `e84157bb3ddfe6b1dd0b8816ec71b553074ed162ab0940ac48b80375f6cb18bd`), parsed four gene features and tested the TSS ±1Mb cis definition published by GTEx v8.
+
+| Gene | GENCODE v26 strand | TSS, GRCh38 | TSS ±1Mb boundaries | QTD-only SNP | Distance beyond nominal cis |
+| --- | --- | ---: | --- | --- | ---: |
+| FGF5 | + | 4:80,266,599 | 79,266,599–81,266,599 | 4:81,266,618 T:G | **19bp above upper** |
+| C4orf22 | + | 4:80,335,720 | 79,335,720–81,335,720 | none | not applicable |
+| CALHM2 | - | 10:103,452,402 | 102,452,402–104,452,402 | none | not applicable |
+| NEURL | + | 10:103,493,979 | 102,493,979–104,493,979 | 10:102,493,750 T:C | **229bp below lower** |
+
+All four 2Mb GENCODE v26 gene-feature cis proxies are contained within the historical broad chr4/chr10 screening windows. **Both QTD-only SNPs fall immediately outside their respective nominal original GTEx v8 TSS±1Mb proxies**, providing an independently sourced, mechanistically coherent explanation for both primary-source QTL gaps. Given that neither SNP had the matching same-gene original row at ±5bp and both QTD sources have MAF >30%, boundary-based differences are more strongly supported than a rare-variant explanation. This is a comparison of the annotation rule; it does **not** prove the exact input genotype or full cohort exclusion filter.
+
+Crucial distinction: GTEx v8 used a **collapsed GENCODE v26 gene model**, and we have not yet independently confirmed that its collapsed exon-model TSS matches the regular GENCODE v26 gene-feature TSS. The original GTEx [public reference file](https://storage.googleapis.com/gtex_analysis_v8/reference/gencode.v26.GRCh38.genes.gtf) was explicitly identified in [the GTEx Consortium reproducibility instructions](https://github.com/broadinstitute/gtex-v8), but a read-only public GET in CI [#41457128784](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41457128784) returned **HTTP 403**. No requester-pays download, payment or credentials were attempted. Therefore **actual GTEx collapsed model TSS remains HOLD**, even though the standard GENCODE TSS proxy and exactly observed source exclusions are compelling.
+
+Official source and observed distances saved in
+[research/is/evidence/gtex_v8_gencode26_tss_two_qtd_only_20261102.json](../../research/is/evidence/gtex_v8_gencode26_tss_two_qtd_only_20261102.json). Reproducible CI and tests:
+`scripts/is/audit_gtex_v8_gencode26_cis_geometry.py`,
+`tests/test_is_gtex_v8_gencode26_cis_geometry.py`,
+`.github/workflows/is-gtex-v8-gencode26-tss-cis-audit.yml`.
+
+Further progress without paid sources can use the [official GTEx Portal v2 API](https://gtexportal.org/api/v2/redoc) endpoint `/dataset/collapsedGeneModelExon` with `datasetId=gtex_v8`, plus an authenticated GENCODE v26 versioned gene ID. Explicit API-derived collapsed-exon TSS should be independently compared with the two positions before upgrading the original cis-boundary gate.
+
+**Scientific boundary:** Two-source QTL gene–variant mappings and full QTD screened counts PASS; original FastQTL exact collapsed TSS, historical release byte identity, original complete per-gene test boundaries, GWAS case fraction, ancestry LD, MR/coloc remain HOLD.
