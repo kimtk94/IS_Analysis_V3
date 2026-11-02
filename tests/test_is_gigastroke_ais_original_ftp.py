@@ -100,10 +100,10 @@ class OriginalGIGASTROKEFTPTests(unittest.TestCase):
         self.assertFalse(out["original_file_byte_hash_verified"])
 
     def test_three_drive_reference_snps_independently_match(self):
-        rows=(HEADER+"\\n"
-              "4\\t81182554\\tC\\tT\\t0.3\\t0.05\\t2.888e-8\\t0.15\\n"
-              "10\\t105447782\\tA\\tG\\t0.2\\t0.03\\t1.332e-6\\t0.25\\n"
-              "10\\t105459834\\tC\\tT\\t0.2\\t0.03\\t7.792e-7\\t0.35\\n").encode()
+        rows=(HEADER+"\n"
+              "4\t81182554\tC\tT\t0.3\t0.05\t2.888e-8\t0.15\n"
+              "10\t105447782\tA\tG\t0.2\t0.03\t1.332e-6\t0.25\n"
+              "10\t105459834\tC\tT\t0.2\t0.03\t7.792e-7\t0.35\n").encode()
         provider=fake_provider(original=rows)
         out=m.verify_full(m.probe(provider),provider)
         self.assertEqual(out["original_to_drive_panel_gate"],
@@ -114,8 +114,8 @@ class OriginalGIGASTROKEFTPTests(unittest.TestCase):
         self.assertFalse(out["source_to_local_EAS5_canonical_allele_alignment_verified"])
 
     def test_three_snp_panel_wrong_p_does_not_falsely_promote(self):
-        rows=(HEADER+"\\n"
-              "4\\t81182554\\tC\\tT\\t0.3\\t0.05\\t2.888e-3\\t0.15\\n").encode()
+        rows=(HEADER+"\n"
+              "4\t81182554\tC\tT\t0.3\t0.05\t2.888e-3\t0.15\n").encode()
         provider=fake_provider(original=rows)
         out=m.verify_full(m.probe(provider),provider)
         self.assertEqual(out["original_to_drive_panel_gate"],
