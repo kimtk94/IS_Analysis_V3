@@ -1,0 +1,45 @@
+name: MASTER DEGREE Real Primary Source Decision — Oral and Skin
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/master-eight-track-live-source-gates-20261102
+    paths:
+      - scripts/research/decision_gate_oral_skin_raw_sources_20261102.py
+      - .github/workflows/research-decision-oral-skin-real-data-20261102.yml
+permissions:
+  contents: read
+jobs:
+  fixture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m py_compile scripts/research/decision_gate_oral_skin_raw_sources_20261102.py
+          python scripts/research/decision_gate_oral_skin_raw_sources_20261102.py --selftest
+  public-real-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify actual public processed expression or bounded original GWAS source
+        run: |
+          python -u scripts/research/decision_gate_oral_skin_raw_sources_20261102.py --track "${{ matrix.track }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: decision-real-public-source-${{ matrix.track }}
+          path: results/research_operations/decision_gate_20261102/${{ matrix.track }}.json
+          retention-days: 60
+          if-no-files-found: warn
