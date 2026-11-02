@@ -169,6 +169,55 @@ class OriginalGIGASTROKEFTPTests(unittest.TestCase):
         self.assertEqual(result["n_fail"],1)
         self.assertFalse(result["rows"][0]["checks"]["single_source_row"])
 
+    def test_fullcis_6273_source_manifest_complete(self):
+        sample=m.load_fullcis_source_panel()
+        self.assertEqual(len(sample),6273)
+        self.assertEqual(sum(not x["palindromic"] for x in sample.values()),5326)
+        self.assertEqual(sum(x["palindromic"] for x in sample.values()),947)
+        self.assertEqual(sum(key[0]=="4" for key in sample),3227)
+
+    def test_fullcis_signed_alt_beta_and_af_both_allele_orders(self):
+        sample=m.load_fullcis_source_panel()
+        observed={}
+        for key, ref in sample.items():
+            alternate=ref["order"]=="OTHER_EFFECT_ORDER"
+            observed[key]=[{
+                "ea":ref["ref"] if alternate else ref["alt"],
+                "oa":ref["alt"] if alternate else ref["ref"],
+                "beta":-ref["beta_ALT"] if alternate else ref["beta_ALT"],
+                "p":ref["p"],
+                "eaf":1-ref["AF_ALT"] if alternate else ref["AF_ALT"],
+            }]
+        report=m.compare_fullcis_panel(sample,observed)
+        self.assertEqual(report["screen_pass"],6273)
+        self.assertEqual(report["screen_fail"],0)
+        self.assertEqual(report["nonpalindromic_numerical_gate"],"PASS")
+        self.assertEqual(report["palindromic_numeric_screen"],"PASS_ORIENTATION_STILL_REVIEW")
+        self.assertEqual(report["scientific_status"],"HOLD")
+        self.assertFalse(report["palindromic_strand_orientation_independently_resolved"])
+
+    def test_fullcis_wrong_beta_is_hold(self):
+        panel=m.load_fullcis_source_panel()
+        key=next(k for k,v in panel.items() if not v["palindromic"] and abs(v["beta_ALT"])>0.03)
+        ref=panel[key]
+        observed={key:[{"ea":ref["alt"],"oa":ref["ref"],
+                        "beta":-ref["beta_ALT"],"p":ref["p"],"eaf":ref["AF_ALT"]}]}
+        report=m.compare_fullcis_panel({key:ref},observed)
+        self.assertEqual(report["screen_fail"],1)
+        self.assertEqual(report["full_reprocessed_ebi_cis_gwas_lineage_gate"],
+          "HOLD_SOURCE_TO_DRIVE_DISCORDANCE")
+        self.assertGreater(report["by_stratum"]["failed_beta_ALT_agrees"],0)
+
+    def test_fullcis_duplicate_source_snp_is_hold(self):
+        panel=m.load_fullcis_source_panel()
+        key=next(iter(panel))
+        ref=panel[key]
+        item={"ea":ref["alt"],"oa":ref["ref"],"beta":ref["beta_ALT"],
+              "p":ref["p"],"eaf":ref["AF_ALT"]}
+        report=m.compare_fullcis_panel({key:ref},{key:[item,item]})
+        self.assertEqual(report["screen_fail"],1)
+        self.assertEqual(report["by_stratum"]["failed_unique_at_source_position"],1)
+
     def test_expected_md5_wrong_fails_source_verification(self):
         opener=fake_provider(yaml_overrides="data_file_md5sum: "+"0"*32+"\n")
         out=m.verify_full(m.probe(opener),opener)
