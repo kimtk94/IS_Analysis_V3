@@ -61,7 +61,7 @@ def eq(actual, expected, key):
 
 
 def close(actual, expected, key, tol=1e-5):
-    if not (math.isfinite(float(actual)) and abs(float(actual)-expected)<tol):
+    if not (math.isfinite(float(actual)) and math.isfinite(float(expected)) and abs(float(actual)-float(expected))<tol):
         raise ValueError("NUMBER_DRIFT_" + key + "_" + str(actual))
 
 
