@@ -185,16 +185,37 @@ def inspect_node(opener=urllib.request.urlopen):
         candidates=hits.pop("candidates")
         out["search"]=hits
         valid=[]
-        for internal in candidates:
+        out["general_info_schema_audits"]=[]
+        def check_internal_id(internal,kind):
+            entry={"candidate_origin":kind,"status":"UNVERIFIED"}
             try:
                 general,gmeta=source_request(project_general_url(internal),opener=opener)
                 d=data_envelope(general)
                 if not isinstance(d,dict):
-                    continue
-                if str(d.get("projectNo","")).upper()==PROJECT:
-                    valid.append({"internal_id":internal,"response_sha256":gmeta["response_sha256"]})
-            except Exception:
-                continue
+                    entry["status"]="GENERAL_INFO_NOT_OBJECT"
+                else:
+                    # Schema keys are not patient IDs and help debug source changes.
+                    entry["top_level_field_names"]=sorted(str(x) for x in d.keys())[:35]
+                    exact=str(d.get("projectNo","")).upper()==PROJECT
+                    entry["projectNo_matches_OEP000321"]=exact
+                    entry["status"]="EXACT_PROJECT_MATCH" if exact else "PROJECT_ACCESSION_MISMATCH"
+                    if exact:
+                        valid.append({"internal_id":internal,
+                                      "response_sha256":gmeta["response_sha256"]})
+            except urllib.error.HTTPError as exc:
+                entry["status"]="GENERAL_INFO_HTTP_ERROR"
+                entry["http_status"]=exc.code
+            except Exception as exc:
+                entry["status"]="GENERAL_INFO_ACCESS_HOLD"
+                entry["error_class"]=type(exc).__name__
+                if isinstance(exc,SourceError):entry["error_code"]=str(exc)
+            out["general_info_schema_audits"].append(entry)
+        for internal in candidates:
+            check_internal_id(internal,"official_search_hit")
+        # The accession is publicly documented, never an invented internal ID.
+        # Probe that exact accession only if the search-derived IDs did not resolve.
+        if not valid and PROJECT not in candidates:
+            check_internal_id(PROJECT,"published_project_accession")
         out["exact_general_info_matches_n"]=len(valid)
         if len(valid)!=1:
             out["status"]="NODE_PROJECT_IDENTITY_UNCONFIRMED"
