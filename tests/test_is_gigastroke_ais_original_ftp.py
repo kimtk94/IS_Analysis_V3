@@ -13,8 +13,8 @@ spec.loader.exec_module(m)
 
 FILE="GCST90104545.tsv.gz"
 YAML=FILE+"-meta.yaml"
-HEADER="chromosome\tbase_pair_location\teffect_allele\tother_allele\tbeta\tstandard_error\tp_value"
-ORIG=(HEADER+"\n1\t100\tG\tA\t0.2\t0.03\t0.001\n1\t101\tC\tT\t-0.4\t0.05\t1e-5\n").encode()
+HEADER="chromosome\tbase_pair_location\teffect_allele\tother_allele\tbeta\tstandard_error\tp_value\teffect_allele_frequency"
+ORIG=(HEADER+"\n1\t100\tG\tA\t0.2\t0.03\t0.001\t0.25\n1\t101\tC\tT\t-0.4\t0.05\t1e-5\t0.35\n").encode()
 
 class Response:
     def __init__(self,url,data,head=False,redirect=False):
@@ -80,9 +80,14 @@ class OriginalGIGASTROKEFTPTests(unittest.TestCase):
         self.assertFalse(out["original_gwas_N_SE_effect_allele_approved"])
 
     def test_malformed_eaf_is_not_approved(self):
-        data=ORIG.replace(b"effect_allele\\tother_allele", b"effect_allele\\tother_allele")
-        data=data.replace(b"effect_allele_frequency",b"effect_allele_frequency")
-        # EAF column absent from this original synthetic fixture; tested separately by schema.
+        data=ORIG.replace(b"0.25",b"missing")
+        opener=fake_provider(original=data)
+        out=m.verify_full(m.probe(opener),opener)
+        self.assertEqual(out["numeric_qc_status"],"HOLD_NUMERIC_OR_ALLELE_QC_REVIEW")
+        self.assertFalse(out["original_gwas_N_SE_effect_allele_approved"])
+
+    def test_missing_eaf_column_blocks_numeric_qc(self):
+        data=ORIG.replace(b"\teffect_allele_frequency",b"\tmissing_eaf")
         opener=fake_provider(original=data)
         out=m.verify_full(m.probe(opener),opener)
         self.assertEqual(out["full_file_gate"],"HOLD_NUMERIC_QC_COLUMNS_MISSING")
