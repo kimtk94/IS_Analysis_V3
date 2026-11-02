@@ -113,6 +113,31 @@ class FullCisTests(unittest.TestCase):
                          "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P")
         self.assertEqual(len(out["rows"]),1)
 
+    def test_optional_maf_an_ac_r2_from_qtd_rows(self):
+        schema=HEAD+["maf","r2","an","ac","ma_samples"]
+        key=(GENES["FGF5"],"4",79000149,"A","C")
+        class WithMAF(MockTabix):
+            def fetch(self,c,start,end):
+                yield make_line("FGF5",c,start+50)+"\t0.004\t0.82\t340\t2\t1"
+        out=m.read_source_rows(WithMAF(m.BASE.REPROCESSED),schema,m.FULL_WINDOWS[0])
+        self.assertEqual(out["status"],"SCREEN_VALID")
+        self.assertEqual(len(out["rows"]),1)
+        item=next(iter(out["genotype_qc_by_key"].values()))
+        self.assertEqual(item["maf"],0.004)
+        self.assertEqual(item["an"],340)
+        self.assertEqual(item["ac"],2)
+        self.assertEqual(item["an_diploid_observed_genotype_equivalent_not_cohort_N"],170)
+        self.assertTrue(item["an_ac_valid"])
+
+    def test_optional_missing_allele_metrics_are_null_not_approvals(self):
+        out=m.optional_source_qc(["missing","nan","NA","."],
+            {"maf":0,"an":1,"ac":2,"r2":3})
+        self.assertIsNone(out["maf"])
+        self.assertIsNone(out["an"])
+        self.assertIsNone(out["ac"])
+        self.assertFalse(out["an_ac_valid"])
+        self.assertIsNone(out["an_diploid_observed_genotype_equivalent_not_cohort_N"])
+
     def test_source_scan_limit_is_fail_closed(self):
         h=MockTabix(m.BASE.ORIGINAL)
         result=m.read_source_rows(h,HEAD,m.FULL_WINDOWS[0],max_rows=1)
