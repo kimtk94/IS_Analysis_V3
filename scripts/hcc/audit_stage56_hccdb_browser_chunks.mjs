@@ -32,8 +32,9 @@ export function isAllowedPublicResource(value, type) {
   try {
     const u = new URL(value);
     if (u.origin !== SITE || u.username || u.password) return false;
-    if (u.search || u.hash) return false;
-    if (type === 'document') return u.pathname === '/';
+    if (u.search || (u.hash && type !== 'document')) return false;
+    if (type === 'document') return u.pathname === '/' &&
+      (!u.hash || ['#/', '#/repository?type=buke', '#/download'].includes(u.hash));
     if (type === 'stylesheet') return /^\/(?:static\/)?css\/[A-Za-z0-9_.\-/]+\.css$/.test(u.pathname);
     if (type === 'script') {
       const valid = /^\/(?:static\/)?js\/[A-Za-z0-9_.\-/]+\.js$/.test(u.pathname);
