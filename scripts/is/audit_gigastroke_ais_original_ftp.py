@@ -33,6 +33,14 @@ REQUIRED_COLUMNS = {"chromosome", "base_pair_location", "effect_allele",
 SE_ALIASES = {"standard_error", "se", "beta_se", "sebeta"}
 EFFECT_ALIASES = {"beta", "effect_size", "odds_ratio", "hazard_ratio"}
 UA = "IS-Source-ReadOnly-Audit/20261102"
+# Frozen from user's 2026-10-11 separate four-gene Drive crosswalk report.
+# These are PUBLIC association-level p-value anchors, not original QTL lineage
+# or a canonical-wide SNP-wise equivalence certification.
+CANONICAL_PANEL = {
+    ("4", 81182554): {"gene": "FGF5", "alleles": frozenset(("T","C")), "giga_ais_p": 2.888e-8},
+    ("10", 105447782): {"gene": "CALHM2", "alleles": frozenset(("A","G")), "giga_ais_p": 1.332e-6},
+    ("10", 105459834): {"gene": "CALHM2", "alleles": frozenset(("T","C")), "giga_ais_p": 7.792e-7},
+}
 
 class Hrefs(HTMLParser):
     def __init__(self):
@@ -216,6 +224,7 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
                 return result
             rows=0
             qc=Counter()
+            panel_hits={key:[] for key in CANONICAL_PANEL}
             with gzip.open(dest,"rt",encoding="utf-8-sig",newline="") as f:
                 reader=csv.reader(f,delimiter="\t")
                 first=next(reader)
@@ -248,6 +257,16 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
                                 and math.isfinite(p) and 0<=p<=1):
                             raise ValueError("invalid beta/se/p")
                         qc["finite_beta_se_p_positive_se_rows"]+=1
+                        chrom=row[cols["chromosome"]].strip().lower().removeprefix("chr")
+                        try:
+                            locus=(chrom,int(row[cols["base_pair_location"]]))
+                        except ValueError:
+                            locus=None
+                        if locus in CANONICAL_PANEL:
+                            panel_hits[locus].append({
+                                "allele_pair_match":frozenset((ea,oa))==CANONICAL_PANEL[locus]["alleles"],
+                                "source_p":p,
+                            })
                         if not math.isfinite(eaf) or not 0<=eaf<=1:
                             qc["invalid_eaf_rows"]+=1
                         else:
@@ -265,6 +284,26 @@ def verify_full(probed, opener=None, *, max_bytes=MAX_COMPRESSED, max_rows=MAX_D
                         qc["missing_or_invalid_beta_se_p_or_eaf_rows"]+=1
             result["full_gwas_data_rows"]=rows
             result["gwas_numeric_qc"]=dict(qc)
+            panel=[]
+            for key, anchor in CANONICAL_PANEL.items():
+                hits=panel_hits[key]
+                matching=(len(hits)==1 and hits[0]["allele_pair_match"] and
+                          hits[0]["source_p"]>0 and
+                          abs(math.log10(hits[0]["source_p"])-math.log10(anchor["giga_ais_p"]))<=0.05)
+                panel.append({
+                    "gene":anchor["gene"], "chromosome_GRCh37":key[0],
+                    "base_pair_location_GRCh37":key[1],
+                    "candidate_alleles_unordered":"".join(sorted(anchor["alleles"])),
+                    "published_crosswalk_expected_p":anchor["giga_ais_p"],
+                    "source_rows_at_exact_position":len(hits),
+                    "source_original_p":hits[0]["source_p"] if len(hits)==1 else None,
+                    "unordered_alleles_and_p_match":bool(matching),
+                })
+            result["original_to_drive_three_anchor_panel"]=panel
+            result["original_to_drive_panel_gate"]=(
+                "THREE_POSITION_ALLELE_AND_P_SCREEN_PASS_NOT_FULL_CANONICAL_VERIFICATION"
+                if all(x["unordered_alleles_and_p_match"] for x in panel)
+                else "HOLD_ORIGINAL_TO_DRIVE_3_POSITION_ANCHOR_MISMATCH")
             result["numeric_qc_status"]=(
                 "BASIC_NUMERIC_FIELDS_SCREEN_PASS" if
                 qc["finite_beta_se_p_positive_se_rows"]==rows
