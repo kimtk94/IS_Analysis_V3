@@ -68,11 +68,15 @@ def read_source_rows(tabix,header,region, *, max_rows=MAX_ROWS_PER_QUERY):
                 pos=int(fields[ix["position"]])
                 ref,alt=(fields[ix[x]].upper() for x in ("ref","alt"))
                 p,beta,se=(float(fields[ix[x]]) for x in ("pvalue","beta","se"))
-                # Only normalized single-base SNPs are comparable in this pass.
-                # Explicitly count exclusions: no mistaken full-variant denominator.
-                if len(ref)!=1 or len(alt)!=1 or ref not in "ACGT" or alt not in "ACGT" or ref==alt:
-                    counts["non_snv_rows_skipped"]+=1
+                # Include explicit REF/ALT SNPs, indels and multinucleotide
+                # changes up to 200bp, but never symbolic/ambiguous alleles.
+                # Keep exact alleles, do not assume strand/normalization equality.
+                if (not ref or not alt or ref==alt or len(ref)>200 or len(alt)>200
+                    or any(nt not in "ACGT" for nt in ref+alt)):
+                    counts["unsupported_allele_encoding_rows"]+=1
                     continue
+                counts["single_base_SNP_rows" if len(ref)==len(alt)==1
+                       else "complex_indel_mnv_rows"]+=1
                 if not (math.isfinite(beta) and math.isfinite(se) and se>0 and
                         math.isfinite(p) and 0<=p<=1 and pos>=1):
                     counts["invalid_statistic_rows"]+=1
@@ -113,13 +117,13 @@ def summarize_full_cis(original,reprocessed):
         reprs=set(b)
         obj.update({
             "gene":name,"gene_id":gene,
-            "original_unique_tested_SNV":len(a),
-            "reprocessed_unique_tested_SNV":len(b),
-            "original_only_SNV":len(orig-reprs),
-            "reprocessed_only_SNV":len(reprs-orig),
+            "original_unique_tested_variant":len(a),
+            "reprocessed_unique_tested_variant":len(b),
+            "original_only_variant":len(orig-reprs),
+            "reprocessed_only_variant":len(reprs-orig),
             "is_complete_full_cis_only_if_separate_cis_interval_confirmed":False,
             "reprocessed_expected_previous_QTD_n_variants":EXPECTED_REPROCESSED_CIS[name],
-            "reprocessed_SNV_denominator_matches_prior_QTD_fullcis_audit":
+            "reprocessed_variant_denominator_matches_prior_QTD_fullcis_audit":
                 len(b)==EXPECTED_REPROCESSED_CIS[name],
         })
         out[name]=obj
@@ -127,7 +131,7 @@ def summarize_full_cis(original,reprocessed):
 
 
 def run(tabix=None,header_fetcher=None,md5_fetcher=None,wait=WAIT_SECONDS):
-    result={"schema":"is-GTExv8-original-vs-QTD000161-four-gene-full-cis-v1",
+    result={"schema":"is-GTExv8-original-vs-QTD000161-four-gene-full-cis-v2",
        "original":BASE.ORIGINAL,"reprocessed":BASE.REPROCESSED,
        "GRCh38_predeclared_windows":[f"{c}:{s}-{e}" for c,s,e in FULL_WINDOWS],
        "QTL_source_tissue":"Brain_Cerebellar_Hemisphere",
@@ -182,15 +186,15 @@ def run(tabix=None,header_fetcher=None,md5_fetcher=None,wait=WAIT_SECONDS):
             source="4" if gene in ("FGF5","C4orf22") else "10"
             genes[gene]=chrom_results[source]["four_genes"][gene]
         result["four_gene_fullcis_screen"]=genes
-        result["total_original_SNV_gene_variant_records"]=sum(
-            v["original_unique_tested_SNV"] for v in genes.values())
-        result["total_reprocessed_SNV_gene_variant_records"]=sum(
-            v["reprocessed_unique_tested_SNV"] for v in genes.values())
+        result["total_original_variant_gene_variant_records"]=sum(
+            v["original_unique_tested_variant"] for v in genes.values())
+        result["total_reprocessed_variant_gene_variant_records"]=sum(
+            v["reprocessed_unique_tested_variant"] for v in genes.values())
         result["total_exact_gene_variant_pairs"]=sum(
             v["matched_same_trait_and_exact_GRCh38_REF_ALT_pairs"]
             for v in genes.values())
         result["expected_QTD_fullcis_reprocessed_gene_counts_equal"]=all(
-            g["reprocessed_SNV_denominator_matches_prior_QTD_fullcis_audit"] for g in genes.values())
+            g["reprocessed_variant_denominator_matches_prior_QTD_fullcis_audit"] for g in genes.values())
         result["all_source_windows_complete"]=all(
             chrom_results[c]["original_source_scan"]["status"]=="SCREEN_VALID"
             and chrom_results[c]["reprocessed_source_scan"]["status"]=="SCREEN_VALID"
