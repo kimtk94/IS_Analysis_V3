@@ -63,6 +63,45 @@ export function blockedScriptSourceClass(value) {
   }
 }
 
+/** Exact public JS links from the actual source homepage only. */
+export function sourceDocumentScriptPaths(html) {
+  if (typeof html !== 'string' || html.length > 128 * 1024) return [];
+  const found = new Set();
+  const regex = /<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi;
+  for (const match of html.matchAll(regex)) {
+    try {
+      const u = new URL(match[1], SITE + '/');
+      const pathname = decodeURIComponent(u.pathname);
+      if (u.origin !== SITE || u.username || u.password || u.search || u.hash) continue;
+      if (!/^\/[A-Za-z0-9_./-]+\.js$/.test(pathname) || pathname.includes('..')) continue;
+      if (/(?:\/api\/|\/private\/|(?:OED|OES|OEP)\d{5,})/i.test(pathname)) continue;
+      found.add(pathname);
+    } catch { /* discard URL with unknown provenance */ }
+  }
+  return [...found].sort().slice(0, 40);
+}
+
+export function isDocumentDeclaredScript(value, paths) {
+  try {
+    const u = new URL(value);
+    return u.origin === SITE && !u.search && !u.hash &&
+      Array.isArray(paths) && paths.includes(u.pathname);
+  } catch {
+    return false;
+  }
+}
+
+export async function fetchOfficialScriptAllowlist() {
+  const response = await fetch(SITE + '/', { redirect: 'manual',
+    signal: AbortSignal.timeout(25000), headers: { Accept: 'text/html' } });
+  if (response.status !== 200 && response.status !== 206) throw new Error('UNVERIFIED_HTML_RESPONSE');
+  if (!(response.headers.get('content-type') || '').toLowerCase().includes('text/html'))
+    throw new Error('UNEXPECTED_DOCUMENT_MIME');
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (bytes.length > 128 * 1024) throw new Error('SOURCE_HTML_TOO_LARGE');
+  return sourceDocumentScriptPaths(bytes.toString('utf8'));
+}
+
 export function sourceSafePath(value) {
   if (!isAllowedPublicResource(value, 'script')) return null;
   return new URL(value).pathname;
@@ -129,7 +168,7 @@ export function postflight(result) {
   };
 }
 
-export async function inspectRoute(browser, def) {
+export async function inspectRoute(browser, def, declaredScripts = []) {
   const context = await browser.newContext({ storageState: { cookies: [], origins: [] },
     serviceWorkers: 'block', acceptDownloads: false });
   const page = await context.newPage();
@@ -141,6 +180,7 @@ export async function inspectRoute(browser, def) {
     blocked_backend_api_requests_n: 0,
     blocked_third_party_or_nonessential_requests_n: 0,
     blocked_resource_type_counts: {},
+    official_document_script_allowlist_n: declaredScripts.length,
     blocked_script_source_classes: [],
     attempted_downloads_n: 0,
     scripts_observed_n: 0,
@@ -154,7 +194,8 @@ export async function inspectRoute(browser, def) {
       result.blocked_backend_api_requests_n += 1;
       return route.abort('blockedbyclient');
     }
-    if (!isAllowedPublicResource(req.url(), rt)) {
+    if (!isAllowedPublicResource(req.url(), rt) &&
+        !(rt === 'script' && isDocumentDeclaredScript(req.url(), declaredScripts))) {
       result.blocked_resource_type_counts[rt] = (result.blocked_resource_type_counts[rt] || 0) + 1;
       if (rt === 'script' && result.blocked_script_source_classes.length < 12) {
         result.blocked_script_source_classes.push(blockedScriptSourceClass(req.url()));
@@ -224,13 +265,24 @@ export async function inspectRoute(browser, def) {
 }
 
 export async function runAudit(browser) {
+  let declaredScripts = [];
+  let scriptProvenance = 'OFFICIAL_HTML_UNAVAILABLE_HOLD';
+  try {
+    declaredScripts = await fetchOfficialScriptAllowlist();
+    scriptProvenance = declaredScripts.length ? 'OFFICIAL_DOCUMENT_SCRIPT_LINKS_VERIFIED'
+      : 'OFFICIAL_DOCUMENT_NO_SCRIPT_LINKS_HOLD';
+  } catch {
+    // Keep prior strict rules if the source HTML cannot be authenticated.
+  }
   const routes = [];
-  for (const def of ROUTES) routes.push(await inspectRoute(browser, def));
+  for (const def of ROUTES) routes.push(await inspectRoute(browser, def, declaredScripts));
   const home = new Set(routes.find(r => r.route === 'home')?.assets?.map(x => x.public_js_path) || []);
   const output = {
     schema: 'hcc-stage56-hccdb25-browser-observed-static-routes-v1',
     checked_utc: new Date().toISOString(),
     official_website: SITE + '/',
+    official_document_script_provenance: scriptProvenance,
+    explicitly_linked_public_document_scripts: declaredScripts,
     network_policy: 'first_party_static_documents_scripts_styles_only;block_xhr_fetch_websocket_downloads',
     rna_matrix_downloaded: false,
     official_biopsy_crosswalk_verified: false,

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { blockedScriptSourceClass, isAllowedPublicResource, sourceSafePath, sourceLiteralPath,
+import { sourceDocumentScriptPaths, isDocumentDeclaredScript, blockedScriptSourceClass, isAllowedPublicResource, sourceSafePath, sourceLiteralPath,
   auditJavaScript, postflight } from '../scripts/hcc/audit_stage56_hccdb_browser_chunks.mjs';
 
 test('source allows only official static JS and exact public origin', () => {
@@ -62,4 +62,17 @@ test('blocked scripts expose only origin classification and safe public asset pa
   assert.equal(b.origin_class, 'source_website');
   assert.equal(b.official_static_js_path, '/static/js/vendor.js');
   assert.equal(b.query_present, true);
+});
+
+test('only exact literal HCCDB public document scripts can extend JS allowlist', () => {
+  const html = '<html><script src="/static/js/app.js"></script>' +
+    '<script src="/static/vendor/elementUI.js"></script>' +
+    '<script src="https://evil.invalid/thirdparty.js"></script>' +
+    '<script src="/api/private/records.js"></script>' +
+    '<script src="/static/vendor/elementUI.js?token=x"></script></html>';
+  const scripts = sourceDocumentScriptPaths(html);
+  assert.deepEqual(scripts, ['/static/js/app.js', '/static/vendor/elementUI.js']);
+  assert.equal(isDocumentDeclaredScript('http://lifeome.net:809/static/vendor/elementUI.js', scripts), true);
+  assert.equal(isDocumentDeclaredScript('http://lifeome.net:809/static/vendor/elementUI.js?token=x', scripts), false);
+  assert.equal(isDocumentDeclaredScript('http://lifeome.net:809/api/private/records.js', scripts), false);
 });
