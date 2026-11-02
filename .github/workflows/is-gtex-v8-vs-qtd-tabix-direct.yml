@@ -1,0 +1,42 @@
+name: IS GTEx v8 Original vs EBI QTD Direct Two-Region QTL Comparison
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "scripts/is/audit_gtex_v8_vs_qtd_direct_tabix.py"
+      - "tests/test_is_gtex_v8_vs_qtd_direct_tabix.py"
+      - ".github/workflows/is-gtex-v8-vs-qtd-tabix-direct.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_gtex_v8_vs_qtd_direct_tabix.py"
+      - "tests/test_is_gtex_v8_vs_qtd_direct_tabix.py"
+      - ".github/workflows/is-gtex-v8-vs-qtd-tabix-direct.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare-original-and-reprocessed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Unit tests for direct original-vs-reprocessed effects and fail-closed limits
+        run: python3 -m unittest discover -s tests -p 'test_is_gtex_v8_vs_qtd_direct_tabix.py' -v
+      - name: Install version-pinned indexed genomic interval reader
+        run: python3 -m pip install --disable-pip-version-check 'pysam==0.23.3'
+      - name: Remote tabix exact-allele gene-variant comparison in two small GRCh38 windows
+        run: python3 scripts/is/audit_gtex_v8_vs_qtd_direct_tabix.py --output ci_reports/is_gtexv8_vs_qtd_smallregion.json
+      - name: Preserve aggregate-only research provenance and explicit HOLD
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gtex-v8-original-vs-ebi-QTD-two-region
+          path: ci_reports/is_gtexv8_vs_qtd_smallregion.json
+          if-no-files-found: ignore
+          retention-days: 30
