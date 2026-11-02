@@ -14,7 +14,7 @@ def row(name,gene,chrom,start,end,strand):
                       ". ",strand,".",f'gene_id "{gene}.11"; gene_name "{name}";']).replace("\t. \t","\t.\t")
 
 GOOD={
- "FGF5":("ENSG00000138675","4",79800000,79900000,"+"),
+ "FGF5":("ENSG00000138675","4",80000000,80100000,"+"),
  "C4orf22":("ENSG00000197826","4",80000000,80500000,"-"),
  "CALHM2":("ENSG00000138172","10",103000000,103200000,"+"),
  "NEURL":("ENSG00000107954","10",103400000,103500000,"-"),
@@ -39,7 +39,7 @@ class CisGeometryTests(unittest.TestCase):
     def test_reverse_strand_uses_gene_end_not_start(self):
         a=fixture(GOOD)
         self.assertEqual(a["gene_boundary_screen"]["C4orf22"]["TSS_GRCh38"],80500000)
-        self.assertEqual(a["gene_boundary_screen"]["FGF5"]["TSS_GRCh38"],79800000)
+        self.assertEqual(a["gene_boundary_screen"]["FGF5"]["TSS_GRCh38"],80000000)
 
     def test_truncated_interval_rejected(self):
         x=dict(GOOD)
@@ -67,7 +67,7 @@ class CisGeometryTests(unittest.TestCase):
 
     def test_ref_and_magnitude_retained(self):
         z=fixture(GOOD)
-        self.assertEqual(z["gene_boundary_screen"]["FGF5"]["GENCODE_v26_gene_TSS_plusminus1Mb_start"],78800000)
+        self.assertEqual(z["gene_boundary_screen"]["FGF5"]["GENCODE_v26_gene_TSS_plusminus1Mb_start"],79000000)
         self.assertEqual(z["gene_boundary_screen"]["FGF5"]["previous_screen_region"],"4:79000000-81500000")
         self.assertTrue(z["scientific_status"]=="HOLD")
 
