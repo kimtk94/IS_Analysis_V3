@@ -1,12 +1,6 @@
 name: Ocular GSE313736 Technical Confounding Identifiability and Pool Composition
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feat/ocular-p0-data-access-audit-20261030
-    paths:
-      - scripts/ocular/ocular_p5_technical_confounding_identifiability_audit.py
-      - .github/workflows/ocular-p5-technical-confounding-identifiability.yml
 
 permissions:
   contents: read
