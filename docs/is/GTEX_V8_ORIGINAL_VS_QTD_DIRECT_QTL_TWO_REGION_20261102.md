@@ -51,3 +51,25 @@ See [CI comparison JSON](../../research/is/evidence/gtex_v8_vs_qtd000161_two_reg
 
 ## Immediate next science acceptance task
 Run gene-specific filters and broaden to a **predefined cis tested variant universe in each original-vs-reprocessed source**, with proper release and full-source provenance. Repeat comparisons under exact variant+gene keys, then use selected single-source QTL with its documented N, LD, effect-allele, and study-level assumptions before colocalization. Until then overall scientific status **HOLD**, while bounded source-difference detection is **PASS**.
+
+
+## Four specifically targeted genes — actual direct comparison
+
+The second [actual GitHub CI #41447873371](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41447873371) completed SUCCESS, 15/15 tests PASS, with stable Ensembl gene-level filtering of the same predeclared two 5-kb GRCh38 windows.
+
+| Historical name | Ensembl gene ID | Exact shared nominal QTL gene-variant pairs | β sign concordance | Median absolute β difference | Median absolute SE difference | Median absolute log10(p) difference |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| FGF5 | ENSG00000138675 | 14 | 13/14 = 92.86% | 0.146308045 | 0.03595225 | 0.88356537 |
+| C4orf22 / CFAP299 | ENSG00000197826 | 14 | 10/14 = 71.43% | 0.05603269 | 0.0006005 | 0.21565336 |
+| CALHM2 | ENSG00000138172 | 11 | 5/11 = 45.45% | 0.0971752 | 0.0187616 | 0.11548641 |
+| NEURL / NEURL1 | ENSG00000107954 | 11 | 5/11 = 45.45% | 0.1470521 | 0.0385696 | 0.44574670 |
+| **Four-gene subset** |  | **50** | **33/50 = 66.0%** | not pooled | not pooled | not pooled |
+
+Underlying actual CI job/source outputs:
+[research/is/evidence/gtex_v8_original_vs_qtd_four_gene_bounded_direct_20261102.json](../../research/is/evidence/gtex_v8_original_vs_qtd_four_gene_bounded_direct_20261102.json).
+
+The two 5kb windows also contained **524 exact overlapping associations for genes other than these four**. Therefore the 574 all-gene result and 50 four-gene result answer distinct questions.
+
+**Nonpromotion safeguard:** Each SNP may be highly correlated with neighboring SNPs in LD. Counts of equal β signs are therefore **not independent observations**, and the small 14/11-per-gene windows cannot be used for binomial significance claims, eQTL locus exclusion, final gene prioritization, sample-size verification or full-cis colocalization. Imported GTEx v8 and QTD effects should remain **two separate analytical sensitivity tracks** until each source's effect-allele convention, full per-gene cis tested universe, release version and cohort-appropriate LD have been independently checked.
+
+**Scope of evidence (2026-11-02):** direct nominal eQTL source comparison PASS for these 50 precise gene-variant pairs; original GTEx v8 full-file byte hash, reprocessed QTD 2023 release-6 full-file hash, original inherited 2026-10-11 QTL provenance, complete cis denominator, and formal colocalization **HOLD**.
