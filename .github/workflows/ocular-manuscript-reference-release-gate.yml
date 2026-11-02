@@ -1,15 +1,6 @@
 name: Ocular Thesis Manuscript and Citation Release Gate
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feat/ocular-p0-data-access-audit-20261030
-    paths:
-      - scripts/ocular/ocular_manuscript_reference_release_gate.py
-      - .github/workflows/ocular-manuscript-reference-release-gate.yml
-      - docs/ocular/THESIS_MANUSCRIPT_METHODS_RESULTS_DISCUSSION_DRAFT_20261101.md
-      - docs/ocular/THESIS_PUBLICATION_READINESS_EVIDENCE_INDEX_20261102.md
-      - docs/ocular/FIGURE_VISUAL_REVIEW_AND_DURABLE_DRIVE_ARCHIVE_20261102.md
 
 permissions:
   contents: read
