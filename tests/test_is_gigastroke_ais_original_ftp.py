@@ -122,6 +122,53 @@ class OriginalGIGASTROKEFTPTests(unittest.TestCase):
           "HOLD_ORIGINAL_TO_DRIVE_3_POSITION_ANCHOR_MISMATCH")
         self.assertFalse(out["coloc_performed"])
 
+    def test_32_drive_snp_manifest_is_frozen_and_valid(self):
+        panel=m.load_extended_panel()
+        self.assertEqual(len(panel),32)
+        self.assertEqual(len(set(panel)),32)
+
+    def test_32_snp_signed_beta_and_effect_allele_flip(self):
+        panel=m.load_extended_panel()
+        mock={}
+        for key,row in panel.items():
+            _,_,ref,alt=row["snp_GRCh37"].split(":")
+            inverted=row["archive_allele_order_provenance"]=="OTHER_EFFECT_ORDER"
+            mock[key]=[{
+                "ea":ref if inverted else alt,
+                "oa":alt if inverted else ref,
+                "beta":-row["beta_ALT"] if inverted else row["beta_ALT"],
+                "p":row["p"],
+                "eaf":1-row["AF_ALT"] if inverted else row["AF_ALT"],
+            }]
+        result=m.compare_extended_panel(panel,mock)
+        self.assertEqual(result["n_pass"],32)
+        self.assertEqual(result["n_fail"],0)
+        self.assertEqual(result["gate"],"32_SNPS_EXACT_REF_ALT_P_BETA_AF_SCREEN_PASS_NOT_FULL_ALIGNMENT")
+        self.assertFalse(result["scientific_approved"])
+
+    def test_32_snp_wrong_effect_direction_blocks_promotion(self):
+        panel=m.load_extended_panel()
+        row=next(iter(panel.values()))
+        chrom,pos,ref,alt=row["snp_GRCh37"].split(":")
+        data={(chrom,int(pos)):[{
+            "ea":ref,"oa":alt,"beta":row["beta_ALT"],
+            "p":row["p"],"eaf":row["AF_ALT"]
+        }]}
+        result=m.compare_extended_panel({(chrom,int(pos)):row},data)
+        self.assertEqual(result["gate"],"HOLD_32_SNP_ORIENTATION_OR_SOURCE_MISMATCH")
+        self.assertFalse(result["rows"][0]["checks"]["alt_oriented_beta_close"])
+
+    def test_32_snp_duplicate_coordinate_blocks(self):
+        panel=m.load_extended_panel()
+        row=next(iter(panel.values()))
+        chrom,pos,ref,alt=row["snp_GRCh37"].split(":")
+        hit={"ea":alt,"oa":ref,"beta":row["beta_ALT"],
+             "p":row["p"],"eaf":row["AF_ALT"]}
+        result=m.compare_extended_panel({(chrom,int(pos)):row},
+                      {(chrom,int(pos)):[hit,hit]})
+        self.assertEqual(result["n_fail"],1)
+        self.assertFalse(result["rows"][0]["checks"]["single_source_row"])
+
     def test_expected_md5_wrong_fails_source_verification(self):
         opener=fake_provider(yaml_overrides="data_file_md5sum: "+"0"*32+"\n")
         out=m.verify_full(m.probe(opener),opener)
