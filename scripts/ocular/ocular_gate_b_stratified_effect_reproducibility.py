@@ -223,7 +223,7 @@ def figure(rows, output):
     axes[0].legend(frameon=False, loc="lower right", fontsize=8)
     fig.suptitle("GSE313736 — within-cohort sign sensitivity by baseline effect/expression",
                  y=.965, fontsize=12)
-    fig.text(.5, .065,
+    fig.text(.5, -.035,
              "N values are shared tested genes in each baseline-defined bin. "
              "Both comparisons reuse original 10x libraries and are NOT independent biological replication.",
              ha="center", va="center", fontsize=9, color="#4b5563")
