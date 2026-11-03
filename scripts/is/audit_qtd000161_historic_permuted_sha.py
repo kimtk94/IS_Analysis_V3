@@ -57,8 +57,8 @@ def inspect(raw):
         source_total+=1
         stable=row["molecular_trait_id"].split(".")[0]
         if stable not in HISTORICAL_GENES:continue
-        if stable in genes:raise ValueError("Duplicated original QTD permutation gene")
         symbol,count,p_beta=HISTORICAL_GENES[stable]
+        if symbol in genes:raise ValueError("Duplicated original QTD permutation gene")
         actual=int(row["n_variants"])
         p=float(row["p_beta"])
         if actual<0 or not math.isfinite(p) or not 0<=p<=1:
