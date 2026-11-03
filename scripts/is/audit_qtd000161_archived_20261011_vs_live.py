@@ -12,6 +12,7 @@ key collisions, allele differences, beta/SE/p mismatches or source read errors.
 import argparse
 from collections import Counter
 import csv
+import hashlib
 import importlib.util
 import json
 import math
@@ -33,6 +34,10 @@ ARCHIVE={
 EXPECTED={"FGF5":5511,"C4orf22":5490,"CALHM2":4868,"NEURL":4820}
 COLUMNS=["gene_id","chromosome","position_GRCh38","REF_GRCh38","ALT_GRCh38",
          "QTD000161_nominal_QTL_p","QTD000161_beta","QTD000161_se"]
+EXPECTED_FROZEN_PANEL_SHA256={
+ "4":"e34ec9d1200ce68838e39174a0c54f550f1b8d99af7d4eac9c1904d6f2f2555e",
+ "10":"a493c7d8ef32bb142e45e7775d288226bede0a095d001dfc5ba499c30cee7779",
+}
 MAX_MISMATCH_EXAMPLES=24
 
 def load_archived(root=ROOT):
@@ -41,6 +46,8 @@ def load_archived(root=ROOT):
     allowed={v:k for k,v in BASE.TARGET_GENES.items()}
     for chrom,relative in ARCHIVE.items():
         path=Path(root)/relative
+        if hashlib.sha256(path.read_bytes()).hexdigest()!=EXPECTED_FROZEN_PANEL_SHA256[chrom]:
+            raise ValueError("Archived source crosswalk SHA256 mismatch")
         with path.open("rt",encoding="utf-8",newline="") as f:
             reader=csv.DictReader(f,delimiter="\t")
             if list(reader.fieldnames or [])!=COLUMNS:
@@ -136,6 +143,7 @@ def live_audit(backend=None,header_provider=None,wait=QTL.WAIT_SECONDS,archive_r
     outcome={"schema":"IS_QTD000161_20261011_archive_vs_20261103_official_source_v1",
         "frozen_archived_GDrive_source_SHA256":SOURCE_SHA256_ARCHIVED_20261011,
         "frozen_archived_source_GDrive_ID":"12g0HrusD3ONV2v9ormnCDMfLNGdXqibU",
+        "frozen_two_panel_SHA256":EXPECTED_FROZEN_PANEL_SHA256,
         "official_live_source":BASE.REPROCESSED,
         "historic_file_byte_identity_to_manifest_confirmed_locally":True,
         "historic_raw_EBI_QTD_gzip_hash_known":False,
