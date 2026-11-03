@@ -1,0 +1,503 @@
+{
+  "record_type": "LIVE_FULL_ORIGINAL_AIS_GWAS_32_DRIVE_SNP_BETA_AF_P_SAMPLES",
+  "source_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41437991270",
+  "source_job_id": 125252483439,
+  "source_sha256": "c521d5695414bdedcc84d2ea21d588e330c75a672f36a87c3fd092b4c55687a3",
+  "source_data_rows": 6725216,
+  "original_full_checksum_gate": "ORIGINAL_FILE_MD5_AND_GZIP_ROWS_PASS_REVIEW_REQUIRED",
+  "actual_numeric_qc": "BASIC_NUMERIC_FIELDS_SCREEN_PASS",
+  "three_previous_anchors_gate": "THREE_POSITION_ALLELE_AND_P_SCREEN_PASS_NOT_FULL_CANONICAL_VERIFICATION",
+  "expanded_panel": {
+    "gate": "32_SNPS_EXACT_REF_ALT_P_BETA_AF_SCREEN_PASS_NOT_FULL_ALIGNMENT",
+    "n_expected": 32,
+    "n_fail": 0,
+    "n_pass": 32,
+    "rows": [
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "FGF5",
+        "passes_all": true,
+        "snp_GRCh37": "4:80545715:C:T",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "FGF5",
+        "passes_all": true,
+        "snp_GRCh37": "4:80974011:G:A",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "FGF5",
+        "passes_all": true,
+        "snp_GRCh37": "4:81763758:G:A",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "FGF5",
+        "passes_all": true,
+        "snp_GRCh37": "4:82070517:C:A",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "FGF5",
+        "passes_all": true,
+        "snp_GRCh37": "4:80547818:T:C",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "FGF5",
+        "passes_all": true,
+        "snp_GRCh37": "4:80971372:A:G",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "FGF5",
+        "passes_all": true,
+        "snp_GRCh37": "4:81778255:T:C",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "FGF5",
+        "passes_all": true,
+        "snp_GRCh37": "4:82070586:A:G",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "C4orf22",
+        "passes_all": true,
+        "snp_GRCh37": "4:80579291:G:A",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "C4orf22",
+        "passes_all": true,
+        "snp_GRCh37": "4:81083303:G:A",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "C4orf22",
+        "passes_all": true,
+        "snp_GRCh37": "4:81800750:C:T",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "C4orf22",
+        "passes_all": true,
+        "snp_GRCh37": "4:82097451:C:T",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "C4orf22",
+        "passes_all": true,
+        "snp_GRCh37": "4:80587941:A:G",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "C4orf22",
+        "passes_all": true,
+        "snp_GRCh37": "4:81041188:A:G",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "C4orf22",
+        "passes_all": true,
+        "snp_GRCh37": "4:81815922:A:G",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "C4orf22",
+        "passes_all": true,
+        "snp_GRCh37": "4:82092870:A:G",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "CALHM2",
+        "passes_all": true,
+        "snp_GRCh37": "10:104412308:C:T",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "CALHM2",
+        "passes_all": true,
+        "snp_GRCh37": "10:104945463:G:A",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "CALHM2",
+        "passes_all": true,
+        "snp_GRCh37": "10:105707374:C:T",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "CALHM2",
+        "passes_all": true,
+        "snp_GRCh37": "10:105989664:G:A",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "CALHM2",
+        "passes_all": true,
+        "snp_GRCh37": "10:104456686:T:C",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "CALHM2",
+        "passes_all": true,
+        "snp_GRCh37": "10:104957152:T:C",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "CALHM2",
+        "passes_all": true,
+        "snp_GRCh37": "10:105742943:A:G",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "CALHM2",
+        "passes_all": true,
+        "snp_GRCh37": "10:106014367:A:G",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "NEURL",
+        "passes_all": true,
+        "snp_GRCh37": "10:104485301:G:A",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "NEURL",
+        "passes_all": true,
+        "snp_GRCh37": "10:105013870:G:T",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "NEURL",
+        "passes_all": true,
+        "snp_GRCh37": "10:105739777:G:T",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "FASTA_REF_ALT",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "NEURL",
+        "passes_all": true,
+        "snp_GRCh37": "10:106055963:C:A",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "NEURL",
+        "passes_all": true,
+        "snp_GRCh37": "10:104534448:A:G",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "NEURL",
+        "passes_all": true,
+        "snp_GRCh37": "10:105025511:A:G",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "NEURL",
+        "passes_all": true,
+        "snp_GRCh37": "10:105771190:A:C",
+        "source_rows": 1
+      },
+      {
+        "archive_allele_order_provenance": "OTHER_EFFECT_ORDER",
+        "checks": {
+          "alt_oriented_af_close": true,
+          "alt_oriented_beta_close": true,
+          "effect_allele_is_ref_or_alt": true,
+          "p_log10_within_tolerance": true,
+          "single_source_row": true,
+          "unordered_ref_alt_pair": true
+        },
+        "gene": "NEURL",
+        "passes_all": true,
+        "snp_GRCh37": "10:106076414:A:G",
+        "source_rows": 1
+      }
+    ],
+    "scientific_approved": false
+  },
+  "scientific_status": "HOLD",
+  "full_canonical_allele_harmonization_verified": false,
+  "study_specific_case_fraction_verified": false,
+  "coloc_executed": false
+}

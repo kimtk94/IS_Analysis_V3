@@ -1,0 +1,60 @@
+{
+  "evidence_type": "REAL_PUBLIC_GWAS_YAML_N_AND_EBI_QTL_RELEASE_LINEAGE",
+  "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41441107392",
+  "job_id": 125262916168,
+  "tests_passed": 11,
+  "source": {
+    "GWAS_accession": "GCST90104545",
+    "MR_performed": false,
+    "QTL_dataset": "QTD000161",
+    "QTL_study": "QTS000015",
+    "coloc_performed": false,
+    "gwas_yaml": {
+      "N_gate": "HOLD_MISSING_OR_INCONSISTENT_FILE_SPECIFIC_CASE_CONTROL_N",
+      "association_level_N_or_case_fraction_approved": false,
+      "coloc_approved": false,
+      "file_specific_case_control_fields_available": false,
+      "illustrative_Neff_from_yaml_not_adopted": null,
+      "illustrative_s_from_yaml_not_adopted": null,
+      "metadata_fields": {
+        "data_file_md5sum": "904e12e33ec3c2eeefe4dc93bec4995c",
+        "data_file_name": "GCST90104545_buildGRCh37.tsv.gz",
+        "file_type": "pre-GWAS-SSF",
+        "genome_assembly": "GRCh37",
+        "gwas_id": "GCST90104545",
+        "is_harmonised": "false",
+        "trait_description": ""
+      },
+      "per_variant_N_available_in_original_11_col_header": false,
+      "published_reference_case_count_only": 19032,
+      "published_reference_control_count_only": 237242,
+      "published_reference_matches_yaml": null,
+      "source_file_identity_and_yaml_digest": "PASS",
+      "source_yaml_sha256": "7383b859ce9bb4811c15bc634592ee1544788536797a5c663644e1aa648f1d3e",
+      "yaml_case_count": null,
+      "yaml_control_count": null,
+      "yaml_internal_N_consistency": false,
+      "yaml_sample_size": null
+    },
+    "qtl_provenance": {
+      "GTEx_v10_ID_reuse_warning_observed": true,
+      "QTL_gate": "REPROCESSED_VS_IMPORTED_SOURCE_DISTINGUISHED_ORIGINAL_HOLD",
+      "current_QTD000161_is_original_GTExv8_FastQTL": false,
+      "historical_2023_eqtl_release6_file_bytes_sha256_authenticated": false,
+      "official_r8_pre_release_documented": true,
+      "official_release6_complete_cis_documented": true,
+      "official_release_page_sha256": "74774f6e11ce0e0872aa18ccd833c3c246aafcbd11424c98a36c90e9a4ffc21d",
+      "official_reprocessed_GTEx_listing": true,
+      "official_separate_imported_GTEx_v8_listing": true,
+      "official_studies_page_sha256": "2fafd674df9368fd734eff31750511e1652fd105e65a19659db8e21e7dc53e0e",
+      "original_GTExv8_cis_results_verified": false,
+      "qtl_dataset_id": "QTD000161",
+      "qtl_prefix_gzip_accessible": true,
+      "qtl_prefix_sha256": "2e6295860e3c1bfae068167c6ceed1dd34e612da5b78385dd60b46473dc6f315",
+      "qtl_study_id": "QTS000015",
+      "same_GTEx_v8_donor_model_and_covariates_verified": false
+    },
+    "schema": "is-eas-ais-N-and-GTEx-eQTL-lineage-v1",
+    "scientific_status": "HOLD"
+  }
+}

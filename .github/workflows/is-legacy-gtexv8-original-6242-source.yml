@@ -1,0 +1,51 @@
+name: IS Archived GTEx V8 QTL 6242 vs Official Imported Original Source
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "research/is/evidence/is_legacy_gtex_v8_labeled_allele_lineage_chr4_20261011.tsv"
+      - "research/is/evidence/is_legacy_gtex_v8_labeled_allele_lineage_chr10_20261011.tsv"
+      - "scripts/is/audit_legacy_gtexv8_original_source_identity.py"
+      - "tests/test_is_legacy_gtexv8_original_source_identity.py"
+      - ".github/workflows/is-legacy-gtexv8-original-6242-source.yml"
+  pull_request:
+    paths:
+      - "research/is/evidence/is_legacy_gtex_v8_labeled_allele_lineage_chr4_20261011.tsv"
+      - "research/is/evidence/is_legacy_gtex_v8_labeled_allele_lineage_chr10_20261011.tsv"
+      - "scripts/is/audit_legacy_gtexv8_original_source_identity.py"
+      - "tests/test_is_legacy_gtexv8_original_source_identity.py"
+      - ".github/workflows/is-legacy-gtexv8-original-6242-source.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-legacy-source-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 23
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run 11 historic 6242 SNP gene-variant ID/allele/beta/p QC tests
+        run: python3 -m unittest discover -s tests -p 'test_is_legacy_gtexv8_original_source_identity.py' -v
+      - name: Install pinned htslib with system TLS
+        run: |
+          python3 -m pip install --disable-pip-version-check 'pysam==0.23.3'
+          test -f /etc/ssl/certs/ca-certificates.crt
+      - name: Compare historical 6242 archived statistics with official imported GTEx_v8
+        env:
+          CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+          SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+        run: python3 scripts/is/audit_legacy_gtexv8_original_source_identity.py --output ci_reports/is_legacy_gtexv8_6242_original_source.json
+      - name: Archive read-only provenance and bounded mismatch examples
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-legacy-gtexv8-6242-original-source-evidence
+          path: ci_reports/is_legacy_gtexv8_6242_original_source.json
+          retention-days: 30
+          if-no-files-found: ignore

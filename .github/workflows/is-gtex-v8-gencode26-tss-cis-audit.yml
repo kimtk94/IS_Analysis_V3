@@ -1,0 +1,40 @@
+name: IS Original GTEx v8 GENCODE26 Cis TSS Boundary Audit
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "scripts/is/audit_gtex_v8_gencode26_cis_geometry.py"
+      - "tests/test_is_gtex_v8_gencode26_cis_geometry.py"
+      - ".github/workflows/is-gtex-v8-gencode26-tss-cis-audit.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_gtex_v8_gencode26_cis_geometry.py"
+      - "tests/test_is_gtex_v8_gencode26_cis_geometry.py"
+      - ".github/workflows/is-gtex-v8-gencode26-tss-cis-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  official-gencode26-tss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate strand-aware historical GENCODE TSS and interval rules
+        run: python3 -m unittest discover -s tests -p 'test_is_gtex_v8_gencode26_cis_geometry.py' -v
+      - name: Download official historical GENCODE v26 gene annotations within byte bound
+        run: python3 scripts/is/audit_gtex_v8_gencode26_cis_geometry.py --output ci_reports/is_gtex_v8_gencode26_tss_cis_geometry.json
+      - name: Preserve bounded audit and GENCODE source SHA256 only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gtex-v8-gencode26-cis-geometry
+          path: ci_reports/is_gtex_v8_gencode26_tss_cis_geometry.json
+          if-no-files-found: ignore
+          retention-days: 30

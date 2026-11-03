@@ -1,0 +1,216 @@
+import importlib.util
+from pathlib import Path
+import unittest
+
+FILE=Path(__file__).resolve().parents[1]/"scripts/is/audit_gtex_v8_qtd_four_gene_fullcis.py"
+SPEC=importlib.util.spec_from_file_location("gtex_fullcis",FILE)
+m=importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(m)
+
+HEAD=["molecular_trait_id","chromosome","position","ref","alt","pvalue","beta","se"]
+GENES=m.BASE.TARGET_GENES
+
+def make_line(gene,chrom,pos,beta="0.3",se="0.05",p="0.0001",alt="C",ref="A"):
+    return "\t".join([GENES[gene]+".8",chrom,str(pos),ref,alt,p,beta,se])
+
+class MockTabix:
+    def __init__(self,url,broken=False):
+        self.url=url
+        self.contigs=("4","10")
+        self.header=["#"+"\t".join(HEAD)]
+        self.broken=broken
+    def fetch(self,c,start,end):
+        if self.broken:raise OSError("remote interrupted")
+        gene1,gene2=("FGF5","C4orf22") if c=="4" else ("CALHM2","NEURL")
+        for i,g in enumerate((gene1,gene2)):
+            pos=start+150+i*10
+            yield make_line(g,c,pos,beta="0.23" if self.url==m.BASE.ORIGINAL else "0.38")
+        # Untargeted neighbors should be excluded but count toward safety cap
+        yield "ENSG9999999999.1\t"+c+"\t"+str(start+150)+"\tA\tC\t0.2\t0.1\t0.05"
+    def close(self):pass
+
+class Module:
+    def TabixFile(self,url):return MockTabix(url)
+class DownModule:
+    def TabixFile(self,url):return MockTabix(url,True)
+
+def source(rows):
+    return {"status":"SCREEN_VALID","rows":rows,"scanned":len(rows),"target_rows":len(rows)}
+
+class FullCisTests(unittest.TestCase):
+    def test_only_four_approved_genes_retained(self):
+        h=MockTabix(m.BASE.ORIGINAL)
+        result=m.read_source_rows(h,HEAD,m.FULL_WINDOWS[0])
+        self.assertEqual(result["status"],"SCREEN_VALID")
+        self.assertEqual(result["scanned"],3)
+        self.assertEqual(result["target_rows"],2)
+        self.assertEqual(len(result["rows"]),2)
+
+    def test_non_snp_explicit_indel_and_mnv_included_without_symbolic(self):
+        class Mixed(MockTabix):
+            def fetch(self,c,start,end):
+                yield make_line("FGF5",c,start+50,ref="A",alt="ATG")
+                yield make_line("FGF5",c,start+60,ref="GGA",alt="G")
+                yield make_line("C4orf22",c,start+70,ref="AC",alt="GT")
+                yield make_line("FGF5",c,start+80,ref="A",alt="<DEL>")
+        out=m.read_source_rows(Mixed(m.BASE.ORIGINAL),HEAD,m.FULL_WINDOWS[0])
+        self.assertEqual(out["status"],"SCREEN_VALID")
+        self.assertEqual(len(out["rows"]),3)
+        self.assertEqual(out["counts"]["complex_indel_mnv_rows"],3)
+        self.assertEqual(out["counts"]["unsupported_allele_encoding_rows"],1)
+        self.assertNotIn(("ENSG00000138675","4",79000079,"A","<DEL>"),out["rows"])
+
+    def test_original_and_reprocessed_same_indel_exact_pair(self):
+        key=(GENES["FGF5"],"4",80010000,"A","AT")
+        a=source({key:(0.3,0.05,1e-5)})
+        b=source({key:(-0.1,0.06,1e-3)})
+        report=m.summarize_full_cis(a,b)
+        self.assertEqual(report["FGF5"]["matched_same_trait_and_exact_GRCh38_REF_ALT_pairs"],1)
+        self.assertEqual(report["FGF5"]["beta_sign_matches"],0)
+
+    def test_report_qtd_missing_exact_variant_and_nearby_original(self):
+        gene=GENES["FGF5"]
+        x=(gene,"4",80000000,"A","AT")
+        y=(gene,"4",80000000,"AT","A")
+        z=(gene,"4",80000002,"G","GT")
+        a=source({y:(0.2,0.05,1e-3),z:(0.1,0.04,1e-2)})
+        q=source({x:(0.3,0.06,1e-4)})
+        result=m.summarize_full_cis(a,q)["FGF5"]
+        d=result["reprocessed_only_diagnostic"]
+        self.assertEqual(d["qtd_only_variant_count"],1)
+        self.assertEqual(len(d["qtd_only_diagnostics"]),1)
+        self.assertTrue(d["qtd_only_diagnostics"][0]["ref_alt_reversed_same_position"])
+        self.assertEqual(d["qtd_only_diagnostics"][0]["original_same_gene_same_position_row_count"],1)
+        self.assertFalse(d["qtd_only_diagnostics"][0]["independent_ref_fasta_indel_normalization_checked"])
+        self.assertFalse(d["qtd_only_diagnostics"][0]["matched_after_liftover_or_strand_reversal"])
+        self.assertEqual(result["original_only_indel_mnv_count"],2)
+
+    def test_qtd_missing_without_nearby_original_keeps_hold(self):
+        key=(GENES["NEURL"],"10",103000000,"A","C")
+        d=m.diagnostic_unmatched_qtd({}, {key:(0.2,0.03,0.001)})
+        self.assertEqual(d["qtd_only_variant_count"],1)
+        self.assertEqual(d["qtd_only_diagnostics"][0]["original_nearby_plusminus5bp_row_count"],0)
+        self.assertTrue(d["qtd_only_diagnostics"][0]["diagnostic_only_not_harmonized"])
+
+    def test_qtd_only_diagnostics_are_bounded(self):
+        gene=GENES["FGF5"]
+        qtd={(gene,"4",79001000+i,"A","C"):(0.2,0.05,0.01) for i in range(30)}
+        d=m.diagnostic_unmatched_qtd({},qtd,limit=3)
+        self.assertEqual(d["qtd_only_variant_count"],30)
+        self.assertTrue(d["qtd_only_diagnostics_truncated"])
+        self.assertEqual(len(d["qtd_only_diagnostics"]),3)
+
+    def test_invalid_original_rows_reported_but_not_matched(self):
+        class BadSample(MockTabix):
+            def fetch(self,c,start,end):
+                yield make_line("FGF5",c,start+50,se="-1",p="0.01")
+                yield make_line("FGF5",c,start+60,se="0.04",p="0.02")
+        out=m.read_source_rows(BadSample(m.BASE.ORIGINAL),HEAD,m.FULL_WINDOWS[0])
+        self.assertEqual(out["status"],"SCREEN_VALID")
+        self.assertEqual(out["counts"]["invalid_statistic_rows"],1)
+        self.assertEqual(len(out["invalid_source_rows_bounded"]),1)
+        self.assertEqual(out["invalid_source_rows_bounded"][0]["reason"],
+                         "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P")
+        self.assertEqual(len(out["rows"]),1)
+
+    def test_optional_maf_an_ac_r2_from_qtd_rows(self):
+        schema=HEAD+["maf","r2","an","ac","ma_samples"]
+        key=(GENES["FGF5"],"4",79000149,"A","C")
+        class WithMAF(MockTabix):
+            def fetch(self,c,start,end):
+                yield make_line("FGF5",c,start+50)+"\t0.004\t0.82\t340\t2\t1"
+        out=m.read_source_rows(WithMAF(m.BASE.REPROCESSED),schema,m.FULL_WINDOWS[0])
+        self.assertEqual(out["status"],"SCREEN_VALID")
+        self.assertEqual(len(out["rows"]),1)
+        item=next(iter(out["genotype_qc_by_key"].values()))
+        self.assertEqual(item["maf"],0.004)
+        self.assertEqual(item["an"],340)
+        self.assertEqual(item["ac"],2)
+        self.assertEqual(item["an_diploid_observed_genotype_equivalent_not_cohort_N"],170)
+        self.assertTrue(item["an_ac_valid"])
+
+    def test_optional_missing_allele_metrics_are_null_not_approvals(self):
+        out=m.optional_source_qc(["missing","nan","NA","."],
+            {"maf":0,"an":1,"ac":2,"r2":3})
+        self.assertIsNone(out["maf"])
+        self.assertIsNone(out["an"])
+        self.assertIsNone(out["ac"])
+        self.assertFalse(out["an_ac_valid"])
+        self.assertIsNone(out["an_diploid_observed_genotype_equivalent_not_cohort_N"])
+
+    def test_source_scan_limit_is_fail_closed(self):
+        h=MockTabix(m.BASE.ORIGINAL)
+        result=m.read_source_rows(h,HEAD,m.FULL_WINDOWS[0],max_rows=1)
+        self.assertEqual(result["status"],"HOLD_SCAN_CAP")
+        self.assertFalse(result["rows"])
+
+    def test_bad_header_stays_hold(self):
+        x=m.read_source_rows(MockTabix(m.BASE.ORIGINAL),["chromosome"],m.FULL_WINDOWS[0])
+        self.assertEqual(x["status"],"HOLD_REQUIRED_COLUMNS")
+
+    def test_duplicate_conflicting_values_hold(self):
+        class Dup(MockTabix):
+            def fetch(self,c,start,end):
+                yield make_line("FGF5",c,start+50,beta="0.1")
+                yield make_line("FGF5",c,start+50,beta="-0.4")
+        x=m.read_source_rows(Dup(m.BASE.ORIGINAL),HEAD,m.FULL_WINDOWS[0])
+        self.assertEqual(x["status"],"HOLD_CONFLICTING_DUPLICATE_SOURCE_VARIANT")
+
+    def test_invalid_target_statistics_are_recorded_not_silently_approved(self):
+        class Bad(MockTabix):
+            def fetch(self,c,start,end):
+                yield make_line("FGF5",c,start+50,se="-1")
+                yield make_line("FGF5",c,start+60,beta="nan")
+        x=m.read_source_rows(Bad(m.BASE.ORIGINAL),HEAD,m.FULL_WINDOWS[0])
+        self.assertEqual(x["counts"]["invalid_statistic_rows"],2)
+        self.assertEqual(len(x["rows"]),0)
+
+    def test_full_cis_gene_summary_uses_exact_variant_key(self):
+        key=("ENSG00000138675","4",80000000,"A","C")
+        opposite=("ENSG00000138675","4",80000000,"C","A")
+        a=source({key:(0.3,0.05,1e-3)})
+        b=source({opposite:(-0.3,0.05,1e-3)})
+        out=m.summarize_full_cis(a,b)
+        self.assertEqual(out["FGF5"]["matched_same_trait_and_exact_GRCh38_REF_ALT_pairs"],0)
+        self.assertEqual(out["FGF5"]["original_only_variant"],1)
+        self.assertEqual(out["FGF5"]["reprocessed_only_variant"],1)
+
+    def test_mock_full_runner_produces_evidence_but_not_causal_claim(self):
+        md5=(m.BASE.ORIGINAL_MD5+" Brain_Cerebellar_Hemisphere.tsv.gz\n").encode()
+        out=m.run(Module(),lambda _:{"header":HEAD},lambda _:md5,wait=0)
+        self.assertEqual(out["total_exact_gene_variant_pairs"],4)
+        self.assertEqual(set(out["four_gene_fullcis_screen"]),set(GENES))
+        self.assertEqual(out["fullcis_source_gate"],"HOLD_FULL_CIS_DENOMINATOR_SOURCE_OR_ACCESS")
+        self.assertFalse(out["expected_QTD_fullcis_reprocessed_gene_counts_equal"])
+        self.assertEqual(out["scientific_status"],"HOLD")
+        self.assertFalse(out["coloc_performed"])
+
+    def test_unavailable_remote_ranges_stay_hold(self):
+        result=m.run(DownModule(),lambda _:{"header":HEAD},
+              lambda _:(m.BASE.ORIGINAL_MD5+" Brain_Cerebellar_Hemisphere.tsv.gz\n").encode(),wait=0)
+        self.assertEqual(result["fullcis_source_gate"],"HOLD_FULL_CIS_DENOMINATOR_SOURCE_OR_ACCESS")
+        self.assertFalse(result["all_source_windows_complete"])
+
+    def test_full_cis_boundaries_follow_previous_documented_source(self):
+        self.assertEqual(m.FULL_WINDOWS,[("4",79000000,81500000),
+                                         ("10",101500000,106500000)])
+        self.assertEqual(m.EXPECTED_REPROCESSED_CIS,
+           {"FGF5":5511,"C4orf22":5490,"CALHM2":4868,"NEURL":4820})
+
+    def test_reported_full_screen_only_after_expected_denominators(self):
+        save=dict(m.EXPECTED_REPROCESSED_CIS)
+        try:
+            for g in m.EXPECTED_REPROCESSED_CIS:
+                m.EXPECTED_REPROCESSED_CIS[g]=1
+            md5=(m.BASE.ORIGINAL_MD5+" Brain_Cerebellar_Hemisphere.tsv.gz\n").encode()
+            out=m.run(Module(),lambda _:{"header":HEAD},lambda _:md5,wait=0)
+            self.assertEqual(out["fullcis_source_gate"],
+                 "FOUR_GENE_FULL_CIS_SOURCE_COMPARISON_SCREEN_PASS_NOT_COLOC")
+            self.assertFalse(out["original_full_file_checksum_recomputed"])
+            self.assertEqual(out["scientific_status"],"HOLD")
+        finally:
+            m.EXPECTED_REPROCESSED_CIS.clear()
+            m.EXPECTED_REPROCESSED_CIS.update(save)
+
+if __name__=="__main__":
+    unittest.main()

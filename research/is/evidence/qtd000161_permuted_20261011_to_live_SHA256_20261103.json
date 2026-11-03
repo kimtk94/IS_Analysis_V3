@@ -1,0 +1,63 @@
+{
+  "record_type": "LIVE_SOURCE_QTD000161_PERMUTED_GZIP_WHOLE_831384_BYTES_HISTORICAL_SHA_MATCH",
+  "ci": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41553961484",
+  "job_id": 125648154574,
+  "tests_passed": 9,
+  "prior_historical_manifest_GDrive_ID": "1dFLd6tcfq8E0oK6Wk44abM12IrAdIInH",
+  "result": {
+    "GWAS_ancestry_LD_N_approved": false,
+    "MR_performed": false,
+    "QTD_all_full_nominal_original_2023_gzip_sha256_authenticated": false,
+    "actual_compressed_source_bytes": 831384,
+    "all_four_gene_permutation_pbeta_n_variants_match_history": true,
+    "coloc_performed": false,
+    "current_EBI_source_whole_gzip_SHA256": "b5de9603b25b7f65f5532442bb5cc90f5d546421387363633967b540b4424bbe",
+    "four_gene_permutation_comparison": {
+      "C4orf22": {
+        "historical_n_variants": 5490,
+        "historical_p_beta": 0.000591983,
+        "live_n_variants": 5490,
+        "live_p_beta": 0.000591983,
+        "n_variants_equal": true,
+        "p_beta_close": true,
+        "stable_gene_id": "ENSG00000197826"
+      },
+      "CALHM2": {
+        "historical_n_variants": 4868,
+        "historical_p_beta": 0.0270452,
+        "live_n_variants": 4868,
+        "live_p_beta": 0.0270452,
+        "n_variants_equal": true,
+        "p_beta_close": true,
+        "stable_gene_id": "ENSG00000138172"
+      },
+      "FGF5": {
+        "historical_n_variants": 5511,
+        "historical_p_beta": 0.0278074,
+        "live_n_variants": 5511,
+        "live_p_beta": 0.0278074,
+        "n_variants_equal": true,
+        "p_beta_close": true,
+        "stable_gene_id": "ENSG00000138675"
+      },
+      "NEURL": {
+        "historical_n_variants": 4820,
+        "historical_p_beta": 0.40605,
+        "live_n_variants": 4820,
+        "live_p_beta": 0.40605,
+        "n_variants_equal": true,
+        "p_beta_close": true,
+        "stable_gene_id": "ENSG00000107954"
+      }
+    },
+    "historic_20261011_cached_permutation_gzip_SHA256": "b5de9603b25b7f65f5532442bb5cc90f5d546421387363633967b540b4424bbe",
+    "is_GTEx_v8_original_FastQTL_statistics": false,
+    "live_source_total_permutation_gene_rows": 23287,
+    "official_original_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000161/QTD000161.permuted.tsv.gz",
+    "permutation_source_gate": "HISTORIC_PERMUTED_GZIP_EXACT_SHA_MATCH_AND_FOUR_GENE_STATS_PASS",
+    "schema": "IS_QTD000161_permuted_gzip_20261011_vs_live_original_v1",
+    "scientific_status": "HOLD",
+    "whole_permuted_gzip_same_bytes_as_20261011_archive": true
+  },
+  "scientific_caveat": "Full QTD nominal .all.tsv.gz gzip remains unauthenticated, even though 20,689 archived derived QTL association rows match live QTD exactly; eGene significance requires per-gene multiple testing and phenotype confounding checks; no GWAS N/LD or causal coloc."
+}

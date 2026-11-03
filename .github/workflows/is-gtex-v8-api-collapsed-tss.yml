@@ -1,0 +1,40 @@
+name: IS GTEx V8 Official API Collapsed Gene Model Boundary
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "scripts/is/audit_gtex_v8_api_collapsed_exons.py"
+      - "tests/test_is_gtex_v8_api_collapsed_exons.py"
+      - ".github/workflows/is-gtex-v8-api-collapsed-tss.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_gtex_v8_api_collapsed_exons.py"
+      - "tests/test_is_gtex_v8_api_collapsed_exons.py"
+      - ".github/workflows/is-gtex-v8-api-collapsed-tss.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  official-gtex-v8-collapsed-tss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Nine deterministic GTEx API version and source identity controls
+        run: python3 -m unittest discover -s tests -p 'test_is_gtex_v8_api_collapsed_exons.py' -v
+      - name: Actual GTEx v8 API collapsed exon model using GENCODE v26 versioned IDs
+        run: python3 scripts/is/audit_gtex_v8_api_collapsed_exons.py --output ci_reports/is_gtex_v8_api_collapsed_tss.json
+      - name: Retain bounded GTEx API reference evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gtex-v8-api-collapsed-exon-boundaries
+          path: ci_reports/is_gtex_v8_api_collapsed_tss.json
+          retention-days: 30
+          if-no-files-found: ignore
