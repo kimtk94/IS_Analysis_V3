@@ -1,0 +1,38 @@
+name: MASTER DEGREE eight-track evidence lineage 2026-11-05
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/research-eight-track-20261105.yml'
+      - 'scripts/research/daily_20261105_lineage.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  lineage:
+    name: 'Evidence lineage — ${{ matrix.track }}'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Audit previous scientific and source evidence without rerunning science
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/research/daily_20261105_lineage.py --track "${{ matrix.track }}"
+      - name: Upload per-track evidence and blockers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-20261105-${{ matrix.track }}
+          path: results/research_operations/20261105/${{ matrix.track }}.json
+          if-no-files-found: error
+          retention-days: 30
