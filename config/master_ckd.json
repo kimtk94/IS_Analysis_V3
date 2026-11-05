@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "disease": "ckd",
+  "title": "Chronic kidney disease",
+  "ancestry": {
+    "discovery": "EUR",
+    "replication": [
+      "EAS"
+    ],
+    "ld_reference": {
+      "EUR": "1000G_EUR",
+      "EAS": "1000G_EAS"
+    }
+  },
+  "stages": {
+    "dataset_audit": true,
+    "exposure": true,
+    "instrument_qc": true,
+    "primary_mr": true,
+    "mr_robustness": true,
+    "coloc": true,
+    "finemap": true,
+    "cross_ancestry": true,
+    "cross_platform": true,
+    "transcriptomics": true,
+    "phenotype_expansion": true,
+    "risk_factor": false,
+    "disease_subtype": true,
+    "individual_validation": true,
+    "tissue": true,
+    "single_cell": true,
+    "spatial": true,
+    "phewas": true,
+    "druggability": true,
+    "evidence_integration": true
+  },
+  "defaults": {
+    "cis_window_bp": 500000,
+    "f_stat_min": 10,
+    "exclude_mhc": true,
+    "coloc": {
+      "p1": 0.0001,
+      "p2": 0.0001,
+      "p12": 0.00001,
+      "strong_pp_h4": 0.8
+    },
+    "multiple_testing": "FDR"
+  },
+  "outcomes": [
+    "CKD",
+    "eGFRcrea",
+    "eGFRcys",
+    "BUN",
+    "UACR",
+    "rapid_kidney_decline",
+    "annualized_eGFR_slope"
+  ],
+  "individual_validation": {
+    "cohort": "KoGES",
+    "endpoints": [
+      "baseline_eGFR",
+      "annualized_eGFR_slope",
+      "incident_CKD"
+    ]
+  },
+  "figures": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ]
+}

@@ -1,0 +1,21 @@
+stage	stage_name	current_status	path_pattern	canonical_use	note
+0	dataset_audit	PARTIAL	/srv/is-analysis/data/ckd/analysis_ready/SHA256SUMS.txt	analysis-ready public-data integrity	Generic MASTER dataset registry has not yet been materialized for CKD.
+1	exposure	EXISTING	/srv/is-analysis/results/ckd/stage1/instrument_qc.tsv.gz	UKB-PPP cis exposure/instrument source	Stage1 instrument_qc preserves exposure beta/se/alleles and F-stat.
+2	instrument_qc	EXISTING	/srv/is-analysis/results/ckd/stage1/instrument_qc.tsv.gz	instrument QC	Existing CKD-specific QC is the current source of truth; generic Stage2 will be bridged from this.
+3	primary_mr	EXISTING	/srv/is-analysis/results/ckd/stage1/stage1_protein_summary.tsv	primary MR summary	Contains EUR eGFR discovery plus supporting renal phenotypes and EAS support.
+4	mr_robustness	PLANNED	/srv/is-analysis/results/ckd/master/stage04_mr_robustness.tsv	generic robustness summary	Needs harmonized multi-instrument table suitable for weighted median/Egger/Q/LOO.
+5	coloc	EXISTING	/srv/is-analysis/results/ckd/stage2b_coloc/coloc_results/STAGE2B_COLOC_DEFAULT.tsv	ABF colocalization	Current CKD Stage2B primary locus-level shared-signal screen.
+6	finemap	EXISTING	/srv/is-analysis/results/ckd/stage2c_susie/susie_results/STAGE2C_SUSIE_DEFAULT.tsv	SuSiE fine-mapping/coloc	Current CKD Stage2C multi-signal result.
+7	cross_ancestry	PARTIAL	/srv/is-analysis/results/ckd/stage1/stage1_protein_summary.tsv	EUR/EAS direction support	Generic Stage7 replication table has not yet been materialized.
+8	cross_platform	PLANNED	/srv/is-analysis/results/ckd/master/stage08_cross_platform.tsv	Olink/SomaScan replication	Requires independent cross-platform MR inputs.
+9	transcriptomics	PARTIAL	/srv/is-analysis/results/ckd/stage3a_kidney/STAGE3A_KIDNEY_EVIDENCE.tsv	kidney eQTL/pQTL evidence	Kidney evidence exists; generic SMR/HEIDI/eQTL-coloc table remains to be generated.
+10	phenotype_expansion	PARTIAL	/srv/is-analysis/results/ckd/stage1/stage1_protein_summary.tsv	CKD/eGFR/BUN/eGFRcys/UACR phenotype matrix	Generic wide phenotype matrix remains to be materialized.
+11	risk_factor	PLANNED	/srv/is-analysis/results/ckd/master/stage11_risk_factor.tsv	mechanism/risk-factor MR	Not yet run for CKD.
+12	disease_subtype	PLANNED	/srv/is-analysis/results/ckd/master/stage12_subtype.tsv	CKD subtype expansion	No dedicated subtype result is currently canonical.
+13	individual_validation	PARTIAL	/srv/is-analysis/results/ckd/stage4_koges/public_prototype/STAGE4_PUBLIC_EGFR_SUBJECT_SUMMARY.tsv	KoGES phenotype workflow QA	Public prototype exists; controlled-access genotype association is still required for manuscript inference.
+14	tissue	EXISTING	/srv/is-analysis/results/ckd/stage3a_kidney/STAGE3A_KIDNEY_EVIDENCE.tsv	kidney tissue genetic evidence	Kidney pQTL/eQTL evidence.
+15	single_cell	EXISTING	/srv/is-analysis/results/ckd/stage3b_celltype/STAGE3B_INTEGRATED_EVIDENCE.tsv	kidney cell-type localization	Expected current Stage3B integrated table.
+16	spatial	PLANNED	/srv/is-analysis/results/ckd/master/stage16_spatial.tsv	spatial kidney localization	No canonical spatial result currently mapped.
+17	phewas	PLANNED	/srv/is-analysis/results/ckd/master/stage17_phewas_summary.tsv	PheWAS/safety	Requires curated candidate-level PheWAS inputs.
+18	druggability	PLANNED	/srv/is-analysis/results/ckd/master/stage18_druggability.tsv	drug-target translation	Requires curated drug-target export plus MR causal direction.
+19	evidence_integration	PLANNED	/srv/is-analysis/results/ckd/master/stage19_evidence_matrix.tsv	final Tier 1/2/3 matrix	Generated only after upstream bridge tables are available.
