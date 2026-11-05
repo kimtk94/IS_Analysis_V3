@@ -1,0 +1,35 @@
+name: MASTER DEGREE 8-track 2026-11-06 bounded gates
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/research-eight-track-20261106.yml'
+      - 'scripts/research/daily_20261106_gates.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gate:
+    name: "Research gate — ${{ matrix.track }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Execute one bounded gate
+        run: python scripts/research/daily_20261106_gates.py --track "${{ matrix.track }}"
+      - name: Upload evidence even on HOLD
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-20261106-${{ matrix.track }}
+          path: results/research_operations/20261106/${{ matrix.track }}.json
+          if-no-files-found: error
+          retention-days: 30
