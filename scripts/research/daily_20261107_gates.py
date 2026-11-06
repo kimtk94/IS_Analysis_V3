@@ -20,7 +20,7 @@ def get(url,limit=3000000):
 def geo(acc):
  u="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?"+urllib.parse.urlencode({"acc":acc,"targ":"self","form":"text","view":"quick"})
  b=get(u);s=b.decode("utf8","replace")
- if not re.search(r"\\^SERIES\\s*=\\s*"+acc+r"\\b",s,re.I):raise ValueError("GEO_ACCESSION_NOT_VERIFIED")
+ if not re.search(r"\^SERIES\s*=\s*"+acc+r"\b",s,re.I):raise ValueError("GEO_ACCESSION_NOT_VERIFIED")
  return s,hashlib.sha256(b).hexdigest()
 def probe(t):
  if t=="is":
@@ -30,7 +30,7 @@ def probe(t):
   terms=sorted(set(re.findall(r"European|East Asian|EUR|EAS",json.dumps(o),re.I)))
   return {"ancestry_endpoint_sha256":hashlib.sha256(b).hexdigest(),"explicit_ancestry_terms":terms,"snp_level_ancestry_ld_verified":False}
  if t=="glaucoma":
-  s,h=geo("GSE313736");links=re.findall(r"^!Series_supplementary_file\\s*=\\s*(.+)$",s,re.M)
+  s,h=geo("GSE313736");links=re.findall(r"^!Series_supplementary_file\s*=\s*(.+)$",s,re.M)
   return {"geo_sha256":h,"supplementary_files":len(links),"count_like_file_names":sum(bool(re.search("count|matrix|mtx",x,re.I)) for x in links),"integer_count_matrix_verified":False}
  if t=="hcc":
   q='{ biospecimenPerStudy(pdc_study_id:"PDC000198",acceptDUA:true){aliquot_id sample_id case_id sample_type} }'
@@ -53,7 +53,7 @@ def probe(t):
   return {"files":len(f),"size_positive":sum(int(x.get("size") or 0)>0 for x in f),"checksum_declared":sum(bool(x.get("checksum")) for x in f),"checksum_algorithms":sorted(set(str(x.get("checksum") or "").split(":")[0] for x in f if x.get("checksum"))),"actual_nifti_header_verified":False}
  if t=="ocular":
   u="https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA1243143&result=read_run&format=tsv&fields=run_accession,sample_accession,experiment_accession"
-  rows=list(csv.DictReader(io.StringIO(get(u).decode("utf8-sig")),delimiter="\\t"))
+  rows=list(csv.DictReader(io.StringIO(get(u).decode("utf8-sig")),delimiter="\t"))
   if len(rows)!=46:raise ValueError("RUN_DENOMINATOR_DRIFT")
   runs={r["run_accession"] for r in rows};experiments={r["experiment_accession"] for r in rows}
   if len(runs)!=46:raise ValueError("DUPLICATE_RUN")
@@ -68,7 +68,7 @@ def probe(t):
    probes[rsid]=len(v)
   return {"api_sentinels":probes,"target_20_loci_association_verified":False,"note":"Sentinels are API checks, not the target 20 loci"}
  if t=="oral":
-  s,h=geo("GSE103322");ids=re.findall(r"^!Series_sample_id\\s*=\\s*(GSM\\d+)",s,re.M)
+  s,h=geo("GSE103322");ids=re.findall(r"^!Series_sample_id\s*=\s*(GSM\d+)",s,re.M)
   if not ids:raise ValueError("NO_GEO_SAMPLE_IDS")
   if len(ids)!=len(set(ids)):raise ValueError("DUPLICATE_GEO_SAMPLE_IDS")
   return {"geo_sha256":h,"series_sample_links":len(ids),"unique_sample_links":len(set(ids)),"patient_to_cell_join_verified":False}
@@ -86,6 +86,6 @@ def main():
  result={"track":a.track,"task":TASKS[a.track],"date_kst":"2026-11-07","scientific_gate":"HOLD","checked_utc":datetime.datetime.now(datetime.timezone.utc).isoformat()}
  try:result.update(probe_status="PASS_BOUNDED_PREREQUISITE",evidence=probe(a.track))
  except Exception as e:result.update(probe_status="HOLD_OR_FAIL_SOURCE",blocker=type(e).__name__+": "+str(e)[:180],evidence={})
- (out/(a.track+".json")).write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\\n")
+ (out/(a.track+".json")).write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n")
  print(json.dumps(result,ensure_ascii=False))
 if __name__=="__main__":main()
