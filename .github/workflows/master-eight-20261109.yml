@@ -1,0 +1,27 @@
+name: MASTER 8 research structured gates 2026-11-09
+on:
+  pull_request:
+    paths:
+      - 'scripts/research/daily_20261109_structured_gates.py'
+      - '.github/workflows/master-eight-20261109.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+      - name: One research track official metadata check
+        run: python3 scripts/research/daily_20261109_structured_gates.py --track "${{ matrix.track }}" --output "results/${{ matrix.track }}.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: master-20261109-${{ matrix.track }}
+          path: results/
+          if-no-files-found: warn
