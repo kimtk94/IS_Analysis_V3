@@ -112,7 +112,7 @@ def main():
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
         "source": "GWAS Catalog metadata REST v2",
         "source_note": "Metadata only. No proof of availability or validity of full summary statistics.",
-        "sample_count_provenance": "Published literature (not API-verified): doi:10.3390/cardiol11080247",
+        "sample_count_provenance": "Published literature (not API-verified): doi:10.3390/jcdd11080247",
         "rows": rows,
     }
     (out / "metadata_audit.json").write_text(json.dumps(audit, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
