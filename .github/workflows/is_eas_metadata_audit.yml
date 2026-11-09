@@ -1,0 +1,34 @@
+name: IS EAS GWAS metadata / feasibility gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_gigastroke_eas_metadata.py'
+      - 'docs/research/is_eas_novelty_feasibility_2026-11-09.md'
+      - '.github/workflows/is_eas_metadata_audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  eas-metadata-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate study map
+        run: python3 scripts/is/audit_gigastroke_eas_metadata.py --self-test
+      - name: Check live GWAS Catalog v2 metadata (strict, read-only)
+        run: python3 scripts/is/audit_gigastroke_eas_metadata.py --output-dir artifacts/is_eas_gwas_catalog
+      - name: Attach audit evidence even if source is unavailable
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-eas-gwas-catalog-metadata
+          path: artifacts/is_eas_gwas_catalog/
+          if-no-files-found: warn
+          retention-days: 30
