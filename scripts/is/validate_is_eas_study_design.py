@@ -38,6 +38,9 @@ def validate(design, phenotypes):
     check(outcome.get("type") == "binary_case_control_GWAS", "Primary endpoint must not be longitudinal outcome")
     check(outcome.get("name") == "ischemic_stroke_susceptibility", "Primary outcome cannot be AS/CE/PD")
     check(outcome.get("eas_gwas_accession") == "GCST90104545", "EAS IS accession mismatch")
+    check(outcome.get("eur_gwas_accession") == "GCST90104540", "EUR IS accession mismatch")
+    check(outcome.get("eur_cases_literature") == 62100 and outcome.get("eur_controls_literature") == 1234808,
+          "EUR published case/control counts mismatch")
     check("not_independent_replication" in json.dumps(design.get("data_contracts", [])),
           "EAS evaluation must not be called independent replication")
     check(design.get("comparison_design", {}).get("external_validation_claim") is False,
@@ -52,6 +55,11 @@ def validate(design, phenotypes):
     source_ids = [x.get("id") for x in sources]
     check(len(source_ids) == len(set(source_ids)) and set(source_ids) == REQUIRED_SOURCE_IDS,
           "Missing or duplicated source contract")
+    source_lookup = {x.get("id"): x for x in sources}
+    check(source_lookup.get("GWAS_EUR_IS", {}).get("reported_accession") == "GCST90104540",
+          "EUR source contract accession mismatch")
+    check(source_lookup.get("GWAS_EAS_IS", {}).get("reported_accession") == "GCST90104545",
+          "EAS source contract accession mismatch")
     for x in sources:
         check(bool(x.get("requires")) and bool(x.get("ancestry")) and bool(x.get("status")),
               "Source contract missing critical fields")
