@@ -1,6 +1,6 @@
 # IS EUR–EAS regulatory genomics: protocol architecture V1 (2026-11-11)
 
-> **Status: design contract validated pending CI; SCIENCE HOLD.** This is an internal protocol/workflow plan, not a submission artifact. The course Research Proposal form explicitly prohibits AI-written submissions. The student must independently write any submitted content.
+> **Status: design contract CI-validated on 2026-11-11; SCIENCE HOLD.** This is an internal protocol/workflow plan, not a submission artifact. The course Research Proposal form explicitly prohibits AI-written submissions. The student must independently write any submitted content.
 
 ## Executive decision
 
@@ -43,7 +43,7 @@ A 3–12 month proposal should not declare 5 equal aims (pQTL MR, TWAS, drug tar
 
 ## 2. Exact populations, outcomes, and independent validation
 
-- **EUR discovery:** confirmed EUR *ischemic stroke* GWAS, source accession/method and cohort overlap to be filled only after verifying original summary statistics. Its accession is deliberately **UNVERIFIED** in the contract.
+- **EUR discovery:** GIGASTROKE GCST90104540 (62,100 published cases / 1,234,808 controls). This accession and counts are literature-supported, but original summary-statistics files, ancestry and phenotype source composition, and overlap remain **NOT SOURCE-VERIFIED**.
 - **EAS assessment:** GIGASTROKE GCST90104545 (19,032 published cases, 237,242 controls). This is an ancestry-specific *assessment* from the same consortium; not independent external replication.
 - **Secondary:** EAS small-vessel subtype GCST90104548 (5,532 cases); EAS cardioembolic subtype GCST90104546 (926 cases) only exploratory. Subtypes may be nested in IS.
 - **Negative phenotype**: GCST90104544 means **any stroke**, includes hemorrhage/unknown; NEVER silently substitute for IS. Clinical outcomes are genetic liability to case-control diagnosis, not prognosis.
@@ -127,11 +127,11 @@ Timing is a planning framework, not a guarantee that gated analyses can be perfo
 ## 7. Gate decision at this commit
 
 - **G0 PARTIAL_HOLD**: published case definitions partially checked; accession-specific cohort membership not verified.
-- **G1 HOLD**: full GWAS summary files unverified.
+- **G1 HOLD**: primary EUR IS accession GCST90104540 and EAS IS GCST90104545 are recorded, but full GWAS summary files unverified.
 - **G2 HOLD**: full ancestry-specific eQTL and LD not yet audited.
 - **G3/G4/G5 BLOCKED**: downstream science cannot start legitimately.
 
-**Current result: DESIGN_READY_FOR_AUDIT; NOT DATA-READY, NOT SCIENTIFICALLY VALIDATED.**
+**Current result: DESIGN_CONTRACT_CI_VALID; NOT DATA-READY, NOT SCIENTIFICALLY VALIDATED.**
 
 ### Literature
 
@@ -139,4 +139,5 @@ Timing is a planning framework, not a guarantee that gated analyses can be perfo
 - Wallace 2021 coloc–SuSiE: https://doi.org/10.1371/journal.pgen.1009440
 - Shen et al. 2026 multi-ancestry colocalization methods: https://doi.org/10.1371/journal.pgen.1012221
 - Stroke subtype sc-eQTL 2024: https://pubmed.ncbi.nlm.nih.gov/38744227/
+- EUR GCST90104540 details in integrative IS multi-omics study: https://doi.org/10.1093/hmg/ddad153 (check bibliographic DOI if reused; accession and counts also in https://academic.oup.com/hmg/article/33/2/170/7308735)
 - Sacco et al. 2013 AHA/ASA definition: https://doi.org/10.1161/STR.0b013e318296aeca
