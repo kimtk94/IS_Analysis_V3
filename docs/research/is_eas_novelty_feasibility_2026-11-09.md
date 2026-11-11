@@ -18,6 +18,8 @@
 
 **Do not confuse:** GCST90104544 is *any stroke*; GCST90104545 is *ischemic stroke*. EUR cardioembolic outcome GCST90104541 has 10,804 cases and 1,234,808 controls. These are counts, not an independent validation cohort. Some GIGASTROKE ancestry/subtype scans share people.
 
+**Phenotype ascertainment update (2026-11-11):** [Stroke diagnosis and cohort audit](stroke_diagnosis_pheno_ancestry_protocol_2026-11-11.md) finds GIGASTROKE preprint appendix descriptions of physician/TOAST-adjudicated BBJ and Hisayama cohorts versus ICD/claims/registry-driven CKB and KCPS2. This supports ascertainment heterogeneity but does NOT yet verify exact study-to-accession representation in GCST90104544–48. External differences are not interpretable as ancestry-specific biology before this gate. Novelty competition also includes Surakka et al. Cell Genomics 2023 doi:10.1016/j.xgen.2023.100345 (ABO ancestry heterogeneity, ALDH2 ancestry–sex, and IS locus eQTL colocalization).
+
 ## Candidate comparisons, ranked
 
 1. **Conditional GO: IS regulatory portability (EUR discovery, EAS outcome + ancestry-matched eQTL comparison).** Research question: At preselected IS-associated loci, does ancestry-matched blood cis-eQTL versus EUR-biased eQTL materially change colocalization support, lead variant interpretation, or gene prioritization? Primary estimands: proportion of analyzable loci with robust shared signals per ancestry; per-locus concordance after locus/LD coverage matching. Require EAS and EUR ancestry-specific LD for fine-mapping and colocalization, not cross-ancestry substitution. Do not interpret low EAS detection as true biological difference.
@@ -58,7 +60,7 @@ H3 (exploratory): Some IS loci have arterial/atrial/immune cell-type transcript 
 
 ## Decision gates
 
-- **G0 Source:** exact five EAS study IDs, phenotype, cases/controls, available genome-wide summary-stat URLs and checksums.
+- **G0 Source/phenotype:** five EAS IDs and GWAS Catalog trait metadata have passed CI; now retrieve full GWAS bytes/headers and **map per-cohort clinical/TOAST vs ICD/claims definitions from final supplementary materials**. Preprint examples are partial evidence, not phenotype-level validation.
 - **G1 Regulatory source:** full eQTL summary-stat access confirmed for EAS and comparator, including SNP/build/effect/SE/MAF/N, plus matched LD.
 - **G2 Statistical feasibility:** estimate local power / credible set overlap and define a small prespecified discovery-locus set; cannot label low powered EAS CE null as biological difference.
 - **G3 Novelty:** publishable locus-wise novelty matrix proving candidate interpretation not already reported; if not, STOP or change focus.
