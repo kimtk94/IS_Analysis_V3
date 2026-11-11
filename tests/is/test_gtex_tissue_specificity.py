@@ -36,7 +36,7 @@ class GtexSpecificityTests(unittest.TestCase):
                 writer = csv.writer(f, delimiter="\t")
                 writer.writerow(["Name", "Description", *columns])
                 writer.writerow(["ENSG00000000001.1", "ABO", *([1] * 44)])
-                writer.writerow(["ENSG00000000002.1", "IL6RA", *([2] * 44)])
+                writer.writerow(["ENSG00000000002.1", "IL6R", *([2] * 44)])
             cols, matches, n = parse_gct(path)
             self.assertEqual(len(cols), 44)
             self.assertEqual(n, 2)
