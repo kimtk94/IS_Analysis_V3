@@ -3,7 +3,10 @@ name: CKM Stroke P0-P6 staged research gates
 on:
   push:
     paths:
-      - 'scripts/ckm_stroke/**'
+      - 'scripts/ckm_stroke/pipeline.py'
+      - 'scripts/ckm_stroke/aggregate.py'
+      - 'scripts/ckm_stroke/audit_public_sources.py'
+      - 'scripts/ckm_stroke/probe_headers.py'
       - 'config/ckm_stroke/**'
       - 'tests/test_ckm_stroke_source_audit.py'
       - 'tests/test_ckm_stroke_normalizer.py'
@@ -15,7 +18,10 @@ on:
       - '.github/workflows/ckm-stroke-pipeline.yml'
   pull_request:
     paths:
-      - 'scripts/ckm_stroke/**'
+      - 'scripts/ckm_stroke/pipeline.py'
+      - 'scripts/ckm_stroke/aggregate.py'
+      - 'scripts/ckm_stroke/audit_public_sources.py'
+      - 'scripts/ckm_stroke/probe_headers.py'
       - 'config/ckm_stroke/**'
       - 'tests/test_ckm_stroke_source_audit.py'
       - 'tests/test_ckm_stroke_normalizer.py'
@@ -29,6 +35,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ckm-research-gates-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   regression:
