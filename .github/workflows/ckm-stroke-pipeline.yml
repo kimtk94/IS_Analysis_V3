@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/ckm_stroke/**'
       - 'config/ckm_stroke/**'
+      - 'tests/test_ckm_stroke_source_audit.py'
       - 'tests/test_ckm_stroke_pipeline.py'
       - 'tests/fixtures/ckm_stroke/**'
       - 'docs/ckm_stroke_pipeline.md'
@@ -13,6 +14,7 @@ on:
     paths:
       - 'scripts/ckm_stroke/**'
       - 'config/ckm_stroke/**'
+      - 'tests/test_ckm_stroke_source_audit.py'
       - 'tests/test_ckm_stroke_pipeline.py'
       - 'tests/fixtures/ckm_stroke/**'
       - 'docs/ckm_stroke_pipeline.md'
@@ -34,7 +36,7 @@ jobs:
       - name: Compile and test small fixtures
         run: |
           python -m py_compile scripts/ckm_stroke/pipeline.py tests/test_ckm_stroke_pipeline.py
-          python -m unittest discover -s tests -p 'test_ckm_stroke_pipeline.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_*.py' -v
 
   stages:
     needs: regression
@@ -64,9 +66,31 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
 
+  source-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Probe curated official GWAS source candidates (bounded)
+        run: |
+          python scripts/ckm_stroke/audit_public_sources.py \
+            --inventory config/ckm_stroke/public_sources.tsv \
+            --out artifacts/ckm_stroke/public_source_audit.json
+      - name: Publish official-source audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-official-source-audit
+          path: artifacts/ckm_stroke/public_source_audit.json
+          if-no-files-found: warn
+          retention-days: 30
+
   aggregate:
     if: always()
-    needs: [regression, stages]
+    needs: [regression, stages, source-provenance]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
