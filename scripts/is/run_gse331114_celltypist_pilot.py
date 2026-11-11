@@ -29,6 +29,7 @@ from audit_stroke_versus_rosmap_sources import (
 from audit_stroke_gse331114_mex_pilot import (
     group_files, download, CAPS,
 )
+from sall1_microglia_orthogonal_check import ann_data_binary_markers
 
 MODEL_NAME = "Immune_All_High.pkl"
 MODEL_REFERENCE = "CellTypist human pan-tissue immune high-hierarchy, not stroke brain trained"
@@ -145,6 +146,7 @@ def run(group, index, source_root, out):
         probs=predictions.probability_matrix
         best_scores=probs.to_numpy().max(axis=1).tolist()
         summary=summarize_predictions(labels,best_scores,n_pass)
+        sall1_evidence=ann_data_binary_markers(adata,labels)
 
         evidence={
             "source":"NCBI_GEO_GSE331114",
@@ -171,6 +173,12 @@ def run(group, index, source_root, out):
             "pseudobulk_DE":"NOT_RUN",
             "genotype_eQTL":"NOT_AVAILABLE",
             "status":"REFERENCE_PILOT_PROVISIONAL_COMPLETE",
+            "SALL1_per_GSM_orthogonal_RNA_markers":sall1_evidence,
+            "clinical_covariate_values_collected":False,
+            "GEO_sample_characteristic_names_only":sorted({
+                x.split(':',1)[0].strip().lower()
+                for x in sample.get('characteristics',[]) if ':' in x
+            }),
             **summary,
         }
     out.mkdir(parents=True,exist_ok=True)
@@ -186,6 +194,20 @@ def run(group, index, source_root, out):
            "| Provisional reference label | QC barcodes | Fraction |","|---|---:|---:|"]
     for row in evidence["provisional_labels_top_20"]:
         lines.append(f"| {row['model_label']} | {row['n_cells']} | {row['fraction']:.3f} |")
+    lines += ["", "### SALL1 orthogonal marker RNA co-detection (NOT cell-type validation)", "",
+              "| Model provisional label | n | SALL1 detected | SALL1 + ≥1 canonical | Strict SALL1/TMEM119/P2RY12 | ≥2 peripheral myeloid |",
+              "|---|---:|---:|---:|---:|---:|"]
+    for d in sall1_evidence["model_categories"]:
+        if d["counts"] is None:
+            continue
+        c=d["counts"]
+        lines.append(f"| {d['model_provisional_label']} | {d['n_barcodes']} | "
+                     f"{c['SALL1_any']} | {c['SALL1_plus_one_canonical']} | "
+                     f"{c['SALL1_TMEM119_P2RY12_triple']} | "
+                     f"{c['at_least_two_FCN1_CD14_S100A8']} |")
+    lines += ["", "These are binary RNA detection counts, NOT the published paper's SALL1-high classifier.",
+              "Absence of detectable SALL1 can reflect single-cell RNA dropout, and a model label",
+              "does NOT establish resident microglia or infiltrating monocyte lineage."]
     lines+=["","No cell-level predictions exported; donor reference mapping/validation, doublets and microglia-specific annotation remain HOLD.",
             "This pilot does NOT permit cell-type differential expression, independent clinical replication or GWAS mediation claims."]
     md="\n".join(lines)+"\n"
