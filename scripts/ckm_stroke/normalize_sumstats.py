@@ -80,15 +80,45 @@ def classify(row, colmap):
                   "BETA": beta, "SE": se, "P": p}
 
 
+def recover_missing_rsid(fields, vals):
+    # The CKDGen UACR original has 313 lines with an empty RSID cell.
+    # A whitespace split drops that empty cell, shifting all later fields.
+    # Restore ONLY a missing RSID, never impute genetic measurements.
+    expected = ["Chr", "Pos_b37", "RSID", "Allele1", "Allele2",
+                "Freq1", "Effect", "StdErr", "P-value", "n_total_sum"]
+    if fields != expected or len(vals) != len(fields) - 1:
+        return None
+    try:
+        chrom, pos, ea, nea = vals[0], int(vals[1]), vals[2].upper(), vals[3].upper()
+        freq, effect, se, p = map(float, vals[4:8])
+        n = int(vals[8])
+        if not (chrom in AUTOSOMES and pos > 0 and ea in "ACGT" and nea in "ACGT"
+                and len(ea) == 1 and len(nea) == 1 and ea != nea
+                and all(map(math.isfinite, (freq, effect, se, p)))
+                and 0 <= freq <= 1 and se > 0 and 0 < p <= 1 and n > 0):
+            return None
+    except (ValueError, IndexError):
+        return None
+    return dict(zip(fields, vals[:2] + [""] + vals[2:]))
+
+
 def ckdgen_rows(input_fh):
     fields = input_fh.readline().strip().split()
     def iterator():
         for line in input_fh:
             vals = line.split()
-            yield dict(zip(fields, vals)) if len(vals) == len(fields) else {
-                "__token_count__": len(vals), "__expected_token_count__": len(fields),
-                "__raw_tokens__": vals[:15]
-            }
+            if len(vals) == len(fields):
+                yield dict(zip(fields, vals))
+            else:
+                recovered = recover_missing_rsid(fields, vals)
+                if recovered is not None:
+                    recovered["__missing_rsid_recovered__"] = True
+                    yield recovered
+                else:
+                    yield {
+                        "__token_count__": len(vals), "__expected_token_count__": len(fields),
+                        "__raw_tokens__": vals[:15]
+                    }
     return fields, iterator()
 
 
@@ -110,6 +140,8 @@ def normalize(src, dest, style, expected_sha256=""):
     excluded = {key: 0 for key in EXCLUDE_KEYS}
     examples = {key: [] for key in EXCLUDE_KEYS}
     malformed_field_count_histogram = {}
+    recovered_missing_rsid = 0
+    recovered_examples = []
     count = good = 0
     try:
         with open_text(src) as input_fh, gzip.open(tmp, "wt", newline="", encoding="utf-8") as output_fh:
@@ -140,6 +172,15 @@ def normalize(src, dest, style, expected_sha256=""):
                             "raw_tokens_head": row.get("__raw_tokens__", []),
                         })
                     continue
+                if row.get("__missing_rsid_recovered__"):
+                    recovered_missing_rsid += 1
+                    if len(recovered_examples) < 3:
+                        recovered_examples.append({"row": count,
+                                                   "chr": normalized["CHR"],
+                                                   "pos": normalized["POS"],
+                                                   "ea": normalized["EA"],
+                                                   "nea": normalized["NEA"],
+                                                   "rsid": None})
                 writer.writerow(normalized)
                 good += 1
         if good == 0:
@@ -159,6 +200,8 @@ def normalize(src, dest, style, expected_sha256=""):
         "input_rows": count, "output_rows": good, "excluded_total": excluded_total,
         "excluded": excluded, "excluded_examples": {k: v for k, v in examples.items() if v},
         "malformed_field_count_histogram": malformed_field_count_histogram,
+        "recovered_missing_rsid": recovered_missing_rsid,
+        "recovered_examples": recovered_examples,
         "declared_genome_build": "GRCh37",
         "note": "Original complete stream parsed; source variants removed with reason counts. Build, sample-overlap and independent checksum require separate validation.",
     }
