@@ -7,6 +7,7 @@ on:
       - 'config/ckm_stroke/**'
       - 'tests/test_ckm_stroke_source_audit.py'
       - 'tests/test_ckm_stroke_normalizer.py'
+      - 'tests/test_ckm_stroke_header_probe.py'
       - 'tests/test_ckm_stroke_pipeline.py'
       - 'tests/fixtures/ckm_stroke/**'
       - 'docs/ckm_stroke_pipeline.md'
@@ -17,6 +18,7 @@ on:
       - 'config/ckm_stroke/**'
       - 'tests/test_ckm_stroke_source_audit.py'
       - 'tests/test_ckm_stroke_normalizer.py'
+      - 'tests/test_ckm_stroke_header_probe.py'
       - 'tests/test_ckm_stroke_pipeline.py'
       - 'tests/fixtures/ckm_stroke/**'
       - 'docs/ckm_stroke_pipeline.md'
@@ -89,6 +91,28 @@ jobs:
           path: artifacts/ckm_stroke/public_source_audit.json
           if-no-files-found: warn
           retention-days: 30
+
+  bounded-headers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read first 128 KiB of five official gzip sources
+        run: |
+          python scripts/ckm_stroke/probe_headers.py \
+            --sources config/ckm_stroke/public_sources.tsv \
+            --output artifacts/ckm_stroke/header_probe.json
+      - name: Upload header observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-header-probe
+          path: artifacts/ckm_stroke/header_probe.json
+          retention-days: 30
+          if-no-files-found: warn
 
   aggregate:
     if: always()
