@@ -85,7 +85,10 @@ def ckdgen_rows(input_fh):
     def iterator():
         for line in input_fh:
             vals = line.split()
-            yield dict(zip(fields, vals)) if len(vals) == len(fields) else {}
+            yield dict(zip(fields, vals)) if len(vals) == len(fields) else {
+                "__token_count__": len(vals), "__expected_token_count__": len(fields),
+                "__raw_tokens__": vals[:15]
+            }
     return fields, iterator()
 
 
@@ -106,6 +109,7 @@ def normalize(src, dest, style, expected_sha256=""):
     tmp = dest.with_name(dest.name + ".partial")
     excluded = {key: 0 for key in EXCLUDE_KEYS}
     examples = {key: [] for key in EXCLUDE_KEYS}
+    malformed_field_count_histogram = {}
     count = good = 0
     try:
         with open_text(src) as input_fh, gzip.open(tmp, "wt", newline="", encoding="utf-8") as output_fh:
@@ -124,9 +128,17 @@ def normalize(src, dest, style, expected_sha256=""):
                 reason, normalized = classify(row, MAP[style])
                 if reason:
                     excluded[reason] += 1
+                    if reason == "malformed_row" and "__token_count__" in row:
+                        ncols = str(row["__token_count__"])
+                        malformed_field_count_histogram[ncols] = malformed_field_count_histogram.get(ncols, 0) + 1
                     if len(examples[reason]) < 3:
-                        examples[reason].append({"row": count, "rsid": row.get("RSID", row.get("rsID", "")),
-                                                 "raw_values": {key: row.get(value) for key, value in MAP[style].items()}})
+                        examples[reason].append({
+                            "row": count, "rsid": row.get("RSID", row.get("rsID", "")),
+                            "raw_values": {key: row.get(value) for key, value in MAP[style].items()},
+                            "observed_field_count": row.get("__token_count__"),
+                            "expected_field_count": row.get("__expected_token_count__"),
+                            "raw_tokens_head": row.get("__raw_tokens__", []),
+                        })
                     continue
                 writer.writerow(normalized)
                 good += 1
@@ -146,6 +158,7 @@ def normalize(src, dest, style, expected_sha256=""):
         "output_file": str(dest), "output_sha256": sha256(dest),
         "input_rows": count, "output_rows": good, "excluded_total": excluded_total,
         "excluded": excluded, "excluded_examples": {k: v for k, v in examples.items() if v},
+        "malformed_field_count_histogram": malformed_field_count_histogram,
         "declared_genome_build": "GRCh37",
         "note": "Original complete stream parsed; source variants removed with reason counts. Build, sample-overlap and independent checksum require separate validation.",
     }
