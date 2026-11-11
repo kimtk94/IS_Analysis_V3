@@ -93,3 +93,30 @@ These rows are *discovery candidates*, not verified and locked manifest entries.
 - Wuttke2019 official eGFR EUR file is confirmed by the CKDGen landing page and README, with GRCh37 Pos_b37 and effect allele Allele1. No independent official MD5/SHA-256 has been confirmed for this eGFR archive, so source checksum status remains UNVERIFIED_OFFICIAL_CHECKSUM.
 
 Both datasets are public GWAS summary statistics and were processed in ephemeral runners. No raw data were committed; only JSON evidence persisted. **Technical file processing is not scientific P1 completion.** Both kidney inputs still require source provenance confidence, duplicate/allele QC, overlap review and analysis-ready controlled storage; all P2+ downstream scientific analyses remain NOT_RUN.
+
+
+### P1 Kidney normalization: definitive correction
+
+The earlier 313 excluded UACR lines were not defective SNP associations.
+All 313 had nine whitespace-separated tokens instead of ten because
+the optional RSID cell was empty. The guarded parser now reconstructs
+only the **empty RSID** after validating the complete remaining field
+layout and effect/SE/P values. It does NOT invent an rsID or a new
+association statistic.
+
+Latest verified UACR full-source replay:
+[run #43030646354](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43030646354)
+- Official MD5: PASS, complete gzip read: PASS
+- Source: 8,603,712, normalized: 8,603,712, excluded: 0
+- Normalization: PASS (technical; scientific_status HOLD)
+- Normalized SHA-256: baad52e98d71bfab7fa1f7a167d1480f26fb265af9cded6e56322fbc068dca88
+
+Original 313-row diagnostic:
+[run #43029712071](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43029712071);
+regression tests after guarded recovery: 33/33 PASS in
+[run #43030798471](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43030798471).
+
+Kidney eGFR and UACR both achieve **complete normalization**, but neither
+the overall CKM P1 nor LDSC/MR biological conclusions are complete.
+An independent official eGFR content checksum and cohort/reference-LD
+harmonization remain open scientific gates.
