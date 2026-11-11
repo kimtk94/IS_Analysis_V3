@@ -71,6 +71,8 @@ References: original TOAST https://doi.org/10.1161/01.STR.24.1.35 ; ISGC phenoty
 
 A 2026 EAS blood eQTL paper **already reports** that ancestry-matched QTL resources improve gene prioritization for EAS complex traits (MAEEA, n=2,024, https://doi.org/10.1093/nsr/nwag566). Thus that **generic** claim is not novel. A specific candidate gap remains **stroke-locus-level robustness under phenotyping and coverage matching**, provided a targeted literature matrix shows earlier stroke work did not already do it. Earlier stroke subtype GWAS/sc-eQTL colocalization (2024; https://pubmed.ncbi.nlm.nih.gov/38744227/) is directly competing prior work.
 
+Additional directly competing publication: Surakka et al., *Cell Genomics* 2023, https://doi.org/10.1016/j.xgen.2023.100345, combined 16 biobanks (GBMI) and MEGASTROKE, used GBMI PheCode 433.21 (cerebral artery occlusion with cerebral infarction), identified heterogeneity at ABO across ancestries and a sex/EAS-specific ALDH2 rs671 signal, and conducted colocalization at several IS loci. Therefore **ABO / ALDH2 sex × ancestry, generic multi-ancestry IS, and generic GWAS–eQTL colocalization are pre-existing results, NOT novel hypotheses.** The biobank-based PheCode ascertainment also illustrates why claims of phenotype equivalence across clinical vs EHR studies require evidence.
+
 This is a **conditional GO**, not a novel result. If exact cohort-level phenotype ascertainment cannot be reconstructed, explicitly limit inference to *published GWAS-level phenotype comparison* and do NOT attribute contrast to ethnicity or biology.
 
 ## 5. Gates and priority next actions
