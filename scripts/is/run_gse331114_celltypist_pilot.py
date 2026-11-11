@@ -111,7 +111,7 @@ def run(group, index, source_root, out):
         adata=sc.read_10x_mtx(root, var_names="gene_symbols",make_unique=True,gex_only=True)
         if adata.n_obs != prior["cell_barcodes"] or adata.n_vars != prior["genes"]:
             raise ValueError("MEX cell / gene dimensions changed")
-        total_by_cell=np.asarray(adata.X.sum(axis=1)).ravel()
+        total_by_cell=np.asarray(adata.X.astype(np.float64).sum(axis=1)).ravel()
         if abs(float(total_by_cell.sum())-float(prior["total_umi_count"])) > 0.1:
             raise ValueError("MEX total UMI differs from source QC")
         n_genes=np.asarray((adata.X>0).sum(axis=1)).ravel()
@@ -153,7 +153,7 @@ def run(group, index, source_root, out):
             "original_source_SHA256_match":True,
             "original_barcodes":int(prior["cell_barcodes"]),
             "qc_barcodes_passed":n_pass,
-            "qc_pass_fraction":round(n_pass/adata.n_obs if False else n_pass/int(prior["cell_barcodes"]),5),
+            "qc_pass_fraction":round(n_pass/int(prior["cell_barcodes"]),5),
             "QC_limits":{"n_genes_min":PASS_N_GENES_MIN,
                          "n_genes_max":PASS_N_GENES_MAX,"mt_percent_lt":PASS_MT_PCT_LT},
             "model":MODEL_NAME,
