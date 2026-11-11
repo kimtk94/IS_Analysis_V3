@@ -63,3 +63,23 @@ Dedicated workflow: .github/workflows/ckm-stroke-uacr-ingest.yml
 
 The next scientific gate remains the full primary EUR phenotype manifest, including
 BMI/SBP/T2D, and robust cross-study build/allele/overlap validation.
+
+
+## Candidate source decisions (not yet production-locked)
+
+| Trait | Potential source | Caution / next proof |
+|---|---|---|
+| BMI EUR | GIANT/Yengo 2018 updated GIANT+UKB meta-analysis | Consortium corrected an earlier sample-size error; confirm corrected version, source build, allele semantics and sample overlap with GIGASTROKE |
+| SBP EUR | ICBP Evangelou 2018 / OpenGWAS ieu-b-38 | Metadata lists European n=757,601 and GRCh37, but bulk access and complete harmonized columns are not yet verified |
+| T2D EUR | DIAMANTE/T2DGGI Mahajan 2022 or Suzuki 2024 ancestry-specific EUR | Website has click-through terms. Do not bypass consent or infer link from a study page; select study version with clear phenotype, ancestry and overlap |
+| CKDGen UACR EUR | Teumer 2019 European subset | Official MD5 available; dedicated full-source pilot handles checksum and gzip, not overall P1 completion |
+| GLGC lipids EUR | Graham 2021 ancestry-specific | Each raw EUR compressed file ~2.1 GB; do not attempt full download in the small bounded-source probe |
+
+References:
+- https://giant-consortium.web.broadinstitute.org/GIANT_consortium_data_files
+- https://gwas.mrcieu.ac.uk/datasets/ieu-b-38/
+- https://www.diagram-consortium.org/downloads.html
+- https://csg.sph.umich.edu/willer/public/glgc-lipids2021/results/ancestry_specific/README.txt
+- https://ckdgen.imbi.uni-freiburg.de/files/Teumer2019/MD5SUM
+
+These rows are *discovery candidates*, not verified and locked manifest entries.
