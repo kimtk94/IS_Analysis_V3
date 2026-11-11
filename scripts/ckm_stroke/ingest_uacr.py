@@ -106,6 +106,7 @@ def ingest(root, max_mb=650, opener=urlopen):
             "excluded":results["excluded"],
             "excluded_total":results["excluded_total"],
             "excluded_examples":results["excluded_examples"],
+            "malformed_field_count_histogram":results["malformed_field_count_histogram"],
             "normalized_sha256":results["output_sha256"],
             "note":"Original source verified against consortium MD5; full source parsed. Not yet allele harmonized, independent LDSC or GWAS duplicate QC."}
 
