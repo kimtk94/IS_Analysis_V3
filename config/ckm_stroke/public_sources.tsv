@@ -1,0 +1,15 @@
+trait	ancestry	source	kind	url	needle	expected_build
+BMI	EUR	unselected	pending			REVIEW_REQUIRED
+LDL_C	EUR	GLGC_Graham2021	file	https://csg.sph.umich.edu/willer/public/glgc-lipids2021/results/ancestry_specific/LDL_INV_EUR_HRC_1KGP3_others_ALL.meta.singlevar.results.gz		GRCh37
+HDL_C	EUR	GLGC_Graham2021	file	https://csg.sph.umich.edu/willer/public/glgc-lipids2021/results/ancestry_specific/HDL_INV_EUR_HRC_1KGP3_others_ALL.meta.singlevar.results.gz		GRCh37
+TG	EUR	GLGC_Graham2021	file	https://csg.sph.umich.edu/willer/public/glgc-lipids2021/results/ancestry_specific/logTG_INV_EUR_HRC_1KGP3_others_ALL.meta.singlevar.results.gz		GRCh37
+SBP	EUR	unselected	pending			REVIEW_REQUIRED
+T2D	EUR	unselected	pending			REVIEW_REQUIRED
+EGFR	EUR	CKDGen_Wuttke2019	file	https://ckdgen.imbi.uni-freiburg.de/files/Wuttke2019/20171017_MW_eGFR_overall_EA_nstud42.dbgap.txt.gz		GRCh37
+UACR	EUR	CKDGen_Teumer2019	file	https://ckdgen.imbi.uni-freiburg.de/files/Teumer2019/formatted_20180517-UACR_overall-EA-nstud_18-SumMac_400.tbl.rsid.gz		GRCh37
+LAA	EUR	GIGASTROKE_GWASCatalog	page	https://www.ebi.ac.uk/gwas/studies/GCST90104542	GCST90104542	REVIEW_REQUIRED
+CE	EUR	GIGASTROKE_GWASCatalog	page	https://www.ebi.ac.uk/gwas/studies/GCST90104541	GCST90104541	REVIEW_REQUIRED
+SVD	EUR	GIGASTROKE_GWASCatalog	page	https://www.ebi.ac.uk/gwas/studies/GCST90104543	GCST90104543	REVIEW_REQUIRED
+LAA	EAS	unselected	pending			REVIEW_REQUIRED
+CE	EAS	unselected	pending			REVIEW_REQUIRED
+SVD	EAS	unselected	pending			REVIEW_REQUIRED
