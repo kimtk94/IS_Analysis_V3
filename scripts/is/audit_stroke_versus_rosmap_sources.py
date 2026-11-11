@@ -121,9 +121,30 @@ def parse_soft(text):
                 sample["organism"] = line.split(" = ", 1)[1].strip()
             elif line.startswith("!Sample_characteristics_ch1 = "):
                 sample["characteristics"].append(line.split(" = ", 1)[1].strip())
-            elif line.startswith("!Sample_supplementary_file = "):
+            elif line.startswith("!Sample_supplementary_file") and " = " in line:
                 sample["files"].append(line.split(" = ", 1)[1].strip())
     return series, samples
+
+
+def audit_series_processed_tar(gse):
+    """Check series-level GEO supplementary TAR existence by HEAD, no data transfer."""
+    bucket = gse[:-3] + "nnn"
+    url = f"https://ftp.ncbi.nlm.nih.gov/geo/series/{bucket}/{gse}/suppl/{gse}_RAW.tar"
+    result = {"url": url, "status": "SOURCE_UNAVAILABLE"}
+    try:
+        req = urllib.request.Request(url, method="HEAD", headers={
+            "User-Agent": "IS-Analysis-V3-StrokeGEO-AccessAudit/1.0"
+        })
+        with urllib.request.urlopen(req, timeout=20) as response:
+            parsed = urllib.parse.urlparse(response.geturl())
+            if parsed.scheme != "https" or parsed.hostname != "ftp.ncbi.nlm.nih.gov":
+                raise ValueError("Unexpected GEO archive redirect")
+            result["status"] = "REMOTE_TAR_LISTED" if response.status == 200 else "HTTP_REVIEW"
+            size = response.headers.get("Content-Length")
+            result["size_bytes"] = int(size) if size and size.isdigit() else None
+    except (urllib.error.URLError, OSError, ValueError, TimeoutError) as exc:
+        result["error"] = f"{type(exc).__name__}: {str(exc)[:140]}"
+    return result
 
 
 def derive_group(sample):
@@ -191,6 +212,8 @@ def audit_one(accession, expected):
             )
             if not outcome["group_counts_match_expected"]:
                 outcome["metadata_status"] = "GROUP_MISMATCH_REVIEW"
+        if accession == "GSE331114":
+            outcome["processed_series_tar"] = audit_series_processed_tar(accession)
         outcome["selected_sample_metadata"] = [{
             "id": x["accession"],
             "title": x["title"],
@@ -239,6 +262,18 @@ def main():
             f"{row.get('sample_groups', {})} | "
             f"{row.get('mtx_file_count_in_soft', 'unknown')} |"
         )
+    lines += [
+        "",
+        "The MTX count above only reflects supplementary-file links explicitly",
+        "present in the SOFT sample metadata; 0 is NOT evidence that processed matrices",
+        "are absent from GEO sample pages. Check the processed series TAR HEAD below.",
+        "",
+    ]
+    for row in records:
+        if row["accession"] == "GSE331114":
+            tar = row.get("processed_series_tar") or {}
+            lines.append(f"GSE331114 processed series TAR: {tar.get('status', 'NOT_CHECKED')} / "
+                         f"{tar.get('size_bytes', 'unknown')} bytes")
     lines += [
         "",
         "GSE331114 was designed as human stroke brain CD45+-enriched immune cell",
