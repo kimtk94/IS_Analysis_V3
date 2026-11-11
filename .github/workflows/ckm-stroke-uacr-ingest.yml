@@ -1,0 +1,43 @@
+name: CKM Stroke P1 CKDGen UACR real-source integrity
+
+on:
+  push:
+    paths:
+      - 'scripts/ckm_stroke/ingest_uacr.py'
+      - 'scripts/ckm_stroke/normalize_sumstats.py'
+      - 'tests/test_ckm_stroke_ingest_uacr.py'
+      - '.github/workflows/ckm-stroke-uacr-ingest.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-stroke-uacr-p1-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  uacr-md5-and-complete-gzip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run offline scientific-integrity regression tests
+        run: |
+          python -m unittest tests.test_ckm_stroke_ingest_uacr tests.test_ckm_stroke_normalizer -v
+      - name: Download and verify full UACR source in ephemeral runner
+        run: |
+          python -m scripts.ckm_stroke.ingest_uacr \
+            --max-mb 650 \
+            --out artifacts/ckm_stroke/uacr_full_integrity.json
+      - name: Preserve evidence metadata only, never raw GWAS
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-uacr-full-integrity
+          path: artifacts/ckm_stroke/uacr_full_integrity.json
+          retention-days: 30
+          if-no-files-found: warn
