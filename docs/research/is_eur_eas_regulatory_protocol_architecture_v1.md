@@ -139,5 +139,5 @@ Timing is a planning framework, not a guarantee that gated analyses can be perfo
 - Wallace 2021 coloc–SuSiE: https://doi.org/10.1371/journal.pgen.1009440
 - Shen et al. 2026 multi-ancestry colocalization methods: https://doi.org/10.1371/journal.pgen.1012221
 - Stroke subtype sc-eQTL 2024: https://pubmed.ncbi.nlm.nih.gov/38744227/
-- EUR GCST90104540 details in integrative IS multi-omics study: https://doi.org/10.1093/hmg/ddad153 (check bibliographic DOI if reused; accession and counts also in https://academic.oup.com/hmg/article/33/2/170/7308735)
+- EUR GCST90104540 details in integrative IS multi-omics study: https://academic.oup.com/hmg/article/33/2/170/7308735
 - Sacco et al. 2013 AHA/ASA definition: https://doi.org/10.1161/STR.0b013e318296aeca
