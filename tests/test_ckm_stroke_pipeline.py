@@ -34,7 +34,7 @@ class StagedTests(unittest.TestCase):
         rows[0]["phenotype"]="STROKE_CKM_STAGE"
         # The real gate always reads the current manifest and therefore
         # does not mutate persistent records in this test.
-        self.assertIn("STROKE",rows[0]["phenotype"])
+        self.assertEqual(pipeline.p0(ROOT,rows)["status"],"FAIL")
 
 if __name__=="__main__":
     unittest.main()
