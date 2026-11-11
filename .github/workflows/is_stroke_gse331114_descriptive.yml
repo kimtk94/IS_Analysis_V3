@@ -1,0 +1,53 @@
+name: IS stroke GSE331114 eight-sample descriptive CPM synthesis
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/aggregate_gse331114_sample_genes.py'
+      - 'tests/is/test_aggregate_gse331114_sample_genes.py'
+      - '.github/workflows/is_stroke_gse331114_descriptive.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  reconcile-eight-samples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate sample-level descriptive integration
+        run: python3 -m unittest discover -s tests/is -p 'test_aggregate_gse331114_sample_genes.py' -v
+      - name: Download actual verified 8-GSM artifacts from prior successful source-QC run
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 43010007530
+          pattern: is-gse331114-*
+          merge-multiple: false
+          path: downloaded_gse331114
+      - name: Fail closed unless exactly eight artifact directories exist
+        shell: python
+        run: |
+          from pathlib import Path
+          root = Path("downloaded_gse331114")
+          names = sorted(x.name for x in root.iterdir() if x.is_dir())
+          expected = sorted(f"is-gse331114-{group}-{i}" for group in ("AIS","Control") for i in range(4))
+          print("Eight source artifacts:", names)
+          assert names == expected, "Source artifact count or group/index incorrect"
+      - name: Compute donor-library descriptive normalized expression (no tests)
+        run: python3 scripts/is/aggregate_gse331114_sample_genes.py --input downloaded_gse331114 --out-dir artifacts/is_gse331114_descriptive
+      - name: Publish descriptive evidence without sparse cell matrices
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gse331114-8sample-descriptive-gene-cpm
+          path: artifacts/is_gse331114_descriptive/
+          retention-days: 60
+          if-no-files-found: warn
