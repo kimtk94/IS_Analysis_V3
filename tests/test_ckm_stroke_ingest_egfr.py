@@ -82,5 +82,39 @@ class TestEgfrSource(unittest.TestCase):
             self.assertEqual(x["excluded"]["malformed_row"], 1)
 
 
+    def test_recover_blank_rsid_losslessly(self):
+        fields = ["Chr", "Pos_b37", "RSID", "Allele1", "Allele2",
+                  "Freq1", "Effect", "StdErr", "P-value", "n_total_sum"]
+        original_tokens = ["1", "2556125", "t", "c", "0.3260",
+                           "-0.0035140", "0.0021112", "0.09603", "547349"]
+        recovered = normalize_sumstats.recover_missing_rsid(fields, original_tokens)
+        self.assertIsNotNone(recovered)
+        self.assertEqual(recovered["RSID"], "")
+        self.assertEqual(recovered["Allele1"], "t")
+        self.assertEqual(recovered["Effect"], "-0.0035140")
+        self.assertIsNone(normalize_sumstats.classify(recovered, normalize_sumstats.MAP["ckdgen2019"])[0])
+
+    def test_do_not_recover_other_missing_columns(self):
+        fields = ["Chr", "Pos_b37", "RSID", "Allele1", "Allele2",
+                  "Freq1", "Effect", "StdErr", "P-value", "n_total_sum"]
+        # Here the third token is an RSID, so some other field was lost.
+        wrong = ["1", "2556125", "rs123", "t", "0.3260",
+                 "-0.0035140", "0.0021112", "0.09603", "547349"]
+        self.assertIsNone(normalize_sumstats.recover_missing_rsid(fields, wrong))
+
+    def test_normalize_recovered_rsid_is_not_exclusion(self):
+        with tempfile.TemporaryDirectory() as d:
+            raw = Path(d) / "src.gz"
+            with gzip.open(raw, "wt") as fh:
+                fh.write("Chr Pos_b37 RSID Allele1 Allele2 Freq1 Effect StdErr P-value n_total_sum\n")
+                fh.write("1 200 rs2 A G 0.2 0.1 0.03 0.01 100\n")
+                fh.write("1 2556125 t c 0.3260 -0.0035140 0.0021112 0.09603 547349\n")
+            result = normalize_sumstats.normalize(raw, Path(d) / "normalized.gz", "ckdgen2019")
+            self.assertEqual(result["status"], "PASS")
+            self.assertEqual(result["output_rows"], 2)
+            self.assertEqual(result["excluded_total"], 0)
+            self.assertEqual(result["recovered_missing_rsid"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()
