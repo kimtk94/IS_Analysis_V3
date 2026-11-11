@@ -55,6 +55,27 @@ References: original TOAST https://doi.org/10.1161/01.STR.24.1.35 ; ISGC phenoty
 
 **EAS accession mapping:** catalog metadata verified, but literature case counts are not file-verified. Source https://doi.org/10.1038/s41586-022-05165-3 ; https://www.ebi.ac.uk/gwas/ .
 
+## 2A. Newly located cohort-specific ascertainment evidence (preprint supplementary appendix)
+
+Source: [Mishra et al. GIGASTROKE supplementary appendix, Research Square preprint version](https://assets-eu.researchsquare.com/files/rs-1175817/v1/609a86c10d4db8cca4fc7ca5.pdf). This is an **earlier preprint supplement**, not a reconciled final version-of-record table. It verifies that multiple ascertainment methods were described in the consortium, but the accession-specific membership/weight and final publication amendments remain to be verified.
+
+| Cohort example | Stroke case identification | Subtyping | Phenotype classification implication |
+|---|---|---|---|
+| BioBank Japan (BBJ), Japan | Physician diagnosis at 66 collaborating hospitals; patients >40 years; medical-record survey. Appendix reports 16,256 IS registrants, including 1,256 LAS, 710 CE, 4,613 SVS | TOAST from medical records | Clinician-ascertained with etiologic subtypes; **do not conflate** appendix cohort count with EAS meta-analysis sample count |
+| Hisayama / Fukuoka Stroke Registry, Japan | Sudden focal nonconvulsive neurological deficit >24 h due to ischemia; stroke neurologist diagnosis using CT/MRI, vascular and cardiac evaluation | Cerebrovascular Disease III + TOAST | Classical duration-defined phenotype; differs from tissue-based <24 h MRI-positive IS inclusion |
+| China Kadoorie Biobank (CKB), China | Incident records through death/disease registries and health insurance; baseline stroke/TIA-free; recorded I60, I61, I63, I64 | No uniform TOAST subgroup confirmation in viewed description | AS encompasses multiple etiologies; cannot treat I60/I61/I64 as IS |
+| Korean Cancer Prevention Study-II (KCPS2), Korea | Prospective incident stroke ascertainment using National Health Insurance claims and linked mortality/hospitalization data; appendix states broad ICD-10 I60–I69 | No individual clinical TOAST adjudication demonstrated by appendix | Administrative coding source; **do not** assume I60–I69 are all infarctions or all imaging-confirmed |
+| Tohoku Medical Megabank (TMM), Japan | Appendix describes population cohorts but gives no detailed incident stroke diagnostic algorithm in viewed section | Unverified | Do not infer clinical case definition from cohort name |
+
+Specific PDF appendix evidence: BBJ pp.14–15; Hisayama pp.24–25; CKB and KCPS2 pp.39–40; TMM p.43. A definitive answer requires reconciling these with the final Nature supplementary DOCX and mapping each contributing dataset to GCST90104544–48.
+
+### Revised phenotype interpretation
+
+- **Partial source review PASS:** verified preprint narrative examples show both clinical/TOAST and administrative/ICD ascertainment among contributing cohorts.
+- **P0 cohort-to-accession phenotype completeness HOLD:** we have NOT established the exact participant contribution of BBJ, Hisayama, CKB, KCPS2 or TMM to each EAS accession, nor whether final supplemental definitions changed.
+- **Causal interpretation limitation:** Differences between EAS and EUR genetic associations can reflect variation in phenotype ascertainment, case mix, linkage disequilibrium, allele frequency and sampling power. Do not attribute a difference solely to ancestry.
+- **Design implication:** Primary outcome remains IS, but add a documented phenotype ascertainment table and prespecified sensitivity to clinical versus administrative cohorts **only if source-stratified GWAS summary statistics can actually be obtained**. Without cohort-stratified data, disclose unresolvable heterogeneity rather than promising correction.
+
 ## 3. Proposed scientific question and design
 
 **Question:** *Among independently preselected ischemic-stroke susceptibility loci, how much does ancestry-matched blood cis-eQTL evidence alter locus-to-gene prioritization in EUR versus EAS, after accounting for phenotype ascertainment, statistical power, variant coverage and ancestry-matched LD?*
@@ -79,7 +100,7 @@ This is a **conditional GO**, not a novel result. If exact cohort-level phenotyp
 
 | Gate | Concrete evidence | Status |
 |---|---|---|
-| P0 Phenotype map | Obtain GIGASTROKE Supplementary Information, study × ancestry × outcome matrix with imaging/clinical adjudication/ICD/self-report, subtyping, incident/prevalent and exclusion criteria | **HOLD** |
+| P0 Phenotype map | Preprint appendix checked for BBJ, Hisayama, CKB, KCPS2 and TMM; verify final Supplementary DOCX and map each contributing cohort/ascertainment to EAS accession/outcome | **PARTIAL / HOLD** |
 | P1 Source files | Full IS EUR and EAS GWAS download, headers/alleles/build/INFO, hashes, actual sample counts and study provenance | **HOLD** |
 | P2 EAS eQTL | MAEEA downloadable full cis-eQTL summary variants/effect/SE/MAF/N and distribution rights, matched EUR comparator | **HOLD** |
 | P3 Statistical feasibility | Allele harmonization/coverage and ancestry-appropriate LD; credible-set overlap and detectable-effect analysis, prospectively selected discovery loci | **HOLD** |
