@@ -104,6 +104,8 @@ def ingest(root, max_mb=650, opener=urlopen):
             "normalization_status":results["status"],
             "input_rows":results["input_rows"],"normalized_rows":results["output_rows"],
             "excluded":results["excluded"],
+            "excluded_total":results["excluded_total"],
+            "excluded_examples":results["excluded_examples"],
             "normalized_sha256":results["output_sha256"],
             "note":"Original source verified against consortium MD5; full source parsed. Not yet allele harmonized, independent LDSC or GWAS duplicate QC."}
 
