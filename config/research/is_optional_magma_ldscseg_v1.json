@@ -1,0 +1,198 @@
+{
+  "schema_version": "1.0",
+  "extension_id": "IS_EUR_EAS_OPTIONAL_TISSUE_ENRICHMENT_V1",
+  "extends_protocol_id": "IS_EUR_EAS_REGULATORY_V1",
+  "created_utc_date": "2026-11-11",
+  "status": "DESIGN_ONLY_SOURCE_NOT_VERIFIED",
+  "primary_endpoint_unchanged": true,
+  "new_primary_hypothesis": false,
+  "purpose": "Optional enrichment context for ischemic-stroke susceptibility; neither replaces locus-level eQTL colocalization nor supplies independent individual-level validation.",
+  "sources": {
+    "GWAS_EUR_IS": {
+      "accession": "GCST90104540",
+      "source_qc_verified": false,
+      "phenotype": "ischemic_stroke",
+      "ancestry": "EUR"
+    },
+    "GWAS_EAS_IS": {
+      "accession": "GCST90104545",
+      "source_qc_verified": false,
+      "phenotype": "ischemic_stroke",
+      "ancestry": "EAS"
+    },
+    "LD_EUR": {
+      "ancestry": "EUR",
+      "source_qc_verified": false
+    },
+    "LD_EAS": {
+      "ancestry": "EAS",
+      "source_qc_verified": false
+    },
+    "GENE_ANNOTATION": {
+      "genome_build": "UNVERIFIED",
+      "version": "UNVERIFIED",
+      "source_qc_verified": false
+    },
+    "EXPRESSION_SPECIFICITY": {
+      "dataset": "UNSELECTED",
+      "gene_id_scheme": "UNVERIFIED",
+      "source_qc_verified": false
+    },
+    "LDSC_SEG_EUR_ANNOTATION_LDSCORES": {
+      "ancestry": "EUR",
+      "baseline_model": "UNVERIFIED",
+      "source_qc_verified": false
+    },
+    "LDSC_SEG_EAS_ANNOTATION_LDSCORES": {
+      "ancestry": "EAS",
+      "baseline_model": "UNVERIFIED",
+      "source_qc_verified": false
+    },
+    "LDSC_EUR_WEIGHTS": {
+      "ancestry": "EUR",
+      "source_qc_verified": false
+    },
+    "LDSC_EAS_WEIGHTS": {
+      "ancestry": "EAS",
+      "source_qc_verified": false
+    }
+  },
+  "analyses": [
+    {
+      "id": "MAGMA_GENE",
+      "method": "MAGMA gene-based (SNP-wise aggregation with LD correction)",
+      "decision": "ADD_AS_SECONDARY",
+      "depends_on": [
+        "G1",
+        "GWAS_EUR_IS",
+        "LD_EUR",
+        "GENE_ANNOTATION"
+      ],
+      "questions": [
+        "Which genes show aggregated GWAS association?",
+        "Are gene-level associations detectable in EAS with matched LD and allele/variant coverage?"
+      ],
+      "unit": "gene_x_ancestry",
+      "eur_status": "HOLD",
+      "eas_status": "HOLD",
+      "requirements": [
+        "Genome build and gene coordinates frozen",
+        "EUR/EAS ancestry-matched LD reference, separately",
+        "SNP/gene coverage and gene-window definition reported",
+        "Gene-level tests genome-wide FDR/Bonferroni and per-population uncertainty",
+        "Do not equate gene P-value with causal mediation or eQTL colocalization"
+      ],
+      "outputs": [
+        "gene_pvals_eur.tsv",
+        "gene_pvals_eas.tsv",
+        "cross_ancestry_gene_association_qc.tsv"
+      ],
+      "non_interpretations": [
+        "Not a locus-level shared-causal-variant test",
+        "Not independent replication if using the same consortium"
+      ]
+    },
+    {
+      "id": "MAGMA_GENE_PROPERTY",
+      "method": "MAGMA gene-property with preselected tissue/cell-type expression specificity",
+      "decision": "OPTIONAL_CONTEXT",
+      "depends_on": [
+        "MAGMA_GENE",
+        "EXPRESSION_SPECIFICITY"
+      ],
+      "questions": [
+        "Does whole-genome IS gene association vary with expression specificity of prespecified vascular/cardiac/brain/blood tissues or cell types?"
+      ],
+      "unit": "tissue_or_celltype_x_ancestry",
+      "eur_status": "HOLD",
+      "eas_status": "HOLD",
+      "requirements": [
+        "Independent expression atlas source, gene ID mapping, cell QC and expression-specificity normalization documented",
+        "Gene-level MAGMA results (full gene universe), not a shortlist of significant/colocalized genes",
+        "Gene length and related covariates accounted for",
+        "Multiple tissue tests FDR-controlled; conditional analysis where tissue expression correlates",
+        "Use same tissue definition for both ancestries and record ancestry of expression donors"
+      ],
+      "outputs": [
+        "magma_gene_property_eur.tsv",
+        "magma_gene_property_eas.tsv"
+      ],
+      "non_interpretations": [
+        "Expression atlas ancestry is not automatically the GWAS ancestry",
+        "Cell-type expression is not proof of cell-type-specific causal regulation"
+      ]
+    },
+    {
+      "id": "LDSC_SEG",
+      "method": "Stratified LDSC using specifically expressed gene-linked annotations conditional on compatible baseline model",
+      "decision": "CONDITIONAL_SENSITIVITY_ONLY",
+      "depends_on": [
+        "G1",
+        "GWAS_EUR_IS",
+        "LDSC_SEG_EUR_ANNOTATION_LDSCORES",
+        "LDSC_EUR_WEIGHTS"
+      ],
+      "questions": [
+        "Is genome-wide SNP heritability enriched in predefined tissue/cell-type specifically-expressed-gene annotations?"
+      ],
+      "unit": "predefined_annotation_x_ancestry",
+      "eur_status": "HOLD",
+      "eas_status": "HOLD",
+      "requirements": [
+        "Genome-wide GWAS usable for LDSC, not just lead SNPs",
+        "Independent full-sumstats QC and reliable polygenic signal/h2 standard error",
+        "Signed statistic and N per SNP/effective N auditing as appropriate",
+        "Matching population-specific annotation LD scores, regression weights and frequency sources",
+        "Compatible annotation/baselineLD reference build, universe and baseline model",
+        "Report enrichment coefficients, SE, one-sided P, adjusted q, h2 Z, intercept, mean chi2 and instability",
+        "EAS requires EAS-matched LDSC annotation LD scores, not EUR precomputed LD scores",
+        "Avoid strong interpretation when EAS h2 is too imprecise"
+      ],
+      "readiness_heuristic": {
+        "min_h2_z_for_consideration": 4,
+        "interpretation": "Conservative reporting heuristic, not universally valid model-assumption threshold; low value leads to REVIEW/NO_GO."
+      },
+      "outputs": [
+        "ldsc_seg_eur_enrichment.tsv",
+        "ldsc_seg_eas_enrichment.tsv",
+        "ldsc_seg_feasibility.json"
+      ],
+      "non_interpretations": [
+        "Not proof of tissue/cell-type causal mechanism",
+        "EUR only output does not support EUR-EAS tissue-enrichment contrast"
+      ]
+    }
+  ],
+  "prespecified_tissue_panel": {
+    "proposed": [
+      "artery_aorta",
+      "artery_coronary",
+      "artery_tibial",
+      "heart_atrial_appendage",
+      "heart_left_ventricle",
+      "whole_blood",
+      "brain_cortex",
+      "brain_cerebellum"
+    ],
+    "status": "CANDIDATE_PENDING_ATLAS_MAPPING",
+    "selection_rule": "Freeze actual atlas IDs, direction of tests and families of hypotheses before inspecting outputs. Do not add posthoc tissues to primary tests.",
+    "interpretation": "Vascular and cardiac relevance is a priori plausible for IS risk but is not a demonstrated result. Atlas-specific availability and data limitations apply."
+  },
+  "method_decision_policy": {
+    "MAGMA_GENE": "Eligible in EUR after G1 + reference LD + gene annotation QC; EAS separately only after EAS reference QC. This is a secondary orthogonal evidence type, not a primary endpoint.",
+    "MAGMA_GENE_PROPERTY": "Requires MAGMA gene-wide outputs plus frozen expression atlas and tissue definitions; explanatory, not validation.",
+    "LDSC_SEG": "Requires GWAS-wide reliable h2 signal and annotation-specific matched LD/baseline/weights; EAS no-go if unmatched. If failing, SKIP WITH EVIDENCE instead of relabeling EUR as EAS.",
+    "comparison": "Do not infer ancestry difference from EUR significant and EAS nonsignificant; evaluate comparable effect estimates, uncertainty, power and tissue atlas composition."
+  },
+  "novelty_constraints": [
+    "MAGMA, LDSC-SEG and broad stroke tissue enrichment exist in published literature; method choice itself is not a novelty claim.",
+    "The main locus-to-gene EUR/EAS eQTL question is unchanged.",
+    "EAS-only sample size does not establish originality; compare exact variants, genes, tissue and outcomes against previous publications."
+  ],
+  "documentation": [
+    "https://doi.org/10.1371/journal.pcbi.1004219",
+    "https://doi.org/10.1038/s41588-018-0081-4",
+    "https://doi.org/10.1038/s41467-019-11181-1",
+    "https://doi.org/10.3390/genes17091061"
+  ]
+}
