@@ -1,0 +1,307 @@
+{
+  "schema_version": "1.0",
+  "protocol_id": "IS_EUR_EAS_REGULATORY_V1",
+  "protocol_date": "2026-11-11",
+  "proposal_note": "Internal research architecture and test specification only; not a course submission. Course instructions forbid AI-written submissions.",
+  "status": "CONDITIONAL_GO_DESIGN_ONLY",
+  "locked": false,
+  "locking_rule": "Freeze outcome, loci selection, QC thresholds and main estimands in a versioned commit before processing any discovery/evaluation results. Current configuration is prospective design, not preregistration.",
+  "research_question": "At EUR-discovered ischemic stroke loci, how reproducible is ancestry-matched cis-eQTL-based gene prioritization between EUR and EAS after comparing phenotype definitions, SNP coverage, LD, and statistical power?",
+  "primary_endpoint": {
+    "name": "cross_ancestry_locus_to_gene_concordance",
+    "unit": "independent_GWAS_locus",
+    "definition": "Among prespecified EUR-discovered loci analyzable in BOTH EUR and EAS for the same gene and ancestry-specific cis-eQTL, report N_same_top_gene, N_different_top_gene, N_unresolved, and denominator N_both_evaluable. Report coverage N_both_evaluable / N_preselected, along with uncertainty; do not condition solely on significant EAS results.",
+    "missingness_rule": "A locus with absent EAS eQTL, inadequate variants, LD or statistical power is NON_EVALUABLE, never classified as biological disagreement.",
+    "success_interpretation": "Descriptive evidence of portability/stability; not causal effect of ancestry or conclusive ethnic biology."
+  },
+  "primary_outcome": {
+    "name": "ischemic_stroke_susceptibility",
+    "type": "binary_case_control_GWAS",
+    "eur_gwas_accession": "UNVERIFIED_LOCKED_PENDING_SOURCE_AUDIT",
+    "eas_gwas_accession": "GCST90104545",
+    "eas_cases_literature": 19032,
+    "eas_controls_literature": 237242,
+    "clinical_basis": "Contributing cohorts may combine physician-adjudicated, TOAST and administrative ICD based ascertainment. Actual GCST accession contribution unresolved.",
+    "exclusions": [
+      "any_stroke_including_hemorrhagic",
+      "TIA_without_infarction",
+      "six_month_progression",
+      "prognosis",
+      "treatment_response",
+      "mortality"
+    ]
+  },
+  "secondary_outcomes": [
+    {
+      "name": "small_vessel_stroke",
+      "eas_gwas_accession": "GCST90104548",
+      "eas_cases_literature": 5532,
+      "priority": "exploratory_only",
+      "interpretation": "May share cases with primary IS phenotype; no independent replication claim."
+    },
+    {
+      "name": "cardioembolic_stroke",
+      "eas_gwas_accession": "GCST90104546",
+      "eas_cases_literature": 926,
+      "priority": "exploratory_only",
+      "interpretation": "Insufficient assumed power for headline EAS mechanistic inference."
+    }
+  ],
+  "data_contracts": [
+    {
+      "id": "GWAS_EUR_IS",
+      "kind": "gwas",
+      "ancestry": "EUR",
+      "purpose": "discovery",
+      "requires": [
+        "study_id",
+        "study_source",
+        "phenotype_definition",
+        "genome_build",
+        "variant_id",
+        "chr",
+        "pos",
+        "effect_allele",
+        "other_allele",
+        "beta_or_log_or",
+        "standard_error",
+        "p_value",
+        "effect_allele_frequency",
+        "n_cases",
+        "n_controls",
+        "imputation_info_if_available"
+      ],
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "GWAS_EAS_IS",
+      "kind": "gwas",
+      "ancestry": "EAS",
+      "purpose": "cross_ancestry_assessment_not_independent_replication",
+      "requires": [
+        "study_id",
+        "study_source",
+        "phenotype_definition",
+        "genome_build",
+        "variant_id",
+        "chr",
+        "pos",
+        "effect_allele",
+        "other_allele",
+        "beta_or_log_or",
+        "standard_error",
+        "p_value",
+        "effect_allele_frequency",
+        "n_cases",
+        "n_controls",
+        "imputation_info_if_available"
+      ],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "id": "EQTL_EUR_BLOOD",
+      "kind": "eqtl",
+      "ancestry": "EUR",
+      "tissue": "whole_blood",
+      "requires": [
+        "study_id",
+        "tissue",
+        "sample_size",
+        "gene_id",
+        "genome_build",
+        "variant_id",
+        "effect_allele",
+        "other_allele",
+        "beta",
+        "standard_error",
+        "p_value",
+        "effect_allele_frequency_if_available",
+        "cis_window",
+        "full_variant_level_results"
+      ],
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "EQTL_EAS_BLOOD",
+      "kind": "eqtl",
+      "ancestry": "EAS",
+      "tissue": "whole_blood",
+      "requires": [
+        "study_id",
+        "tissue",
+        "sample_size",
+        "gene_id",
+        "genome_build",
+        "variant_id",
+        "effect_allele",
+        "other_allele",
+        "beta",
+        "standard_error",
+        "p_value",
+        "effect_allele_frequency_if_available",
+        "cis_window",
+        "full_variant_level_results"
+      ],
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "LD_EUR",
+      "kind": "ld_reference",
+      "ancestry": "EUR",
+      "requires": [
+        "population_provenance",
+        "genome_build",
+        "sample_size",
+        "reference_panel",
+        "variant_coverage",
+        "ld_matrix_for_locus"
+      ],
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "LD_EAS",
+      "kind": "ld_reference",
+      "ancestry": "EAS",
+      "requires": [
+        "population_provenance",
+        "genome_build",
+        "sample_size",
+        "reference_panel",
+        "variant_coverage",
+        "ld_matrix_for_locus"
+      ],
+      "status": "NOT_VERIFIED"
+    }
+  ],
+  "comparison_design": {
+    "loci_unit": "independent_locus_with_declared_nonoverlapping_windows",
+    "discovery": "EUR_IS_GWAS_ONLY",
+    "external_validation_claim": false,
+    "core_comparisons": [
+      "EUR_IS_GWAS_with_EUR_whole_blood_eQTL_and_EUR_LD",
+      "EAS_IS_GWAS_with_EAS_whole_blood_eQTL_and_EAS_LD"
+    ],
+    "fairness_conditions": [
+      "Same genome build and explicit liftover chain provenance",
+      "Harmonized and comparable allele coding",
+      "Matched tissue and cis-window definition",
+      "Per-locus overlapping SNP universe documented",
+      "Separate EUR/EAS LD matrices",
+      "Document eQTL sample size, effective GWAS sample size, coverage, imputation quality and statistical power",
+      "Document phenotype ascertainment and likely overlapping samples",
+      "No selection of loci by EAS discovery statistics"
+    ],
+    "anti_claims": [
+      "Difference in significance is not evidence of effect heterogeneity",
+      "Colocalization is not proof of mediation",
+      "Cell-type expression does not demonstrate cell-type eQTL",
+      "Two GIGASTROKE ancestry strata are not automatically independent replication",
+      "Neither eQTL study is patient-matched to GWAS patients",
+      "A low-powered result is not negative biological evidence"
+    ]
+  },
+  "analysis_methods": [
+    {
+      "step": "A0_phenotype_audit",
+      "question": "Are EUR and EAS phenotype case definitions actually comparable?",
+      "method": "Cohort contribution × trait × ancestry phenotyping and provenance table",
+      "deliverable": "phenotype_matrix.csv",
+      "stop_rule": "Unresolvable ascertainment heterogeneity is explicitly recorded; no ancestry-specific causal mechanism claims."
+    },
+    {
+      "step": "A1_gwas_qc",
+      "question": "Are source effect sizes/alleles/build and study membership suitable for analysis?",
+      "method": "Source checksums, header/body validation, locus extraction, palindromic & multiallelic QC",
+      "deliverable": "gwas_qc.json",
+      "stop_rule": "Missing alleles/effects/build or unknowable overlap => HOLD."
+    },
+    {
+      "step": "A2_eQTL_ld_qc",
+      "question": "Can the same gene and variant universe be compared in both populations?",
+      "method": "Whole-blood eQTL access audit, matching SNP/cis-gene set, ancestry LD checks, power assessment",
+      "deliverable": "paired_loci_eligibility.tsv",
+      "stop_rule": "No EAS full eQTL or ancestry LD => no primary comparison."
+    },
+    {
+      "step": "A3_locus_coloc",
+      "question": "Is there evidence GWAS and cis-eQTL share variant(s) within each ancestry?",
+      "method": "Fine-mapping with multi-signal aware colocalization where well-powered; PP3/PP4, credible-set quality, priors/sensitivity",
+      "deliverable": "locus_gene_coloc.tsv",
+      "stop_rule": "Poor conditional signals or inadequate SNP coverage => UNRESOLVED."
+    },
+    {
+      "step": "A4_compare",
+      "question": "Do ancestry-matched sources support the same genes?",
+      "method": "Compute paired locus-gene concordance/discordance + coverage/power matched sensitivity, CIs across loci",
+      "deliverable": "paired_locus_concordance.tsv",
+      "stop_rule": "Do not classify non-evaluable loci as discordant."
+    },
+    {
+      "step": "A5_novelty",
+      "question": "Does locus-wise observation add to published IS/AF/eQTL work?",
+      "method": "Locus × gene × ancestry × prepublication matrix; independent evidence vs reused GWAS sample",
+      "deliverable": "novelty_matrix.tsv",
+      "stop_rule": "Prior published interpretation or no independent evidence => no novelty assertion."
+    }
+  ],
+  "decision_gates": [
+    {
+      "id": "G0",
+      "label": "phenotype_source_definition",
+      "status": "PARTIAL_HOLD",
+      "verified_evidence": "Preprint supplement examples and GWAS Catalog trait names; full accession-contribution not mapped.",
+      "required_to_pass": "Final source supplement + contributing cohort/ascertainment by accession/outcome where recoverable."
+    },
+    {
+      "id": "G1",
+      "label": "gwas_sumstats_and_provenance",
+      "status": "HOLD",
+      "verified_evidence": "Catalog metadata only.",
+      "required_to_pass": "Full EUR and EAS files verified by source hashes, build, EAF, beta/SE and mapping."
+    },
+    {
+      "id": "G2",
+      "label": "ancestry_matched_eqtl_and_ld",
+      "status": "HOLD",
+      "verified_evidence": "Study publications identified, full data not audited.",
+      "required_to_pass": "Both EUR/EAS full cis-eQTL variant results and appropriate matched LD reproducibly accessible."
+    },
+    {
+      "id": "G3",
+      "label": "prelocked_loci_coverage_and_power",
+      "status": "BLOCKED",
+      "verified_evidence": "Not measured.",
+      "required_to_pass": "EUR discovery loci frozen, locus eligibility, shared SNP coverage, sensitivity power audit."
+    },
+    {
+      "id": "G4",
+      "label": "multi_signal_coloc_and_robustness",
+      "status": "BLOCKED",
+      "verified_evidence": "Not run.",
+      "required_to_pass": "Valid PP3/PP4, multi-signal-aware analysis and sensitivity per analyzable locus."
+    },
+    {
+      "id": "G5",
+      "label": "novelty_and_reproducibility",
+      "status": "BLOCKED",
+      "verified_evidence": "Background literature only.",
+      "required_to_pass": "Locus-wise publication comparison, independent evidence where claimed, and report all null results."
+    }
+  ],
+  "run_order": [
+    "G0",
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5"
+  ],
+  "statistical_fallback": "If G2 fails, EUR-only discovery interpretation with descriptive EAS GWAS effect direction; label hypothesis generation, not EAS eQTL replication.",
+  "source_references": [
+    "https://doi.org/10.1038/s41586-022-05165-3",
+    "https://doi.org/10.1371/journal.pgen.1009440",
+    "https://doi.org/10.1371/journal.pgen.1012221",
+    "https://pubmed.ncbi.nlm.nih.gov/38744227/",
+    "https://doi.org/10.1161/STR.0b013e318296aeca"
+  ]
+}
