@@ -10,8 +10,8 @@ class TestCKMNormalizer(unittest.TestCase):
             root=Path(d)
             raw=root/"source.tsv.gz"
             with gzip.open(raw,"wt") as fh:
-                fh.write("Chr\tPos_b37\tAllele1\tAllele2\tEffect\tStdErr\tP-value\n")
-                fh.write("1\t100\tA\tG\t0.22\t0.07\t0.001\n")
+                fh.write("Chr Pos_b37 Allele1 Allele2 Effect StdErr P-value\n")
+                fh.write("1   100 A G 0.22 0.07 0.001\n")
             output=root/"out.tsv.gz"
             report=norm.normalize(raw,output,"ckdgen2019")
             self.assertEqual(report["status"],"PASS")
