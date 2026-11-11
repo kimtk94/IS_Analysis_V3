@@ -6,6 +6,7 @@ on:
       - 'scripts/ckm_stroke/**'
       - 'config/ckm_stroke/**'
       - 'tests/test_ckm_stroke_source_audit.py'
+      - 'tests/test_ckm_stroke_normalizer.py'
       - 'tests/test_ckm_stroke_pipeline.py'
       - 'tests/fixtures/ckm_stroke/**'
       - 'docs/ckm_stroke_pipeline.md'
@@ -15,6 +16,7 @@ on:
       - 'scripts/ckm_stroke/**'
       - 'config/ckm_stroke/**'
       - 'tests/test_ckm_stroke_source_audit.py'
+      - 'tests/test_ckm_stroke_normalizer.py'
       - 'tests/test_ckm_stroke_pipeline.py'
       - 'tests/fixtures/ckm_stroke/**'
       - 'docs/ckm_stroke_pipeline.md'
@@ -35,7 +37,7 @@ jobs:
           python-version: '3.11'
       - name: Compile and test small fixtures
         run: |
-          python -m py_compile scripts/ckm_stroke/pipeline.py tests/test_ckm_stroke_pipeline.py
+          python -m py_compile scripts/ckm_stroke/*.py tests/test_ckm_stroke_*.py
           python -m unittest discover -s tests -p 'test_ckm_stroke_*.py' -v
 
   stages:
