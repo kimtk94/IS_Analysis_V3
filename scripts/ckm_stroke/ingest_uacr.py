@@ -16,6 +16,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import urlopen, Request
 
 from scripts.ckm_stroke.normalize_sumstats import normalize
+from scripts.ckm_stroke.variant_qc import variant_qc
 
 UACR = {
     "url": "https://ckdgen.imbi.uni-freiburg.de/files/Teumer2019/formatted_20180517-UACR_overall-EA-nstud_18-SumMac_400.tbl.rsid.gz",
@@ -93,10 +94,11 @@ def ingest(root, max_mb=650, opener=urlopen):
                 "input_sha256":digest_sha}
     try:
         results=normalize(target,normalized,"ckdgen2019",digest_sha)
-    except (OSError,ValueError,EOFError) as exc:
+        variant=variant_qc(normalized,work_dir=root)
+    except (OSError,ValueError,EOFError,RuntimeError) as exc:
         return {"status":"FAIL","scientific_status":"NOT_RUN",
                 "reason":"normalization or gzip integrity failed","details":str(exc)[:300]}
-    return {"status":"PASS" if results["status"] in ("PASS","HOLD") else "FAIL",
+    return {"status":"PASS" if results["status"]=="PASS" and variant["status"]=="PASS" else "HOLD",
             "scientific_status":"HOLD","source_verified":True,
             "source_md5_verified":True,"gzip_stream_read_to_end":True,
             "source_bytes":nbytes,"official_md5":UACR["md5"],
@@ -110,6 +112,7 @@ def ingest(root, max_mb=650, opener=urlopen):
             "recovered_missing_rsid":results["recovered_missing_rsid"],
             "recovered_examples":results["recovered_examples"],
             "normalized_sha256":results["output_sha256"],
+            "variant_qc":variant,
             "note":"Original source verified against consortium MD5; full source parsed. Not yet allele harmonized, independent LDSC or GWAS duplicate QC."}
 
 
