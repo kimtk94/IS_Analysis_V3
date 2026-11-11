@@ -1,12 +1,6 @@
 name: CKM Stroke P1 CKDGen UACR real-source integrity
 
 on:
-  push:
-    paths:
-      - 'scripts/ckm_stroke/ingest_uacr.py'
-      - 'scripts/ckm_stroke/normalize_sumstats.py'
-      - 'tests/test_ckm_stroke_ingest_uacr.py'
-      - '.github/workflows/ckm-stroke-uacr-ingest.yml'
   workflow_dispatch:
 
 permissions:
@@ -27,7 +21,7 @@ jobs:
           python-version: '3.11'
       - name: Run offline scientific-integrity regression tests
         run: |
-          python -m unittest tests.test_ckm_stroke_ingest_uacr tests.test_ckm_stroke_normalizer -v
+          python -m unittest tests.test_ckm_stroke_ingest_uacr tests.test_ckm_stroke_normalizer tests.test_ckm_stroke_variant_qc -v
       - name: Download and verify full UACR source in ephemeral runner
         run: |
           python -m scripts.ckm_stroke.ingest_uacr \
