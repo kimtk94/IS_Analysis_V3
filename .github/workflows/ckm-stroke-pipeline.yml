@@ -63,3 +63,29 @@ jobs:
           path: artifacts/ckm_stroke/
           retention-days: 30
           if-no-files-found: warn
+
+  aggregate:
+    if: always()
+    needs: [regression, stages]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download seven stage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-stroke-*
+          path: artifacts/ckm_stroke
+          merge-multiple: true
+      - name: Report technical versus scientific completion
+        run: |
+          python scripts/ckm_stroke/aggregate.py \
+            --folder artifacts/ckm_stroke \
+            --out artifacts/ckm_stroke_summary.json
+      - name: Upload integrated status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-summary
+          path: artifacts/ckm_stroke_summary.json
+          if-no-files-found: warn
