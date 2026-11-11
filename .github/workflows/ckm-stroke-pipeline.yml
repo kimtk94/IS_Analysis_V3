@@ -1,0 +1,65 @@
+name: CKM Stroke P0-P6 staged research gates
+
+on:
+  push:
+    paths:
+      - 'scripts/ckm_stroke/**'
+      - 'config/ckm_stroke/**'
+      - 'tests/test_ckm_stroke_pipeline.py'
+      - 'tests/fixtures/ckm_stroke/**'
+      - 'docs/ckm_stroke_pipeline.md'
+      - '.github/workflows/ckm-stroke-pipeline.yml'
+  pull_request:
+    paths:
+      - 'scripts/ckm_stroke/**'
+      - 'config/ckm_stroke/**'
+      - 'tests/test_ckm_stroke_pipeline.py'
+      - 'tests/fixtures/ckm_stroke/**'
+      - 'docs/ckm_stroke_pipeline.md'
+      - '.github/workflows/ckm-stroke-pipeline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and test small fixtures
+        run: |
+          python -m py_compile scripts/ckm_stroke/pipeline.py tests/test_ckm_stroke_pipeline.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_pipeline.py' -v
+
+  stages:
+    needs: regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        stage: [p0, p1, p2, p3, p4, p5, p6]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run one evidence gate
+        env:
+          CKM_STAGE: ${{ matrix.stage }}
+        run: |
+          python scripts/ckm_stroke/pipeline.py --stage "$CKM_STAGE" \
+            --out "artifacts/ckm_stroke/$CKM_STAGE.json"
+      - name: Archive stage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-${{ matrix.stage }}
+          path: artifacts/ckm_stroke/
+          retention-days: 30
+          if-no-files-found: warn
