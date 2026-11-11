@@ -1,0 +1,44 @@
+name: IS GSE331114 eight-sample immune-marker QC synthesis
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/aggregate_gse331114_cell_marker_qc.py'
+      - 'tests/is/test_aggregate_gse331114_cell_marker_qc.py'
+      - '.github/workflows/is_gse331114_marker_synthesis.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  synthesize-markers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit-test marker integration and false biological label protections
+        run: python3 -m unittest discover -s tests/is -p 'test_aggregate_gse331114_cell_marker_qc.py' -v
+      - name: Fetch exact prior eight verified marker summaries
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 43013961145
+          pattern: is-gse331114-marker-*
+          merge-multiple: false
+          path: downloaded_gse331114_markers
+      - name: Integrate true 8-Sample marker evidence, explicitly HOLD pseudobulk DEG
+        run: python3 scripts/is/aggregate_gse331114_cell_marker_qc.py --source downloaded_gse331114_markers --out-dir artifacts/is_gse331114_marker_synthesis
+      - name: Preserve only sample-level evidence and QC decision
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gse331114-cell-marker-8sample-summary
+          path: artifacts/is_gse331114_marker_synthesis/
+          retention-days: 45
+          if-no-files-found: warn
