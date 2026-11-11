@@ -1,0 +1,38 @@
+name: IS full GWAS source integrity (EUR/EAS)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/is/audit_gwas_full_integrity.py"
+      - "tests/is/test_gwas_full_integrity.py"
+      - ".github/workflows/is_gwas_full_integrity.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  full-gwas-qc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        ancestry: [EUR, EAS]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Full-file QC offline tests
+        run: python3 -m unittest discover -s tests/is -p 'test_gwas_full_integrity.py' -v
+      - name: Download complete original gzip temporarily and audit all variant rows
+        run: python3 scripts/is/audit_gwas_full_integrity.py --ancestries ${{ matrix.ancestry }} --out-dir artifacts/is_gwas_full_qc
+      - name: Upload lightweight provenance and QC (not raw files)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gwas-full-original-qc-${{ matrix.ancestry }}
+          path: artifacts/is_gwas_full_qc/
+          if-no-files-found: warn
+          retention-days: 30
