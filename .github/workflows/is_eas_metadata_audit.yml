@@ -7,6 +7,10 @@ on:
       - 'scripts/is/audit_gigastroke_eas_metadata.py'
       - 'scripts/is/audit_stroke_phenotype_register.py'
       - 'scripts/is/validate_is_eas_study_design.py'
+      - 'scripts/is/validate_is_optional_enrichment.py'
+      - 'tests/is/test_is_optional_enrichment.py'
+      - 'config/research/is_optional_magma_ldscseg_v1.json'
+      - 'docs/research/is_magma_ldscseg_methods_decision_2026-11-11.md'
       - 'tests/is/test_is_eas_study_design.py'
       - 'config/research/is_eur_eas_regulatory_v1.json'
       - 'docs/research/is_eur_eas_regulatory_protocol_architecture_v1.md'
@@ -37,6 +41,10 @@ jobs:
         run: python3 -m unittest discover -s tests/is -p 'test_is_eas_study_design.py' -v
       - name: Audit research-design gates (design only)
         run: python3 scripts/is/validate_is_eas_study_design.py --output-dir artifacts/is_eas_design_gate
+      - name: Test optional MAGMA and LDSC-SEG interpretation safeguards
+        run: python3 -m unittest discover -s tests/is -p 'test_is_optional_enrichment.py' -v
+      - name: Audit optional MAGMA / LDSC-SEG readiness (no biological computation)
+        run: python3 scripts/is/validate_is_optional_enrichment.py --output-dir artifacts/is_eas_optional_enrichment
       - name: Attach audit evidence even if source is unavailable
         if: always()
         uses: actions/upload-artifact@v4
@@ -46,5 +54,6 @@ jobs:
             artifacts/is_eas_gwas_catalog/
             artifacts/is_eas_phenotypes/
             artifacts/is_eas_design_gate/
+            artifacts/is_eas_optional_enrichment/
           if-no-files-found: warn
           retention-days: 30
