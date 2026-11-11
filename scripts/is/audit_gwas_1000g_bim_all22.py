@@ -16,6 +16,10 @@ from contextlib import ExitStack
 from datetime import datetime, timezone
 import gzip
 import json
+import hashlib
+import subprocess
+import time
+from urllib.parse import urlparse
 import os
 from pathlib import Path
 import tarfile
@@ -62,6 +66,89 @@ COORDINATE_FOUND=(
     "COORDINATE_PRESENT_ALLELES_DISCORDANT",
 )
 
+
+
+def metadata_with_retry(ancestry,attempts=4):
+    """Transient Zenodo API timeouts are not scientific source absence."""
+    for attempt in range(1,attempts+1):
+        try:
+            print(f"SOURCE_METADATA attempt={attempt}/{attempts} ancestry={ancestry}",flush=True)
+            return metadata_ld_source(ancestry)
+        except (TimeoutError,urllib.error.URLError,OSError) as exc:
+            print(f"SOURCE_METADATA_RETRY error={type(exc).__name__}: {str(exc)[:150]}",flush=True)
+            if attempt>=attempts:
+                raise
+            time.sleep(attempt*4)
+    raise RuntimeError("Unreachable metadata retry state")
+
+
+def streamed_file_checksums(file_path,expected_size,expected_md5):
+    """Publisher identity must match exact physical file bytes."""
+    if not file_path.exists() or file_path.stat().st_size!=expected_size:
+        return None
+    md5=hashlib.md5()
+    sha256=hashlib.sha256()
+    with file_path.open("rb") as stream:
+        for chunk in iter(lambda:stream.read(4*1024*1024),b""):
+            md5.update(chunk)
+            sha256.update(chunk)
+    if md5.hexdigest().lower()!=expected_md5.lower():
+        return None
+    return {
+        "publisher_MD5_verified":True,
+        "downloaded_bytes":expected_size,
+        "MD5":md5.hexdigest(),
+        "SHA256_local":sha256.hexdigest(),
+    }
+
+
+def resumable_source_download(url,target,expected_md5,expected_size,attempts=4):
+    """GitHub runner curl partial resume + full publisher MD5; fail closed.
+
+    Handles interrupted original file reads but never treats curl success alone
+    as an integrity PASS. Limited to public source domains and 650MB cap.
+    """
+    parsed=urlparse(url)
+    if parsed.scheme!="https" or parsed.hostname not in {"zenodo.org","ftp.ebi.ac.uk"}:
+        raise ValueError("Unexpected source URL host or scheme")
+    if not isinstance(expected_size,int) or not 0<expected_size<650*1024*1024:
+        raise ValueError("Unexpected original source size")
+    for attempt in range(1,attempts+1):
+        proven=streamed_file_checksums(target,expected_size,expected_md5)
+        if proven:
+            return proven
+        if target.exists() and target.stat().st_size>=expected_size:
+            # Corrupt/oversized "complete" download: retry from zero, never bypass MD5.
+            target.unlink()
+        print(f"ORIGINAL_DOWNLOAD attempt={attempt}/{attempts} "
+              f"source={parsed.hostname} current_bytes={target.stat().st_size if target.exists() else 0}",
+              flush=True)
+        cmd=[
+            "curl","--fail","--location","--silent","--show-error",
+            "--retry","2","--retry-all-errors","--retry-delay","3",
+            "--connect-timeout","30","--max-time","800",
+            "--speed-time","45","--speed-limit","1024",
+            "--continue-at","-",
+            "--proto","=https","--proto-redir","=https",
+            "--output",str(target),url,
+        ]
+        try:
+            response=subprocess.run(cmd,capture_output=True,text=True,timeout=840,check=False)
+        except (OSError,subprocess.TimeoutExpired) as exc:
+            print(f"DOWNLOAD_TOOL_ERROR {type(exc).__name__}: {str(exc)[:160]}",flush=True)
+            response=None
+        if response and response.returncode!=0:
+            print(f"DOWNLOAD_NETWORK_RETRY curl_exit={response.returncode}: "
+                  f"{response.stderr[-240:]}",flush=True)
+        # Even if curl exited with a nonzero network return, the final output can
+        # be whole and publisher-identical when the connection closes late.
+        proven=streamed_file_checksums(target,expected_size,expected_md5)
+        if proven:
+            print(f"ORIGINAL_SOURCE_MD5_PASS bytes={expected_size}",flush=True)
+            return proven
+        if attempt<attempts:
+            time.sleep(attempt*3)
+    raise ValueError(f"Publisher MD5/size not verified after {attempts} attempts: {parsed.hostname}")
 
 def stage_bim_by_chr(archive,root):
     """Do not extract tar paths. Stream all .bim members to fixed-safe per-chr shards."""
@@ -240,7 +327,7 @@ def main():
     }
     try:
         source=SOURCES[args.ancestry]
-        ld=metadata_ld_source(args.ancestry)
+        ld=metadata_with_retry(args.ancestry)
         report["LD_publisher_source"]=ld
         accession=source["gwas_accession"]
         gwas_url=GWAS_FTP+accession+"/"+accession+"_buildGRCh37.tsv.gz"
@@ -248,25 +335,31 @@ def main():
             root=Path(temp)
             ldf=root/"ld_original.tgz"
             gwasf=root/"gwas_original.tsv.gz"
-            report["LD_checksum"]=download(ld["download_url"],ldf,ld["expected_publisher_md5"],ld["published_bytes"])
+            report["LD_checksum"]=resumable_source_download(ld["download_url"],ldf,ld["expected_publisher_md5"],ld["published_bytes"])
+            print("REFERENCE_BIM_CHR_STAGING_BEGIN",flush=True)
             bim_shards,bim_tally,members=stage_bim_by_chr(ldf,root)
+            print("REFERENCE_BIM_CHR_STAGING_PASS",flush=True)
             report["LD_BIM_source_counts"]=bim_tally
             report["LD_BIM_member_count"]=len(members)
             # Free compressed archive space; each chromosome reference BIM shard is enough for positional QC.
             ldf.unlink()
-            report["GWAS_checksum"]=download(gwas_url,gwasf,source["gwas_publisher_md5"],source["gwas_publisher_size"])
+            report["GWAS_checksum"]=resumable_source_download(gwas_url,gwasf,source["gwas_publisher_md5"],source["gwas_publisher_size"])
+            print("GWAS_FULL_GZIP_CHR_STAGING_BEGIN",flush=True)
             gwas_shards,gwas_tally=stage_gwas_by_chr(gwasf,root,args.ancestry)
+            print("GWAS_FULL_GZIP_CHR_STAGING_PASS",flush=True)
             report["GWAS_source_counts"]=gwas_tally
             gwasf.unlink()
             by_chr={}
             for chrom in sorted(AUTOSOMES):
                 by_chr[str(chrom)]=single_chr_overlap(chrom,bim_shards[chrom],gwas_shards[chrom])
+                print(f"CHR_MATCH_PASS {chrom}/22 matched={by_chr[str(chrom)]['chr_pos_overlap_pct']}%",flush=True)
                 # Fixed residual disk footprint
                 bim_shards[chrom].unlink()
                 gwas_shards[chrom].unlink()
             report["by_chr"]=by_chr
             report["previous_chr1_2_regression"]=check_previous_chr12(args.ancestry,by_chr)
             report["overall"]=finish_counts(by_chr,gwas_tally)
+            print("ALL_22_AND_PRIOR_CHR12_REGRESSION_PASS",flush=True)
             report["status"]="ALL_22_AUTOSOME_ORIGINAL_MD5_AND_BIM_OVERLAP_PASS"
             report["all_22_complete"]=True
     except (urllib.error.URLError,OSError,TimeoutError,ValueError,tarfile.TarError,
