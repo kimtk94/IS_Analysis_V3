@@ -257,11 +257,11 @@ def main():
         ))
     lines.extend(["", "## Located files / sampled header evidence", ""])
     for row in reports:
-        lines.append(f"**{row[\'ancestry\']}**: {row.get(\'remote_file\') or \'not found\'}")
-        lines.append(f"Remote size (HEAD): {row.get(\'remote_content_length_bytes\', \'unknown\')} bytes; sampled bytes: {row.get(\'sampled_compressed_bytes\', 0)}")
+        lines.append(f"**{row['ancestry']}**: {row.get('remote_file') or 'not found'}")
+        lines.append(f"Remote size (HEAD): {row.get('remote_content_length_bytes', 'unknown')} bytes; sampled bytes: {row.get('sampled_compressed_bytes', 0)}")
         h = row.get("header", {})
-        lines.append(f"Header columns: {\', \'.join(h.get(\'columns\', []))}")
-        lines.append(f"Detected fields: {json.dumps(h.get(\'field_groups\', {}), sort_keys=True)}")
+        lines.append(f"Header columns: {', '.join(h.get('columns', []))}")
+        lines.append(f"Detected fields: {json.dumps(h.get('field_groups', {}), sort_keys=True)}")
         lines.append("")
     lines.extend([
         "", "This step does not verify complete bytes, sample counts, genome-wide",
