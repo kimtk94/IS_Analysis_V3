@@ -56,9 +56,16 @@ def normalize(src, dest, style, expected_sha256=""):
     try:
         if dest.suffix!=".gz": raise ValueError("output must end .gz")
         with open_text(src) as input_fh, gzip.open(tmp,"wt",newline="",encoding="utf-8") as output_fh:
-            reader=csv.DictReader(input_fh,delimiter="\t")
-            if not reader.fieldnames or not set(columns.values()).issubset(reader.fieldnames):
-                raise ValueError("source header missing: "+str(set(columns.values())-set(reader.fieldnames or [])))
+            if style=="ckdgen2019":
+                # Original CKDGen files are whitespace-delimited, not TSV.
+                fields=input_fh.readline().strip().split()
+                reader=(dict(zip(fields,values)) if len(values)==len(fields) else {}
+                        for values in (line.split() for line in input_fh))
+            else:
+                reader=csv.DictReader(input_fh,delimiter="\t")
+                fields=reader.fieldnames
+            if not fields or not set(columns.values()).issubset(fields):
+                raise ValueError("source header missing: "+str(set(columns.values())-set(fields or [])))
             writer=csv.DictWriter(output_fh,fieldnames=OUT_HEADER,delimiter="\t")
             writer.writeheader()
             for row in reader:
