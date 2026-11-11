@@ -65,14 +65,14 @@ class EightMarkerQCTests(unittest.TestCase):
     def test_missing_one_artifact_stops(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);fixtures(root)
-            (root/"is-gse331114-AIS-3"/"marker_qc.json").unlink()
+            (root/"is-gse331114-marker-AIS-3"/"marker_qc.json").unlink()
             with self.assertRaisesRegex(ValueError,"Missing"):
                 load(root)
 
     def test_wrong_gsm_stops(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);fixtures(root)
-            p=root/"is-gse331114-Control-2"/"marker_qc.json"
+            p=root/"is-gse331114-marker-Control-2"/"marker_qc.json"
             x=json.loads(p.read_text(encoding="utf-8"));x["GSM"]="GSMWRONG"
             p.write_text(json.dumps(x),encoding="utf-8")
             with self.assertRaisesRegex(ValueError,"identity"):
@@ -81,7 +81,7 @@ class EightMarkerQCTests(unittest.TestCase):
     def test_marker_counts_must_partition_passed_cells(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);fixtures(root)
-            p=root/"is-gse331114-AIS-2"/"marker_qc.json"
+            p=root/"is-gse331114-marker-AIS-2"/"marker_qc.json"
             x=json.loads(p.read_text(encoding="utf-8"))
             x["marker_panel_support_unvalidated_counts_after_QC"]["UNASSIGNED"]=1
             p.write_text(json.dumps(x),encoding="utf-8")
@@ -91,7 +91,7 @@ class EightMarkerQCTests(unittest.TestCase):
     def test_no_invented_cell_type_label(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);fixtures(root)
-            p=root/"is-gse331114-AIS-2"/"marker_qc.json"
+            p=root/"is-gse331114-marker-AIS-2"/"marker_qc.json"
             x=json.loads(p.read_text(encoding="utf-8"))
             x["not_a_celltype_annotation"]=False
             p.write_text(json.dumps(x),encoding="utf-8")
