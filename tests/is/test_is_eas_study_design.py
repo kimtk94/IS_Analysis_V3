@@ -31,6 +31,11 @@ class StudyDesignContractTests(unittest.TestCase):
         d["primary_outcome"]["eas_gwas_accession"] = "GCST90104544"
         self.assertTrue(validate(d, self.registry))
 
+    def test_any_stroke_cannot_replace_eur_ischemic_primary(self):
+        d = copy.deepcopy(self.design)
+        d["primary_outcome"]["eur_gwas_accession"] = "GCST90104539"
+        self.assertTrue(validate(d, self.registry))
+
     def test_independent_validation_claim_rejected(self):
         d = copy.deepcopy(self.design)
         d["comparison_design"]["external_validation_claim"] = True
