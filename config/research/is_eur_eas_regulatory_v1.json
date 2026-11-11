@@ -17,7 +17,7 @@
   "primary_outcome": {
     "name": "ischemic_stroke_susceptibility",
     "type": "binary_case_control_GWAS",
-    "eur_gwas_accession": "UNVERIFIED_LOCKED_PENDING_SOURCE_AUDIT",
+    "eur_gwas_accession": "GCST90104540",
     "eas_gwas_accession": "GCST90104545",
     "eas_cases_literature": 19032,
     "eas_controls_literature": 237242,
@@ -29,7 +29,10 @@
       "prognosis",
       "treatment_response",
       "mortality"
-    ]
+    ],
+    "eur_cases_literature": 62100,
+    "eur_controls_literature": 1234808,
+    "eur_id_evidence": "Publication reports accession and cohort counts; actual GWAS file bytes and clinical per-cohort provenance still NOT verified."
   },
   "secondary_outcomes": [
     {
@@ -71,7 +74,8 @@
         "n_controls",
         "imputation_info_if_available"
       ],
-      "status": "NOT_VERIFIED"
+      "status": "LITERATURE_ACCESSION_ONLY",
+      "reported_accession": "GCST90104540"
     },
     {
       "id": "GWAS_EAS_IS",
@@ -96,7 +100,8 @@
         "n_controls",
         "imputation_info_if_available"
       ],
-      "status": "CATALOG_ONLY"
+      "status": "CATALOG_ONLY",
+      "reported_accession": "GCST90104545"
     },
     {
       "id": "EQTL_EUR_BLOOD",
