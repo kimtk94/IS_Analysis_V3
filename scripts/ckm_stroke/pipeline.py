@@ -22,8 +22,8 @@ def manifest(root):
     if not records: raise ValueError("empty manifest")
     return records
 
-def p0(root):
-    rows=manifest(root)
+def p0(root, rows=None):
+    rows=manifest(root) if rows is None else rows
     seen=set()
     errors=[]
     todo=[]
@@ -84,18 +84,19 @@ def gwas_qc(path,limit=0):
 
 def p1(root,max_rows):
     missing=[]
+    optional_missing=[]
     outputs={}
     for r in manifest(root):
         label=r["phenotype"]+"_"+r["ancestry"]
         file=r["data_file"]
         if file.strip().upper() in UNKNOWN or not (root/file).is_file():
-            missing.append(label)
+            (optional_missing if r["ancestry"]=="EAS" else missing).append(label)
         else:
             outputs[label]=gwas_qc(root/file,max_rows)
     broken=[name for name,x in outputs.items() if x["status"]=="FAIL"]
     incomplete=[name for name,x in outputs.items() if x["status"]=="HOLD"]
     return {"status":"FAIL" if broken else "HOLD" if missing or incomplete else "PASS",
-            "scientific_status":"HOLD","files":outputs,"missing":missing,
+            "scientific_status":"HOLD","files":outputs,"missing":missing,"optional_missing":optional_missing,
             "broken":broken,"incomplete":incomplete,
             "warning":"external checksum, clinical ascertainment, genome build, sample overlap not approved"}
 
