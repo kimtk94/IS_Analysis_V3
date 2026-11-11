@@ -37,3 +37,29 @@ runners are ephemeral and will not retain original GWAS data. Do not
 commit summary statistics, patient-level data or tokens to this repo.
 Before enabling P1-P6 real science, implement source downloads plus
 independent hash/build/allele checks and persistent artifact storage.
+
+
+## 2026-11-11 P1 real-source evidence
+
+Official bounded gzip-prefix probe verified:
+- GLGC EUR LDL-C, HDL-C, TG: tab-delimited, CHROM/POS_b37/REF/ALT/EFFECT_SIZE/SE/pvalue. ALT is the effect allele; TG is log-transformed and inverse-normalized.
+- CKDGen EUR eGFR and UACR: **whitespace-delimited** (not tab), Chr/Pos_b37/Allele1/Allele2/Effect/StdErr/P-value. Allele1 is the effect allele.
+- Header observation is not file integrity or full-row QC.
+
+The source-specific normalizer now reads the CKDGen whitespace layout.
+Excluded non-autosomal/non-SNP/missing/P-underflow rows are explicitly counted,
+and any exclusion leaves a QC review HOLD rather than silently promoting a complete
+analysis. Source-level checksums are needed before interpreting any output.
+
+Dedicated workflow: .github/workflows/ckm-stroke-uacr-ingest.yml
+- Downloads the entire **public** UACR EUR CKDGen Teumer2019 file within a 650 MiB safety cap.
+- Verifies official consortium MD5 51270db6886892199975b343452f1d90
+  from https://ckdgen.imbi.uni-freiburg.de/files/Teumer2019/MD5SUM .
+- Reads the entire gzip stream (CRC during normalization), emits source and
+  normalized SHA256, raw/retained row counts and exclusion breakdown.
+- Uploads JSON metadata only; both raw and normalized GWAS remain ephemeral.
+- A successful source-integrity pilot is *one validated file*, not P1 cohort-wide
+  completion, clinical phenotype resolution, independent replication, or MR evidence.
+
+The next scientific gate remains the full primary EUR phenotype manifest, including
+BMI/SBP/T2D, and robust cross-study build/allele/overlap validation.
