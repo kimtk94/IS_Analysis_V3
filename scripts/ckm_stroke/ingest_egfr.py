@@ -18,6 +18,7 @@ from urllib.request import Request, urlopen
 
 from scripts.ckm_stroke.ingest_uacr import hash_file, stream_to_file
 from scripts.ckm_stroke.normalize_sumstats import normalize
+from scripts.ckm_stroke.variant_qc import variant_qc
 
 EGFR = {
     "url": "https://ckdgen.imbi.uni-freiburg.de/files/Wuttke2019/20171017_MW_eGFR_overall_EA_nstud42.dbgap.txt.gz",
@@ -76,11 +77,12 @@ def ingest(root, max_mb=1400, opener=urlopen, retry_sleep=time.sleep):
     source_sha = hash_file(target, "sha256")
     try:
         result = normalize(target, normalized, "ckdgen2019", source_sha)
-    except (OSError, ValueError, EOFError, AssertionError) as exc:
+        variant = variant_qc(normalized,work_dir=root)
+    except (OSError, ValueError, EOFError, AssertionError, RuntimeError) as exc:
         return {"status": "FAIL", "scientific_status": "NOT_RUN",
                 "reason": "full gzip/normalization failure", "details": str(exc)[:320]}
     return {
-        "status": "PASS" if result["status"] in {"PASS", "HOLD"} else "FAIL",
+        "status": "PASS" if result["status"] == "PASS" and variant["status"] == "PASS" else "HOLD",
         "scientific_status": "HOLD",
         "source_provenance": "CKDGen_Wuttke2019_EUR",
         "source_checksum_status": "UNVERIFIED_OFFICIAL_CHECKSUM",
@@ -98,6 +100,7 @@ def ingest(root, max_mb=1400, opener=urlopen, retry_sleep=time.sleep):
         "excluded": result["excluded"],
         "excluded_examples": result["excluded_examples"],
         "normalized_sha256": result["output_sha256"],
+        "variant_qc": variant,
         "note": "Full gzip/row parse and locally computed SHA-256, without an independently published source hash. NOT a statistical or allele-harmonization PASS.",
     }
 
