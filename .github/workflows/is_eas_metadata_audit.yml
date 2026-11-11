@@ -5,6 +5,9 @@ on:
   pull_request:
     paths:
       - 'scripts/is/audit_gigastroke_eas_metadata.py'
+      - 'scripts/is/audit_stroke_phenotype_register.py'
+      - 'data/metadata/stroke_eas_phenotype_register_2026-11-11.json'
+      - 'docs/research/stroke_diagnosis_pheno_ancestry_protocol_2026-11-11.md'
       - 'docs/research/is_eas_novelty_feasibility_2026-11-09.md'
       - '.github/workflows/is_eas_metadata_audit.yml'
 
@@ -24,11 +27,15 @@ jobs:
         run: python3 scripts/is/audit_gigastroke_eas_metadata.py --self-test
       - name: Check live GWAS Catalog v2 metadata (strict, read-only)
         run: python3 scripts/is/audit_gigastroke_eas_metadata.py --output-dir artifacts/is_eas_gwas_catalog
+      - name: Audit stroke clinical phenotype provenance (schema PASS, cohort diagnosis HOLD)
+        run: python3 scripts/is/audit_stroke_phenotype_register.py --output-dir artifacts/is_eas_phenotypes
       - name: Attach audit evidence even if source is unavailable
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: is-eas-gwas-catalog-metadata
-          path: artifacts/is_eas_gwas_catalog/
+          name: is-eas-phenotype-and-gwas-metadata
+          path: |
+            artifacts/is_eas_gwas_catalog/
+            artifacts/is_eas_phenotypes/
           if-no-files-found: warn
           retention-days: 30
