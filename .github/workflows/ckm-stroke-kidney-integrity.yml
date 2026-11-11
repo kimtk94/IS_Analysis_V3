@@ -1,0 +1,78 @@
+name: CKM Stroke P1 Kidney eGFR and UACR integrity audit
+
+on:
+  push:
+    paths:
+      - 'scripts/ckm_stroke/ingest_egfr.py'
+      - 'scripts/ckm_stroke/ingest_uacr.py'
+      - 'scripts/ckm_stroke/normalize_sumstats.py'
+      - 'tests/test_ckm_stroke_ingest_egfr.py'
+      - 'tests/test_ckm_stroke_ingest_uacr.py'
+      - 'tests/test_ckm_stroke_normalizer.py'
+      - '.github/workflows/ckm-stroke-kidney-integrity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-kidney-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify CKDGen parsing and download guard tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/normalize_sumstats.py scripts/ckm_stroke/ingest_egfr.py scripts/ckm_stroke/ingest_uacr.py
+          python -m unittest tests.test_ckm_stroke_normalizer tests.test_ckm_stroke_ingest_uacr tests.test_ckm_stroke_ingest_egfr -v
+
+  uacr-full-source:
+    needs: offline-regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Recheck UACR official MD5 and explain 313 excluded variants
+        run: |
+          python -m scripts.ckm_stroke.ingest_uacr --max-mb 650 \
+            --out artifacts/ckm_stroke/uacr_reason_audit.json
+      - name: Upload UACR audit metadata only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-kidney-uacr-qc-reasons
+          path: artifacts/ckm_stroke/uacr_reason_audit.json
+          retention-days: 30
+          if-no-files-found: warn
+
+  egfr-full-source:
+    needs: offline-regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download European eGFR and verify gzip/rows/local SHA256
+        run: |
+          python -m scripts.ckm_stroke.ingest_egfr --max-mb 1400 \
+            --out artifacts/ckm_stroke/egfr_full_integrity.json
+      - name: Upload eGFR audit metadata only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-kidney-egfr-qc
+          path: artifacts/ckm_stroke/egfr_full_integrity.json
+          retention-days: 30
+          if-no-files-found: warn
