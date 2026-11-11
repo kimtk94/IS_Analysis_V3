@@ -26,6 +26,7 @@ MAX_BYTES = 30 * 1024 * 1024
 CANDIDATES = ("ABO", "ALDH2", "CD40", "F11", "FGF5", "FURIN", "GRK5",
               "IL6RA", "KIAA0319", "MMP12", "PROCR", "SCARA5", "SWAP70",
               "TFPI", "TMPRSS5")
+SYMBOL_ALIASES = {"IL6RA": "IL6R"}  # official HGNC gene symbol versus legacy alias
 TISSUES = {
     "Artery_Aorta": "Artery - Aorta",
     "Artery_Coronary": "Artery - Coronary",
@@ -102,7 +103,8 @@ def parse_gct(path, targets=CANDIDATES):
         for row in reader:
             row_count += 1
             symbol = (row.get("Description") or "").strip()
-            if symbol not in matches:
+            name = next((k for k in matches if SYMBOL_ALIASES.get(k, k) == symbol), None)
+            if name is None:
                 continue
             values = []
             for tissue in tissue_cols:
@@ -110,7 +112,7 @@ def parse_gct(path, targets=CANDIDATES):
                 if not math.isfinite(value) or value < 0:
                     raise ValueError(f"Invalid TPM in {symbol}")
                 values.append(value)
-            matches[symbol].append((row["Name"], values))
+            matches[name].append((row["Name"], values))
         if int(parts[0]) != row_count or int(parts[1]) != len(tissue_cols):
             raise ValueError("GCT shape/count mismatch")
     return tissue_cols, matches, row_count
@@ -132,7 +134,7 @@ def summarize(tissues, matches):
         order = sorted(range(len(values)), key=lambda i: values[i], reverse=True)
         top_idx = order[0]
         entry = {
-            "gene_symbol": gene, "gene_id_gencode_versioned": ensg,
+            "gene_symbol": gene, "mapped_gene_symbol": SYMBOL_ALIASES.get(gene, gene), "gene_id_gencode_versioned": ensg,
             "status": "EXPRESSION_AVAILABLE_NOT_EQTL", "top_tissue": tissues[top_idx],
             "top_median_tpm": round(values[top_idx], 4),
             "tau_all_tissues": round(tau(values), 4) if tau(values) is not None else None,
