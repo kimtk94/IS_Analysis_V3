@@ -1,4 +1,4 @@
-name: IS GSE331114 CellTypist reference feasibility pilot
+name: IS GSE331114 CellTypist reference 8-sample feasibility
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         group: [AIS, Control]
-        index: [0]
+        index: [0, 1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -48,7 +48,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: is-celltypist-reference-pilot-${{ matrix.group }}
+          name: is-celltypist-reference-pilot-${{ matrix.group }}-${{ matrix.index }}
           path: artifacts/is_celltypist_pilot/
           retention-days: 45
           if-no-files-found: warn
