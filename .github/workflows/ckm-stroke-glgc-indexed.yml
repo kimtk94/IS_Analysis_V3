@@ -1,11 +1,6 @@
 name: CKM Stroke P1 GLGC indexed lipid GWAS proof
 
 on:
-  push:
-    paths:
-      - 'scripts/ckm_stroke/glgc_region_probe.py'
-      - 'tests/test_ckm_stroke_glgc_region_probe.py'
-      - '.github/workflows/ckm-stroke-glgc-indexed.yml'
   workflow_dispatch:
     inputs:
       chromosome:
