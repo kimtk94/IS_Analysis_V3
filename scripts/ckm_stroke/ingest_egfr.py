@@ -94,6 +94,7 @@ def ingest(root, max_mb=1400, opener=urlopen, retry_sleep=time.sleep):
         "input_rows": result["input_rows"],
         "normalized_rows": result["output_rows"],
         "excluded_total": result["excluded_total"],
+        "recovered_missing_rsid": result["recovered_missing_rsid"],
         "excluded": result["excluded"],
         "excluded_examples": result["excluded_examples"],
         "normalized_sha256": result["output_sha256"],
