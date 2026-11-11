@@ -1,0 +1,54 @@
+name: IS GSE331114 CellTypist reference feasibility pilot
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/run_gse331114_celltypist_pilot.py'
+      - 'tests/is/test_gse331114_celltypist_pilot.py'
+      - '.github/workflows/is_gse331114_celltypist_pilot.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  celltypist-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [AIS, Control]
+        index: [0]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned human immune annotation dependencies
+        run: python3 -m pip install 'celltypist==1.7.1' 'scanpy==1.11.4'
+      - name: Reference-pilot regression tests
+        run: python3 -m unittest discover -s tests/is -p 'test_gse331114_celltypist_pilot.py' -v
+      - name: Fetch actual original GEO sample checksums from previous verified CI
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 43010007530
+          pattern: is-gse331114-*
+          merge-multiple: false
+          path: downloaded_gse331114
+      - name: Run human immune reference model on actual stroke/control MEX data
+        run: |
+          python3 scripts/is/run_gse331114_celltypist_pilot.py \
+            --group ${{ matrix.group }} --index ${{ matrix.index }} \
+            --source-root downloaded_gse331114 --out-dir artifacts/is_celltypist_pilot
+      - name: Archive per-GSM summaries; no per-cell identities or full MEX matrices
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-celltypist-reference-pilot-${{ matrix.group }}
+          path: artifacts/is_celltypist_pilot/
+          retention-days: 45
+          if-no-files-found: warn
