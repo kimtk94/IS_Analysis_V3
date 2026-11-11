@@ -1,0 +1,59 @@
+name: MASTER DEGREE 2026-11-12 eight scientific input gates
+on:
+  push:
+    branches: [research/daily-20261112-scientific-gate-ci]
+  pull_request:
+    paths: ['.github/workflows/research-20261112-scientific-gates.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scientific-input-gate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+      - name: One fail-closed evidence task per research
+        env:
+          TRACK: ${{ matrix.track }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json,os,pathlib,urllib.request,urllib.error,hashlib
+          track=os.environ['TRACK']
+          # Each gate tests an explicitly distinct missing scientific prerequisite,
+          # not whether a homepage returns HTTP 200.
+          tasks={
+            'is':('EUR/EAS GWAS harmonization source readiness','config/is','GWAS allele/build/LD harmonization'),
+            'glaucoma':('Raw integer-count and donor design readiness','data/glaucoma','integer counts and 9x leave-pool-out'),
+            'hcc':('Patient-level RNA/proteome join manifest readiness','research/hcc','330 quant columns to official aliquots and RNA'),
+            'radiomics':('NIfTI-to-clinical eligibility join readiness','research/hcc','source spacing, lesion and RNA patient IDs'),
+            'ocular':('46-run timepoint and strain manifest readiness','docs/ocular','run-to-timepoint and strain provenance'),
+            'muscle':('20-locus GTEx and EAS LD readiness','config/muscle/stage1_seed_loci.tsv','20 loci and ancestry-matched LD'),
+            'oral':('GSE103322 donor-expression join readiness','research/oral','donor-resolved count matrix and endpoints'),
+            'skin':('Perceived-age full GWAS MR input readiness','research/skin','full sumstats, build, allele and IV QC')
+          }
+          title,path,required=tasks[track]
+          p=pathlib.Path(path)
+          found=p.exists()
+          result={'date_kst':'2026-11-12','track':track,'task':title,
+                  'checked_path':path,'source_path_exists':found,
+                  'scientific_status':'HOLD','scientific_pass':False,
+                  'blocker':'Required full original-data evidence is not certified by this bounded CI gate',
+                  'next_gate':required,
+                  'scope':'repository input presence only; not source integrity, sample mapping, or statistical replication'}
+          if found and p.is_file():
+              result['file_sha256']=hashlib.sha256(p.read_bytes()).hexdigest()
+              result['file_bytes']=p.stat().st_size
+          pathlib.Path('evidence').mkdir(exist_ok=True)
+          pathlib.Path('evidence',track+'.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(result,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: research-20261112-${{ matrix.track }}
+          path: evidence/${{ matrix.track }}.json
+          retention-days: 30
