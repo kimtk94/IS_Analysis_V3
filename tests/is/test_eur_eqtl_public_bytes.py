@@ -60,7 +60,7 @@ class EqtlsActualSourcePrepTests(unittest.TestCase):
         self.assertTrue(result["still_need_association_rows_and_variant_coverage"])
 
     def test_significant_only_schema_does_not_qualify(self):
-        txt="variant\tgene_id\tpvalue\nchr1_101_A_G\tENSG1\t0.01\n"
+        txt="variant\tgene_id\tpvalue\tmaf\tchromosome\nchr1_101_A_G\tENSG1\t0.01\t0.23\t1\n"
         result=gzip_prefix_header(gzip.compress(txt.encode()))
         self.assertFalse(result["full_nominal_required_fields_present"])
         self.assertIn("se",result["missing_required_fields"])
