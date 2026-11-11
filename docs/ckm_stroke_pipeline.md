@@ -83,3 +83,13 @@ References:
 - https://ckdgen.imbi.uni-freiburg.de/files/Teumer2019/MD5SUM
 
 These rows are *discovery candidates*, not verified and locked manifest entries.
+
+
+## 2026-11-11 Kidney EUR full-data audit
+
+[CKDGen kidney dual-source CI #43029392758](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43029392758):
+- UACR EUR, Teumer2019: 202,371,162 input bytes, official MD5 PASS, full gzip CRC PASS. 8,603,712 source rows, 8,603,399 normalized. Exactly 313 rows previously classified as malformed source records by a strict whitespace-delimited parser. They are **not** yet characterized as defective genetics or removable anomalies; raw-token diagnostics are a separate gate.
+- eGFR EUR, Wuttke2019: 192,603,042 source bytes, declared HTTP Content-Length PASS, full gzip CRC PASS, 8,885,712 source rows, 8,885,712 normalized, 0 excluded. Locally computed original SHA-256: 1bf4906310e1cf8d74fa0be3b052dc0c5a09bf87a27106fa11184afdad5e155e.
+- Wuttke2019 official eGFR EUR file is confirmed by the CKDGen landing page and README, with GRCh37 Pos_b37 and effect allele Allele1. No independent official MD5/SHA-256 has been confirmed for this eGFR archive, so source checksum status remains UNVERIFIED_OFFICIAL_CHECKSUM.
+
+Both datasets are public GWAS summary statistics and were processed in ephemeral runners. No raw data were committed; only JSON evidence persisted. **Technical file processing is not scientific P1 completion.** Both kidney inputs still require source provenance confidence, duplicate/allele QC, overlap review and analysis-ready controlled storage; all P2+ downstream scientific analyses remain NOT_RUN.
