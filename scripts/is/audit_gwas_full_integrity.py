@@ -131,6 +131,7 @@ def scan_source_gzip(path):
     below_5e8 = 0
     zero_p = 0
     palindromic = 0
+    excluded_nonautosomal = 0
     chi2_sum = 0.0
     chi2_n = 0
     fields = []
@@ -148,6 +149,9 @@ def scan_source_gzip(path):
         for row in reader:
             count += 1
             error = validate_row(row)
+            if error == "CHROMOSOME_OUTSIDE_AUTOSOMES":
+                excluded_nonautosomal += 1
+                continue
             if error:
                 failures[error] += 1
                 continue
@@ -165,8 +169,8 @@ def scan_source_gzip(path):
                 chi2_sum += chi2
                 chi2_n += 1
     # Exhausting the gzip iterator verifies its EOF/CRC. Not an external hash match.
-    valid = count - sum(failures.values())
-    bad_ratio = sum(failures.values()) / max(count, 1)
+    valid = count - excluded_nonautosomal - sum(failures.values())
+    bad_ratio = sum(failures.values()) / max(count - excluded_nonautosomal, 1)
     status = ("STRUCTURE_QC_PASS" if count >= MIN_VARIANTS and bad_ratio < 0.001
               else "STRUCTURE_QC_REVIEW")
     return {
@@ -174,6 +178,7 @@ def scan_source_gzip(path):
         "row_qc_status": status,
         "total_variant_rows": count,
         "valid_autosomal_snp_rows": valid,
+        "excluded_nonautosomal_rows_not_invalid": excluded_nonautosomal,
         "invalid_ratio": round(bad_ratio, 8),
         "invalid_row_counts": dict(failures),
         "n_genome_wide_significant_p_below_5e8": below_5e8,
