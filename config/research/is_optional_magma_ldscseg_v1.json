@@ -186,7 +186,7 @@
   },
   "novelty_constraints": [
     "MAGMA, LDSC-SEG and broad stroke tissue enrichment exist in published literature; method choice itself is not a novelty claim.",
-    "The main locus-to-gene EUR/EAS eQTL question is unchanged.",
+    "The primary locus-to-gene EUR/EAS eQTL question remains unchanged; exploratory enrichments cannot substitute for primary evidence.",
     "EAS-only sample size does not establish originality; compare exact variants, genes, tissue and outcomes against previous publications."
   ],
   "documentation": [
