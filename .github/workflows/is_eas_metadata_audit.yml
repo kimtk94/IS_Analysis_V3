@@ -6,6 +6,10 @@ on:
     paths:
       - 'scripts/is/audit_gigastroke_eas_metadata.py'
       - 'scripts/is/audit_stroke_phenotype_register.py'
+      - 'scripts/is/validate_is_eas_study_design.py'
+      - 'tests/is/test_is_eas_study_design.py'
+      - 'config/research/is_eur_eas_regulatory_v1.json'
+      - 'docs/research/is_eur_eas_regulatory_protocol_architecture_v1.md'
       - 'data/metadata/stroke_eas_phenotype_register_2026-11-11.json'
       - 'docs/research/stroke_diagnosis_pheno_ancestry_protocol_2026-11-11.md'
       - 'docs/research/is_eas_novelty_feasibility_2026-11-09.md'
@@ -29,13 +33,18 @@ jobs:
         run: python3 scripts/is/audit_gigastroke_eas_metadata.py --output-dir artifacts/is_eas_gwas_catalog
       - name: Audit stroke clinical phenotype provenance (schema PASS, cohort diagnosis HOLD)
         run: python3 scripts/is/audit_stroke_phenotype_register.py --output-dir artifacts/is_eas_phenotypes
+      - name: Test research-design assumptions and failure guardrails
+        run: python3 -m unittest discover -s tests/is -p 'test_is_eas_study_design.py' -v
+      - name: Audit research-design gates (design only)
+        run: python3 scripts/is/validate_is_eas_study_design.py --output-dir artifacts/is_eas_design_gate
       - name: Attach audit evidence even if source is unavailable
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: is-eas-phenotype-and-gwas-metadata
+          name: is-eas-study-design-and-source-metadata
           path: |
             artifacts/is_eas_gwas_catalog/
             artifacts/is_eas_phenotypes/
+            artifacts/is_eas_design_gate/
           if-no-files-found: warn
           retention-days: 30
