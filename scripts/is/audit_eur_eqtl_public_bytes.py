@@ -23,7 +23,7 @@ import urllib.error
 import zlib
 
 GTEX_EUR_URL=(
-  "https://storage.googleapis.com/gtex_analysis_v8/single_tissue_qtl_data/"
+  "https://storage.googleapis.com/adult-gtex/bulk-qtl/v8/single-tissue-cis-qtl/"
   "GTEx_Analysis_v8_eQTL_EUR.tar"
 )
 EBI_BLUEPRINT_URL=(
