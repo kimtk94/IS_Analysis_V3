@@ -1,5 +1,6 @@
 import unittest
 from scripts.ckm_stroke import glgc_pysam_probe as pilot
+from unittest.mock import patch
 
 HEADER="rsID\tCHROM\tPOS_b37\tREF\tALT\tN\tEFFECT_SIZE\tSE\tpvalue"
 ROW="rs1\t22\t20000010\tA\tG\t100000\t0.1\t0.03\t0.0008581"
@@ -28,8 +29,34 @@ class TestPysamRegion(unittest.TestCase):
         self.assertEqual(result["scientific_status"],"NOT_RUN")
 
     def test_source_header_absent_is_hold(self):
-        result=pilot.probe("HDL_C",factory=NoHeader)
+        result=pilot.probe("HDL_C",factory=NoHeader,
+                           header_fetcher=lambda url: {"status":"HOLD","reason":"no header"})
         self.assertEqual(result["status"],"HOLD")
+
+    def test_source_prefix_header_fallback_validates_real_rows(self):
+        result=pilot.probe(
+            "HDL_C",factory=NoHeader,
+            header_fetcher=lambda url: {"status":"PASS","header":HEADER,
+                                        "origin":"official_gzip_prefix","header_bytes_read":4096})
+        self.assertEqual(result["status"],"PASS")
+        self.assertEqual(result["rows_region"],1)
+        self.assertEqual(result["header_evidence"]["origin"],"official_gzip_prefix")
+        self.assertEqual(result["scientific_status"],"NOT_RUN")
+
+    def test_official_header_prefix_rejects_wrong_schema(self):
+        with patch.object(pilot,"inspect",return_value={
+                "status":"HEADER_OBSERVED","first_lines":["WRONG\tPOS\tALLELE"],
+                "bytes_read":1024}):
+            r=pilot.fetch_official_header("https://csg.sph.umich.edu/x.gz")
+        self.assertEqual(r["status"],"HOLD")
+
+    def test_official_header_prefix_accepts_actual_columns(self):
+        with patch.object(pilot,"inspect",return_value={
+                "status":"HEADER_OBSERVED","first_lines":["#"+HEADER],
+                "bytes_read":4096,"http_status":206}):
+            r=pilot.fetch_official_header("https://csg.sph.umich.edu/x.gz")
+        self.assertEqual(r["status"],"PASS")
+        self.assertEqual(r["header"],HEADER)
 
     def test_factory_failure_is_not_success(self):
         def bad(url):
