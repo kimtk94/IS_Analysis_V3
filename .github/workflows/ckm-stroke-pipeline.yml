@@ -1,0 +1,138 @@
+name: CKM Stroke P0-P6 staged research gates
+
+on:
+  push:
+    paths:
+      - 'scripts/ckm_stroke/pipeline.py'
+      - 'scripts/ckm_stroke/aggregate.py'
+      - 'scripts/ckm_stroke/audit_public_sources.py'
+      - 'scripts/ckm_stroke/probe_headers.py'
+      - 'config/ckm_stroke/**'
+      - 'tests/test_ckm_stroke_source_audit.py'
+      - 'tests/test_ckm_stroke_normalizer.py'
+      - 'tests/test_ckm_stroke_header_probe.py'
+      - 'tests/test_ckm_stroke_ingest_uacr.py'
+      - 'tests/test_ckm_stroke_pipeline.py'
+      - 'tests/fixtures/ckm_stroke/**'
+      - 'docs/ckm_stroke_pipeline.md'
+      - '.github/workflows/ckm-stroke-pipeline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-research-gates-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and test small fixtures
+        run: |
+          python -m py_compile scripts/ckm_stroke/*.py tests/test_ckm_stroke_*.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_*.py' -v
+
+  stages:
+    needs: regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        stage: [p0, p1, p2, p3, p4, p5, p6]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run one evidence gate
+        env:
+          CKM_STAGE: ${{ matrix.stage }}
+        run: |
+          python scripts/ckm_stroke/pipeline.py --stage "$CKM_STAGE" \
+            --out "artifacts/ckm_stroke/$CKM_STAGE.json"
+      - name: Archive stage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-${{ matrix.stage }}
+          path: artifacts/ckm_stroke/
+          retention-days: 30
+          if-no-files-found: warn
+
+  source-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Probe curated official GWAS source candidates (bounded)
+        run: |
+          python scripts/ckm_stroke/audit_public_sources.py \
+            --inventory config/ckm_stroke/public_sources.tsv \
+            --out artifacts/ckm_stroke/public_source_audit.json
+      - name: Publish official-source audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-official-source-audit
+          path: artifacts/ckm_stroke/public_source_audit.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  bounded-headers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read first 128 KiB of five official gzip sources
+        run: |
+          python scripts/ckm_stroke/probe_headers.py \
+            --sources config/ckm_stroke/public_sources.tsv \
+            --output artifacts/ckm_stroke/header_probe.json
+      - name: Upload header observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-header-probe
+          path: artifacts/ckm_stroke/header_probe.json
+          retention-days: 30
+          if-no-files-found: warn
+
+  aggregate:
+    if: always()
+    needs: [regression, stages, source-provenance]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download seven stage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-stroke-*
+          path: artifacts/ckm_stroke
+          merge-multiple: true
+      - name: Report technical versus scientific completion
+        run: |
+          python scripts/ckm_stroke/aggregate.py \
+            --folder artifacts/ckm_stroke \
+            --out artifacts/ckm_stroke_summary.json
+      - name: Upload integrated status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-summary
+          path: artifacts/ckm_stroke_summary.json
+          if-no-files-found: warn

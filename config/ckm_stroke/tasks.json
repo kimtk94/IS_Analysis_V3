@@ -1,0 +1,26 @@
+{
+  "p2": {
+    "purpose": "LDSC rg, h2, intercept; optional Genomic SEM",
+    "argv": [],
+    "inputs": [],
+    "outputs": []
+  },
+  "p3": {
+    "purpose": "MAGMA and locus fine-mapping",
+    "argv": [],
+    "inputs": [],
+    "outputs": []
+  },
+  "p4": {
+    "purpose": "cis pQTL/eQTL MR, colocalization and sensitivity",
+    "argv": [],
+    "inputs": [],
+    "outputs": []
+  },
+  "p5": {
+    "purpose": "GTEx tissue and brain cell specificity",
+    "argv": [],
+    "inputs": [],
+    "outputs": []
+  }
+}

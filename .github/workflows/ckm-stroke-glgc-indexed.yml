@@ -1,0 +1,80 @@
+name: CKM Stroke P1 GLGC indexed lipid GWAS proof
+
+on:
+  workflow_dispatch:
+    inputs:
+      chromosome:
+        description: 'Autosomal chromosome, pilot default 22'
+        required: true
+        default: '22'
+        type: string
+      start:
+        description: 'Window start (GRCh37; pilot only)'
+        required: true
+        default: '20000000'
+        type: string
+      end:
+        description: 'Window end (GRCh37; pilot only)'
+        required: true
+        default: '20050000'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-glgc-indexed-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  validate-index-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate exact indexed-region source contract
+        run: |
+          python -m py_compile scripts/ckm_stroke/glgc_region_probe.py
+          python -m unittest tests.test_ckm_stroke_glgc_region_probe -v
+
+  glgc-eur-ancestry-specific:
+    needs: validate-index-probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        trait: [LDL_C, HDL_C, TG]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install htslib tabix for consortium tabix-indexed bgzip files
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq tabix
+          tabix --version
+      - name: Query a small region from remote official .tbi indexed summary stats
+        env:
+          CHR: ${{ github.event_name == 'workflow_dispatch' && inputs.chromosome || '22' }}
+          REGION_START: ${{ github.event_name == 'workflow_dispatch' && inputs.start || '20000000' }}
+          REGION_END: ${{ github.event_name == 'workflow_dispatch' && inputs.end || '20050000' }}
+          TRAIT: ${{ matrix.trait }}
+        run: |
+          python -m scripts.ckm_stroke.glgc_region_probe \
+            --trait "$TRAIT" \
+            --chrom "$CHR" \
+            --start "$REGION_START" --end "$REGION_END" \
+            --out "artifacts/ckm_stroke/glgc_$TRAIT.json"
+      - name: Upload bounded evidence (not a full GWAS)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-indexed-${{ matrix.trait }}
+          path: artifacts/ckm_stroke/glgc_*.json
+          retention-days: 30
+          if-no-files-found: warn
