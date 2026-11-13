@@ -1,0 +1,38 @@
+name: IS GWAS independent publisher checksum
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/is/audit_gwas_publisher_checksum.py"
+      - "tests/is/test_gwas_publisher_checksum.py"
+      - ".github/workflows/is_gwas_publisher_checksum.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-publisher-md5:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        ancestry: [EUR, EAS]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate checksum metadata and calculation
+        run: python3 -m unittest discover -s tests/is -p 'test_gwas_publisher_checksum.py' -v
+      - name: Stream original compressed GWAS and compare to publisher's YAML MD5
+        run: python3 scripts/is/audit_gwas_publisher_checksum.py --ancestry ${{ matrix.ancestry }} --out-dir artifacts/is_gwas_publisher_checksum
+      - name: Preserve independent source checksum evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gwas-publisher-md5-${{ matrix.ancestry }}
+          path: artifacts/is_gwas_publisher_checksum/
+          retention-days: 30
+          if-no-files-found: warn

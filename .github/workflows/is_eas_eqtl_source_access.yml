@@ -1,0 +1,34 @@
+name: IS cis-eQTL real source-access gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_eas_eqtl_access_gates.py'
+      - 'tests/is/test_eas_eqtl_access_gates.py'
+      - '.github/workflows/is_eas_eqtl_source_access.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  eqtl-access-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Unit-test all five source identities and do-not-overclaim gate
+        run: python3 -m unittest discover -s tests/is -p 'test_eas_eqtl_access_gates.py' -v
+      - name: Inspect MAEEA Zenodo file manifest and public EAS/EUR cis-eQTL endpoints
+        run: python3 scripts/is/audit_eas_eqtl_access_gates.py --out-dir artifacts/is_eQTL_actual_access_gates
+      - name: Preserve source proof without bulk restricted data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-eQTL-actual-access-gates
+          path: artifacts/is_eQTL_actual_access_gates/
+          retention-days: 45
+          if-no-files-found: warn

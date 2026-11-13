@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+"""Synthetic ZIP64 and manifest tests; 43GB public source fetched only in CI."""
+import gzip
+import io
+import struct
+import sys
+import tarfile
+import unittest
+import zipfile
+from pathlib import Path
+
+ROOT=Path(__file__).resolve().parents[2]
+sys.path.insert(0,str(ROOT/"scripts"/"is"))
+from audit_EGEAD420_nominal_zip64 import (
+    EXPECTED_ZIP_SIZE,EXPECTED_PUBLISHED_ZIP_MD5,
+    source_filelist,zip64_eocd,zip_directory_members,nested_gzip_tar_head,
+    first_nominal_tsv_preview,
+    check_url,ZIP,FILELIST,
+)
+
+
+def mock_manifest():
+    return ("\n".join([
+        "#Archive/File\tName\tTime\tSize\tMD5",
+        "File\tE-GEAD-420.idf.txt\t2021-06-09\t2858\t0672e92775fd103fd4a848d653de1f1a",
+        f"Archive\tE-GEAD-420.processed.zip\t2021-06-09\t{EXPECTED_ZIP_SIZE}\t{EXPECTED_PUBLISHED_ZIP_MD5}",
+        "File\tnominal_eQTL_2.tar.gz\t2021-06-09\t43495814577\t41544fb671177aeee7fd2d0634b90ae2",
+    ])+"\n").encode()
+
+
+class NominalZip64Tests(unittest.TestCase):
+    def test_exact_NBDC_source(self):
+        check_url(ZIP);check_url(FILELIST)
+        with self.assertRaisesRegex(ValueError,"Unapproved|Source"):
+            check_url("https://evil.example/public/E-GEAD-420.processed.zip")
+
+    def test_publisher_manifest(self):
+        d=source_filelist(mock_manifest())
+        self.assertEqual(d["E-GEAD-420.processed.zip"]["size_bytes"],43507433191)
+        self.assertEqual(d["nominal_eQTL_2.tar.gz"]["size_bytes"],43495814577)
+
+    def test_changed_publisher_filelist_hash_fails(self):
+        bad=mock_manifest().replace(EXPECTED_PUBLISHED_ZIP_MD5.encode(),b"0"*32)
+        with self.assertRaisesRegex(ValueError,"manifest drift"):
+            source_filelist(bad)
+
+    def test_small_zip_eocd(self):
+        buf=io.BytesIO()
+        with zipfile.ZipFile(buf,"w") as writer:
+            writer.writestr("nominal_eQTL_2.tar.gz",b"test")
+        b=buf.getvalue()
+        meta={"start":0,"end":len(b)-1,"total":len(b)}
+        parsed=zip64_eocd(b,meta)
+        self.assertEqual(parsed["members_expected"],1)
+        self.assertFalse(parsed["ZIP64_footer_required"])
+        start=parsed["central_directory_start"]
+        end=parsed["central_directory_end_inclusive"]
+        members=zip_directory_members(b[start:end+1],1)
+        self.assertEqual(members[0]["name"],"nominal_eQTL_2.tar.gz")
+        self.assertEqual(members[0]["uncompressed_size"],4)
+
+    def test_zip64_eocd_locator(self):
+        rec=struct.pack("<IQHHIIQQQQ",0x06064B50,44,45,45,0,0,1,1,100,700)
+        loc=struct.pack("<IIQI",0x07064B50,0,0,1)
+        eocd=struct.pack("<IHHHHIIH",0x06054B50,0,0,0xffff,0xffff,0xffffffff,0xffffffff,0)
+        tail=rec+loc+eocd
+        data=zip64_eocd(tail,{"start":0,"end":len(tail)-1,"total":1000})
+        self.assertTrue(data["ZIP64_footer_required"])
+        self.assertEqual(data["central_directory_start"],700)
+        self.assertEqual(data["central_directory_byte_count"],100)
+
+    def test_zip64_member_extended_sizes(self):
+        name=b"nominal_eQTL_2.tar.gz"
+        extra=struct.pack("<HHQQQ",1,24,43495814577,43495700000,1234567890)
+        packed=struct.pack("<IHHHHHHIIIHHHHHII",
+            0x02014B50,45,45,0,0,0,0,0,0xffffffff,0xffffffff,
+            len(name),len(extra),0,0,0,0,0xffffffff)+name+extra
+        record=zip_directory_members(packed,1)[0]
+        self.assertEqual(record["uncompressed_size"],43495814577)
+        self.assertEqual(record["compressed_size"],43495700000)
+        self.assertEqual(record["local_header_offset"],1234567890)
+
+    def test_gzip_nested_tar_first_member(self):
+        fileobj=io.BytesIO()
+        with tarfile.open(fileobj=fileobj,mode="w:gz") as archive:
+            payload=b"variant\tgene\tbeta\tp\n"
+            info=tarfile.TarInfo("nominal_eQTL_CD4.tsv")
+            info.size=len(payload)
+            archive.addfile(info,io.BytesIO(payload))
+        row=nested_gzip_tar_head(fileobj.getvalue())[0]
+        self.assertEqual(row["member"],"nominal_eQTL_CD4.tsv")
+        self.assertTrue(row["contents_not_validated"])
+
+    def test_realistic_headerless_qtltools_nominal_snps(self):
+        f=io.BytesIO()
+        with tarfile.open(fileobj=f,mode="w:gz") as archive:
+            lines=[]
+            for i in range(6):
+                lines.append(
+                    f"ENSG0000012345\t1_{100+i}_A_G\t0\t0.20\t40\t80\t"
+                    f"{0.1+i*0.05:.5f}\t0.03\t0.12\tA\tG"
+                )
+            source=("\n".join(lines)+"\n").encode()
+            info=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            info.size=len(source)
+            archive.addfile(info,io.BytesIO(source))
+        r=first_nominal_tsv_preview(f.getvalue())
+        self.assertEqual(r["source_nominal_file"],"CD16p_Mono_nominal.txt")
+        self.assertEqual(r["sampled_complete_association_lines"],6)
+        self.assertEqual(r["tab_columns_per_line"],11)
+        self.assertFalse(r["looks_like_header"])
+        self.assertFalse(r["entire_cis_distribution_examined"])
+
+    def test_qtltools_nominal_space_separate_without_std_err_is_hold(self):
+        buf=io.BytesIO()
+        with tarfile.open(fileobj=buf,mode="w:gz") as tar:
+            rows=[]
+            for i in range(6):
+                # QTLtools ungrouped nominal without optional std-err:
+                # phe_id chr start end strand n_cis dist varid chr from to p r2 slope besthit
+                rows.append(f"ENSG000000001 chr1 1000 1000 + 1200 {i*2} "
+                            f"rs{i+1} chr1 {1050+i} {1050+i} 0.72 0.02 0.11 0")
+            content=("\n".join(rows)+"\n").encode()
+            info=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            info.size=len(content)
+            tar.addfile(info,io.BytesIO(content))
+        result=first_nominal_tsv_preview(buf.getvalue())
+        self.assertEqual(result["whitespace_delimited_columns_per_line"],15)
+        parsed=result["qtltools_nominal_ungrouped_schema_probe"]
+        self.assertIsNotNone(parsed)
+        self.assertFalse(parsed["slope_se_present"])
+        self.assertEqual(parsed["n_variants_tested_cis_for_first_gene"],1200)
+
+    def test_qtltools_nominal_space_separate_with_optional_std_err(self):
+        buf=io.BytesIO()
+        with tarfile.open(fileobj=buf,mode="w:gz") as tar:
+            rows=[]
+            for i in range(6):
+                rows.append(f"ENSG000000001 chr1 1000 1000 + 1200 {i*2} "
+                            f"rs{i+1} chr1 {1050+i} {1050+i} 0.72 0.02 0.11 0.09 0")
+            content=("\n".join(rows)+"\n").encode()
+            info=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            info.size=len(content)
+            tar.addfile(info,io.BytesIO(content))
+        result=first_nominal_tsv_preview(buf.getvalue())
+        self.assertEqual(result["whitespace_delimited_columns_per_line"],16)
+        parsed=result["qtltools_nominal_ungrouped_schema_probe"]
+        self.assertTrue(parsed["slope_se_present"])
+        self.assertEqual(parsed["slope_se"],0.09)
+
+    def test_non_tabular_nominal_content_is_rejected(self):
+        f=io.BytesIO()
+        with tarfile.open(fileobj=f,mode="w:gz") as archive:
+            source=(b"bad contents\n"*20)
+            info=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            info.size=len(source)
+            archive.addfile(info,io.BytesIO(source))
+        with self.assertRaisesRegex(ValueError,"field counts"):
+            first_nominal_tsv_preview(f.getvalue())
+
+    def test_bad_nested_gzip_not_validated(self):
+        with self.assertRaisesRegex(ValueError,"not gzip"):
+            nested_gzip_tar_head(b"invalid")
+
+if __name__=="__main__":
+    unittest.main()

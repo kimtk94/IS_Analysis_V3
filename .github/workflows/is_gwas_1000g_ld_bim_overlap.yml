@@ -1,0 +1,38 @@
+name: IS EUR-EAS original GWAS vs 1000G PLINK BIM chr1-2 overlap
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_gwas_1000g_bim_overlap.py'
+      - 'tests/is/test_gwas_1000g_bim_overlap.py'
+      - '.github/workflows/is_gwas_1000g_ld_bim_overlap.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  gwas-LD-coordinate-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    strategy:
+      fail-fast: false
+      matrix:
+        ancestry: [EUR, EAS]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify source IDs, coordinate matches and palindromic safety gates
+        run: python3 -m unittest discover -s tests/is -p 'test_gwas_1000g_bim_overlap.py' -v
+      - name: Download complete official checksummed LD and GWAS sources; audit chr 1-2
+        run: python3 scripts/is/audit_gwas_1000g_bim_overlap.py --ancestry ${{ matrix.ancestry }} --chromosomes 1,2 --out-dir artifacts/is_original_gwas_ld_chr12
+      - name: Preserve source hashes and genomic coordinate overlap only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-GWAS-1000G-phase3-BIM-${{ matrix.ancestry }}-chr12
+          path: artifacts/is_original_gwas_ld_chr12/
+          retention-days: 45
+          if-no-files-found: warn

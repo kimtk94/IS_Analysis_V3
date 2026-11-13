@@ -1,0 +1,38 @@
+name: IS GIGASTROKE EUR-EAS vs 1000G all 22 autosomes BIM QC
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_gwas_1000g_bim_all22.py'
+      - 'tests/is/test_gwas_1000g_bim_all22.py'
+      - '.github/workflows/is_gwas_1000g_all22.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  original-genomewide-BIM-matching:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        ancestry: [EUR, EAS]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test chromosome sharding, data conservation and chr1-2 independent regression
+        run: python3 -m unittest discover -s tests/is -p 'test_gwas_1000g_bim_all22.py' -v
+      - name: Transfer publisher-verified original sources and check each of 22 autosomes
+        run: python3 scripts/is/audit_gwas_1000g_bim_all22.py --ancestry ${{ matrix.ancestry }} --out-dir artifacts/is_gwas_ld_all22
+      - name: Archive chromosome-wise rates and original source hashes only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-GWAS-1000G-all22-${{ matrix.ancestry }}
+          path: artifacts/is_gwas_ld_all22/
+          retention-days: 60
+          if-no-files-found: warn
