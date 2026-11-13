@@ -16,21 +16,6 @@ on:
       - 'tests/fixtures/ckm_stroke/**'
       - 'docs/ckm_stroke_pipeline.md'
       - '.github/workflows/ckm-stroke-pipeline.yml'
-  pull_request:
-    paths:
-      - 'scripts/ckm_stroke/pipeline.py'
-      - 'scripts/ckm_stroke/aggregate.py'
-      - 'scripts/ckm_stroke/audit_public_sources.py'
-      - 'scripts/ckm_stroke/probe_headers.py'
-      - 'config/ckm_stroke/**'
-      - 'tests/test_ckm_stroke_source_audit.py'
-      - 'tests/test_ckm_stroke_normalizer.py'
-      - 'tests/test_ckm_stroke_header_probe.py'
-      - 'tests/test_ckm_stroke_ingest_uacr.py'
-      - 'tests/test_ckm_stroke_pipeline.py'
-      - 'tests/fixtures/ckm_stroke/**'
-      - 'docs/ckm_stroke_pipeline.md'
-      - '.github/workflows/ckm-stroke-pipeline.yml'
   workflow_dispatch:
 
 permissions:
