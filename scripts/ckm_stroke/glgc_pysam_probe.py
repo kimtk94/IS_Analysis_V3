@@ -67,7 +67,8 @@ def main():
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(result,ensure_ascii=False),flush=True)
-    return int(result["status"]=="FAIL")
+    # A completed CI process with SOURCE_UNAVAILABLE used to be a false PASS.
+    return int(result["status"] != "PASS")
 
 
 if __name__=="__main__":
