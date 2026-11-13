@@ -272,11 +272,48 @@ def first_nominal_tsv_preview(gzip_tar_member_prefix,max_rows=80):
         complete=complete[:-1]
     if len(complete)<3:
         raise ValueError("Too few complete original nominal associations")
-    pieces=[x.split("\t") for x in complete]
+    pieces=[x.split() for x in complete]
     num_cols=[len(p) for p in pieces]
     if not 7<=num_cols[0]<=40 or any(count!=num_cols[0] for count in num_cols):
         raise ValueError("Inconsistent association TSV field counts in source")
     sample=pieces[:8]
+    # Upstream QTLtools cis --nominal format is WHITESPACE-separated.
+    # slope_se exists only when --std-err was supplied. Optional group
+    # columns move positional indices: do not guess full schema if unexpected.
+    header_fields=[v.lower().lstrip("#") for v in sample[0]]
+    source_has_header=("phe_id" in header_fields or "grp_id" in header_fields)
+    data_rows=pieces[1:] if source_has_header else pieces
+    qtltools_schema=None
+    if not source_has_header and len(data_rows[0]) in (14,15):
+        first_data=data_rows[0]
+        # Standard ungrouped positional QTLtools fields; prior to declaring
+        # a genuine format, require chromosome and nominal p-value semantics.
+        try:
+            n_cis=int(first_data[5])
+            qtl_p=float(first_data[11])
+            qtl_slope=float(first_data[13])
+            chr1=first_data[1]
+            chr2=first_data[8]
+            if n_cis>0 and 0<=qtl_p<=1 and chr1==chr2 and qtl_slope==qtl_slope:
+                qtltools_schema={
+                    "format":"QTLtools nominal ungrouped positional candidate",
+                    "nominal_pvalue":qtl_p,
+                    "n_variants_tested_cis_for_first_gene":n_cis,
+                    "first_phenotype_id":first_data[0],
+                    "first_variant_id":first_data[7],
+                    "slope_beta":qtl_slope,
+                    "slope_se_present":len(first_data)==15,
+                    "slope_se_column_option_required":"--std-err",
+                    "first_record_without_confirmed_REF_ALT":True,
+                    "first_record_without_proven_per_celltype_N":True,
+                }
+                if len(first_data)==15:
+                    se=float(first_data[14])
+                    if not 0<se<float("inf"):
+                        raise ValueError("Nonpositive QTLtools slope_se")
+                    qtltools_schema["slope_se"]=se
+        except (ValueError,IndexError):
+            pass
     header_guess=any(word in [v.strip().lower() for v in sample[0]]
                      for word in ("variant_id","slope","slope_se","pval_nominal","phenotype_id","gene_id"))
     numeric_by_col=[]
@@ -296,7 +333,9 @@ def first_nominal_tsv_preview(gzip_tar_member_prefix,max_rows=80):
         "source_nominal_file":name,
         "declared_first_nominal_uncompressed_bytes":declared_size,
         "sampled_complete_association_lines":len(complete),
-        "tab_columns_per_line":num_cols[0],
+        "whitespace_delimited_columns_per_line":num_cols[0],
+        "tab_delimiter_required":False,
+        "qtltools_nominal_ungrouped_schema_probe":qtltools_schema,
         "looks_like_header":header_guess,
         "first_line_fields_verbatim":sample[0][:40],
         "second_line_fields_verbatim":sample[1][:40],
@@ -375,7 +414,8 @@ def run(out):
         lines.extend(["", "## Actual original source nominal SNP-gene table preview",
                       f"- First file: {v['source_nominal_file']}",
                       f"- Complete source lines inspected: {v['sampled_complete_association_lines']}",
-                      f"- Fields per tab-delimited row: {v['tab_columns_per_line']}",
+                      f"- Whitespace-delimited fields per row: {v['whitespace_delimited_columns_per_line']}",
+                      f"- QTLtools positional schema probe: {v.get('qtltools_nominal_ungrouped_schema_probe')}",
                       f"- Looks like a header: {v['looks_like_header']}",
                       "- First row: `" + " | ".join(v["first_line_fields_verbatim"])[:500] + "`",
                       "- Second row: `" + " | ".join(v["second_line_fields_verbatim"])[:500] + "`"])
