@@ -237,6 +237,77 @@ def nested_gzip_tar_head(raw):
     return fields
 
 
+def first_nominal_tsv_preview(gzip_tar_member_prefix,max_rows=80):
+    """Inspect only start of the first ~8GB nominal QTLtools TAR member.
+
+    This is source-byte schema evidence, not full member CRC or sample N.
+    QTLtools original nominal output can be headerless, so no guessed
+    column names are hard-coded as established evidence.
+    """
+    if not gzip_tar_member_prefix.startswith(b"\x1f\x8b"):
+        raise ValueError("Not an original gzip member")
+    inflated=zlib.decompressobj(16+zlib.MAX_WBITS).decompress(
+        gzip_tar_member_prefix,2*MAX_PREFIX)
+    if len(inflated)<1536:
+        raise ValueError("Too few bytes to inspect original nominal rows")
+    header=inflated[:512]
+    name=header[:100].split(b"\0",1)[0].decode("utf-8","replace")
+    if not name.endswith("_nominal.txt"):
+        raise ValueError("First nested nominal TAR member not association TSV")
+    declared=header[124:136].strip(b"\0 ")
+    if not re.fullmatch(rb"[0-7]+",declared):
+        raise ValueError("Original nominal TAR member size malformed")
+    declared_size=int(declared,8)
+    if declared_size<100:
+        raise ValueError("Nominal TSV member unexpectedly small")
+    raw=inflated[512:512+min(declared_size,len(inflated)-512)]
+    decoded=raw.decode("utf-8","strict")
+    rows=decoded.split("\n")
+    if len(rows)<4:
+        raise ValueError("Original association source has fewer than 3 full lines")
+    first=rows[:max_rows] if decoded.endswith("\n") else rows[:max_rows]
+    complete=[x.rstrip("\r") for x in first if x.strip()]
+    # Exclude final partial line if it lies at the decompression boundary.
+    if not decoded.endswith("\n") and len(rows)<=max_rows:
+        complete=complete[:-1]
+    if len(complete)<3:
+        raise ValueError("Too few complete original nominal associations")
+    pieces=[x.split("\t") for x in complete]
+    num_cols=[len(p) for p in pieces]
+    if not 7<=num_cols[0]<=40 or any(count!=num_cols[0] for count in num_cols):
+        raise ValueError("Inconsistent association TSV field counts in source")
+    sample=pieces[:8]
+    header_guess=any(word in [v.strip().lower() for v in sample[0]]
+                     for word in ("variant_id","slope","slope_se","pval_nominal","phenotype_id","gene_id"))
+    numeric_by_col=[]
+    for j in range(num_cols[0]):
+        inspected=pieces[1:40] if header_guess else pieces[:40]
+        numeric=0
+        for row in inspected:
+            try:
+                value=float(row[j])
+                if value==value and value not in (float("inf"),float("-inf")):
+                    numeric+=1
+            except ValueError:
+                pass
+        numeric_by_col.append({"column_index_zero_based":j,
+                               "numeric_fraction_first_rows":round(numeric/max(1,len(inspected)),3)})
+    return {
+        "source_nominal_file":name,
+        "declared_first_nominal_uncompressed_bytes":declared_size,
+        "sampled_complete_association_lines":len(complete),
+        "tab_columns_per_line":num_cols[0],
+        "looks_like_header":header_guess,
+        "first_line_fields_verbatim":sample[0][:40],
+        "second_line_fields_verbatim":sample[1][:40],
+        "numeric_field_evidence":numeric_by_col,
+        "no_source_per_person_data_extracted":True,
+        "full_nominal_member_size_or_crc_checked":False,
+        "entire_cis_distribution_examined":False,
+        "coloc_allele_sample_size_compatibility":"NOT_YET_VERIFIED",
+    }
+
+
 def run(out):
     report={
         "checked_utc":datetime.now(timezone.utc).isoformat(),
@@ -280,6 +351,7 @@ def run(out):
         first,source_meta=source_member_prefix(matching[0])
         report["original_nominal_member_prefix"]=source_meta
         report["nested_nominal_TAR_first_members"]=nested_gzip_tar_head(first)
+        report["first_actual_nominal_association_records"]=first_nominal_tsv_preview(first)
         report["source_status"]="OFFICIAL_PUBLIC_43GB_ZIP64_CENTRAL_AND_NOMINAL_TAR_PREFIX_VERIFIED"
     except (OSError,ValueError,TimeoutError,urllib.error.URLError,struct.error,zlib.error) as e:
         report["source_status"]="SOURCE_OR_QC_HOLD"
@@ -299,6 +371,14 @@ def run(out):
         lines+=["","| First nested nominal TAR member | Declared bytes |","|---|---:|"]
         for v in y[:12]:
             lines.append(f"| {v['member']} | {v['uncompressed_bytes']:,} |")
+    if v:=report.get("first_actual_nominal_association_records"):
+        lines.extend(["", "## Actual original source nominal SNP-gene table preview",
+                      f"- First file: {v['source_nominal_file']}",
+                      f"- Complete source lines inspected: {v['sampled_complete_association_lines']}",
+                      f"- Fields per tab-delimited row: {v['tab_columns_per_line']}",
+                      f"- Looks like a header: {v['looks_like_header']}",
+                      "- First row: `" + " | ".join(v["first_line_fields_verbatim"])[:500] + "`",
+                      "- Second row: `" + " | ".join(v["second_line_fields_verbatim"])[:500] + "`"])
     if err:=report.get("source_issue"):
         lines.append("\nHOLD: "+err)
     lines+=["","GRCh38 public immune cell QTL vs GRCh37 original stroke GWAS; no positional join or causal claims.",
