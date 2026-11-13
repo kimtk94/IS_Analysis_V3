@@ -8,6 +8,7 @@ HEADER=("rsID\tCHROM\tPOS_b37\tREF\tALT\tN\tN_studies\tPOOLED_ALT_AF\t"
 SNP1="rs1\t22\t20000018\tG\tA\t1000\t2\t0.3\t0.1\t0.1\t0.498\t0.31731050786291415\t0.498\t0.31731050786291415"
 SNP2="rs2\t22\t20000030\tA\tT\t1000\t2\t0.5\t-0.2\t0.1\t1.34\t0.04550026389635842\t1.34\t0.04550026389635842"
 INDEL="rs3\t22\t20000031\tG\tAC\t1000\t2\t0.2\t0.1\t0.1\t0.498\t0.31731050786291415\t0.498\t0.31731050786291415"
+SYMBOLIC="NA\t22\t20000032\tR\tI\t1000\t2\t0.2\t0.1\t0.1\t0.498\t0.31731050786291415\t0.498\t0.31731050786291415"
 
 class FakeTabix:
     def __init__(self,url): self.url=url
@@ -15,7 +16,7 @@ class FakeTabix:
     def __exit__(self,*args): return False
     def fetch(self,chrom):
         assert chrom=="22"
-        return iter([SNP1,SNP2,INDEL])
+        return iter([SNP1,SNP2,INDEL,SYMBOLIC])
 
 class DuplicateTabix(FakeTabix):
     def fetch(self,chrom):
@@ -34,9 +35,10 @@ class TestGLGCChromShard(unittest.TestCase):
             r=shard.chromosome_qc("LDL_C","22",factory=FakeTabix,
                                   header_fetcher=header,work_dir=d)
         self.assertEqual(r["status"],"PASS")
-        self.assertEqual(r["counts"]["original_rows"],3)
+        self.assertEqual(r["counts"]["original_rows"],4)
         self.assertEqual(r["counts"]["retained_autosomal_snp"],2)
         self.assertEqual(r["counts"]["non_snp"],1)
+        self.assertEqual(r["counts"]["symbolic_or_ambiguous_non_snp"],1)
         self.assertEqual(r["counts"]["palindromic_ambiguous_af_0_42_to_0_58"],1)
         self.assertEqual(r["variant_qc"]["duplicate_excess_rows"],0)
         self.assertFalse(r["full_file_source_sha256_verified"])
