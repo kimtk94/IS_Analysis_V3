@@ -50,7 +50,8 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
         factory=pysam.TabixFile
     indices={k:header.index(k) for k in required_shard}
     counts={"original_rows":0,"retained_autosomal_snp":0,
-            "non_snp":0,"malformed_columns":0,"wrong_chromosome":0,
+            "non_snp":0,"symbolic_or_ambiguous_non_snp":0,
+            "malformed_columns":0,"wrong_chromosome":0,
             "invalid_coordinate":0,"invalid_alleles":0,"invalid_effect_or_se":0,
             "p_underflow_zero":0,"invalid_p":0,
             "invalid_allele_frequency":0,"palindromic_ambiguous_af_0_42_to_0_58":0}
@@ -94,7 +95,13 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
                         if len(ea)!=1 or len(nea)!=1:
                             reason("non_snp",n,parts)
                             continue
-                        if ea not in BASE_DNA or nea not in BASE_DNA or ea==nea:
+                        # GLGC includes I/D and IUPAC symbolic or ambiguous
+                        # alleles such as R/I. These are not biallelic SNVs,
+                        # but their presence is not proof of a corrupt GWAS.
+                        if ea not in BASE_DNA or nea not in BASE_DNA:
+                            reason("symbolic_or_ambiguous_non_snp",n,parts)
+                            continue
+                        if ea==nea:
                             reason("invalid_alleles",n,parts)
                             continue
                         try:
@@ -153,7 +160,9 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
                 "variant_qc":variant,
                 "full_file_source_sha256_verified":False,
                 "analysis_ready_data_persisted":False,
-                "note":"Only chr shard and SNP subset; indels and P=0 underflow explicitly counted. "
+                "note":"Only chr shard and SNP subset; multibase and symbolic/ambiguous alleles "
+                       "are excluded from SNP-only results (not labeled biological errors); "
+                       "P=0 underflow is separately counted. "
                        "No whole-GWAS checksum, cross-GWAS harmonization, LDSC or MR performed."
             }
     except (OSError,RuntimeError,ValueError,KeyError,TimeoutError) as exc:
