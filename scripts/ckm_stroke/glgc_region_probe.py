@@ -30,18 +30,14 @@ def validate_rows(text,chrom,start,end):
     lines=[s for s in text.splitlines() if s.strip()]
     if not lines:
         return {"status":"HOLD","reason":"no output"}
-    header=None
-    for s in lines:
-        if s.startswith("##"):
-            continue
-        if s.startswith("#"):
-            s=s.lstrip("#")
-        header=s
-        break
-    if header is None:
+    first = next((i for i, line in enumerate(lines) if not line.startswith("##")), None)
+    if first is None:
         return {"status":"HOLD","reason":"tabix returned no column header"}
-    f=csv.DictReader(io.StringIO("\n".join(lines[lines.index(next(x for x in lines if not x.startswith("##"))):])),delimiter="\t")
-    # Most GLGC files have a plain first header row, not a VCF metadata section.
+    header = lines[first].lstrip("#")
+    # GLGC files can present either '#rsID' or 'rsID'. Preserve the true
+    # column names before parsing the actual rows.
+    reader_lines = [header] + lines[first+1:]
+    f=csv.DictReader(io.StringIO("\n".join(reader_lines)), delimiter="\t")
     fields=set(f.fieldnames or [])
     if not REQUIRED.issubset(fields):
         return {"status":"FAIL","reason":"missing required GLGC fields",
@@ -69,8 +65,9 @@ def validate_rows(text,chrom,start,end):
         except (ValueError,TypeError,KeyError,AttributeError):
             invalid+=1
     if n<=0: return {"status":"HOLD","reason":"region returned zero variants","header":sorted(fields)}
-    return {"status":"HOLD" if invalid or p_invalid else "PASS",
-            "rows_region":n,"invalid_rows":invalid,
+    valid=n-invalid-p_invalid-many
+    return {"status":"HOLD" if invalid or p_invalid or valid==0 else "PASS",
+            "rows_region":n,"valid_snp_rows":valid,"invalid_rows":invalid,
             "non_snp_rows":many,"invalid_effect_rows":p_invalid,
             "palindromic_snp_rows":n_pal,
             "observed_fields":sorted(fields),"sample_variants":examples,
@@ -124,7 +121,7 @@ def main():
                          "- Region: "+result.get("region",f"{args.chrom}:{args.start}-{args.end}")+"\n"+
                          "- Records in region: "+str(result.get("rows_region",0))+"\n"+
                          "- Scientific status: NOT_RUN\n")
-    return int(result["status"]=="FAIL")
+    return int(result["status"] != "PASS")
 
 if __name__=="__main__":
     raise SystemExit(main())
