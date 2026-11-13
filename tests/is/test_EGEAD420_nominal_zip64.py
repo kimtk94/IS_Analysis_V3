@@ -14,6 +14,7 @@ sys.path.insert(0,str(ROOT/"scripts"/"is"))
 from audit_EGEAD420_nominal_zip64 import (
     EXPECTED_ZIP_SIZE,EXPECTED_PUBLISHED_ZIP_MD5,
     source_filelist,zip64_eocd,zip_directory_members,nested_gzip_tar_head,
+    first_nominal_tsv_preview,
     check_url,ZIP,FILELIST,
 )
 
@@ -89,6 +90,36 @@ class NominalZip64Tests(unittest.TestCase):
         row=nested_gzip_tar_head(fileobj.getvalue())[0]
         self.assertEqual(row["member"],"nominal_eQTL_CD4.tsv")
         self.assertTrue(row["contents_not_validated"])
+
+    def test_realistic_headerless_qtltools_nominal_snps(self):
+        f=io.BytesIO()
+        with tarfile.open(fileobj=f,mode="w:gz") as archive:
+            lines=[]
+            for i in range(6):
+                lines.append(
+                    f"ENSG0000012345\t1_{100+i}_A_G\t0\t0.20\t40\t80\t"
+                    f"{0.1+i*0.05:.5f}\t0.03\t0.12\tA\tG"
+                )
+            source=("\n".join(lines)+"\n").encode()
+            info=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            info.size=len(source)
+            archive.addfile(info,io.BytesIO(source))
+        r=first_nominal_tsv_preview(f.getvalue())
+        self.assertEqual(r["source_nominal_file"],"CD16p_Mono_nominal.txt")
+        self.assertEqual(r["sampled_complete_association_lines"],6)
+        self.assertEqual(r["tab_columns_per_line"],11)
+        self.assertFalse(r["looks_like_header"])
+        self.assertFalse(r["entire_cis_distribution_examined"])
+
+    def test_non_tabular_nominal_content_is_rejected(self):
+        f=io.BytesIO()
+        with tarfile.open(fileobj=f,mode="w:gz") as archive:
+            source=(b"bad contents\n"*20)
+            info=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            info.size=len(source)
+            archive.addfile(info,io.BytesIO(source))
+        with self.assertRaisesRegex(ValueError,"field counts"):
+            first_nominal_tsv_preview(f.getvalue())
 
     def test_bad_nested_gzip_not_validated(self):
         with self.assertRaisesRegex(ValueError,"not gzip"):
