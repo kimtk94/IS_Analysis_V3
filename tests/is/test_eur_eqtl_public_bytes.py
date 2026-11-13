@@ -18,6 +18,7 @@ from audit_eur_eqtl_public_bytes import (
 class EqtlsActualSourcePrepTests(unittest.TestCase):
     def test_correct_source_object_names(self):
         self.assertTrue(GTEX_EUR_URL.endswith("GTEx_Analysis_v8_eQTL_EUR.tar"))
+        self.assertIn("/adult-gtex/bulk-qtl/v8/single-tissue-cis-qtl/",GTEX_EUR_URL)
         self.assertTrue(EBI_BLUEPRINT_URL.endswith("QTD000021.all.tsv.gz"))
         self.assertIn("GRCh37",SOURCE_BUILD["GIGASTROKE_EUR_EAS"])
         self.assertIn("GRCh38",SOURCE_BUILD["eQTL_Catalogue_BLUEPRINT"])
