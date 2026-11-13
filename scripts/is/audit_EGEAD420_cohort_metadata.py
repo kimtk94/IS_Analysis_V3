@@ -156,4 +156,6 @@ if __name__=="__main__":
     parser=argparse.ArgumentParser()
     parser.add_argument("--out-dir",default="artifacts/is_EGEAD420_sdrf")
     args=parser.parse_args()
-    run(Path(args.out_dir))
+    audit=run(Path(args.out_dir))
+    if audit.get("status",audit.get("source_status"))!="SOURCE_SDRF_416_COHORT_METADATA_AND_PUBLISHER_MD5_PASS":
+        raise SystemExit(1)
