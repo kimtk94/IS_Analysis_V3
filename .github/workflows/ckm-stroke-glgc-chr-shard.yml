@@ -5,6 +5,8 @@ on:
     paths:
       - 'scripts/ckm_stroke/glgc_chr_shard.py'
       - 'tests/test_ckm_stroke_glgc_chr_shard.py'
+      - 'tests/test_ckm_stroke_glgc_chr_summary.py'
+      - 'scripts/ckm_stroke/summarize_glgc_chr.py'
       - '.github/workflows/ckm-stroke-glgc-chr-shard.yml'
   workflow_dispatch:
     inputs:
@@ -33,7 +35,7 @@ jobs:
       - name: Test chromosome-shard source and SNP QC contracts
         run: |
           python -m py_compile scripts/ckm_stroke/glgc_chr_shard.py
-          python -m unittest tests.test_ckm_stroke_glgc_chr_shard -v
+          python -m unittest tests.test_ckm_stroke_glgc_chr_shard tests.test_ckm_stroke_glgc_chr_summary -v
 
   chromosome-snp-qc:
     needs: offline-contract
@@ -80,3 +82,33 @@ jobs:
           path: artifacts/ckm_stroke/glgc_*.json
           retention-days: 30
           if-no-files-found: warn
+
+  aggregate-chromosome-evidence:
+    if: always()
+    needs: [offline-contract, chromosome-snp-qc]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch per-trait evidence artifacts from current run
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-chr-qc-*
+          path: artifacts/ckm_stroke
+          merge-multiple: true
+      - name: Verify all three traits with consistent source commit
+        env:
+          CHROMOSOME: ${{ github.event_name == 'workflow_dispatch' && inputs.chromosome || '22' }}
+        run: |
+          python -m scripts.ckm_stroke.summarize_glgc_chr \
+            --input-dir artifacts/ckm_stroke \
+            --chromosome "$CHROMOSOME" \
+            --output "artifacts/glgc_chr$CHROMOSOME-aggregate.json"
+      - name: Upload aggregate metadata, including HOLD evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-chr-aggregate
+          path: artifacts/glgc_chr*-aggregate.json
+          if-no-files-found: warn
+          retention-days: 30
