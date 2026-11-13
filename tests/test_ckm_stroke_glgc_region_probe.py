@@ -15,18 +15,17 @@ class TestGLGCIndexedRegion(unittest.TestCase):
         self.assertEqual(r["sample_variants"][0]["alt"],"G")
 
     def test_hash_prefixed_glgc_column_header(self):
-        text="##GLGC indexed summary stats\\n#"+HEADER+"rs3\\t22\\t20000011\\tG\\tA\\t90000\\t0.2\\t0.05\\t0.0000633425\\n"
-        text=text.replace("\\\\n","\\n").replace("\\\\t","\\t")
-        result=probe.validate_rows(text,"22",20000000,20050000)
-        self.assertEqual(result["status"],"PASS")
-        self.assertEqual(result["valid_snp_rows"],1)
+        text = "##GLGC indexed summary stats\n#" + HEADER
+        text += "rs3\t22\t20000011\tG\tA\t90000\t0.2\t0.05\t0.0000633425\n"
+        result = probe.validate_rows(text, "22", 20000000, 20050000)
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["valid_snp_rows"], 1)
 
     def test_empty_snp_only_indel_region_is_hold(self):
-        text=HEADER+"rs4\\t22\\t20000022\\tA\\tAT\\t90000\\t0.2\\t0.05\\t0.0000633425\\n"
-        text=text.replace("\\\\t","\\t").replace("\\\\n","\\n")
-        result=probe.validate_rows(text,"22",20000000,20050000)
-        self.assertEqual(result["status"],"HOLD")
-        self.assertEqual(result["valid_snp_rows"],0)
+        text = HEADER + "rs4\t22\t20000022\tA\tAT\t90000\t0.2\t0.05\t0.0000633425\n"
+        result = probe.validate_rows(text, "22", 20000000, 20050000)
+        self.assertEqual(result["status"], "HOLD")
+        self.assertEqual(result["valid_snp_rows"], 0)
 
     def test_wrong_region_fail_closed(self):
         r=probe.validate_rows(HEADER+"rs1\t1\t20000010\tA\tG\t1000\t0.1\t0.03\t0.001\n",
