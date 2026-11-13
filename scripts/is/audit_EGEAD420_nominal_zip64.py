@@ -284,7 +284,7 @@ def first_nominal_tsv_preview(gzip_tar_member_prefix,max_rows=80):
     source_has_header=("phe_id" in header_fields or "grp_id" in header_fields)
     data_rows=pieces[1:] if source_has_header else pieces
     qtltools_schema=None
-    if not source_has_header and len(data_rows[0]) in (14,15):
+    if not source_has_header and len(data_rows[0]) in (15,16):
         first_data=data_rows[0]
         # Standard ungrouped positional QTLtools fields; prior to declaring
         # a genuine format, require chromosome and nominal p-value semantics.
@@ -294,7 +294,7 @@ def first_nominal_tsv_preview(gzip_tar_member_prefix,max_rows=80):
             qtl_slope=float(first_data[13])
             chr1=first_data[1]
             chr2=first_data[8]
-            if n_cis>0 and 0<=qtl_p<=1 and chr1==chr2 and qtl_slope==qtl_slope:
+            if n_cis>0 and 0<=qtl_p<=1 and chr1==chr2 and qtl_slope==qtl_slope and first_data[-1] in ("0","1"):
                 qtltools_schema={
                     "format":"QTLtools nominal ungrouped positional candidate",
                     "nominal_pvalue":qtl_p,
@@ -302,12 +302,12 @@ def first_nominal_tsv_preview(gzip_tar_member_prefix,max_rows=80):
                     "first_phenotype_id":first_data[0],
                     "first_variant_id":first_data[7],
                     "slope_beta":qtl_slope,
-                    "slope_se_present":len(first_data)==15,
+                    "slope_se_present":len(first_data)==16,
                     "slope_se_column_option_required":"--std-err",
                     "first_record_without_confirmed_REF_ALT":True,
                     "first_record_without_proven_per_celltype_N":True,
                 }
-                if len(first_data)==15:
+                if len(first_data)==16:
                     se=float(first_data[14])
                     if not 0<se<float("inf"):
                         raise ValueError("Nonpositive QTLtools slope_se")
