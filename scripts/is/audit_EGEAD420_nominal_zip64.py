@@ -436,4 +436,6 @@ if __name__=="__main__":
     a=argparse.ArgumentParser()
     a.add_argument("--out-dir",default="artifacts/is_EGEAD420_pilot")
     args=a.parse_args()
-    run(Path(args.out_dir))
+    audit=run(Path(args.out_dir))
+    if audit.get("status",audit.get("source_status"))!="OFFICIAL_PUBLIC_43GB_ZIP64_CENTRAL_AND_NOMINAL_TAR_PREFIX_VERIFIED":
+        raise SystemExit(1)
