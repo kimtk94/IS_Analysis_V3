@@ -37,7 +37,8 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
                 "reason":"official header not verified", "header_evidence":source_header,
                 "trait":trait,"chromosome":chromosome}
     header=source_header["header"].split("\t")
-    if not REQUIRED.issubset(set(header)) or len(set(header))!=len(header):
+    required_shard=REQUIRED | {"POOLED_ALT_AF"}
+    if not required_shard.issubset(set(header)) or len(set(header))!=len(header):
         return {"status":"FAIL","scientific_status":"NOT_RUN",
                 "reason":"invalid or duplicate source columns", "header":header}
     if factory is None:
@@ -47,7 +48,7 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
             return {"status":"TOOL_UNAVAILABLE","scientific_status":"NOT_RUN",
                     "reason":str(exc)}
         factory=pysam.TabixFile
-    indices={k:header.index(k) for k in REQUIRED}
+    indices={k:header.index(k) for k in required_shard}
     counts={"original_rows":0,"retained_autosomal_snp":0,
             "non_snp":0,"malformed_columns":0,"wrong_chromosome":0,
             "invalid_coordinate":0,"invalid_alleles":0,"invalid_effect_or_se":0,
