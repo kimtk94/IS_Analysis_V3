@@ -111,6 +111,43 @@ class NominalZip64Tests(unittest.TestCase):
         self.assertFalse(r["looks_like_header"])
         self.assertFalse(r["entire_cis_distribution_examined"])
 
+    def test_qtltools_nominal_space_separate_without_std_err_is_hold(self):
+        buf=io.BytesIO()
+        with tarfile.open(fileobj=buf,mode="w:gz") as tar:
+            rows=[]
+            for i in range(6):
+                # QTLtools ungrouped nominal without optional std-err:
+                # phe_id chr start end strand n_cis dist varid chr from to p r2 slope besthit
+                rows.append(f"ENSG000000001 chr1 1000 1000 + 1200 {i*2} "
+                            f"rs{i+1} chr1 {1050+i} {1050+i} 0.72 0.02 0.11 0")
+            content=("\n".join(rows)+"\n").encode()
+            info=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            info.size=len(content)
+            tar.addfile(info,io.BytesIO(content))
+        result=first_nominal_tsv_preview(buf.getvalue())
+        self.assertEqual(result["whitespace_delimited_columns_per_line"],15)
+        parsed=result["qtltools_nominal_ungrouped_schema_probe"]
+        self.assertIsNotNone(parsed)
+        self.assertFalse(parsed["slope_se_present"])
+        self.assertEqual(parsed["n_variants_tested_cis_for_first_gene"],1200)
+
+    def test_qtltools_nominal_space_separate_with_optional_std_err(self):
+        buf=io.BytesIO()
+        with tarfile.open(fileobj=buf,mode="w:gz") as tar:
+            rows=[]
+            for i in range(6):
+                rows.append(f"ENSG000000001 chr1 1000 1000 + 1200 {i*2} "
+                            f"rs{i+1} chr1 {1050+i} {1050+i} 0.72 0.02 0.11 0.09 0")
+            content=("\n".join(rows)+"\n").encode()
+            info=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            info.size=len(content)
+            tar.addfile(info,io.BytesIO(content))
+        result=first_nominal_tsv_preview(buf.getvalue())
+        self.assertEqual(result["whitespace_delimited_columns_per_line"],16)
+        parsed=result["qtltools_nominal_ungrouped_schema_probe"]
+        self.assertTrue(parsed["slope_se_present"])
+        self.assertEqual(parsed["slope_se"],0.09)
+
     def test_non_tabular_nominal_content_is_rejected(self):
         f=io.BytesIO()
         with tarfile.open(fileobj=f,mode="w:gz") as archive:
