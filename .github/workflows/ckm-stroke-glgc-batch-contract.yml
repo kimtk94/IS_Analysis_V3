@@ -1,0 +1,30 @@
+name: CKM Stroke GLGC bounded-batch gate contract
+
+on:
+  push:
+    paths:
+      - 'scripts/ckm_stroke/plan_glgc_batch.py'
+      - 'tests/test_ckm_stroke_glgc_batch_plan.py'
+      - '.github/workflows/ckm-stroke-glgc-batch-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-glgc-batch-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check bounded batch gate syntax and regression tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/plan_glgc_batch.py tests/test_ckm_stroke_glgc_batch_plan.py
+          python -m unittest tests.test_ckm_stroke_glgc_batch_plan -v
