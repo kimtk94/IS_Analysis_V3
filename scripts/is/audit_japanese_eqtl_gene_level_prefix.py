@@ -139,6 +139,7 @@ def first_tar_records_from_nested_gzip(binary_prefix,max_records=14):
     if len(inflated)<512:
         raise ValueError("TAR header unavailable in bounded original prefix")
     names=[]
+    readme_text=None
     off=0
     while off+512<=len(inflated) and len(names)<max_records:
         header=inflated[off:off+512]
@@ -159,10 +160,13 @@ def first_tar_records_from_nested_gzip(binary_prefix,max_records=14):
         end=off+512+((size+511)//512)*512
         if end>len(inflated):
             break
+        if name.endswith("/README.txt") and size<=8192:
+            readme_text=inflated[off+512:off+512+size].decode("utf-8","replace")
         off=end
     return {
         "nested_tar_first_member_headers":names,
         "bytes_of_nested_tar_inflated":len(inflated),
+        "gene_level_original_README_first_8192_chars":readme_text,
         "full_gene_level_tar_unpacked":False,
         "full_variant_cis_pairs_examined":False,
     }
@@ -242,8 +246,15 @@ def run(out):
                       "|---|---:|"])
         for x in sub["nested_tar_first_member_headers"]:
             lines.append(f"| {x['name']} | {x['uncompressed_member_size']:,} |")
+    if tar:=report.get("gene_level_tar_first_members"):
+        if readme:=tar.get("gene_level_original_README_first_8192_chars"):
+            lines.extend(["", "## Original gene-level README (source excerpt)", "", "```text", readme[:4000], "```"])
     if methods:=report.get("source_methods"):
         lines.append(f"\nMethods DOCX CRC PASS, {methods['paragraphs']} paragraphs available in machine-readable evidence.")
+        keylines=[x for x in methods["method_text_first_12000_chars"].splitlines()
+                  if any(k in x.lower() for k in ("eqtl","permutation","cis","maf","q-value","nominal","snp","covariate"))]
+        lines.extend(["", "## Original methods excerpt (selected matching paragraphs)", ""])
+        lines.extend(f"- {x[:250]}" for x in keylines[:12])
     if err:=report.get("source_issue"):
         lines.append("\nSource HOLD: "+err)
     lines+=["","Only first TAR headers examined. NO variant-gene beta/SE/allele row QC, no tested cis completeness, no GWAS mapping or coloc."]
