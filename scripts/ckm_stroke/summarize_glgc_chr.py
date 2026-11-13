@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 TRAITS=("LDL_C","HDL_C","TG")
-EXCLUSION_FIELDS=("non_snp","malformed_columns","wrong_chromosome",
+EXCLUSION_FIELDS=("non_snp","symbolic_or_ambiguous_non_snp","malformed_columns","wrong_chromosome",
                   "invalid_coordinate","invalid_alleles","invalid_effect_or_se",
                   "p_underflow_zero","invalid_p","invalid_allele_frequency")
 SCOPE="ONE_FULL_CHROMOSOME_ONLY_NOT_WHOLE_GWAS"
@@ -56,7 +56,8 @@ def summarize(folder,chromosome):
             "original_rows":original,
             "valid_snp_rows":retained,
             "excluded_non_snp":counts.get("non_snp",0),
-            "excluded_other":excluded-counts.get("non_snp",0),
+            "excluded_symbolic_or_ambiguous_non_snp":counts.get("symbolic_or_ambiguous_non_snp",0),
+            "excluded_other":excluded-counts.get("non_snp",0)-counts.get("symbolic_or_ambiguous_non_snp",0),
             "palindromic_ambiguous_af":counts.get("palindromic_ambiguous_af_0_42_to_0_58",0),
             "duplicate_keys":variant.get("duplicate_excess_rows"),
             "p_consistency_sampled":variant.get("p_consistency_sampled"),
