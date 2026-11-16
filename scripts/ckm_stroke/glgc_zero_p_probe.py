@@ -49,6 +49,8 @@ def audit_pzero(trait, chrom, factory=None, header_fetcher=None, max_rows=500000
     overflow=False
     reported_logps=[]
     other_errors=0
+    seen_zero_p_keys=set()
+    duplicate_zero_p_keys=0
     with factory(url) as source:
         for raw in source.fetch(chrom):
             source_rows+=1
@@ -82,6 +84,10 @@ def audit_pzero(trait, chrom, factory=None, header_fetcher=None, max_rows=500000
             eligible_snp+=1
             if p!=0:
                 continue
+            key=(chrom,pos,tuple(sorted((ea,nea))))
+            if key in seen_zero_p_keys:
+                duplicate_zero_p_keys+=1
+            seen_zero_p_keys.add(key)
             raw_n=fields[ix["N"]].strip()
             raw_af=fields[ix["POOLED_ALT_AF"]].strip()
             raw_logp=fields[ix["pvalue_neg_log10"]].strip()
@@ -108,7 +114,7 @@ def audit_pzero(trait, chrom, factory=None, header_fetcher=None, max_rows=500000
                 "pvalue_neg_log10":raw_logp,
                 "z_abs":abs(beta/se),
             })
-    status="PASS" if not overflow and not invalid_pzero_metadata and not other_errors else "HOLD"
+    status="PASS" if not overflow and not invalid_pzero_metadata and not other_errors and not duplicate_zero_p_keys else "HOLD"
     return {
         "status":status, "scientific_status":"HOLD",
         "scope":"ONE_ORIGINAL_GLGCEUR_CHROMOSOME_ZERO_P_SNP_EVIDENCE_NOT_MR",
@@ -120,6 +126,7 @@ def audit_pzero(trait, chrom, factory=None, header_fetcher=None, max_rows=500000
         "pzero_with_valid_original_logp":len(reported_logps),
         "pzero_with_invalid_auxiliary_metadata":invalid_pzero_metadata,
         "source_parse_errors":other_errors,
+        "duplicate_zero_p_variant_keys":duplicate_zero_p_keys,
         "row_cap_hit":overflow,
         "original_logp_min":min(reported_logps) if reported_logps else None,
         "original_logp_max":max(reported_logps) if reported_logps else None,
