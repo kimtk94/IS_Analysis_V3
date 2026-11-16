@@ -222,6 +222,38 @@ def count_tar_sample_header_probe(prefix):
         "per_celltype_eqtl_N":"NOT_VERIFIED",
     }
 
+def confidential_matrix_clinical_overlap(count_tar_first_bytes,clinical_data):
+    """Anonymous matrix-column / 416 participant-ID intersection only.
+
+    Never log, return or archive the actual public person/sample IDs.
+    Numbers are EXTRACTED FROM SOURCE headers, not QTL regression model N.
+    """
+    header_text=count_tar_first_bytes[512:].split(b"\n",1)[0].rstrip(b"\r").decode("utf-8","strict")
+    columns=header_text.split("\t")
+    if len(columns)<3:
+        raise ValueError("Original expression matrix contains no sample columns")
+    matrix_ids=columns[1:]
+    if len(set(matrix_ids))!=len(matrix_ids) or any(not x for x in matrix_ids):
+        raise ValueError("Original expression matrix column IDs blank/duplicated")
+    clinical=list(csv.DictReader(io.StringIO(clinical_data.decode("utf-8-sig","strict")),delimiter="\t"))
+    if not clinical or "id" not in clinical[0]:
+        raise ValueError("Original clinical table missing ID key")
+    sample_ids=[r["id"] for r in clinical]
+    if len(set(sample_ids))!=len(sample_ids) or not all(sample_ids):
+        raise ValueError("Original clinical ID collision or missing")
+    common=len(set(matrix_ids) & set(sample_ids))
+    return {
+        "original_count_matrix_column_count_excluding_gene_key":len(matrix_ids),
+        "original_count_matrix_unique_sample_columns":len(set(matrix_ids)),
+        "independent_clinical_source_ID_records":len(sample_ids),
+        "exact_same_public_name_match_columns_to_clinical":common,
+        "unmatched_count_matrix_columns":len(matrix_ids)-common,
+        "clinical_id_match_is_not_verified_qtl_model_inclusion":True,
+        "per_celltype_eQTL_regression_N":"NOT_VERIFIED",
+        "no_source_person_identifiers_exposed":True,
+    }
+
+
 def run(out):
     result={"source":"E-GEAD-397 public ImmuNexUT expression archive",
             "checked_utc":datetime.now(timezone.utc).isoformat(),
@@ -254,6 +286,7 @@ def run(out):
                        "clinical_structure":summarize_clinical(cbytes),
                        "count_tar_preview":tar_first_member(header),
                        "CD16_monocyte_count_matrix_header_probe":count_tar_sample_header_probe(header),
+                       "CD16_monocyte_anonymized_expression_clinical_ID_overlap":confidential_matrix_clinical_overlap(header,cbytes),
                        "source_filelist_publisher_count_tar_MD5_ONLY":official["count.tar"]["publisher_md5"]})
     except (OSError,ValueError,TimeoutError,UnicodeDecodeError,urllib.error.URLError,zlib.error):
         result["status"]="SOURCE_OR_QC_HOLD"
@@ -270,7 +303,9 @@ def run(out):
                       f"- Public clinical header fields: {', '.join(c['header_fields'])}",
                       f"- Actual count TAR first member: {result['count_tar_preview']['first_member_name']}",
                       f"- CD16p_Mono source count-matrix header fields (NOT eQTL N): {result['CD16_monocyte_count_matrix_header_probe']['source_first_matrix_header_fields']}",
-                      f"- Nonnegative numeric expression values in first source row: {result['CD16_monocyte_count_matrix_header_probe']['numeric_nonnegative_values_in_first_data_row_excluding_first_field']}"])
+                      f"- Nonnegative numeric expression values in first source row: {result['CD16_monocyte_count_matrix_header_probe']['numeric_nonnegative_values_in_first_data_row_excluding_first_field']}",
+                      f"- Original anonymized expression columns vs clinical ID count: {result['CD16_monocyte_anonymized_expression_clinical_ID_overlap']['original_count_matrix_unique_sample_columns']} / {result['CD16_monocyte_anonymized_expression_clinical_ID_overlap']['independent_clinical_source_ID_records']}",
+                      f"- Exact public ID overlap without exporting identities: {result['CD16_monocyte_anonymized_expression_clinical_ID_overlap']['exact_same_public_name_match_columns_to_clinical']}"])
     lines+=["","No original participant IDs emitted, original 286MB archive MD5 NOT independently verified.",
             "True per-cell eQTL N, variant MAF and stroke loci colocalization remain HOLD."]
     summary="\n".join(lines)+"\n"
