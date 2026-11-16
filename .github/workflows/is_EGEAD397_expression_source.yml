@@ -1,0 +1,34 @@
+name: IS E-GEAD397 original expression metadata and cell N feasibility QC
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_EGEAD397_expression_source.py'
+      - 'tests/is/test_EGEAD397_expression_source.py'
+      - '.github/workflows/is_EGEAD397_expression_source.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  public-expression-source-n-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test bounded original expression ZIP and no patient data leak
+        run: python3 -m unittest discover -s tests/is -p 'test_EGEAD397_expression_source.py' -v
+      - name: Read expression clinical original MD5 and count-TAR ZIP header only
+        run: python3 scripts/is/audit_EGEAD397_expression_source.py --out-dir artifacts/is_EGEAD397_expression_source
+      - name: Archive public source structure without subject identifiers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-EGEAD397-expression-original-ZIP-metadata-pilot
+          path: artifacts/is_EGEAD397_expression_source/
+          retention-days: 60
+          if-no-files-found: warn

@@ -1,0 +1,34 @@
+name: IS GSE331114 GEO donor covariate availability
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_gse331114_donor_metadata.py'
+      - 'tests/is/test_gse331114_donor_metadata.py'
+      - '.github/workflows/is_gse331114_donor_metadata.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  donor-covariate-metadata-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test no-pseudoreplication and no leaked donor values
+        run: python3 -m unittest discover -s tests/is -p 'test_gse331114_donor_metadata.py' -v
+      - name: Verify actual public GEO SOFT donor and covariate field coverage
+        run: python3 scripts/is/audit_gse331114_donor_metadata.py --out-dir artifacts/is_gse331114_donor_coverage
+      - name: Archive schema availability only (no donor identifiers)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gse331114-donor-covariate-coverage
+          path: artifacts/is_gse331114_donor_coverage/
+          retention-days: 45
+          if-no-files-found: warn

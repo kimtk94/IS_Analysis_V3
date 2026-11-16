@@ -1,0 +1,34 @@
+name: IS public GWAS eQTL LD source manifests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/is/audit_public_gwas_eqtl_ld_manifests.py"
+      - "tests/is/test_public_gwas_eqtl_ld_manifests.py"
+      - ".github/workflows/is_public_source_manifests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  public-source-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate manifest audit parser and source identity
+        run: python3 -m unittest discover -s tests/is -p 'test_public_gwas_eqtl_ld_manifests.py' -v
+      - name: Query publisher GWAS YAML and Zenodo source manifests (read only)
+        run: python3 scripts/is/audit_public_gwas_eqtl_ld_manifests.py --out-dir artifacts/is_eas_public_source_manifests
+      - name: Archive metadata-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-public-gwas-eqtl-ld-manifests
+          path: artifacts/is_eas_public_source_manifests/
+          if-no-files-found: warn
+          retention-days: 30

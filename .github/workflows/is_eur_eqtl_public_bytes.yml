@@ -1,0 +1,34 @@
+name: IS EUR eQTL actual public source byte QC
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_eur_eqtl_public_bytes.py'
+      - 'tests/is/test_eur_eqtl_public_bytes.py'
+      - '.github/workflows/is_eur_eqtl_public_bytes.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  eur-eqtl-raw-byte-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test public source identities and header/allele guardrails
+        run: python3 -m unittest discover -s tests/is -p 'test_eur_eqtl_public_bytes.py' -v
+      - name: Audit actual source bytes (strict bound, never bulk downloads)
+        run: python3 scripts/is/audit_eur_eqtl_public_bytes.py --out-dir artifacts/is_eur_cis_eqtl_byte_qc
+      - name: Publish raw public header evidence and science HOLD gate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-eur-eqtl-true-source-byte-headers
+          path: artifacts/is_eur_cis_eqtl_byte_qc/
+          retention-days: 45
+          if-no-files-found: warn

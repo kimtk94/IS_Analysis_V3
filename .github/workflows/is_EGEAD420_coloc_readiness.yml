@@ -1,0 +1,51 @@
+name: IS E-GEAD420 original eQTL and donor source coloc readiness gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_EGEAD420_coloc_readiness.py'
+      - 'tests/is/test_EGEAD420_coloc_readiness.py'
+      - '.github/workflows/is_EGEAD420_coloc_readiness.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audited-source-coloc-go-hold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test false readiness and provenance contract against synthetic fixtures
+        run: python3 -m unittest discover -s tests/is -p 'test_EGEAD420_coloc_readiness.py' -v
+      - name: Fetch actual original 13-column ImmuNexUT association evidence
+        uses: actions/download-artifact@v4
+        with:
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          run-id: 43847910968
+          name: is-ImmuNexUT-E-GEAD-420-original-ZIP64-nominal-source-evidence
+          path: original_evidence/source
+      - name: Fetch independently MD5-verified original 416 participant SDRF evidence
+        uses: actions/download-artifact@v4
+        with:
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          run-id: 43433142595
+          name: is-ImmuNexUT-E-GEAD420-SDRF-416-cohort-original-MD5
+          path: original_evidence/cohort
+      - name: Fail-closed source-level eQTL colocalization eligibility gate
+        run: python3 scripts/is/audit_EGEAD420_coloc_readiness.py --source original_evidence --out-dir artifacts/is_EGEAD420_coloc_readiness
+      - name: Archive reproducible GO/HOLD decisions, not patient data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-EGEAD420-original-eQTL-coloc-GO-HOLD
+          path: artifacts/is_EGEAD420_coloc_readiness/
+          retention-days: 60
+          if-no-files-found: warn

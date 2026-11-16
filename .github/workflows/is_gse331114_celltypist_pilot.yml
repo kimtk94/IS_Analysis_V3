@@ -1,0 +1,102 @@
+name: IS GSE331114 CellTypist reference 8-sample feasibility
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/run_gse331114_celltypist_pilot.py'
+      - 'tests/is/test_gse331114_celltypist_pilot.py'
+      - 'scripts/is/aggregate_gse331114_reference_predictions.py'
+      - 'tests/is/test_aggregate_gse331114_reference_predictions.py'
+      - 'scripts/is/sall1_microglia_orthogonal_check.py'
+      - 'tests/is/test_sall1_microglia_orthogonal_check.py'
+      - 'scripts/is/aggregate_gse331114_sall1_crosscheck.py'
+      - 'tests/is/test_aggregate_gse331114_sall1_crosscheck.py'
+      - '.github/workflows/is_gse331114_celltypist_pilot.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  celltypist-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [AIS, Control]
+        index: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned human immune annotation dependencies
+        run: python3 -m pip install 'celltypist==1.7.1' 'scanpy==1.11.4'
+      - name: Reference-pilot regression tests
+        run: python3 -m unittest discover -s tests/is -p 'test_gse331114_celltypist_pilot.py' -v
+      - name: Test independent SALL1 orthogonal RNA marker rules
+        run: python3 -m unittest discover -s tests/is -p 'test_sall1_microglia_orthogonal_check.py' -v
+      - name: Fetch actual original GEO sample checksums from previous verified CI
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 43010007530
+          pattern: is-gse331114-*
+          merge-multiple: false
+          path: downloaded_gse331114
+      - name: Run human immune reference model on actual stroke/control MEX data
+        run: |
+          python3 scripts/is/run_gse331114_celltypist_pilot.py \
+            --group ${{ matrix.group }} --index ${{ matrix.index }} \
+            --source-root downloaded_gse331114 --out-dir artifacts/is_celltypist_pilot
+      - name: Archive per-GSM summaries; no per-cell identities or full MEX matrices
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-celltypist-reference-pilot-${{ matrix.group }}-${{ matrix.index }}
+          path: artifacts/is_celltypist_pilot/
+          retention-days: 45
+          if-no-files-found: warn
+
+  synthesize-eight:
+    needs: celltypist-pilot
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test sample provenance and cell-label confidence guardrails
+        run: python3 -m unittest discover -s tests/is -p 'test_aggregate_gse331114_reference_predictions.py' -v
+      - name: Download all eight actual model results from this exact run
+        uses: actions/download-artifact@v4
+        with:
+          pattern: is-celltypist-reference-pilot-*
+          merge-multiple: false
+          path: downloaded_reference_predictions
+      - name: Validate eight GSM, same reference hash and synthesize descriptive labels
+        run: python3 scripts/is/aggregate_gse331114_reference_predictions.py --source downloaded_reference_predictions --out-dir artifacts/is_celltypist_8sample_synthesis
+      - name: Test the 8-GSM SALL1 source identity, marker rates and biological HOLD
+        run: python3 -m unittest discover -s tests/is -p 'test_aggregate_gse331114_sall1_crosscheck.py' -v
+      - name: Reconcile true 8-GSM SALL1 marker signatures, not cell type labels
+        run: python3 scripts/is/aggregate_gse331114_sall1_crosscheck.py --source downloaded_reference_predictions --out-dir artifacts/is_sall1_orthogonal
+      - name: Publish only sample-level provisional reference summaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-celltypist-eight-sample-synthesis
+          path: artifacts/is_celltypist_8sample_synthesis/
+          retention-days: 45
+          if-no-files-found: warn
+      - name: Archive SALL1 orthogonal evidence with pseudobulk HOLD
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-sall1-orthogonal-8sample-summary
+          path: artifacts/is_sall1_orthogonal/
+          retention-days: 45
+          if-no-files-found: warn

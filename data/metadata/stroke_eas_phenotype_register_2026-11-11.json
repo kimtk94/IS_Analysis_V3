@@ -1,0 +1,78 @@
+{
+  "manifest_version": "2026-11-11",
+  "source": "Mishra et al. GIGASTROKE 2022; GWAS Catalog v2 trait metadata",
+  "evidence_type": "published_aggregate_gwas_metadata_only",
+  "case_ascertainment_note": "Individual EAS contributing cohort diagnostic criteria and TOAST/ICD/clinical imaging status must be checked from original supplementary studies; not inferred from labels.",
+  "clinical_reference": "AHA/ASA 2013 tissue-based stroke definition",
+  "research_primary_outcome": "ischemic_stroke",
+  "excluded_outcome_concepts": [
+    "TIA without infarction",
+    "silent infarction without attributable clinical symptoms",
+    "intracerebral hemorrhage",
+    "subarachnoid hemorrhage",
+    "stroke mimic"
+  ],
+  "record_source_status": "COHORT_CASE_DEFINITION_UNVERIFIED",
+  "eas_studies": [
+    {
+      "accession": "GCST90104544",
+      "phenotype": "any_stroke",
+      "published_cases": 27413,
+      "published_controls": 237242,
+      "primary": false,
+      "case_ascertainment": "NOT_VERIFIED",
+      "imaging_confirmation": null,
+      "toast_adjudication": null,
+      "icd_rules": null,
+      "incident_or_prevalent": null
+    },
+    {
+      "accession": "GCST90104545",
+      "phenotype": "ischemic_stroke",
+      "published_cases": 19032,
+      "published_controls": 237242,
+      "primary": true,
+      "case_ascertainment": "NOT_VERIFIED",
+      "imaging_confirmation": null,
+      "toast_adjudication": null,
+      "icd_rules": null,
+      "incident_or_prevalent": null
+    },
+    {
+      "accession": "GCST90104546",
+      "phenotype": "cardioembolic_stroke",
+      "published_cases": 926,
+      "published_controls": 237242,
+      "primary": false,
+      "case_ascertainment": "NOT_VERIFIED",
+      "imaging_confirmation": null,
+      "toast_adjudication": null,
+      "icd_rules": null,
+      "incident_or_prevalent": null
+    },
+    {
+      "accession": "GCST90104547",
+      "phenotype": "large_artery_stroke",
+      "published_cases": 1735,
+      "published_controls": 237242,
+      "primary": false,
+      "case_ascertainment": "NOT_VERIFIED",
+      "imaging_confirmation": null,
+      "toast_adjudication": null,
+      "icd_rules": null,
+      "incident_or_prevalent": null
+    },
+    {
+      "accession": "GCST90104548",
+      "phenotype": "small_vessel_stroke",
+      "published_cases": 5532,
+      "published_controls": 237242,
+      "primary": false,
+      "case_ascertainment": "NOT_VERIFIED",
+      "imaging_confirmation": null,
+      "toast_adjudication": null,
+      "icd_rules": null,
+      "incident_or_prevalent": null
+    }
+  ]
+}
