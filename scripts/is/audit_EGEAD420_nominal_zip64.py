@@ -237,6 +237,82 @@ def nested_gzip_tar_head(raw):
     return fields
 
 
+
+IMMUNEXUT_13_COL_HEADER=(
+    "Gene_id","Gene_name","CHR","TSS_position","Number_of_variants_cis",
+    "Variant_ID","REF","ALT","Variant_CHR","Variant_position_start",
+    "Variant_position_end","nominal_P_value","slope(ALT)",
+)
+
+
+def validate_real_immuNexUT_13col_rows(pieces):
+    """Validate genuinely observed 13-column ImmuNexUT source, not QTLtools guess.
+
+    ImmuNexUT publishes a postprocessed table with ALT-oriented slope,
+    nominal p, cis-test count, REF/ALT and coordinate. It does not publish
+    SE/MAF/per-celltype sample n in this original observed table header.
+    Multiple rsIDs and multi-base indel alleles are permitted, not collapsed.
+    """
+    import math
+    if not pieces or tuple(pieces[0])!=IMMUNEXUT_13_COL_HEADER:
+        raise ValueError("ImmuNexUT actual source 13-column header mismatch")
+    if len(pieces)<4:
+        raise ValueError("Less than 3 actual association rows")
+    summary={
+        "source_13col_header_verified":True,
+        "n_actual_complete_source_association_rows":len(pieces)-1,
+        "source_nominal_non_significant_p_gt_0_05":0,
+        "source_nominal_significant_p_le_0_05":0,
+        "source_reported_cis_variants_for_first_gene":None,
+        "source_first_gene_id":None,
+        "distinct_genes_in_bounded_prefix":None,
+        "variant_id_semicolon_multi_ids_rows":0,
+        "SNVs_and_indels_supported":True,
+        "beta_effect_allele":"ALT",
+        "slope_beta_present":True,
+        "nominal_p_value_present":True,
+        "ref_alt_alleles_present":True,
+        "variant_coordinates_present":True,
+        "slope_se_column_present":False,
+        "allele_frequency_MAF_EAF_present":False,
+        "per_celltype_sample_n_column_present":False,
+        "no_association_SE_reconstruction_performed":True,
+        "full_study_CRC_MD5_checked":False,
+        "full_cis_association_completeness":"NOT_VERIFIED",
+        "GWAS_liftover_and_harmonized_variants":"NOT_RUN",
+        "coloc_ABF_or_SuSiE":"BLOCKED",
+    }
+    unique_genes=set()
+    for i,cols in enumerate(pieces[1:],start=1):
+        if len(cols)!=len(IMMUNEXUT_13_COL_HEADER):
+            raise ValueError("Original association row column count mismatch")
+        (gene,gname,gchr,tss,n_cis,rsids,ref,alt,vchr,vstart,vend,pvalue,beta)=cols
+        if not gene.startswith("ENSG") or not gchr.startswith("chr") or not vchr.startswith("chr"):
+            raise ValueError("Unexpected original gene/chr provenance")
+        if gchr!=vchr:
+            raise ValueError("Original cis variant chromosome differs from gene")
+        if not gname or not rsids:
+            raise ValueError("Source gene or variant identifier missing")
+        if not set(ref)<=set("ACGT") or not set(alt)<=set("ACGT") or not ref or not alt or ref==alt:
+            raise ValueError("Invalid or identical REF ALT alleles")
+        try:
+            pos=int(vstart); end=int(vend); transcription=int(tss); n=int(n_cis)
+            pv=float(pvalue); b=float(beta)
+        except ValueError as exc:
+            raise ValueError("Invalid original ImmuNexUT numeric association") from exc
+        if not (n>0 and pos>0 and end>=pos and transcription>0 and
+                math.isfinite(pv) and 0<=pv<=1 and math.isfinite(b)):
+            raise ValueError("Original ImmuNexUT association values out of bounds")
+        unique_genes.add(gene)
+        summary["source_nominal_non_significant_p_gt_0_05"]+=(pv>0.05)
+        summary["source_nominal_significant_p_le_0_05"]+=(pv<=0.05)
+        summary["variant_id_semicolon_multi_ids_rows"]+=(";" in rsids)
+        if i==1:
+            summary["source_reported_cis_variants_for_first_gene"]=n
+            summary["source_first_gene_id"]=gene
+    summary["distinct_genes_in_bounded_prefix"]=len(unique_genes)
+    return summary
+
 def first_nominal_tsv_preview(gzip_tar_member_prefix,max_rows=80):
     """Inspect only start of the first ~8GB nominal QTLtools TAR member.
 
@@ -276,6 +352,9 @@ def first_nominal_tsv_preview(gzip_tar_member_prefix,max_rows=80):
     num_cols=[len(p) for p in pieces]
     if not 7<=num_cols[0]<=40 or any(count!=num_cols[0] for count in num_cols):
         raise ValueError("Inconsistent association TSV field counts in source")
+    source_13col_stats=None
+    if pieces[0] and pieces[0][0]=="Gene_id":
+        source_13col_stats=validate_real_immuNexUT_13col_rows(pieces)
     sample=pieces[:8]
     # Upstream QTLtools cis --nominal format is WHITESPACE-separated.
     # slope_se exists only when --std-err was supplied. Optional group
@@ -336,6 +415,7 @@ def first_nominal_tsv_preview(gzip_tar_member_prefix,max_rows=80):
         "whitespace_delimited_columns_per_line":num_cols[0],
         "tab_delimiter_required":False,
         "qtltools_nominal_ungrouped_schema_probe":qtltools_schema,
+        "actual_ImmuNexUT_13_column_source_data_QC":source_13col_stats,
         "looks_like_header":header_guess,
         "first_line_fields_verbatim":sample[0][:40],
         "second_line_fields_verbatim":sample[1][:40],
@@ -416,6 +496,7 @@ def run(out):
                       f"- Complete source lines inspected: {v['sampled_complete_association_lines']}",
                       f"- Whitespace-delimited fields per row: {v['whitespace_delimited_columns_per_line']}",
                       f"- QTLtools positional schema probe: {v.get('qtltools_nominal_ungrouped_schema_probe')}",
+                      f"- Actual ImmuNexUT 13-column data audit: {v.get('actual_ImmuNexUT_13_column_source_data_QC')}",
                       f"- Looks like a header: {v['looks_like_header']}",
                       "- First row: `" + " | ".join(v["first_line_fields_verbatim"])[:500] + "`",
                       "- Second row: `" + " | ".join(v["second_line_fields_verbatim"])[:500] + "`"])
