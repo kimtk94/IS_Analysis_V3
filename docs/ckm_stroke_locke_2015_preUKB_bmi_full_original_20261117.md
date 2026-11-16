@@ -48,7 +48,16 @@ The source has **no explicit chromosome/BP columns**; this audit matches source 
 - An rsID/allele matched count is **not** an estimate of genetic correlation, heritability, MR causality, or shared individuals.
 - Scientific status **`HOLD`**, `ready_for_ldsc=false`, `h2/rg/MR/coloc=NOT_RUN`. Draft PR #284 stays unmerged.
 
-## 5. Reproduction
+## 5. Independent Linux CI source re-fetch and exact cross-platform evidence
+
+- [GitHub Actions #43983463946](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43983463946): **SUCCESS**, both offline tests (8/8) and entire-original-source validation; timestamp 2026-11-16 23:57:01 UTC (2026-11-17 08:57:01 KST).
+- [Artifact #14283897455](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43983463946/artifacts/14283897455): JSON-only temporary 2018 candidate generation provenance and final 2015 source QC; no compressed original association files or full candidate tables uploaded.
+- The exact Linux JSON artifact was copied to Orca and independently compared to the original Windows result: all **19 QC count keys**, all per-variant matched-N distribution statistics, original compressed source bytes **35,869,809**, SHA256 `ddca3b30985e3428f4762f8e8aadd385504627b9b825cff1ecdc4a5e2e358b44`, candidate total and match percentage were **identical**; comparison exited 0. Note this raw-source hash is a **pinned primary-source observation reproduced independently**, not publisher-published source checksum.
+- New full-source data is **technically validated** as a pre-UKB-era alternate BMI exposure reference; `scientific_status=HOLD` and `ready_for_ldsc=false` remain unchanged.
+- **Critical future sensitivity design constraint:** The 1,007,858 loci are a *QC intersection of 2015 original with the 2018-derived HM3 candidate*. They are **not** a standalone 2015-selected variant universe. For a methodologically independent 2015 sensitivity GWAS, derive its SNP set directly from the 2015 original and independently authenticated GRCh37 reference/LD-score and HM3 sources rather than selecting it conditional on the 2018 BMI panel. Compare 2018 and 2015 only after each independently established QC and harmonization universe is defined.
+- Complete independence from GIGASTROKE is not established: 2015 GIANT may share non-UKB recruitment studies with stroke cohorts. Participant overlap remains `POSSIBLE_UNQUANTIFIED`, not zero.
+
+## 6. Reproduction
 
 - Main program: `scripts/ckm_stroke/audit_locke_2015_bmi_overlap.py`. Complete raw gzip SHA256 pinned to the Orca observation and rechecked in CI, 2,554,637 original rows and 14 duplicates pinned, strict hashed 2018 candidate consistency, per-row numerical QC, explicit allele swap/sign categories, SNP-specific N quartiles, aggregate-only output.
 - Tests: `tests/test_ckm_stroke_locke_2015_bmi_overlap.py` — 8 offline test cases including non-integer N, missing reference frequency, duplicate-rsID quarantine, effects orientation and source drift.
