@@ -1,0 +1,30 @@
+name: CKM Stroke GLGC source-SNP export offline contract
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-glgc-export-contract.yml'
+      - 'scripts/ckm_stroke/glgc_chr_shard.py'
+      - 'tests/test_ckm_stroke_glgc_chr_shard.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-glgc-source-export-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export-contract-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate offline source-SNP export without official GWAS downloads
+        run: |
+          python -m py_compile scripts/ckm_stroke/glgc_chr_shard.py tests/test_ckm_stroke_glgc_chr_shard.py
+          python -m unittest tests.test_ckm_stroke_glgc_chr_shard -v
