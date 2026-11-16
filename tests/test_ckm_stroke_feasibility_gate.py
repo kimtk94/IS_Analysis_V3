@@ -8,15 +8,27 @@ class FeasibilityGateTests(unittest.TestCase):
     def test_conflicting_subtype_accession_is_hold(self):
         p = [
             {"phenotype": "LAA", "ancestry": "EUR", "role": "outcome",
-             "accession": "GCST90104542", "build": "REVIEW_REQUIRED", "data_file": "REVIEW_REQUIRED"},
+             "accession": "GCST90104541", "build": "GRCh37", "data_file": "REVIEW_REQUIRED"},
             {"phenotype": "CE", "ancestry": "EUR", "role": "outcome",
-             "accession": "GCST90104541", "build": "REVIEW_REQUIRED", "data_file": "REVIEW_REQUIRED"},
+             "accession": "GCST90104542", "build": "GRCh37", "data_file": "REVIEW_REQUIRED"},
         ]
         observed = assess(p, [], {})
         self.assertEqual(observed["scientific_status"], "HOLD")
         self.assertEqual({r["phenotype"] for r in observed["stroke_eur_accession_conflicts"]},
                          {"LAA", "CE"})
         self.assertFalse(observed["can_run_ldsc"])
+
+    def test_correct_official_labels_do_not_trigger_false_conflict(self):
+        p = [
+            {"phenotype": n, "ancestry": "EUR", "role": "outcome",
+             "accession": a, "build": "GRCh37", "data_file": "REVIEW_REQUIRED"}
+            for n,a in [("LAA","GCST90104542"),("CE","GCST90104541"),("SVD","GCST90104543")]
+        ]
+        result=assess(p,[],{})
+        self.assertEqual(result["stroke_eur_accession_conflicts"],[])
+        self.assertEqual(result["stroke_eur_unverified_builds"],[])
+        self.assertFalse(result["can_run_ldsc"])
+        self.assertEqual(result["scientific_status"],"HOLD")
 
     def test_url_is_not_full_gwas_qc(self):
         p = [{"phenotype": "LDL_C", "ancestry": "EUR", "role": "exposure",

@@ -9,10 +9,11 @@ from pathlib import Path
 
 EXPOSURES = ("BMI", "LDL_C", "HDL_C", "TG", "SBP", "T2D", "EGFR", "UACR")
 OUTCOMES = ("LAA", "CE", "SVD")
-# Independent 2026 supplementary table, not treated as the authoritative source.
-EXTERNAL_SUBTYPE_MAPPING = {
-    "LAA": "GCST90104541",
-    "CE": "GCST90104542",
+# Publisher GWAS Catalog metadata verified directly on 2026-11-16.
+# Mapping metadata confirmed; full raw GWAS MD5 verification not yet done.
+OFFICIAL_SUBTYPE_MAPPING = {
+    "LAA": "GCST90104542",
+    "CE": "GCST90104541",
     "SVD": "GCST90104543",
 }
 
@@ -70,12 +71,12 @@ def assess(
     disputed = []
     for name in OUTCOMES:
         actual = phenotype_lookup.get((name, "EUR"), {}).get("accession", "")
-        other = EXTERNAL_SUBTYPE_MAPPING[name]
+        other = OFFICIAL_SUBTYPE_MAPPING[name]
         if actual and actual != other:
             disputed.append({
                 "phenotype": name,
                 "manifest_accession": actual,
-                "independent_supplement_accession": other,
+                "official_metadata_accession": other,
                 "decision": "HOLD_ORIGINAL_CONSORTIUM_METADATA_REQUIRED",
             })
     missing_eas = [
@@ -90,7 +91,7 @@ def assess(
     ]
     missing_outcome_build = [
         name for name in OUTCOMES
-        if phenotype_lookup.get((name, "EUR"), {}).get("build", "").startswith("REVIEW_")
+        if phenotype_lookup.get((name, "EUR"), {}).get("build", "") != "GRCh37"
     ]
     problems = []
     if missing_eur_sources:
@@ -124,10 +125,10 @@ def assess(
         "orphan_source_rows": source_mismatches,
         "blocking_reasons": problems,
         "external_comparison": {
-            "publication": "Song et al. 2026 Translational Stroke Research supplement Table S2",
+            "publication": "EBI GWAS Catalog official metadata; Song et al. secondary Table S2 conflicts",
             "source_url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1007%2Fs12975-026-01509-7/MediaObjects/12975_2026_1509_MOESM2_ESM.pdf",
-            "authority": "independent_secondary_source_not_authoritative",
-            "action": "Verify GCST90104541/42 against original GIGASTROKE study-level metadata and file headers before analysis",
+            "authority": "PUBLISHER_METADATA_IS_AUTHORITATIVE; secondary publication labels rejected",
+            "action": "Official EBI labels confirmed (CE=41, LAA=42); original full-file checksums and harmonization still HOLD",
         },
         "novelty_prior_art": [{
             "doi": "10.1177/0271678X261462718",

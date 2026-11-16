@@ -12,12 +12,19 @@ This audit is deliberately metadata-only. It does not download original GWAS dat
 - BMI, SBP, and T2D EUR primary sources remain unselected. Available source URLs are not verified full normalized GWAS files.
 - tasks.json leaves P2–P5 argv/inputs/outputs empty. Thus **LDSC, MAGMA, MR/coloc and tissue-level science are NOT_RUN**.
 
-## Critical P0 discrepancy
+## P0 accession/build source metadata gate: RESOLVED 2026-11-16
 
-The PR phenotype manifest maps **LAA → GCST90104542**, **CE → GCST90104541**, **SVD → GCST90104543**.
-A separate 2026 published supplement (Table S2, https://media.springernature.com/original/springer-static/esm/art%3A10.1007%2Fs12975-026-01509-7/MediaObjects/12975_2026_1509_MOESM2_ESM.pdf)
-reports **LAS → GCST90104541** and **CES → GCST90104542**. Its validity has not been independently adjudicated.
-**Do not swap labels automatically**: cross-check against the *original* GIGASTROKE consortium release, GWAS Catalog authoritative study records, original summary-stat file headers and sample size. P0 must remain HOLD until resolved.
+Directly downloaded EBI GWAS Catalog original metadata YAML and md5sum.txt for the four European outcomes. The originally recorded phenotype labels were correct. The secondary Song et al 2026 supplement reverses LAA/CE, and must not override the EBI publisher record.
+
+| Outcome | Official accession | Original reported phenotype | Assembly | EUR total N | Published raw MD5 |
+| --- | --- | --- | --- | ---: | --- |
+| AIS | GCST90104540 | Ischemic stroke | GRCh37 | 1296908 | 1bfe4ae8a5042fb24cb0a562b05b0d2f |
+| LAA | GCST90104542 | Large artery stroke | GRCh37 | 1241207 | 71ea9fd7c06791a831861053b6a1cfbe |
+| CE | GCST90104541 | Cardioembolic stroke | GRCh37 | 1245612 | c252262586a6ea84b985f30dd7ab32be |
+| SVD | GCST90104543 | Small vessel stroke | GRCh37 | 1241619 | f41bc5f55b3cab238e305e3e86363f69 |
+
+Machine-readable evidence: config/ckm_stroke/gigastroke_eur_official.tsv. EBI source URL is recorded per study.
+Original GWAS binary has not been downloaded or hash-checked in this gate: checksum/source-integrity scientific HOLD remains. Do not infer LDSC or MR result PASS.
 
 ## Novelty audit
 
@@ -41,7 +48,7 @@ KoGES scientific-status **HOLD** pending access rights, precise data use conditi
 
 ## Next actions in order
 
-1. Resolve **GCST90104541/42 label conflict** against official original GWAS source; lock GRCh37, ancestry, phenotype/sample counts.
+1. [RESOLVED metadata] Verify downloaded original GWAS file hash and variant columns separately; accession and GRCh37 labels locked.
 2. Confirm chr21/20/19 job outcomes, review uploaded QC artifacts; do not dispatch additional chromosomes on queued evidence.
 3. Lock source candidates for EUR BMI/SBP/T2D; independently verify full release provenance, allele orientation and cohort overlap.
 4. Build durable normalized summary-stat artifact handoff/ancestry matched reference LD. Only then begin LDSC h2/intercept/rg.
