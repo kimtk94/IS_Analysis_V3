@@ -1,10 +1,8 @@
 name: CKM Stroke P1 GLGC chromosome EUR SNP QC
 
 on:
-  push:
-    paths:
-      - 'scripts/ckm_stroke/glgc_chr_shard.py'
-      - 'tests/test_ckm_stroke_glgc_chr_shard.py'
+  # The full-chromosome source audit is expensive and previously passed.
+  # Changes to code/docs should never silently schedule another matrix.
   workflow_dispatch:
     inputs:
       chromosome:
