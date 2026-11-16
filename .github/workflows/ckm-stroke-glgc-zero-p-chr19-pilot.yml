@@ -1,0 +1,79 @@
+name: CKM Stroke GLGC chr19 LDL zero-P source-logP audit
+
+on:
+  push:
+    branches:
+      - research/ckm-stroke-staged-actions-20261111
+    paths:
+      - '.github/workflows/ckm-stroke-glgc-zero-p-chr19-pilot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-glgc-pzero-chr19-ldl-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verified-pzero-loci-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run zero-P original-row fail-closed tests before public data download
+        run: |
+          python -m py_compile scripts/ckm_stroke/glgc_zero_p_probe.py
+          python -m unittest tests.test_ckm_stroke_glgc_zero_p_probe -v
+      - name: Install pinned indexed source reader and CA certificate bundle
+        run: |
+          python -m pip install pysam==0.23.3 certifi
+          python - <<'PY'
+          import certifi
+          import os
+          from pathlib import Path
+          ca=Path(certifi.where())
+          if not ca.exists() or ca.stat().st_size<1000:
+              raise RuntimeError("source TLS CA trust not available")
+          with open(os.environ["GITHUB_ENV"],"a",encoding="utf-8") as env:
+              for key in ("CURL_CA_BUNDLE","SSL_CERT_FILE","REQUESTS_CA_BUNDLE"):
+                  env.write(key+"="+str(ca)+"\n")
+          PY
+      - name: Audit full official indexed GLGC EUR chr19 LDL-C for zero-P original logP
+        run: |
+          python -m scripts.ckm_stroke.glgc_zero_p_probe \
+            --trait LDL_C --chromosome 19 \
+            --max-rows 5000000 \
+            --expected-original-rows 1081460 \
+            --expected-pzero-rows 332 \
+            --json-output artifacts/glgc_chr19_ldl_pzero_qc.json \
+            --tsv-output artifacts/glgc_chr19_ldl_pzero_source_candidates.tsv.gz
+      - name: Assert source logP is available but biological association remains HOLD
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("artifacts/glgc_chr19_ldl_pzero_qc.json").read_text())
+          assert d["status"]=="PASS",d
+          assert d["scientific_status"]=="HOLD"
+          assert d["source_pzero_canonical_snp_count"]==332
+          assert d["pzero_with_valid_original_logp"]==332
+          assert d["pzero_with_invalid_auxiliary_metadata"]==0
+          assert d["duplicate_zero_p_variant_keys"]==0
+          assert d["instrument_significance_or_harmonization"]=="NOT_RUN"
+          assert not d["source_full_genome_checksum_verified"]
+          print("Observed 332 original numeric P=0 canonical SNPs; log10(P) source field present")
+          print("Original -log10(P) range:",d["original_logp_min"],d["original_logp_max"])
+          print("Source loci remain unharmonized, and downstream MR remains scientific HOLD.")
+          PY
+      - name: Preserve source-only evidence with short retention
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-chr19-ldlc-zero-p-source-evidence
+          path: artifacts/glgc_chr19_ldl_pzero_*
+          retention-days: 30
+          if-no-files-found: warn
