@@ -1,0 +1,67 @@
+name: CKM Stroke GLGC chr22+21 verified coverage snapshot
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-glgc-progress-snapshot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-glgc-coverage-snapshot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verified-evidence-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Offline coverage and source provenance contract tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_glgc_autosomes.py
+          python -m unittest tests.test_ckm_stroke_audit_glgc_autosomes -v
+      - name: Fetch verified original chr22 aggregate from technical-PASS run
+        uses: actions/download-artifact@v4
+        with:
+          name: ckm-glgc-chr-aggregate
+          repository: ${{ github.repository }}
+          run-id: '43431051168'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/verified_aggregates
+      - name: Fetch only three completed chr21 QC source artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-21-*
+          repository: ${{ github.repository }}
+          run-id: '43848671279'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/chr21_source
+          merge-multiple: true
+      - name: Build chr21 independent 3-trait aggregate from real source artifacts
+        run: |
+          python -m scripts.ckm_stroke.summarize_glgc_chr \
+            --input-dir artifacts/chr21_source \
+            --chromosome 21 \
+            --output artifacts/verified_aggregates/glgc_chr21-aggregate.json
+      - name: Validate 22-autosome coverage honestly (PARTIAL until all 22)
+        run: |
+          python -m scripts.ckm_stroke.audit_glgc_autosomes \
+            --input-dir artifacts/verified_aggregates \
+            --output artifacts/glgc_autosome_coverage_snapshot.json
+      - name: Publish evidence-only results, not raw GWAS
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-chr22-21-coverage-snapshot
+          path: |
+            artifacts/verified_aggregates/glgc_chr*-aggregate.json
+            artifacts/glgc_autosome_coverage_snapshot.json
+          retention-days: 30
+          if-no-files-found: warn
