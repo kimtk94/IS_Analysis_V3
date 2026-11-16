@@ -12,6 +12,7 @@ sys.path.insert(0,str(ROOT/"scripts"/"is"))
 from audit_EGEAD397_expression_source import (
     EXPECTED_BYTES,EXPECTED_MD5,filelist,parse_zip_index,parse_zip_members,
     tar_first_member,summarize_clinical,count_tar_sample_header_probe,
+    confidential_matrix_clinical_overlap,
 )
 
 
@@ -81,6 +82,32 @@ class ExpressionSourceTests(unittest.TestCase):
         self.assertEqual(report["numeric_nonnegative_values_in_first_data_row_excluding_first_field"],3)
         self.assertTrue(report["count_matrix_column_count_not_equivalent_to_qtl_regression_N"])
         self.assertNotIn("Donor1",str(report))
+
+    def test_anonymized_original_416_member_count_and_clinical_intersection(self):
+        stream=io.BytesIO()
+        with tarfile.open(fileobj=stream,mode="w") as tar:
+            data=b"gene\tDonorA\tDonorB\tDonorC\nENSG0001\t0\t4\t7\n"
+            m=tarfile.TarInfo("CD16p_Mono_count.txt")
+            m.size=len(data)
+            tar.addfile(m,io.BytesIO(data))
+        clinical=b"id\tdisease\tPhase\tage\tsex\nDonorA\tHC\t1\t50\tF\nDonorB\tRA\t2\t40\tM\nDonorD\tHC\t1\t51\tF\n"
+        r=confidential_matrix_clinical_overlap(stream.getvalue()[:8192],clinical)
+        self.assertEqual(r["original_count_matrix_unique_sample_columns"],3)
+        self.assertEqual(r["exact_same_public_name_match_columns_to_clinical"],2)
+        self.assertEqual(r["unmatched_count_matrix_columns"],1)
+        self.assertNotIn("DonorA",str(r))
+        self.assertEqual(r["per_celltype_eQTL_regression_N"],"NOT_VERIFIED")
+
+    def test_duplicate_matrix_source_names_must_fail(self):
+        stream=io.BytesIO()
+        with tarfile.open(fileobj=stream,mode="w") as tar:
+            data=b"gene\tDonorA\tDonorA\nENSG0001\t0\t7\n"
+            m=tarfile.TarInfo("CD16p_Mono_count.txt")
+            m.size=len(data)
+            tar.addfile(m,io.BytesIO(data))
+        clinical=b"id\tdisease\nDonorA\tHC\n"
+        with self.assertRaisesRegex(ValueError,"duplicated"):
+            confidential_matrix_clinical_overlap(stream.getvalue()[:8192],clinical)
 
     def test_missing_original_count_matrix_data_line_fails(self):
         stream=io.BytesIO()
