@@ -1,29 +1,29 @@
 {
   "schema": "ckm-glgc-next-batch-approval-v2",
   "scientific_status": "HOLD",
-  "prior_run_id": 43865163287,
+  "prior_run_id": 43866716532,
   "prior_chromosomes": [
-    "18",
-    "17",
-    "16"
-  ],
-  "next_chromosomes": [
     "15",
     "14",
     "13"
   ],
-  "expected_prior_source_commit": "856a6681b4b5e49449595680370d0f626c541a87",
+  "next_chromosomes": [
+    "12",
+    "11",
+    "10"
+  ],
+  "expected_prior_source_commit": "12e71a567ff2768e8d41856c5b97062a8764a4fe",
   "prior_aggregate_statuses": {
-    "16": "PASS",
-    "17": "PASS",
-    "18": "PASS"
+    "13": "PASS",
+    "14": "PASS",
+    "15": "PASS"
   },
   "expected_prior_snp_rows": {
-    "16": 4237341,
-    "17": 3659008,
-    "18": 3649239
+    "13": 4586725,
+    "14": 4195881,
+    "15": 3815651
   },
   "max_parallel_jobs": 3,
   "expected_next_matrix_jobs": 9,
-  "approval_reason": "Prior run #43865163287 completed all 9 real-data source QC and 3 independent chromosome aggregate jobs SUCCESS. Actual aggregate JSON source SHA, per-trait counts, missing/duplicate/error checks independently verified; GitHub gate contract 42/42 PASS. Scientific readiness HOLD."
+  "approval_reason": "Original prior run #43866716532 overall SUCCESS; all 9 source QC and 3 chromosome aggregate jobs PASS. All 3 aggregates verified from original job logs, source commit and counts match. Scientific status HOLD."
 }
