@@ -7,6 +7,8 @@ metadata is uploaded. No full GWAS hash, LDSC or MR inferred.
 """
 import argparse
 import csv
+import hashlib
+import shutil
 import datetime as dt
 import gzip
 import json
@@ -19,13 +21,15 @@ from scripts.ckm_stroke.glgc_pysam_probe import fetch_official_header
 from scripts.ckm_stroke.glgc_region_probe import BASE, FILE_NAMES, REQUIRED
 from scripts.ckm_stroke.variant_qc import variant_qc
 
-OUT_HEADER=["CHR","POS","EA","NEA","BETA","SE","P"]
+# Include source-specified variant N, ALT allele frequency and original -log10 P
+# so future MR/LDSC-ready harmonization can assess rather than invent them.
+OUT_HEADER=["CHR","POS","EA","NEA","BETA","SE","P","RSID","N","EAF","NEG_LOG10P"]
 AUTOSOMES={str(i) for i in range(1,23)}
 BASE_DNA={"A","C","G","T"}
 
 
 def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
-                  max_rows=5000000, work_dir=None, qc_runner=variant_qc):
+                  max_rows=5000000, work_dir=None, qc_runner=variant_qc, export_dir=None):
     if trait not in FILE_NAMES or str(chromosome) not in AUTOSOMES:
         raise ValueError("invalid trait or autosome")
     if max_rows<100: raise ValueError("row cap must be >=100")
@@ -37,7 +41,7 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
                 "reason":"official header not verified", "header_evidence":source_header,
                 "trait":trait,"chromosome":chromosome}
     header=source_header["header"].split("\t")
-    required_shard=REQUIRED | {"POOLED_ALT_AF"}
+    required_shard=REQUIRED | {"POOLED_ALT_AF","pvalue_neg_log10"}
     if not required_shard.issubset(set(header)) or len(set(header))!=len(header):
         return {"status":"FAIL","scientific_status":"NOT_RUN",
                 "reason":"invalid or duplicate source columns", "header":header}
@@ -54,7 +58,9 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
             "malformed_columns":0,"wrong_chromosome":0,
             "invalid_coordinate":0,"invalid_alleles":0,"invalid_effect_or_se":0,
             "p_underflow_zero":0,"invalid_p":0,
-            "invalid_allele_frequency":0,"palindromic_ambiguous_af_0_42_to_0_58":0}
+            "invalid_allele_frequency":0,"palindromic_ambiguous_af_0_42_to_0_58":0,
+            "auxiliary_missing_or_invalid_n_rows":0,
+            "auxiliary_missing_or_invalid_log10p_rows":0}
     examples={}
     def reason(name,position,values):
         counts[name]+=1
@@ -131,8 +137,24 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
                         if frozenset((ea,nea)) in (frozenset(("A","T")),frozenset(("C","G"))):
                             if 0.42<=af<=0.58:
                                 counts["palindromic_ambiguous_af_0_42_to_0_58"]+=1
+                        raw_n=parts[indices["N"]].strip()
+                        raw_logp=parts[indices["pvalue_neg_log10"]].strip()
+                        try:
+                            n_numeric=float(raw_n)
+                            if not math.isfinite(n_numeric) or n_numeric<=0:
+                                raise ValueError("variant N must be positive")
+                        except ValueError:
+                            counts["auxiliary_missing_or_invalid_n_rows"]+=1
+                        try:
+                            logp_numeric=float(raw_logp)
+                            if not math.isfinite(logp_numeric) or logp_numeric<0:
+                                raise ValueError("negative-log10 P must be nonnegative")
+                        except ValueError:
+                            counts["auxiliary_missing_or_invalid_log10p_rows"]+=1
                         writer.writerow({"CHR":chrom,"POS":pos,"EA":ea,"NEA":nea,
-                                         "BETA":beta,"SE":se,"P":p})
+                                         "BETA":beta,"SE":se,"P":p,
+                                         "RSID":parts[indices["rsID"]].strip(),
+                                         "N":raw_n,"EAF":af,"NEG_LOG10P":raw_logp})
                         counts["retained_autosomal_snp"]+=1
             if not counts["retained_autosomal_snp"]:
                 return {"status":"HOLD","scientific_status":"NOT_RUN",
@@ -150,8 +172,39 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
                 status="HOLD"
             else:
                 status="PASS"
+            export_info={"normalized_source_snp_data_persisted":False,
+                         "analysis_ready_data_persisted":False}
+            if status=="PASS" and export_dir is not None:
+                if (counts["auxiliary_missing_or_invalid_n_rows"]
+                    or counts["auxiliary_missing_or_invalid_log10p_rows"]):
+                    # Never quietly publish a purported future-analysis input
+                    # whose sample size or P statistic is missing.
+                    export_info["source_snp_export_status"]="HOLD"
+                    export_info["source_snp_export_reason"]="invalid N or negative-log10 P"
+                else:
+                    dest_dir=Path(export_dir)
+                    dest_dir.mkdir(parents=True,exist_ok=True)
+                    exported=dest_dir/f"GLGC_Graham2021_EUR_{trait}_chr{chromosome}_source_snps.tsv.gz"
+                    # Export remains UNHARMONIZED; QC status and source URI
+                    # live in JSON. No individual participant data.
+                    shutil.copyfile(normalized,exported)
+                    digest=hashlib.sha256()
+                    with exported.open("rb") as fh:
+                        for block in iter(lambda:fh.read(1024*1024),b""):
+                            digest.update(block)
+                    export_info={
+                        "source_snp_export_status":"PASS",
+                        "normalized_source_snp_data_persisted":True,
+                        "analysis_ready_data_persisted":False,
+                        "source_snp_export_path":str(exported),
+                        "source_snp_export_sha256":digest.hexdigest(),
+                        "source_snp_export_size_bytes":exported.stat().st_size,
+                        "source_snp_export_columns":OUT_HEADER,
+                        "source_snp_export_harmonization":"NOT_RUN",
+                    }
             return {
                 "status":status,"scientific_status":"HOLD",
+                **export_info,
                 "source":"GLGC_Graham2021","trait":trait,"ancestry":"EUR",
                 "chromosome":chromosome,"source_url":url,
                 "scope":"ONE_FULL_CHROMOSOME_ONLY_NOT_WHOLE_GWAS",
@@ -159,7 +212,6 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
                 "counts":counts,"examples":examples,"row_cap_reached":capped,
                 "variant_qc":variant,
                 "full_file_source_sha256_verified":False,
-                "analysis_ready_data_persisted":False,
                 "note":"Only chr shard and SNP subset; multibase and symbolic/ambiguous alleles "
                        "are excluded from SNP-only results (not labeled biological errors); "
                        "P=0 underflow is separately counted. "
@@ -176,8 +228,11 @@ def main():
     ap.add_argument("--chromosome",default="22")
     ap.add_argument("--out",required=True)
     ap.add_argument("--max-rows",type=int,default=5000000)
+    ap.add_argument("--export-source-snp-dir",default=None,
+                    help="Optional source-SNP GZIP output after full technical PASS. Not harmonized for MR.")
     args=ap.parse_args()
-    result=chromosome_qc(args.trait,args.chromosome,max_rows=args.max_rows)
+    result=chromosome_qc(args.trait,args.chromosome,max_rows=args.max_rows,
+                         export_dir=args.export_source_snp_dir)
     result["timestamp_utc"]=dt.datetime.now(dt.timezone.utc).isoformat()
     result["source_commit"]=os.getenv("GITHUB_SHA","")
     dest=Path(args.out)
