@@ -64,3 +64,15 @@ Gene_id  Gene_name  CHR  TSS_position  Number_of_variants_cis  Variant_ID  REF  
 - New scripts `validate_real_immuNexUT_13col_rows` and `first_gene_full_cis_block_probe` with synthetic tests preserve real header, mixed indels and multi-rsIDs, p/allele QC, no false SE/N claims. Follow-on first-gene block source vs 835 original tested variants CI [#43848328705](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43848328705) submitted; **do not claim its actual 835-variant completeness until run validated**.
 
 **Scientific gate:** EAS eQTL **P0 actual nominal source structure/data rows PASS** for a small bounded region. EAS **full tested cis coverage, usable summary SE/MAF/N and per-locus GWAS alignment HOLD**. Coloc.abf/SuSiE, MAGMA, LDSC-SEG **NOT_RUN**. Do not mistake unrelated immune-disease cohort eQTL for expression measured in ischemic stroke patients.
+
+## Verified 2026-11-16 gene-block completeness — actual original source
+
+[GitHub Actions #43848328705](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43848328705) **SUCCESS, 18/18 tests PASS**. Without downloading the 43.5GB archive, the validated ZIP64→DEFLATE→gzip→TAR prefix contained an entire first contiguous `CD16p_Mono_nominal.txt` gene association block:
+- Source `ENSG00000227232.5` / `WASH7P` declared `Number_of_variants_cis=835`.
+- **835 actual association rows** read until the first record of the **next gene** (hard source boundary). **835/835 count matched**, 835 distinct variant genomic+allele keys validated in pilot. This establishes source row block completeness *relative to the source's declared count for this one gene*, **not that every GRCh38 cis variant, disease candidate gene or all 28 immune cell sources were checked**.
+- Among all original 835 WASH7P rows, **775 were nonsignificant (P>0.05)**. Earlier first 79 actual records included 75 nonsignificant; updated full first-gene evidence supersedes that partial subsample.
+- Still **NO per-SNP SE, MAF/EAF, or per-celltype N** in observed 13-column header; genotype REF/ALT can be indels and `Variant_ID` can list multiple rsIDs; no GWAS–eQTL aligned GRCh38↔GRCh37 locus prepared.
+- Full 43.5GB source publisher MD5 NOT independently tested. The official small cohort SDRF publisher MD5 and 416 cohort records were independently verified.
+- Additional `scripts/is/audit_EGEAD420_coloc_readiness.py` and `.github/workflows/is_EGEAD420_coloc_readiness.yml` independently join the two **actual original-source artifact ZIPs** ([eQTL #43847910968](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43847910968), [cohort #43433142595](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43433142595)) and **fail closed** on fabricated SE, MAF, effective celltype N, or direct stroke coloc readiness. It does not perform coloc.
+
+**G2 decision update:** actual EAS nominal source + first gene cis row completeness **PASS PILOT**; genome-wide full tested cis, the selected IS loci, harmonized GWAS variants and coloc-ready beta-varbeta or p-MAF-N **HOLD**. Source pipeline integrity must not be confused with statistical or clinical inference.
