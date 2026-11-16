@@ -1,0 +1,54 @@
+name: CKM P1 GIANT corrected BMI complete source integrity (bounded)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-bmi-full-source-qc.yml'
+      - 'scripts/ckm_stroke/audit_bmi_full_stream.py'
+      - 'tests/test_ckm_stroke_bmi_full_stream.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-p1-bmi-full-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail-closed offline regression
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_bmi_full_stream.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_bmi_full_stream.py' -v
+
+  full-source-stream:
+    # One deliberate push tagged [bmi-full]; no huge download on every commit.
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[bmi-full]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Stream complete publisher gzip, SHA256 and row QC (no source retention)
+        run: |
+          python scripts/ckm_stroke/audit_bmi_full_stream.py \
+            --out artifacts/ckm_stroke/bmi_full_source_ci.json
+      - name: Publish compact source QC evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-bmi-giant-full-source-evidence
+          path: artifacts/ckm_stroke/bmi_full_source_ci.json
+          if-no-files-found: warn
+          retention-days: 30
