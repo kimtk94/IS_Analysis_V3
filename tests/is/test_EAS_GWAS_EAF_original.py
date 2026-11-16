@@ -28,7 +28,7 @@ class OutcomeFrequencyTests(unittest.TestCase):
     def test_minor_frequency_symmetry_and_bin(self):
         self.assertEqual(q.maf_bin(0.001),"0_001_to_0_01")
         self.assertEqual(q.maf_bin(0.49),"0_4_to_0_5")
-        self.assertEqual(min(0.9,1-0.9),min(0.1,1-0.1))
+        self.assertAlmostEqual(min(0.9,1-0.9),min(0.1,1-0.1),places=12)
 
     def sample(self,missing_eaf=False):
         with tempfile.TemporaryDirectory() as folder:
