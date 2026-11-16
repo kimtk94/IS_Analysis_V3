@@ -7,7 +7,7 @@ Audit date: **2026-11-16**. Execution: Orca worktree on NGKR-SAL-TH, verified pu
 - Corrected GIANT/Yengo 2018 EUR BMI original: `https://giant-consortium.web.broadinstitute.org/images/c/c8/Meta-analysis_Locke_et_al%2BUKBiobank_2018_UPDATED.txt.gz`.
 - Full BMI original SHA256 (already checked on Orca and independent GitHub runner): `0d6ed0ea97870916b830ccae349df94ca6f3cc68c025c79e784729af7f7136a4`, compressed size 46,754,937 bytes.
 - Reference: MRCIEU/ldsc GRCh37 `w_hm3.snplist` file at repository commit `e9f9739c9c74ad5b4c653a6409a703cc005c62dc`. Raw URL: `https://raw.githubusercontent.com/MRCIEU/ldsc/e9f9739c9c74ad5b4c653a6409a703cc005c62dc/GRCh37/data/hm3/w_hm3.snplist`. SHA256 `4ed5a031f88edff7f94663841160d0fff750c45d4d55a630515b4d6de082c49e`, 17,170,716 bytes.
-- MRCIEU reference has **1,217,311 SNP records** plus one header. Initial 1,204,346 unique rsIDs included **12,965 repeated rsID rows**, and one unique rsID had discordant reference allele pairs. This one **conflicted rsID is excluded** from all reference matching; conservative reference denominator is **1,204,345**.
+- MRCIEU reference has **1,217,311 SNP records** plus one header. Initial 1,204,346 unique marker labels included **12,965 repeated marker rows**. The sole internally conflicting label was the literal missing-identifier placeholder **`NA`**, not a real rsID. Excluding `NA` leaves **1,204,345** eligible reference labels. An earlier naive counter reported 8,958 conflicting-allele observations from repeated `NA` lines; these do **not** represent 8,958 independent SNPs.
 
 ## Orca whole-source observed results
 
