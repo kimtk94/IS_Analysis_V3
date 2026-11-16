@@ -48,3 +48,16 @@ KoGES scientific-status **HOLD** pending access rights, precise data use conditi
 5. Ask KDCA/CODA for authorized phenotype/genotype/metabolomics overlap counts and access instructions, not unrestricted individual-level data.
 
 The executable metadata audit in scripts/ckm_stroke/feasibility_gate.py produces a JSON status artifact from current repository manifests, with fail-closed scientific HOLD. It does not claim to resolve unavailable scientific evidence.
+
+## Additional near-identical prior art found in the 2026-11-16 audit
+
+1. **Proteome-wide Genetic Study in East Asians and Europeans Identified Multiple Therapeutic Targets for Ischemic Stroke** (2025; PubMed 40304040): EAS/EUR MR and colocalization for FGF5, F11, ALDH2, ABO, GRK5, PROCR, MMP12 etc. This overlaps earlier user IS candidate screening and refutes novelty from EAS+EUR proteomics alone.
+   https://pubmed.ncbi.nlm.nih.gov/40304040/
+2. **Song et al., Proteome-Wide Mendelian Randomization Identifies Therapeutic Targets for Ischemic Stroke** (*Translational Stroke Research*, 2026-10-22, DOI 10.1007/s12975-026-01509-7): 589 INTERVAL pQTL instruments versus AIS, LAA, CES and SVD; deCODE replication, colocalization and 65,479 brain vascular nuclei. Highlights SPATA20/KDELC2. **Subtype-wide protein MR+coloc is already published**.
+   https://pubmed.ncbi.nlm.nih.gov/42911303/
+3. **Lu et al., Genomic Structural Equation Modeling Reveals CKM Syndrome Genetic Architecture** (*Journal of Diabetes*, 2026-04-13, DOI 10.1111/1753-0407.70225): existing CKM genomic SEM, LDSC, GWAS-by-subtraction, fine-mapping, TWAS and cell annotations.
+   https://doi.org/10.1111/1753-0407.70225
+4. **Multivariate genomic analysis of 5 million people elucidates the genetic architecture of shared components of metabolic syndrome** (*Nature Genetics*, 2024): a large pre-existing multivariate MetS genomic architecture baseline.
+   https://www.nature.com/articles/s41588-024-01933-1
+
+**Revised novelty decision:** Merely extending earlier IS proteomics to subtype MR, merely EAS/EUR triangulation, and merely CKM Genomic SEM are insufficient. The key potential contribution must be a *formally tested interaction between CKM component-specific liability and stroke subtype heterogeneity*, with population-specific genetic interpretation and independent biological validation. If the formal contrast is weak, STOP the claims and consider KoGES longitudinal transition analysis (subject to data access).

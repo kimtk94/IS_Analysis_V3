@@ -124,7 +124,7 @@ def assess(
         "orphan_source_rows": source_mismatches,
         "blocking_reasons": problems,
         "external_comparison": {
-            "publication": "2026 Journal of Stroke and Cerebrovascular Diseases supplement Table S2",
+            "publication": "Song et al. 2026 Translational Stroke Research supplement Table S2",
             "source_url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1007%2Fs12975-026-01509-7/MediaObjects/12975_2026_1509_MOESM2_ESM.pdf",
             "authority": "independent_secondary_source_not_authoritative",
             "action": "Verify GCST90104541/42 against original GIGASTROKE study-level metadata and file headers before analysis",
@@ -134,6 +134,20 @@ def assess(
             "published_online": "2026-06-15",
             "overlap": "CKM metabolic signature, incident stroke, MR and colocalization",
             "differentiation_needed": "ischemic stroke subtype heterogeneity and EUR/EAS evidence",
+        }, {
+            "doi": "10.1007/s12975-026-01509-7",
+            "published_online": "2026-10-22",
+            "overlap": "proteome-wide cis-pQTL MR across AIS/LAA/CES/SVD; deCODE replication; brain vascular cell atlas",
+            "differentiation_needed": "not merely rerun subtype proteomics MR/coloc",
+        }, {
+            "pubmed": "40304040",
+            "overlap": "EAS/EUR proteome-wide stroke MR including FGF5, ALDH2, F11, ABO, MMP12",
+            "differentiation_needed": "not merely replicate ten known proteins",
+        }, {
+            "doi": "10.1111/1753-0407.70225",
+            "published_online": "2026-04-13",
+            "overlap": "CKM Genomic SEM, LDSC, GWAS-by-subtraction, TWAS, cell-type specificity",
+            "differentiation_needed": "formal subtype-specific genetic heterogeneity beyond CKM latent factor only",
         }],
     }
 
