@@ -22,7 +22,7 @@ from audit_gwas_1000g_bim_all22 import resumable_source_download
 ANCESTRY="EAS"
 EXPECTED_ROWS=6725216
 COLUMNS=("chromosome","base_pair_location","effect_allele",
-         "other_allele","effect_allele_frequency","p_value")
+         "other_allele","effect_allele_frequency","p_value","beta","standard_error")
 PALINDROMIC={frozenset(("A","T")),frozenset(("C","G"))}
 BINS=(("lt_0_001",0.001),("0_001_to_0_01",0.01),
       ("0_01_to_0_05",0.05),("0_05_to_0_1",0.1),
@@ -53,6 +53,8 @@ def maf_bin(maf):
 def audit_original_eaf(gzip_file):
     counts=Counter()
     by_chr=defaultdict(Counter)
+    lead_bins={}
+    significant_window_rows=Counter()
     with gzip.open(gzip_file,"rt",encoding="utf-8",newline="") as source:
         header=source.readline().rstrip("\r\n").split("\t")
         if any(v not in header for v in COLUMNS):
@@ -68,6 +70,41 @@ def audit_original_eaf(gzip_file):
                 raise ValueError("Source GWAS row not a valid autosome")
             counts["original_autosomal_rows"]+=1
             by_chr[str(chrom)]["gwas_rows"]+=1
+            # Preliminary 1 Mb descriptive screen only; windows do not establish
+            # LD independence, conditional causal variants or locus novelty.
+            try:
+                position=int(fields[ix["base_pair_location"]])
+                original_p=float(fields[ix["p_value"]])
+            except ValueError as exc:
+                raise ValueError("Source GWAS position / p-value not numeric") from exc
+            if position<1 or not math.isfinite(original_p) or not 0<=original_p<=1:
+                raise ValueError("Invalid original EAS GWAS position or p-value")
+            if original_p<5e-8:
+                counts["GWS_raw_GWAS_variants_including_missing_EAF"]+=1
+                key=(chrom,(position-1)//1000000)
+                significant_window_rows[key]+=1
+                if key not in lead_bins or original_p<lead_bins[key]["p_value"]:
+                    try:
+                        source_beta=float(fields[ix["beta"]])
+                        source_se=float(fields[ix["standard_error"]])
+                    except ValueError as exc:
+                        raise ValueError("Original lead GWAS beta/SE malformed") from exc
+                    if not all(map(math.isfinite,(source_beta,source_se))) or source_se<=0:
+                        raise ValueError("Original lead GWAS beta/SE invalid")
+                    lead_bins[key]={
+                        "chromosome":chrom,
+                        "region_window_start_grch37_1_based":key[1]*1000000+1,
+                        "region_window_end_grch37":(key[1]+1)*1000000,
+                        "lead_position_grch37":position,
+                        "p_value":original_p,
+                        "beta":source_beta,
+                        "standard_error":source_se,
+                        "signed_z_from_original_beta_se":source_beta/source_se,
+                        "effect_allele":fields[ix["effect_allele"]],
+                        "other_allele":fields[ix["other_allele"]],
+                        "frequency_is_original_outcome_GWAS_not_eQTL":True,
+                        "LD_independent_signal":False,
+                    }
             eaf=classify_freq(fields[ix["effect_allele_frequency"]])
             if eaf is None:
                 counts["eaf_missing"]+=1
@@ -98,7 +135,15 @@ def audit_original_eaf(gzip_file):
         raise ValueError("EAS EAF counting does not conserve all source rows")
     if sum(counts["maf_"+b] for b,_ in BINS)!=counts["eaf_valid"]:
         raise ValueError("EAS MAF frequency-bin denominator mismatch")
+    top_windows=sorted(lead_bins.values(),key=lambda d:(d["p_value"],d["chromosome"],d["lead_position_grch37"]))[:30]
+    for item in top_windows:
+        key=(item["chromosome"],(item["lead_position_grch37"]-1)//1000000)
+        item["raw_gws_variants_in_same_1Mb_window"]=significant_window_rows[key]
     summary={
+        "raw_gws_total_1Mb_windows_NOT_LD_INDEPENDENT":len(lead_bins),
+        "top_30_descriptive_1Mb_windows_not_LD_clumps":top_windows,
+        "all_window_min_pvalues_covered":True,
+        "does_NOT_determine_prioritized_stroke_loci_or_gene_causality":True,
         "rows":dict(counts),
         "per_chromosome":{x:dict(v) for x,v in sorted(by_chr.items(),key=lambda v:int(v[0]))},
         "frequency_coverage_pct":round(100*counts["eaf_valid"]/EXPECTED_ROWS,4),
@@ -157,6 +202,9 @@ def main():
         ])
         for band,_ in BINS:
             lines.append(f"| {band} | {counts['maf_'+band]:,} |")
+        lines.extend(["", f"- Observed 1 Mb GWS bins (NOT LD-independent loci): {agg['raw_gws_total_1Mb_windows_NOT_LD_INDEPENDENT']}", "", "| Chromosome | 1 Mb window GRCh37 | Source lead position | GWAS P |", "|---:|---|---:|---:|"])
+        for locus in agg['top_30_descriptive_1Mb_windows_not_LD_clumps'][:12]:
+            lines.append(f"| {locus['chromosome']} | {locus['region_window_start_grch37_1_based']:,}-{locus['region_window_end_grch37']:,} | {locus['lead_position_grch37']:,} | {locus['p_value']:.3g} |")
     if err:=report.get("issue"):
         lines.append("- QC HOLD: "+err)
     lines.extend(["","**NEVER use these outcome EAFs as if measured in the ImmuNexUT CD16+ monocyte eQTL subset.**",
