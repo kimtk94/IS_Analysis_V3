@@ -76,10 +76,37 @@ class SignedZInputTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"incomplete"):
             first_gene_source_rows(fixture(7,False))
 
-    def test_only_published_alt_effect_direction_used(self):
+    def test_identical_ref_alt_excluded_and_accounted(self):
         rows,_=first_gene_source_rows(fixture())
         rows[0][7]="TTTTC"
-        with self.assertRaisesRegex(ValueError,"alleles"):
+        result,summary=convert_block(rows)
+        self.assertEqual(summary["real_original_gene_cis_rows"],7)
+        self.assertEqual(summary["source_rows_in_pilot_eligible_signed_z"],6)
+        self.assertEqual(summary["source_exclusion_reasons"]["missing_or_identical_REF_ALT"],1)
+        self.assertTrue(summary["all_original_cis_records_accounted_for"])
+        self.assertFalse(summary["all_original_cis_records_output"])
+        self.assertFalse(summary["eCAVIAR_CLPP_calculated"])
+
+    def test_noncanonical_source_allele_is_HOLD_for_that_variant_not_dataset(self):
+        rows,_=first_gene_source_rows(fixture())
+        rows[2][6]="N"
+        result,summary=convert_block(rows)
+        self.assertEqual(len(result),6)
+        self.assertEqual(summary["source_exclusion_reasons"]["noncanonical_OR_symbolic_REF_ALT"],1)
+        self.assertEqual(summary["real_original_gene_cis_rows"],len(result)+summary["source_rows_excluded_from_signed_z"])
+
+    def test_original_p_zero_not_infinite_z_or_fabricated(self):
+        rows,_=first_gene_source_rows(fixture())
+        rows[1][11]="0"
+        result,summary=convert_block(rows)
+        self.assertEqual(summary["source_exclusion_reasons"]["no_finite_signed_z_from_p_and_slope"],1)
+        self.assertEqual(len(result),6)
+
+    def test_duplicate_original_allelic_key_fails(self):
+        rows,_=first_gene_source_rows(fixture())
+        rows[2][8:11]=rows[1][8:11]
+        rows[2][6:8]=rows[1][6:8]
+        with self.assertRaisesRegex(ValueError,"Duplicated"):
             convert_block(rows)
 
 
