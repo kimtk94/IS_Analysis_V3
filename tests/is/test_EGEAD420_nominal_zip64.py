@@ -15,6 +15,7 @@ from audit_EGEAD420_nominal_zip64 import (
     EXPECTED_ZIP_SIZE,EXPECTED_PUBLISHED_ZIP_MD5,
     source_filelist,zip64_eocd,zip_directory_members,nested_gzip_tar_head,
     first_nominal_tsv_preview, IMMUNEXUT_13_COL_HEADER, validate_real_immuNexUT_13col_rows,
+    first_gene_full_cis_block_probe,
     check_url,ZIP,FILELIST,
 )
 
@@ -142,6 +143,48 @@ class NominalZip64Tests(unittest.TestCase):
         self.assertFalse(r["allele_frequency_MAF_EAF_present"])
         self.assertFalse(r["per_celltype_sample_n_column_present"])
         self.assertEqual(r["coloc_ABF_or_SuSiE"],"BLOCKED")
+
+    def test_first_gene_cis_count_exact_and_bounded(self):
+        stream=io.BytesIO()
+        header="\t".join(IMMUNEXUT_13_COL_HEADER)
+        lines=[header]
+        for i in range(5):
+            lines.append("\t".join([
+                "ENSG00000227232.5","WASH7P","chr1","29570","5",
+                f"rs{i+1}","A","G","chr1",str(50000+i),
+                str(50000+i),"0.77","-0.03"]))
+        lines.append("\t".join([
+            "ENSG00000111111.1","TEST","chr1","55000","2",
+            "rs200","C","T","chr1","55555","55555","0.11","0.01"]))
+        payload=("\n".join(lines)+"\n").encode()
+        with tarfile.open(fileobj=stream,mode="w:gz") as archive:
+            info=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            info.size=len(payload)
+            archive.addfile(info,io.BytesIO(payload))
+        result=first_gene_full_cis_block_probe(stream.getvalue())
+        self.assertEqual(result["source_declared_cis_tested_variants"],5)
+        self.assertEqual(result["original_gene_association_rows_seen"],5)
+        self.assertTrue(result["observed_start_of_second_gene"])
+        self.assertEqual(result["original_source_metadata_vs_row_count"],"COUNT_MATCHED")
+        self.assertEqual(result["source_nonsignificant_p_gt_0_05_rows"],5)
+        self.assertFalse(result["full_genome_cis_catalogue_covered"])
+
+    def test_first_gene_count_mismatch_requires_HOLD(self):
+        stream=io.BytesIO()
+        lines=["\t".join(IMMUNEXUT_13_COL_HEADER)]
+        for gene,expected,i in [("ENSG00000227232.5","6",0),("ENSG00000227232.5","6",1),("ENSG00000111111.1","1",2)]:
+            lines.append("\t".join([
+                gene,"TEST","chr1","10000",expected,
+                f"rs{i+1}","A","G","chr1",str(10000+i),
+                str(10000+i),"0.23","-0.02"]))
+        payload=("\n".join(lines)+"\n").encode()
+        with tarfile.open(fileobj=stream,mode="w:gz") as archive:
+            info=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            info.size=len(payload)
+            archive.addfile(info,io.BytesIO(payload))
+        result=first_gene_full_cis_block_probe(stream.getvalue())
+        self.assertEqual(result["original_source_metadata_vs_row_count"],"COUNT_MISMATCH")
+        self.assertFalse(result["number_of_cis_variants_matches_first_gene_association_rows"])
 
     def test_actual_13col_bad_pvalue_fails(self):
         rows=self.make_actual_13col_source_rows(p="1.5").decode().splitlines()
