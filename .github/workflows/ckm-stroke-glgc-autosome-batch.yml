@@ -1,6 +1,15 @@
 name: CKM Stroke P1 GLGC bounded autosome batch (manual, gated)
 
 on:
+  # Branch-only workflows are not always available for workflow_dispatch
+  # until merged to default. A dedicated, scoped approval-file PUSH lets
+  # us launch the next gated batch on the Draft PR branch without merging.
+  # DO NOT add or update the approval file before prior 3/3 aggregate PASS.
+  push:
+    branches:
+      - research/ckm-stroke-staged-actions-20261111
+    paths:
+      - 'config/ckm_stroke/glgc_next_batch_approval.json'
   workflow_dispatch:
     inputs:
       chr22_run_id:
@@ -44,7 +53,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Fetch chr22 original technical PASS (initial batch only)
-        if: ${{ !inputs.prior_run_id }}
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.prior_run_id }}
         uses: actions/download-artifact@v4
         with:
           name: ckm-glgc-chr-aggregate
@@ -53,21 +62,21 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: artifacts/chr22_gate
       - name: Fetch all prior batch chromosome summaries (subsequent batches)
-        if: ${{ inputs.prior_run_id != '' }}
+        if: ${{ github.event_name == 'push' || inputs.prior_run_id != '' }}
         uses: actions/download-artifact@v4
         with:
           pattern: ckm-glgc-batch-summary-*
           repository: ${{ github.repository }}
-          run-id: ${{ inputs.prior_run_id }}
+          run-id: ${{ github.event_name == 'push' && '43848671279' || inputs.prior_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: artifacts/prior_gate
           merge-multiple: true
       - name: Verify prior real-data PASS and strictly limit batch
         id: plan
         env:
-          CHROMOSOMES: ${{ inputs.chromosomes || '21,20,19' }}
-          PRIOR_CHROMOSOMES: ${{ inputs.prior_chromosomes || '21,20,19' }}
-          PRIOR_RUN_ID: ${{ inputs.prior_run_id }}
+          CHROMOSOMES: ${{ github.event_name == 'push' && '18,17,16' || inputs.chromosomes || '21,20,19' }}
+          PRIOR_CHROMOSOMES: ${{ github.event_name == 'push' && '21,20,19' || inputs.prior_chromosomes || '21,20,19' }}
+          PRIOR_RUN_ID: ${{ github.event_name == 'push' && '43848671279' || inputs.prior_run_id }}
         run: |
           python -m unittest tests.test_ckm_stroke_glgc_batch_plan tests.test_ckm_stroke_verify_previous_batch -v
           if [ -n "$PRIOR_RUN_ID" ]; then
