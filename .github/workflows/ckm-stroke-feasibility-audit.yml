@@ -1,0 +1,39 @@
+name: CKM Stroke feasibility metadata audit (bounded)
+on:
+  push:
+    paths:
+      - 'scripts/ckm_stroke/feasibility_gate.py'
+      - 'tests/test_ckm_stroke_feasibility_gate.py'
+      - 'docs/ckm_stroke_feasibility_20261116.md'
+      - '.github/workflows/ckm-stroke-feasibility-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Offline regression tests
+        run: python -m unittest tests.test_ckm_stroke_feasibility_gate -v
+      - name: Check real repository manifests without any GWAS download
+        run: |
+          python -m scripts.ckm_stroke.feasibility_gate \
+            --phenotypes config/ckm_stroke/phenotypes.tsv \
+            --sources config/ckm_stroke/public_sources.tsv \
+            --tasks config/ckm_stroke/tasks.json \
+            --out artifacts/ckm_stroke/feasibility.json
+      - name: Publish independent evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-feasibility-20261116
+          path: artifacts/ckm_stroke/feasibility.json
+          if-no-files-found: warn
+          retention-days: 30
