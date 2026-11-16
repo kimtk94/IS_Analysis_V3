@@ -51,7 +51,15 @@ def maf_bin(maf):
 
 
 def audit_original_eaf(gzip_file):
-    counts=Counter()
+    counts=Counter({
+        "original_autosomal_rows":0,
+        "eaf_valid":0,
+        "eaf_missing":0,
+        "palindromic_eaf_valid":0,
+        "palindromic_maf_ge_0_4_frequency_ambiguous":0,
+        "gwas_significant_eaf_valid_rows":0,
+        "GWS_raw_GWAS_variants_including_missing_EAF":0,
+    })
     by_chr=defaultdict(Counter)
     lead_bins={}
     significant_window_rows=Counter()
