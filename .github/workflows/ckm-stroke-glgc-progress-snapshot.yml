@@ -1,4 +1,4 @@
-name: CKM Stroke GLGC chr22+21 verified coverage snapshot
+name: CKM Stroke GLGC chr22+21+20 verified coverage snapshot
 
 on:
   push:
@@ -65,16 +65,53 @@ jobs:
           print("chr21 source commit preserved:", report["source_commit"])
           print("summary generated from:", report["summary_generated_from_commit"])
           PY
+      - name: Fetch three completed chr20 real-data source artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-20-*
+          repository: ${{ github.repository }}
+          run-id: '43848671279'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/chr20_source
+          merge-multiple: true
+      - name: Build chr20 independent aggregate and preserve evidence commit
+        run: |
+          python -m scripts.ckm_stroke.summarize_glgc_chr \
+            --input-dir artifacts/chr20_source \
+            --chromosome 20 \
+            --output artifacts/verified_aggregates/glgc_chr20-aggregate.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("artifacts/verified_aggregates/glgc_chr20-aggregate.json").read_text())
+          commits={v["source_commit"] for v in d["traits"].values()}
+          assert d["status"]=="PASS" and len(d["traits"])==3 and len(commits)==1
+          assert d["source_commit"]==next(iter(commits)), "original chr20 source commit lost"
+          print("chr20 real source commit:", d["source_commit"])
+          PY
       - name: Validate 22-autosome coverage honestly (PARTIAL until all 22)
         run: |
           python -m scripts.ckm_stroke.audit_glgc_autosomes \
             --input-dir artifacts/verified_aggregates \
             --output artifacts/glgc_autosome_coverage_snapshot.json
+      - name: Assert verified coverage and prevent whole-GWAS false PASS
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("artifacts/glgc_autosome_coverage_snapshot.json").read_text())
+          assert d["status"]=="PARTIAL" and d["scientific_status"]=="HOLD", d["status"]
+          assert d["observed_chromosome_pass"]==3 and d["trait_chromosome_pass"]==9
+          assert d["missing_chromosome_count"]==19
+          assert d["totals_verified_pass_only"]["retained_snp_rows"]==6457067
+          assert not d["whole_source_checksum_verified"]
+          print("Verified 3/22 chromosomes, 9/66 trait-chromosome technical PASS, 6,457,067 SNP records")
+          PY
       - name: Publish evidence-only results, not raw GWAS
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ckm-glgc-chr22-21-coverage-snapshot
+          name: ckm-glgc-chr22-21-20-coverage-snapshot
           path: |
             artifacts/verified_aggregates/glgc_chr*-aggregate.json
             artifacts/glgc_autosome_coverage_snapshot.json
