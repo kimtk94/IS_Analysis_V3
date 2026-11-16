@@ -48,3 +48,11 @@ Source technical completeness for **one** WASH7P gene (835/835) is insufficient 
 | G3 GRCh38↔GRCh37 allele/haplotype harmonization | **NOT_RUN** | Mapping test + unique reference bases + matched variant counts |
 | G4 eCAVIAR/coloc.abf/coloc.susie | **BLOCKED** | Same set of true variants + matched LD, checked summary stats |
 | G5 novelty, MAGMA, LDSC-SEG | **NOT_RUN** | Secondary once locus and ancestry model is calibrated |
+
+## Added outcome-GWAS first-pass locus window screen (descriptive, not independent loci)
+
+The EAS original-GWAS frequency QC script now also screens all original GIGASTROKE `GCST90104545` EAS IS variants with `p<5e-8` into 1 Mb **fixed genomic windows** (GRCh37), retaining the top beta/SE/P/EA/OA per window and the number of significant variants in that bin. It does **not** perform LD clumping, SuSiE, multi-ancestry prioritization or independence testing. Top signals are **NOT** defensibly called distinct causal loci, and genes cannot be assigned solely by distance. All source totals and published GWAS MD5 must pass.
+
+- Latest descriptive screening CI: [#43852757654](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43852757654), **queued** as last verified.
+- Only after this actual source CI is complete should preselected stroke GWAS intervals be annotated via independent GRCh37 gene coordinates, harmonized to matching ImmuNexUT GRCh38 loci, and assessed for per-locus tested-variant coverage.
+- The derived GWAS outcome EAF/MAF is **not Japanese eQTL N/MAF**, and fixed 1 Mb bins are **not LD-defined**.
