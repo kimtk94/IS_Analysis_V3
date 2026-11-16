@@ -39,3 +39,9 @@ Subtotal over these nine chromosome/trait evidence records: **6,457,067 retained
 **Interpretation:** This supports that specific GLGC chromosome input segments and their SNP-only parsers function correctly. It does **not** support CKM→stroke causal inference, cross-trait colocalization, or prioritizing candidates.
 
 Tracking: [Issue #285](https://github.com/kimtk94/IS_Analysis_V3/issues/285) · [Draft PR #284](https://github.com/kimtk94/IS_Analysis_V3/pull/284).
+
+## chr19 extreme-significance source P-value underflow (new 2026-11-16 evidence)
+
+Original GLGC chr19 jobs from [#43848671279](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43848671279) show source `pvalue == 0` for **LDL-C 332**, **HDL-C 8**, **logTG 29** rows (total **369**); these rows were *excluded* from the reported valid SNP-only counts. Those are not scientific negative associations. They require independent recovery/verification against original `pvalue_neg_log10` for subsequent instrument discovery and must not silently disappear in downstream MR input. Excluding these records still permits a deliberately scoped **technical subset QC PASS**, but all scientific and source-SNP-export readiness remains HOLD. New per-chromosome summaries expose `excluded_p_underflow_zero` explicitly; older pre-fix aggregates without this field must be treated as **unreported**, not assumed zero.
+
+The existing sampled β/SE-to-P diagnostic performs comparisons only where both P values avoid severe floating-point underflow; the number of sampled rows is not necessarily the number of numerically comparable rows.

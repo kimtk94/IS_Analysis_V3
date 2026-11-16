@@ -59,6 +59,10 @@ def summarize(folder,chromosome):
             "excluded_symbolic_or_ambiguous_non_snp":counts.get("symbolic_or_ambiguous_non_snp",0),
             "excluded_other":excluded-counts.get("non_snp",0)-counts.get("symbolic_or_ambiguous_non_snp",0),
             "palindromic_ambiguous_af":counts.get("palindromic_ambiguous_af_0_42_to_0_58",0),
+            "p_underflow_zero":counts.get("p_underflow_zero",0),
+            "source_snp_export_readiness":(
+                "HOLD_P_VALUE_UNDERFLOW" if counts.get("p_underflow_zero",0)>0
+                else "NOT_ASSESSED_NO_PERSISTED_SOURCE_SNPS"),
             "duplicate_keys":variant.get("duplicate_excess_rows"),
             "p_consistency_sampled":variant.get("p_consistency_sampled"),
             "p_consistency_mismatches":variant.get("p_consistency_mismatches"),
@@ -78,6 +82,8 @@ def summarize(folder,chromosome):
         "errors":errors,
         "traits":entries,
         "snp_rows_total":sum(e["valid_snp_rows"] for e in entries.values()),
+        "excluded_p_underflow_zero":sum(e["p_underflow_zero"] for e in entries.values()),
+        "source_snp_export_scientific_ready":False,
         "source_gwas_whole_genome_qc":"NOT_RUN",
         "allele_harmonization":"NOT_RUN",
         "downstream_ldsc_or_mr":"NOT_RUN",

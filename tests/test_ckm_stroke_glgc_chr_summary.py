@@ -46,6 +46,35 @@ class TestGLGCChromAggregate(unittest.TestCase):
         self.assertEqual(result["snp_rows_total"],6)
         self.assertEqual(result["source_gwas_whole_genome_qc"],"NOT_RUN")
 
+    def test_underflow_is_reported_without_false_scientific_pass(self):
+        with tempfile.TemporaryDirectory() as d:
+            folder=Path(d)
+            for t in summary.TRAITS:
+                r=make(t)
+                if t=="LDL_C":
+                    r["counts"]["original_rows"]=5
+                    r["counts"]["p_underflow_zero"]=2
+                write(folder,t,r)
+            result=summary.summarize(folder,"19")
+        self.assertEqual(result["status"],"PASS")
+        self.assertEqual(result["scientific_status"],"HOLD")
+        self.assertEqual(result["excluded_p_underflow_zero"],2)
+        self.assertEqual(result["traits"]["LDL_C"]["p_underflow_zero"],2)
+        self.assertEqual(result["traits"]["LDL_C"]["source_snp_export_readiness"],
+                         "HOLD_P_VALUE_UNDERFLOW")
+        self.assertFalse(result["source_snp_export_scientific_ready"])
+
+    def test_zero_underflow_still_not_analysis_ready(self):
+        with tempfile.TemporaryDirectory() as d:
+            folder=Path(d)
+            for t in summary.TRAITS:
+                write(folder,t,make(t))
+            result=summary.summarize(folder,"22")
+        self.assertEqual(result["excluded_p_underflow_zero"],0)
+        self.assertFalse(result["source_snp_export_scientific_ready"])
+        self.assertTrue(all(r["source_snp_export_readiness"]=="NOT_ASSESSED_NO_PERSISTED_SOURCE_SNPS"
+                            for r in result["traits"].values()))
+
     def test_missing_trait_keeps_hold(self):
         with tempfile.TemporaryDirectory() as d:
             folder=Path(d)

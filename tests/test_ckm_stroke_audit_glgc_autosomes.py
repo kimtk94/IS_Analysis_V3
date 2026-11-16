@@ -119,6 +119,24 @@ class TestGLGCAutosomeCoverage(unittest.TestCase):
         self.assertTrue(result["mixed_code_commits_review_required"])
         self.assertEqual(len(result["source_commits"]),2)
 
+    def test_known_underflow_and_unreported_historic_records_are_separate(self):
+        with tempfile.TemporaryDirectory() as d:
+            folder=Path(d)
+            old=chrom_row(22)  # Old technical aggregate does not expose P=0
+            write(folder,22,old)
+            newer=chrom_row(19)
+            newer["traits"]["LDL_C"]["p_underflow_zero"]=332
+            newer["traits"]["HDL_C"]["p_underflow_zero"]=8
+            newer["traits"]["TG"]["p_underflow_zero"]=29
+            write(folder,19,newer)
+            d=audit.assess(folder)
+        self.assertEqual(d["status"],"PARTIAL")
+        self.assertTrue(d["underflow_recovery_required"])
+        self.assertFalse(d["source_snp_export_scientific_ready"])
+        self.assertEqual(d["totals_verified_pass_only"]["underflow_p_zero_rows"],369)
+        self.assertEqual(
+            d["totals_verified_pass_only"]["underflow_unreported_legacy_trait_chromosome_results"],3)
+
     def test_corrupt_json_is_hold(self):
         with tempfile.TemporaryDirectory() as d:
             folder=Path(d)

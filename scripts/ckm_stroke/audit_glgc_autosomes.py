@@ -47,7 +47,9 @@ def assess(directory):
     coverage=[]
     summary={"source_rows":0,"retained_snp_rows":0,"multibase_non_snp":0,
              "symbolic_or_ambiguous_non_snp":0,"invalid_other":0,
-             "duplicate_snp_keys":0,"palindromic_ambiguous_af":0}
+             "duplicate_snp_keys":0,"palindromic_ambiguous_af":0,
+             "underflow_p_zero_rows":0,
+             "underflow_unreported_legacy_trait_chromosome_results":0}
     code_commits=set()
     for chrom in AUTOSOMES:
         raw=evidence.get(chrom)
@@ -95,6 +97,12 @@ def assess(directory):
                 summary["invalid_other"]+=record.get("excluded_other",0)
                 summary["duplicate_snp_keys"]+=record.get("duplicate_keys",0)
                 summary["palindromic_ambiguous_af"]+=record.get("palindromic_ambiguous_af",0)
+                if "p_underflow_zero" in record:
+                    summary["underflow_p_zero_rows"]+=record["p_underflow_zero"]
+                else:
+                    # Earlier approved aggregates lack this column; never
+                    # mistake unreported underflow counts for actual zero.
+                    summary["underflow_unreported_legacy_trait_chromosome_results"]+=1
         if valid_total!=raw.get("snp_rows_total"):
             errors.append("chr"+chrom+": SNP row total mismatches verified traits")
         status="PASS" if all(v=="PASS" for v in values.values()) and len(values)==3 and raw.get("status")=="PASS" else "HOLD"
@@ -128,6 +136,10 @@ def assess(directory):
         "whole_source_checksum_verified":False,
         "ldsc_ready":"NOT_ASSESSED",
         "mr_ready":"NOT_ASSESSED",
+        "source_snp_export_scientific_ready":False,
+        "underflow_recovery_required":(
+            summary["underflow_p_zero_rows"]>0
+            or summary["underflow_unreported_legacy_trait_chromosome_results"]>0),
         "note":"This checks SNP-only per-chromosome metadata. A 22/22 PASS is not original full-file source integrity or statistical model readiness."
     }
 
