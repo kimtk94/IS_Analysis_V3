@@ -1,29 +1,29 @@
 {
   "schema": "ckm-glgc-next-batch-approval-v2",
   "scientific_status": "HOLD",
-  "prior_run_id": 43866716532,
+  "prior_run_id": 43867261217,
   "prior_chromosomes": [
-    "15",
-    "14",
-    "13"
-  ],
-  "next_chromosomes": [
     "12",
     "11",
     "10"
   ],
-  "expected_prior_source_commit": "12e71a567ff2768e8d41856c5b97062a8764a4fe",
+  "next_chromosomes": [
+    "9",
+    "8",
+    "7"
+  ],
+  "expected_prior_source_commit": "e8b5513b453d5074ed082ac3efb0154f84517de7",
   "prior_aggregate_statuses": {
-    "13": "PASS",
-    "14": "PASS",
-    "15": "PASS"
+    "10": "PASS",
+    "11": "PASS",
+    "12": "PASS"
   },
   "expected_prior_snp_rows": {
-    "13": 4586725,
-    "14": 4195881,
-    "15": 3815651
+    "10": 6376912,
+    "11": 6340948,
+    "12": 6108537
   },
   "max_parallel_jobs": 3,
   "expected_next_matrix_jobs": 9,
-  "approval_reason": "Original prior run #43866716532 overall SUCCESS; all 9 source QC and 3 chromosome aggregate jobs PASS. All 3 aggregates verified from original job logs, source commit and counts match. Scientific status HOLD."
+  "approval_reason": "Prior run #43867261217 overall SUCCESS; all 9 original real-data jobs and 3 per-chromosome aggregates independently reviewed for status PASS, identical source commit and exact SNP counts. Scientific P1 remains HOLD."
 }
