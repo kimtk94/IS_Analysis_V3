@@ -1,19 +1,24 @@
 name: CKM Stroke P1 GLGC bounded autosome batch (manual, gated)
 
 on:
-  # One-time pilot bootstrap via this workflow-file update only.
-  # Subsequent chr batches require manual dispatch and a validated gate.
-  push:
-    paths:
-      - '.github/workflows/ckm-stroke-glgc-autosome-batch.yml'
   workflow_dispatch:
     inputs:
       chr22_run_id:
-        description: 'Completed chr22 technical PASS run ID with aggregate artifact'
+        description: 'Verified chr22 technical PASS run, for initial batch'
         type: string
-        required: true
+        default: '43431051168'
+        required: false
+      prior_run_id:
+        description: 'Completed previous batch run; required for batch 2 and later'
+        type: string
+        required: false
+      prior_chromosomes:
+        description: 'Previous three, e.g. 21,20,19'
+        type: string
+        default: '21,20,19'
+        required: false
       chromosomes:
-        description: 'One to three distinct chromosomes 1-21 (e.g., 21,20,19)'
+        description: 'Next contiguous descending 1-3 chromosomes (e.g. 18,17,16)'
         type: string
         default: '21,20,19'
         required: true
@@ -38,7 +43,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Get aggregate from completed chr22 run in this repository
+      - name: Fetch chr22 original technical PASS (initial batch only)
+        if: ${{ !inputs.prior_run_id }}
         uses: actions/download-artifact@v4
         with:
           name: ckm-glgc-chr-aggregate
@@ -46,16 +52,36 @@ jobs:
           run-id: ${{ inputs.chr22_run_id || '43431051168' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: artifacts/chr22_gate
-      - name: Validate prior real chr22 PASS and limit batch size
+      - name: Fetch all prior batch chromosome summaries (subsequent batches)
+        if: ${{ inputs.prior_run_id != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-summary-*
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.prior_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/prior_gate
+          merge-multiple: true
+      - name: Verify prior real-data PASS and strictly limit batch
         id: plan
         env:
           CHROMOSOMES: ${{ inputs.chromosomes || '21,20,19' }}
+          PRIOR_CHROMOSOMES: ${{ inputs.prior_chromosomes || '21,20,19' }}
+          PRIOR_RUN_ID: ${{ inputs.prior_run_id }}
         run: |
-          python -m unittest tests.test_ckm_stroke_glgc_batch_plan -v
-          python -m scripts.ckm_stroke.plan_glgc_batch \
-            --chromosomes "$CHROMOSOMES" \
-            --chr22-gate artifacts/chr22_gate/glgc_chr22-aggregate.json \
-            --output artifacts/ckm_stroke/batch_plan.json
+          python -m unittest tests.test_ckm_stroke_glgc_batch_plan tests.test_ckm_stroke_verify_previous_batch -v
+          if [ -n "$PRIOR_RUN_ID" ]; then
+            python -m scripts.ckm_stroke.verify_glgc_previous_batch \
+              --prior-dir artifacts/prior_gate \
+              --prior-chromosomes "$PRIOR_CHROMOSOMES" \
+              --next-chromosomes "$CHROMOSOMES" \
+              --output artifacts/ckm_stroke/batch_plan.json
+          else
+            python -m scripts.ckm_stroke.plan_glgc_batch \
+              --chromosomes "$CHROMOSOMES" \
+              --chr22-gate artifacts/chr22_gate/glgc_chr22-aggregate.json \
+              --output artifacts/ckm_stroke/batch_plan.json
+          fi
       - name: Save bounded work plan
         uses: actions/upload-artifact@v4
         with:
