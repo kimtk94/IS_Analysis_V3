@@ -1,29 +1,29 @@
 {
   "schema": "ckm-glgc-next-batch-approval-v2",
   "scientific_status": "HOLD",
-  "prior_run_id": 43867261217,
+  "prior_run_id": 43867962230,
   "prior_chromosomes": [
-    "12",
-    "11",
-    "10"
-  ],
-  "next_chromosomes": [
     "9",
     "8",
     "7"
   ],
-  "expected_prior_source_commit": "e8b5513b453d5074ed082ac3efb0154f84517de7",
+  "next_chromosomes": [
+    "6",
+    "5",
+    "4"
+  ],
+  "expected_prior_source_commit": "83820e3f2d0c95674588961c06f3fafd94ab844a",
   "prior_aggregate_statuses": {
-    "10": "PASS",
-    "11": "PASS",
-    "12": "PASS"
+    "7": "PASS",
+    "8": "PASS",
+    "9": "PASS"
   },
   "expected_prior_snp_rows": {
-    "10": 6376912,
-    "11": 6340948,
-    "12": 6108537
+    "7": 7521660,
+    "8": 7316149,
+    "9": 5603486
   },
   "max_parallel_jobs": 3,
   "expected_next_matrix_jobs": 9,
-  "approval_reason": "Prior run #43867261217 overall SUCCESS; all 9 original real-data jobs and 3 per-chromosome aggregates independently reviewed for status PASS, identical source commit and exact SNP counts. Scientific P1 remains HOLD."
+  "approval_reason": "Prior run #43867962230 overall SUCCESS; 9/9 real-source chromosome×trait jobs, 3/3 official independent aggregate jobs PASS, source commit validated and source association row sums verified from live job logs. Scientific status remains HOLD. The next job's approval parser and independent prior artifacts must PASS before reading sources."
 }
