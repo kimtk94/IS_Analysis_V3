@@ -161,7 +161,7 @@ def run(out):
     lines=[
         "# Official hg19/GRCh37 ↔ hg38/GRCh38 chain source technical pilot","",
         "**"+status["status"]+"**","",
-        "Both original UCSC chains independently matched their publisher MD5.",
+        ("Both publisher UCSC chains independently MD5 verified: PASS"\n         if status["status"]=="OFFICIAL_UCSC_TWO_WAY_CHAIN_MD5_AND_COORDINATE_PILOT_PASS"\n         else "Publisher chain MD5 verification: HOLD/NOT_COMPLETED"),
         "Unique coordinate mapping is not REF/ALT harmonization and is not indel normalization.",
         "Original source WASH7P interval is a technical sentinel, not an IS signal."
     ]
