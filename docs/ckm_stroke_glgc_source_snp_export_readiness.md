@@ -56,3 +56,7 @@ Default use **without** `--export-source-snp-dir` still writes JSON only and avo
 **Current observed evidence**: chr22/chr21/chr20 × LDL-C/HDL-C/logTG (9/66 source jobs) technical PASS, 6,457,067 retained SNP rows across phenotype/chromosome slices. chr19 queued; scientific completion remains 0/7, P1 HOLD.
 
 Related: [Draft PR #284](https://github.com/kimtk94/IS_Analysis_V3/pull/284), [Issue #285](https://github.com/kimtk94/IS_Analysis_V3/issues/285).
+
+## SHA reproducibility and extremely small P-value safety
+
+The optional gzip writer explicitly fixes gzip `mtime=0` and omits the filename in the gzip header, so identical source rows yield a stable **export gzip SHA-256** on reruns. This still does not establish official upstream source file integrity. If any otherwise eligible source SNP has `pvalue == 0` due to floating-point underflow, the optional export is held until original `pvalue_neg_log10` can be interpreted correctly; truncating the strongest associations would bias downstream MR and LDSC. Technical SNP-only QC may still PASS while the **export gate is HOLD**.

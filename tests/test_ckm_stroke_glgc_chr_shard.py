@@ -38,6 +38,11 @@ class MissingLog10PTabix(FakeTabix):
     def fetch(self,chrom):
         return iter([SNP1.replace("\t0.498\t0.31731050786291415\t","\tNA\t0.31731050786291415\t"),SNP2])
 
+class PValueUnderflowTabix(FakeTabix):
+    def fetch(self,chrom):
+        return iter([SNP1.replace("\t0.498\t0.31731050786291415\t",
+                                  "\t400.0\t0\t"), SNP2])
+
 def header(url):
     return {"status":"PASS","header":HEADER,"origin":"official_gzip_prefix"}
 
@@ -122,6 +127,31 @@ class TestGLGCChromShard(unittest.TestCase):
             self.assertEqual(r["counts"]["auxiliary_missing_or_invalid_log10p_rows"],1)
             self.assertEqual(r["source_snp_export_status"],"HOLD")
             self.assertFalse(dest.exists())
+
+    def test_repeat_export_gzip_sha_is_byte_reproducible(self):
+        hashes=[]
+        with tempfile.TemporaryDirectory() as d:
+            for name in ("a","b"):
+                work=Path(d)/name
+                work.mkdir()
+                r=shard.chromosome_qc(
+                    "LDL_C","22",factory=FakeTabix,
+                    header_fetcher=header,work_dir=work,export_dir=work/"out")
+                self.assertEqual(r["source_snp_export_status"],"PASS")
+                hashes.append(r["source_snp_export_sha256"])
+        self.assertEqual(hashes[0],hashes[1])
+
+    def test_zero_source_p_prevents_incomplete_mr_export(self):
+        with tempfile.TemporaryDirectory() as d:
+            output=Path(d)/"output"
+            r=shard.chromosome_qc(
+                "TG","22",factory=PValueUnderflowTabix,
+                header_fetcher=header,work_dir=d,export_dir=output)
+            self.assertEqual(r["status"],"PASS")
+            self.assertEqual(r["counts"]["p_underflow_zero"],1)
+            self.assertEqual(r["source_snp_export_status"],"HOLD")
+            self.assertFalse(r["normalized_source_snp_data_persisted"])
+            self.assertFalse(output.exists())
 
     def test_invalid_p_is_recorded(self):
         with tempfile.TemporaryDirectory() as d:

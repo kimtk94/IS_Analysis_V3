@@ -11,6 +11,8 @@ import hashlib
 import shutil
 import datetime as dt
 import gzip
+import io
+from contextlib import contextmanager
 import json
 import math
 import os
@@ -24,6 +26,19 @@ from scripts.ckm_stroke.variant_qc import variant_qc
 # Include source-specified variant N, ALT allele frequency and original -log10 P
 # so future MR/LDSC-ready harmonization can assess rather than invent them.
 OUT_HEADER=["CHR","POS","EA","NEA","BETA","SE","P","RSID","N","EAF","NEG_LOG10P"]
+
+@contextmanager
+def deterministic_gzip_text(destination):
+    """Create byte-reproducible gzip from identical SNP source rows.
+
+    No variable gzip timestamp or output filename; text serialization stays
+    identical to upstream csv.DictWriter. This is not a source-file checksum.
+    """
+    with Path(destination).open("wb") as raw:
+        with gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as compressed:
+            with io.TextIOWrapper(compressed, encoding="utf-8", newline="") as text:
+                yield text
+
 AUTOSOMES={str(i) for i in range(1,23)}
 BASE_DNA={"A","C","G","T"}
 
@@ -71,7 +86,7 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
             tmp=Path(tmp)
             normalized=tmp/"normalized.tsv.gz"
             capped=False
-            with gzip.open(normalized,"wt",encoding="utf-8",newline="") as out:
+            with deterministic_gzip_text(normalized) as out:
                 writer=csv.DictWriter(out,fieldnames=OUT_HEADER,delimiter="\t")
                 writer.writeheader()
                 with factory(url) as source:
@@ -176,11 +191,14 @@ def chromosome_qc(trait, chromosome, factory=None, header_fetcher=None,
                          "analysis_ready_data_persisted":False}
             if status=="PASS" and export_dir is not None:
                 if (counts["auxiliary_missing_or_invalid_n_rows"]
-                    or counts["auxiliary_missing_or_invalid_log10p_rows"]):
-                    # Never quietly publish a purported future-analysis input
-                    # whose sample size or P statistic is missing.
+                    or counts["auxiliary_missing_or_invalid_log10p_rows"]
+                    or counts["p_underflow_zero"]):
+                    # A zero P is not mathematically zero probability. Until
+                    # explicitly repaired from original -log10P, source SNP
+                    # export must not omit extremely associated variants.
                     export_info["source_snp_export_status"]="HOLD"
-                    export_info["source_snp_export_reason"]="invalid N or negative-log10 P"
+                    export_info["source_snp_export_reason"]=(
+                        "invalid N, negative-log10 P, or pvalue underflow requires review")
                 else:
                     dest_dir=Path(export_dir)
                     dest_dir.mkdir(parents=True,exist_ok=True)
