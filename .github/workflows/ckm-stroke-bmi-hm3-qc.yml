@@ -1,0 +1,53 @@
+name: CKM BMI exact duplicate and HapMap3 overlap QC
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-bmi-hm3-qc.yml'
+      - 'scripts/ckm_stroke/audit_bmi_hm3_overlap.py'
+      - 'tests/test_ckm_stroke_bmi_hm3_overlap.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-bmi-hm3-overlap-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Offline validation of reference conflicts and duplicate keys
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_bmi_hm3_overlap.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_bmi_hm3_overlap.py' -v
+
+  complete-overlap:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[hm3-full]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Stream pinned BMI and MRCIEU 1000G EUR HapMap3 reference
+        run: |
+          python -m scripts.ckm_stroke.audit_bmi_hm3_overlap \
+            --out artifacts/ckm_stroke/bmi_hm3_overlap_ci.json
+      - name: Store compact evidence, never raw files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-bmi-hm3-duplicate-overlap
+          path: artifacts/ckm_stroke/bmi_hm3_overlap_ci.json
+          if-no-files-found: warn
+          retention-days: 30
