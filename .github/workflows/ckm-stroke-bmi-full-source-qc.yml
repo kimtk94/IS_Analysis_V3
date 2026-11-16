@@ -6,6 +6,8 @@ on:
       - '.github/workflows/ckm-stroke-bmi-full-source-qc.yml'
       - 'scripts/ckm_stroke/audit_bmi_full_stream.py'
       - 'tests/test_ckm_stroke_bmi_full_stream.py'
+      - 'scripts/ckm_stroke/audit_authorized_sbp_t2d_file.py'
+      - 'tests/test_ckm_stroke_authorized_sbp_t2d.py'
   workflow_dispatch:
 
 permissions:
@@ -26,8 +28,9 @@ jobs:
           python-version: '3.11'
       - name: Fail-closed offline regression
         run: |
-          python -m py_compile scripts/ckm_stroke/audit_bmi_full_stream.py
+          python -m py_compile scripts/ckm_stroke/audit_bmi_full_stream.py scripts/ckm_stroke/audit_authorized_sbp_t2d_file.py
           python -m unittest discover -s tests -p 'test_ckm_stroke_bmi_full_stream.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_authorized_sbp_t2d.py' -v
 
   full-source-stream:
     # One deliberate push tagged [bmi-full]; no huge download on every commit.
