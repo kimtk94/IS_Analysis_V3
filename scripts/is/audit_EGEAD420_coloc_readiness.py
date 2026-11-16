@@ -40,7 +40,7 @@ def audit_inputs(raw,metadata):
     if not isinstance(n,int) or n<5 or not all(isinstance(x,int) for x in (nonsig,sig)):
         raise ValueError("Actual P-value summary unverified")
     if nonsig+sig!=n or nonsig==0:
-        raise ValueError("Original nominal sample doesn't have verified nonsignificant pairs")
+        raise ValueError("Original P-value group counts invalid or nonsignificant associations absent")
     if (audit.get("slope_beta_present") is not True or
             audit.get("beta_effect_allele")!="ALT" or
             audit.get("ref_alt_alleles_present") is not True):
