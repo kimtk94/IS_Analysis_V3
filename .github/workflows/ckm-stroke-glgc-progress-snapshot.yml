@@ -50,6 +50,21 @@ jobs:
             --input-dir artifacts/chr21_source \
             --chromosome 21 \
             --output artifacts/verified_aggregates/glgc_chr21-aggregate.json
+      - name: Verify chr21 aggregate preserves original real-data source commit
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("artifacts/verified_aggregates/glgc_chr21-aggregate.json")
+          report=json.loads(p.read_text())
+          source_commits={v["source_commit"] for v in report["traits"].values()}
+          assert report["status"]=="PASS", "chr21 3/3 aggregate not PASS"
+          assert len(source_commits)==1, "chr21 sources came from different commits"
+          assert report["source_commit"]==next(iter(source_commits)), "source provenance overwritten by later aggregator commit"
+          assert report["summary_generated_from_commit"]!=report["source_commit"], "expected independently generated summary"
+          print("chr21 source commit preserved:", report["source_commit"])
+          print("summary generated from:", report["summary_generated_from_commit"])
+          PY
       - name: Validate 22-autosome coverage honestly (PARTIAL until all 22)
         run: |
           python -m scripts.ckm_stroke.audit_glgc_autosomes \
