@@ -48,6 +48,10 @@ class OutcomeFrequencyTests(unittest.TestCase):
         self.assertEqual(d["rows"]["eaf_valid"],44)
         self.assertEqual(d["rows"]["palindromic_maf_ge_0_4_frequency_ambiguous"],22)
         self.assertEqual(d["rows"]["gwas_significant_eaf_valid_rows"],22)
+        self.assertEqual(d["raw_gws_total_1Mb_windows_NOT_LD_INDEPENDENT"],22)
+        self.assertEqual(len(d["top_30_descriptive_1Mb_windows_not_LD_clumps"]),22)
+        self.assertFalse(d["top_30_descriptive_1Mb_windows_not_LD_clumps"][0]["LD_independent_signal"])
+        self.assertEqual(d["top_30_descriptive_1Mb_windows_not_LD_clumps"][0]["raw_gws_variants_in_same_1Mb_window"],1)
         self.assertFalse(d["maf_is_from_immuNexUT_donors"])
         self.assertFalse(d["palindromic_frequency_resolved"])
 
