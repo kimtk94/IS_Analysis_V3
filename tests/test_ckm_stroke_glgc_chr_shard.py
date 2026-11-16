@@ -1,5 +1,9 @@
+import csv
+import gzip
+import hashlib
 import tempfile
 import unittest
+from pathlib import Path
 
 from scripts.ckm_stroke import glgc_chr_shard as shard
 
@@ -25,6 +29,14 @@ class DuplicateTabix(FakeTabix):
 class InvalidTabix(FakeTabix):
     def fetch(self,chrom):
         return iter([SNP1,SNP2.replace("\t0.04550026389635842\t","\tNA\t")])
+
+class MissingNTabix(FakeTabix):
+    def fetch(self,chrom):
+        return iter([SNP1.replace("\t1000\t2\t","\tNA\t2\t"),SNP2])
+
+class MissingLog10PTabix(FakeTabix):
+    def fetch(self,chrom):
+        return iter([SNP1.replace("\t0.498\t0.31731050786291415\t","\tNA\t0.31731050786291415\t"),SNP2])
 
 def header(url):
     return {"status":"PASS","header":HEADER,"origin":"official_gzip_prefix"}
@@ -60,6 +72,56 @@ class TestGLGCChromShard(unittest.TestCase):
         r=shard.chromosome_qc("HDL_C","22",factory=FakeTabix,
                               header_fetcher=lambda url: {"status":"HOLD","reason":"no header"})
         self.assertEqual(r["status"],"HOLD")
+
+    def test_source_snp_export_retains_sample_n_eaf_rsid_and_logp(self):
+        with tempfile.TemporaryDirectory() as d:
+            dest=Path(d)/"export"
+            r=shard.chromosome_qc("LDL_C","22",factory=FakeTabix,
+                                  header_fetcher=header,work_dir=d,export_dir=dest)
+            self.assertEqual(r["status"],"PASS")
+            self.assertTrue(r["normalized_source_snp_data_persisted"])
+            self.assertFalse(r["analysis_ready_data_persisted"])
+            self.assertEqual(r["source_snp_export_harmonization"],"NOT_RUN")
+            target=Path(r["source_snp_export_path"])
+            self.assertTrue(target.is_file())
+            with gzip.open(target,"rt",encoding="utf-8") as fh:
+                rows=list(csv.DictReader(fh,delimiter="\t"))
+            self.assertEqual(len(rows),2)
+            self.assertEqual(rows[0]["RSID"],"rs1")
+            self.assertEqual(rows[0]["N"],"1000")
+            self.assertEqual(float(rows[0]["EAF"]),0.3)
+            self.assertEqual(float(rows[0]["NEG_LOG10P"]),0.498)
+            self.assertEqual(hashlib.sha256(target.read_bytes()).hexdigest(),
+                             r["source_snp_export_sha256"])
+
+    def test_duplicate_snp_can_never_be_exported(self):
+        with tempfile.TemporaryDirectory() as d:
+            dest=Path(d)/"export"
+            r=shard.chromosome_qc("TG","22",factory=DuplicateTabix,
+                                  header_fetcher=header,work_dir=d,export_dir=dest)
+            self.assertEqual(r["status"],"HOLD")
+            self.assertFalse(r["normalized_source_snp_data_persisted"])
+            self.assertFalse(dest.exists())
+
+    def test_missing_n_does_not_silently_export_for_downstream(self):
+        with tempfile.TemporaryDirectory() as d:
+            dest=Path(d)/"export"
+            r=shard.chromosome_qc("TG","22",factory=MissingNTabix,
+                                  header_fetcher=header,work_dir=d,export_dir=dest)
+            self.assertEqual(r["status"],"PASS")
+            self.assertEqual(r["source_snp_export_status"],"HOLD")
+            self.assertEqual(r["counts"]["auxiliary_missing_or_invalid_n_rows"],1)
+            self.assertFalse(dest.exists())
+
+    def test_missing_minus_log10_p_blocks_optional_export(self):
+        with tempfile.TemporaryDirectory() as d:
+            dest=Path(d)/"export"
+            r=shard.chromosome_qc("TG","22",factory=MissingLog10PTabix,
+                                  header_fetcher=header,work_dir=d,export_dir=dest)
+            self.assertEqual(r["status"],"PASS")
+            self.assertEqual(r["counts"]["auxiliary_missing_or_invalid_log10p_rows"],1)
+            self.assertEqual(r["source_snp_export_status"],"HOLD")
+            self.assertFalse(dest.exists())
 
     def test_invalid_p_is_recorded(self):
         with tempfile.TemporaryDirectory() as d:
