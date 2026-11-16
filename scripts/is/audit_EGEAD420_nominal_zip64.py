@@ -313,6 +313,92 @@ def validate_real_immuNexUT_13col_rows(pieces):
     summary["distinct_genes_in_bounded_prefix"]=len(unique_genes)
     return summary
 
+
+def first_gene_full_cis_block_probe(gzip_tar_member_prefix):
+    """Look for the first COMPLETE gene block in a bounded nested gzip prefix.
+
+    Requires seeing a following gene (or full end-of-member) to establish that
+    the first gene's 835 reported rows are bounded and not just 80 records.
+    Count matching confirms *first gene block row completeness* against its
+    own source metadata, not reference-genome full cis variant coverage.
+    """
+    if not gzip_tar_member_prefix.startswith(b"\x1f\x8b"):
+        raise ValueError("Nested gene association stream not gzip")
+    decompressor=zlib.decompressobj(16+zlib.MAX_WBITS)
+    buffer=decompressor.decompress(gzip_tar_member_prefix,2*MAX_PREFIX)
+    if len(buffer)<1536:
+        raise ValueError("No complete gene association block prefix")
+    hdr=buffer[:512]
+    filename=hdr[:100].split(b"\0",1)[0].decode("utf-8","replace")
+    if not filename.endswith("_nominal.txt"):
+        raise ValueError("First nested file is not nominal SNP-gene associations")
+    body=buffer[512:]
+    lines=body.split(b"\n")
+    # Last decoded line may be partial; do not treat it as a valid record.
+    complete_lines=lines[:-1]
+    if not complete_lines:
+        raise ValueError("No complete source eQTL gene rows in prefix")
+    header=complete_lines[0].decode("utf-8","strict").rstrip("\r").split()
+    if tuple(header)!=IMMUNEXUT_13_COL_HEADER:
+        raise ValueError("Original 13-column file schema changed")
+    first_gene=None
+    expected=None
+    nrows=0
+    n_nonsig=0
+    loci=set()
+    saw_next_gene=False
+    for raw_line in complete_lines[1:]:
+        if not raw_line.strip():
+            continue
+        row=raw_line.decode("utf-8","strict").rstrip("\r").split()
+        if len(row)!=13:
+            raise ValueError("Malformed original cis gene block row")
+        gene=row[0]
+        if first_gene is None:
+            first_gene=gene
+            expected=int(row[4])
+            if expected<1 or expected>2000000:
+                raise ValueError("Unreasonable declared original first-gene cis variant count")
+        if gene!=first_gene:
+            saw_next_gene=True
+            break
+        if int(row[4])!=expected:
+            raise ValueError("First gene cis tested count changes across rows")
+        nrows+=1
+        try:
+            p=float(row[11])
+        except ValueError as exc:
+            raise ValueError("Source nominal pvalue nonnumeric") from exc
+        if not 0<=p<=1:
+            raise ValueError("Source nominal pvalue out of range")
+        n_nonsig+=(p>0.05)
+        locus=(row[8],row[9],row[10],row[6],row[7])
+        if locus in loci:
+            raise ValueError("Repeated original variant coordinate/REF/ALT in first gene")
+        loci.add(locus)
+    if first_gene is None:
+        raise ValueError("No first source gene found")
+    result={
+        "source_gene_id":first_gene,
+        "source_declared_cis_tested_variants":expected,
+        "original_gene_association_rows_seen":nrows,
+        "distinct_original_variant_chrom_pos_allele_keys":len(loci),
+        "source_nonsignificant_p_gt_0_05_rows":n_nonsig,
+        "observed_start_of_second_gene":saw_next_gene,
+        "fully_observed_first_gene_block":saw_next_gene,
+        "number_of_cis_variants_matches_first_gene_association_rows":nrows==expected if saw_next_gene else None,
+        "original_source_metadata_vs_row_count":(
+            "COUNT_MATCHED" if saw_next_gene and nrows==expected
+            else "COUNT_MISMATCH" if saw_next_gene
+            else "UNFINISHED_GENE_PREFIX_HOLD"),
+        "raw_variant_gwas_alleles_harmonized":False,
+        "full_genome_cis_catalogue_covered":False,
+        "colocalization":"NOT_RUN",
+        "source_publication_claim_of_unfiltered_cis":"PUBLISHED_NOT_ALL_GENES_INDEPENDENTLY_VERIFIED",
+    }
+    return result
+
+
 def first_nominal_tsv_preview(gzip_tar_member_prefix,max_rows=80):
     """Inspect only start of the first ~8GB nominal QTLtools TAR member.
 
@@ -471,6 +557,7 @@ def run(out):
         report["original_nominal_member_prefix"]=source_meta
         report["nested_nominal_TAR_first_members"]=nested_gzip_tar_head(first)
         report["first_actual_nominal_association_records"]=first_nominal_tsv_preview(first)
+        report["first_gene_full_cis_block_probe"]=first_gene_full_cis_block_probe(first)
         report["source_status"]="OFFICIAL_PUBLIC_43GB_ZIP64_CENTRAL_AND_NOMINAL_TAR_PREFIX_VERIFIED"
     except (OSError,ValueError,TimeoutError,urllib.error.URLError,struct.error,zlib.error) as e:
         report["source_status"]="SOURCE_OR_QC_HOLD"
@@ -500,6 +587,14 @@ def run(out):
                       f"- Looks like a header: {v['looks_like_header']}",
                       "- First row: `" + " | ".join(v["first_line_fields_verbatim"])[:500] + "`",
                       "- Second row: `" + " | ".join(v["second_line_fields_verbatim"])[:500] + "`"])
+    if first_gene:=report.get("first_gene_full_cis_block_probe"):
+        lines.extend(["", "## First-gene complete block count cross-check",
+                      f"- Gene: {first_gene['source_gene_id']}",
+                      f"- Original declared cis variants: {first_gene['source_declared_cis_tested_variants']}",
+                      f"- Source rows observed until next gene: {first_gene['original_gene_association_rows_seen']}",
+                      f"- Next gene observed: {first_gene['observed_start_of_second_gene']}",
+                      f"- Result: {first_gene['original_source_metadata_vs_row_count']}",
+                      f"- Non-significant tested variants in this gene block: {first_gene['source_nonsignificant_p_gt_0_05_rows']}"])
     if err:=report.get("source_issue"):
         lines.append("\nHOLD: "+err)
     lines+=["","GRCh38 public immune cell QTL vs GRCh37 original stroke GWAS; no positional join or causal claims.",
