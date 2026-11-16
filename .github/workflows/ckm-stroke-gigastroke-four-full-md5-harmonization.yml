@@ -1,0 +1,69 @@
+name: CKM GIGASTROKE 4 EUR full publisher MD5 and BMI allele alignment
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-gigastroke-four-full-md5-harmonization.yml'
+      - 'scripts/ckm_stroke/audit_gigastroke_bmi_allele_harmonization.py'
+      - 'tests/test_ckm_stroke_gigastroke_bmi_allele_harmonization.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-gigastroke-four-md5-align-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and verify fail-closed direction / MD5 / duplicate tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_gigastroke_bmi_allele_harmonization.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_bmi_allele_harmonization.py' -v
+
+  original-four-outcomes:
+    # Avoid downloading ~1.014 GB of originals on ordinary pushes.
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[gigastroke-full4]')
+    needs: offline-fixture
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reproduce pinned 1007899 SNP BMI candidate in temporary ignored folder
+        run: |
+          python -m scripts.ckm_stroke.prepare_bmi_ldsc_candidate \
+            --out artifacts/ckm_stroke/bmi_candidate_four_original_ci.json \
+            --emit-candidate artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz
+      - name: Stream 4 official EUR GIGASTROKE original gzip files, full published MD5, and allele directions
+        run: |
+          python -m scripts.ckm_stroke.audit_gigastroke_bmi_allele_harmonization \
+            --phenotype ALL \
+            --candidate artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz \
+            --provenance artifacts/ckm_stroke/bmi_candidate_four_original_ci.json \
+            --out artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json
+      - name: Delete local temporary candidate before publishing evidence
+        if: always()
+        run: |
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz').unlink(missing_ok=True)"
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz.partial').unlink(missing_ok=True)"
+      - name: Upload compact, aggregate-only evidence JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-four-gigastroke-eur-md5-bmi-orientation
+          path: |
+            artifacts/ckm_stroke/bmi_candidate_four_original_ci.json
+            artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json
+          if-no-files-found: warn
+          retention-days: 30
