@@ -1,0 +1,55 @@
+name: CKM GIGASTROKE corrected cohort UK Biobank and LDSC Neff evidence
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-gigastroke-cohort-neff-audit.yml'
+      - 'scripts/ckm_stroke/audit_gigastroke_supplement_cohort_neff.py'
+      - 'tests/test_ckm_stroke_gigastroke_supplement_cohort_neff.py'
+      - 'config/ckm_stroke/gigastroke_eur_official.tsv'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-corrected-cohort-neff-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pinned source, EUR mapping and effect N fail-closed fixtures
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_gigastroke_supplement_cohort_neff.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_supplement_cohort_neff.py' -v
+
+  corrected-primary:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[gigastroke-cohort-full]')
+    needs: offline
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read corrected 2022 Supplementary Tables 1 and 3 directly from Springer Nature
+        run: |
+          python -m scripts.ckm_stroke.audit_gigastroke_supplement_cohort_neff \
+            --manifest config/ckm_stroke/gigastroke_eur_official.tsv \
+            --out artifacts/ckm_stroke/gigastroke_corrected_cohort_neff_ci.json
+      - name: Publish aggregate-only UKB, effective-N scenario and published LDSC benchmarks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-gigastroke-corrected-primary-UKB-neff-gate
+          path: artifacts/ckm_stroke/gigastroke_corrected_cohort_neff_ci.json
+          if-no-files-found: warn
+          retention-days: 30
