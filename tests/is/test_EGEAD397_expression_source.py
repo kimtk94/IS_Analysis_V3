@@ -11,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/"scripts"/"is"))
 from audit_EGEAD397_expression_source import (
     EXPECTED_BYTES,EXPECTED_MD5,filelist,parse_zip_index,parse_zip_members,
-    tar_first_member,summarize_clinical,
+    tar_first_member,summarize_clinical,count_tar_sample_header_probe,
 )
 
 
@@ -68,6 +68,39 @@ class ExpressionSourceTests(unittest.TestCase):
         out=tar_first_member(tar.getvalue()[:512])
         self.assertEqual(out["first_member_name"],"counts/CD16p_Mono.txt")
         self.assertFalse(out["full_expression_count_matrix_rows_read"])
+
+    def test_true_count_matrix_header_width_only_no_identifiers(self):
+        stream=io.BytesIO()
+        with tarfile.open(fileobj=stream,mode="w") as tar:
+            data=b"GeneID\tDonor1\tDonor2\tDonor3\nENSG0001\t0\t9\t12\n"
+            member=tarfile.TarInfo("CD16p_Mono_count.txt")
+            member.size=len(data)
+            tar.addfile(member,io.BytesIO(data))
+        report=count_tar_sample_header_probe(stream.getvalue()[:8192])
+        self.assertEqual(report["source_first_matrix_header_fields"],4)
+        self.assertEqual(report["numeric_nonnegative_values_in_first_data_row_excluding_first_field"],3)
+        self.assertTrue(report["count_matrix_column_count_not_equivalent_to_qtl_regression_N"])
+        self.assertNotIn("Donor1",str(report))
+
+    def test_missing_original_count_matrix_data_line_fails(self):
+        stream=io.BytesIO()
+        with tarfile.open(fileobj=stream,mode="w") as tar:
+            data=b"GeneID\tDonor1\tDonor2\n"
+            member=tarfile.TarInfo("CD16p_Mono_count.txt")
+            member.size=len(data)
+            tar.addfile(member,io.BytesIO(data))
+        with self.assertRaisesRegex(ValueError,"two complete count matrix lines"):
+            count_tar_sample_header_probe(stream.getvalue()[:8192])
+
+    def test_wrong_first_count_file_is_rejected(self):
+        stream=io.BytesIO()
+        with tarfile.open(fileobj=stream,mode="w") as tar:
+            data=b"GeneID\tDonor1\tDonor2\nENSG\t1\t2\n"
+            member=tarfile.TarInfo("Other_immune_count.txt")
+            member.size=len(data)
+            tar.addfile(member,io.BytesIO(data))
+        with self.assertRaisesRegex(ValueError,"Unexpected first expression"):
+            count_tar_sample_header_probe(stream.getvalue()[:8192])
 
     def test_clinical_summary_only_column_names(self):
         sample=("Donor ID\tDisease\tCell type\n"
