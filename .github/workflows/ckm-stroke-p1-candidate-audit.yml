@@ -1,0 +1,30 @@
+name: CKM P1 BMI SBP T2D source candidate landing audit
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  candidates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Offline fail-closed tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_p1_gwas_candidates.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_p1_gwas_candidates.py' -v
+      - name: Metadata-only landing page probes
+        run: |
+          python scripts/ckm_stroke/audit_p1_gwas_candidates.py --out artifacts/ckm_stroke/p1_candidate_sources.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-p1-bmi-sbp-t2d-candidate-audit
+          path: artifacts/ckm_stroke/p1_candidate_sources.json
+          if-no-files-found: warn
+          retention-days: 30
