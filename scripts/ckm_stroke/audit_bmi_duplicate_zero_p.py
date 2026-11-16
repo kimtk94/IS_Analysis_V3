@@ -259,7 +259,7 @@ def main():
         "zero_p_neglog10_range": report.get("zero_p_derived_neglog10p_range"),
         "scientific_status": report["scientific_status"],
     }))
-    if not report["technical_status"].startswith("PASS_DIAGNOSTICS"):
+    if report["technical_status"] != "PASS_DUPLICATE_EXACT_AND_ZERO_P_DIAGNOSTICS":
         raise SystemExit(1)
 
 

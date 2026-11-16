@@ -92,5 +92,35 @@ class DuplicateAndZeroPTests(unittest.TestCase):
         self.assertEqual(r["scientific_status"],"HOLD")
 
 
+    def test_main_success_status_returns_zero(self):
+        import pathlib
+        import tempfile
+        from scripts.ckm_stroke.audit_bmi_duplicate_zero_p import main
+        with tempfile.TemporaryDirectory() as d:
+            out = pathlib.Path(d) / "fixture.json"
+            with patch("sys.argv", ["audit", "--out", str(out)]), patch(
+                "scripts.ckm_stroke.audit_bmi_duplicate_zero_p.analyze",
+                return_value={"dedup_ready_for_downstream": True, "scientific_status": "HOLD"},
+            ):
+                main()
+            self.assertTrue(out.is_file())
+            self.assertEqual(__import__("json").loads(out.read_text())["technical_status"],
+                             "PASS_DUPLICATE_EXACT_AND_ZERO_P_DIAGNOSTICS")
+
+    def test_main_holds_discordant_duplicate(self):
+        import pathlib
+        import tempfile
+        from scripts.ckm_stroke.audit_bmi_duplicate_zero_p import main
+        with tempfile.TemporaryDirectory() as d:
+            out = pathlib.Path(d) / "hold.json"
+            with patch("sys.argv", ["audit", "--out", str(out)]), patch(
+                "scripts.ckm_stroke.audit_bmi_duplicate_zero_p.analyze",
+                return_value={"dedup_ready_for_downstream": False, "scientific_status": "HOLD"},
+            ):
+                with self.assertRaises(SystemExit) as ctx:
+                    main()
+            self.assertEqual(ctx.exception.code, 1)
+
+
 if __name__=="__main__":
     unittest.main()
