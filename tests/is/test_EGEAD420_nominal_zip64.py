@@ -14,7 +14,7 @@ sys.path.insert(0,str(ROOT/"scripts"/"is"))
 from audit_EGEAD420_nominal_zip64 import (
     EXPECTED_ZIP_SIZE,EXPECTED_PUBLISHED_ZIP_MD5,
     source_filelist,zip64_eocd,zip_directory_members,nested_gzip_tar_head,
-    first_nominal_tsv_preview,
+    first_nominal_tsv_preview, IMMUNEXUT_13_COL_HEADER, validate_real_immuNexUT_13col_rows,
     check_url,ZIP,FILELIST,
 )
 
@@ -107,9 +107,57 @@ class NominalZip64Tests(unittest.TestCase):
         r=first_nominal_tsv_preview(f.getvalue())
         self.assertEqual(r["source_nominal_file"],"CD16p_Mono_nominal.txt")
         self.assertEqual(r["sampled_complete_association_lines"],6)
-        self.assertEqual(r["tab_columns_per_line"],11)
+        self.assertEqual(r["whitespace_delimited_columns_per_line"],11)
         self.assertFalse(r["looks_like_header"])
         self.assertFalse(r["entire_cis_distribution_examined"])
+
+    def make_actual_13col_source_rows(self,p="0.733464",ref="TTTTC",alt="T"):
+        headers="\t".join(IMMUNEXUT_13_COL_HEADER)
+        rows=[]
+        for i in range(5):
+            rows.append("\t".join([
+                "ENSG00000227232.5","WASH7P","chr1","29570","835",
+                f"rs201095316;rs773293602_{i}",ref,alt,
+                "chr1",str(54712+i),str(54716+i),p if i==0 else "0.001",
+                "-0.0228653",
+            ]))
+        return (headers+"\n"+"\n".join(rows)+"\n").encode()
+
+    def test_real_immuNexUT_13col_original_schema(self):
+        tarbytes=io.BytesIO()
+        with tarfile.open(fileobj=tarbytes,mode="w:gz") as tf:
+            actual=self.make_actual_13col_source_rows()
+            m=tarfile.TarInfo("CD16p_Mono_nominal.txt")
+            m.size=len(actual)
+            tf.addfile(m,io.BytesIO(actual))
+        result=first_nominal_tsv_preview(tarbytes.getvalue())
+        r=result["actual_ImmuNexUT_13_column_source_data_QC"]
+        self.assertEqual(result["whitespace_delimited_columns_per_line"],13)
+        self.assertEqual(r["n_actual_complete_source_association_rows"],5)
+        self.assertEqual(r["source_nominal_non_significant_p_gt_0_05"],1)
+        self.assertEqual(r["source_nominal_significant_p_le_0_05"],4)
+        self.assertEqual(r["source_reported_cis_variants_for_first_gene"],835)
+        self.assertEqual(r["variant_id_semicolon_multi_ids_rows"],5)
+        self.assertFalse(r["slope_se_column_present"])
+        self.assertFalse(r["allele_frequency_MAF_EAF_present"])
+        self.assertFalse(r["per_celltype_sample_n_column_present"])
+        self.assertEqual(r["coloc_ABF_or_SuSiE"],"BLOCKED")
+
+    def test_actual_13col_bad_pvalue_fails(self):
+        rows=self.make_actual_13col_source_rows(p="1.5").decode().splitlines()
+        with self.assertRaisesRegex(ValueError,"out of bounds"):
+            validate_real_immuNexUT_13col_rows([x.split() for x in rows])
+
+    def test_actual_13col_ref_alt_identical_fails(self):
+        rows=self.make_actual_13col_source_rows(ref="A",alt="A").decode().splitlines()
+        with self.assertRaisesRegex(ValueError,"REF ALT"):
+            validate_real_immuNexUT_13col_rows([x.split() for x in rows])
+
+    def test_actual_13col_missing_header_fails(self):
+        rows=self.make_actual_13col_source_rows().decode().splitlines()
+        rows[0]=rows[0].replace("slope(ALT)","slope(SE)")
+        with self.assertRaisesRegex(ValueError,"13-column header"):
+            validate_real_immuNexUT_13col_rows([x.split() for x in rows])
 
     def test_qtltools_nominal_space_separate_without_std_err_is_hold(self):
         buf=io.BytesIO()
