@@ -1,6 +1,11 @@
 name: CKM Stroke P1 GLGC bounded autosome batch (manual, gated)
 
 on:
+  # One-time pilot bootstrap via this workflow-file update only.
+  # Subsequent chr batches require manual dispatch and a validated gate.
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-glgc-autosome-batch.yml'
   workflow_dispatch:
     inputs:
       chr22_run_id:
@@ -38,13 +43,13 @@ jobs:
         with:
           name: ckm-glgc-chr-aggregate
           repository: ${{ github.repository }}
-          run-id: ${{ inputs.chr22_run_id }}
+          run-id: ${{ inputs.chr22_run_id || '43431051168' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: artifacts/chr22_gate
       - name: Validate prior real chr22 PASS and limit batch size
         id: plan
         env:
-          CHROMOSOMES: ${{ inputs.chromosomes }}
+          CHROMOSOMES: ${{ inputs.chromosomes || '21,20,19' }}
         run: |
           python -m unittest tests.test_ckm_stroke_glgc_batch_plan -v
           python -m scripts.ckm_stroke.plan_glgc_batch \
