@@ -52,6 +52,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Parse approval file for this push with bounded metadata
+        id: approval
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          python -m unittest tests.test_ckm_stroke_parse_glgc_batch_approval -v
+          python -m scripts.ckm_stroke.parse_glgc_batch_approval \
+            --input config/ckm_stroke/glgc_next_batch_approval.json
       - name: Fetch chr22 original technical PASS (initial batch only)
         if: ${{ github.event_name == 'workflow_dispatch' && !inputs.prior_run_id }}
         uses: actions/download-artifact@v4
@@ -67,23 +74,27 @@ jobs:
         with:
           pattern: ckm-glgc-batch-summary-*
           repository: ${{ github.repository }}
-          run-id: ${{ github.event_name == 'push' && '43848671279' || inputs.prior_run_id }}
+          run-id: ${{ github.event_name == 'push' && steps.approval.outputs.prior_run_id || inputs.prior_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: artifacts/prior_gate
           merge-multiple: true
       - name: Verify prior real-data PASS and strictly limit batch
         id: plan
         env:
-          CHROMOSOMES: ${{ github.event_name == 'push' && '18,17,16' || inputs.chromosomes || '21,20,19' }}
-          PRIOR_CHROMOSOMES: ${{ github.event_name == 'push' && '21,20,19' || inputs.prior_chromosomes || '21,20,19' }}
-          PRIOR_RUN_ID: ${{ github.event_name == 'push' && '43848671279' || inputs.prior_run_id }}
+          CHROMOSOMES: ${{ github.event_name == 'push' && steps.approval.outputs.next_chromosomes || inputs.chromosomes || '21,20,19' }}
+          PRIOR_CHROMOSOMES: ${{ github.event_name == 'push' && steps.approval.outputs.prior_chromosomes || inputs.prior_chromosomes || '21,20,19' }}
+          PRIOR_RUN_ID: ${{ github.event_name == 'push' && steps.approval.outputs.prior_run_id || inputs.prior_run_id }}
+          APPROVED_SOURCE_COMMIT: ${{ steps.approval.outputs.expected_prior_commit }}
+          APPROVED_SNP_COUNTS: ${{ steps.approval.outputs.expected_prior_snp_rows_json }}
         run: |
-          python -m unittest tests.test_ckm_stroke_glgc_batch_plan tests.test_ckm_stroke_verify_previous_batch -v
+          python -m unittest tests.test_ckm_stroke_glgc_batch_plan tests.test_ckm_stroke_verify_previous_batch tests.test_ckm_stroke_parse_glgc_batch_approval -v
           if [ -n "$PRIOR_RUN_ID" ]; then
             python -m scripts.ckm_stroke.verify_glgc_previous_batch \
               --prior-dir artifacts/prior_gate \
               --prior-chromosomes "$PRIOR_CHROMOSOMES" \
               --next-chromosomes "$CHROMOSOMES" \
+              --expected-prior-commit "$APPROVED_SOURCE_COMMIT" \
+              --expected-snp-rows-json "$APPROVED_SNP_COUNTS" \
               --output artifacts/ckm_stroke/batch_plan.json
           else
             python -m scripts.ckm_stroke.plan_glgc_batch \

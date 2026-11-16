@@ -18,7 +18,7 @@ REQUIRED_CHECKS={
 }
 
 
-def verify_previous(folder, prior_text, next_text):
+def verify_previous(folder, prior_text, next_text, expected_commit=None, expected_counts=None):
     prior=chromosomes(prior_text)
     nxt=chromosomes(next_text)
     if prior!=[str(i) for i in range(int(prior[0]),int(prior[0])-len(prior),-1)]:
@@ -62,6 +62,14 @@ def verify_previous(folder, prior_text, next_text):
         counts[chrom]=total
     if len(commits)!=1:
         raise ValueError("previous batches mixed code revisions")
+    if expected_commit and expected_commit!=next(iter(commits)):
+        raise ValueError("approved prior source commit differs from actual aggregate evidence")
+    if expected_counts is not None:
+        if not isinstance(expected_counts,dict) or set(expected_counts)!=set(prior):
+            raise ValueError("approved prior SNP counts must cover every expected chromosome")
+        if any(type(expected_counts[c]) is not int or
+               expected_counts[c]!=counts[c] for c in prior):
+            raise ValueError("approved prior SNP counts differ from actual aggregate evidence")
     return {
         "status":"PASS","scientific_status":"HOLD",
         "prior_chromosomes":prior,"next_chromosomes":nxt,
@@ -79,8 +87,14 @@ def main():
     parser.add_argument("--prior-chromosomes",required=True)
     parser.add_argument("--next-chromosomes",required=True)
     parser.add_argument("--output",required=True)
+    parser.add_argument("--expected-prior-commit",default="")
+    parser.add_argument("--expected-snp-rows-json",default="")
     args=parser.parse_args()
-    report=verify_previous(args.prior_dir,args.prior_chromosomes,args.next_chromosomes)
+    expected_counts=(json.loads(args.expected_snp_rows_json)
+                     if args.expected_snp_rows_json else None)
+    report=verify_previous(args.prior_dir,args.prior_chromosomes,args.next_chromosomes,
+                           expected_commit=args.expected_prior_commit or None,
+                           expected_counts=expected_counts)
     output=Path(args.output)
     output.parent.mkdir(parents=True,exist_ok=True)
     output.write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")

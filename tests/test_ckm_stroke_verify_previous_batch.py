@@ -92,5 +92,26 @@ class TestPreviousBatchGate(unittest.TestCase):
                 gate.verify_previous(folder,"21,20,19","18,17,16")
 
 
+
+    def test_expected_commit_from_approval_must_match_real_source_evidence(self):
+        with tempfile.TemporaryDirectory() as d:
+            folder=Path(d);populate(folder)
+            with self.assertRaisesRegex(ValueError,"approved prior source commit"):
+                gate.verify_previous(folder,"21,20,19","18,17,16",
+                                     expected_commit="b"*40)
+            accepted=gate.verify_previous(folder,"21,20,19","18,17,16",
+                                          expected_commit=COMMIT)
+        self.assertEqual(accepted["prior_commit"],COMMIT)
+
+    def test_approved_row_totals_must_match_independent_previous_summaries(self):
+        with tempfile.TemporaryDirectory() as d:
+            folder=Path(d);populate(folder)
+            with self.assertRaisesRegex(ValueError,"approved prior SNP counts differ"):
+                gate.verify_previous(folder,"21,20,19","18,17,16",
+                                     expected_counts={"21":300,"20":300,"19":301})
+            accepted=gate.verify_previous(folder,"21,20,19","18,17,16",
+                                          expected_counts={"21":300,"20":300,"19":300})
+        self.assertEqual(accepted["status"],"PASS")
+
 if __name__=="__main__":
     unittest.main()

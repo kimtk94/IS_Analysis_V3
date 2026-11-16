@@ -7,6 +7,9 @@ on:
       - 'tests/test_ckm_stroke_glgc_batch_plan.py'
       - 'scripts/ckm_stroke/verify_glgc_previous_batch.py'
       - 'tests/test_ckm_stroke_verify_previous_batch.py'
+      - 'scripts/ckm_stroke/parse_glgc_batch_approval.py'
+      - 'tests/test_ckm_stroke_parse_glgc_batch_approval.py'
+      - '.github/workflows/ckm-stroke-glgc-autosome-batch.yml'
       - 'scripts/ckm_stroke/audit_glgc_autosomes.py'
       - 'tests/test_ckm_stroke_audit_glgc_autosomes.py'
       - 'scripts/ckm_stroke/summarize_glgc_chr.py'
@@ -34,4 +37,5 @@ jobs:
         run: |
           python -m py_compile scripts/ckm_stroke/plan_glgc_batch.py scripts/ckm_stroke/verify_glgc_previous_batch.py tests/test_ckm_stroke_glgc_batch_plan.py tests/test_ckm_stroke_verify_previous_batch.py
           python -m py_compile scripts/ckm_stroke/audit_glgc_autosomes.py tests/test_ckm_stroke_audit_glgc_autosomes.py
-          python -m unittest tests.test_ckm_stroke_glgc_batch_plan tests.test_ckm_stroke_verify_previous_batch tests.test_ckm_stroke_audit_glgc_autosomes tests.test_ckm_stroke_glgc_chr_summary -v
+          python -m py_compile scripts/ckm_stroke/parse_glgc_batch_approval.py tests/test_ckm_stroke_parse_glgc_batch_approval.py
+          python -m unittest tests.test_ckm_stroke_glgc_batch_plan tests.test_ckm_stroke_verify_previous_batch tests.test_ckm_stroke_parse_glgc_batch_approval tests.test_ckm_stroke_audit_glgc_autosomes tests.test_ckm_stroke_glgc_chr_summary -v
