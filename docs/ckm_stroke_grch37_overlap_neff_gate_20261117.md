@@ -46,7 +46,17 @@ The formula gives **illustrative effective sample sizes for a single homogeneous
 - Once those are addressed, run **single-trait h² and intercept diagnostics first**, then only consider pairwise rg if h²/SE/intercept diagnostics are satisfactory; do not infer causality from rg.
 - **Scientific decision: HOLD**, `ready_for_ldsc=false`, no h2/rg/MR/coloc performed. Existing PR #284 remains Draft and unmerged.
 
-## 4. Reproduction in Orca
+## 4. GitHub independent Linux reproduction — SUCCESS
+
+The original evidence was independently regenerated in Linux by [GitHub Actions #43902088417](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43902088417), completed 2026-11-16 15:58:19 UTC (2026-11-17 00:58:19 KST). Both jobs **SUCCESS**; 8/8 fail-closed offline fixtures PASS. The full independent-reference job recreated the same 1,007,899-SNP candidate with canonical plaintext SHA-256 `ed8f713827cd3281bea5f88a9cb42a3eabfecb1ee67c912ca7e86f151e4399bf`, reverified the complete 2,336,269-row GIANT original source, and matched **44/44** Ensembl GRCh37 forward-reference bases, 2 SNPs per chromosome across all 22 autosomes.
+
+The public bounded-marker evidence is in [GitHub Actions artifact #14240489469](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43902088417/artifacts/14240489469) (4,422-byte ZIP). The source and candidate original compressed files were not uploaded. The 44 selected sentinel rows were also independently hashed after sorted-key canonical JSON serialization on **both** Windows Orca and Linux CI:
+
+`31bd9b0962153e0f23f54bfa0f824252bd83528164d3a8241a028cb0de12fd32`
+
+**Identical 44-SNP evidence SHA-256 across operating systems.** This proves full repeatability of the *sampled sentinel audit*, **not** proof that all 1,007,899 allele pairs are independently forward-orientation verified. `scientific_status=HOLD`, `ready_for_ldsc=false`.
+
+## 5. Reproduction in Orca
 
 ```powershell
 py -3 -m unittest discover -s tests -p test_ckm_stroke_bmi_grch37_reference_sentinels.py -v
