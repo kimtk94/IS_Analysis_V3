@@ -46,3 +46,21 @@ Original public NHA000051 `hum0099.v1.eqtl.v1.zip` was verified as an actual pub
 6. **Research originality**: 2026 MAEEA already establishes utility of ancestry-matched eQTL for multiple phenotypes; novelty must be **specific IS locus-to-gene transitions** robust to ancestry LD/MAF, cell types and case-control power, not the generic use of EAS eQTL.
 
 **Decision:** Promote publicly documented E-GEAD-420 (not NHA000051) to **EAS full-nominal source pilot P0**, with genome-wide colocalization still BLOCKED.
+
+## Update, 2026-11-16 — actual ImmuNexUT original eQTL variant row QC
+
+**Not just dataset documentation:** [real GitHub run #43847910968](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43847910968) **SUCCESS, tests 16/16**, original E-GEAD-420 `CD16p_Mono_nominal.txt` first 80 complete lines checked (1 header + **79 actual association rows**).
+
+The genuine original ImmuNexUT output is a processed **13-column headered** table, not the generic 15/16-column QTLtools output:
+```text
+Gene_id  Gene_name  CHR  TSS_position  Number_of_variants_cis  Variant_ID  REF  ALT  Variant_CHR  Variant_position_start  Variant_position_end  nominal_P_value  slope(ALT)
+```
+- Actual first record: `ENSG00000227232.5` / `WASH7P`; `chr1:54712-54716`, `REF=TTTTC`, `ALT=T`, `nominal_P_value=0.733464`, `slope(ALT)=-0.0228653`. This is an **indel** with **multiple rsIDs** (`rs201095316;rs773293602`), so SNP-only or rsID-only GWAS joins are unsafe.
+- From **79 original observed association rows**, **75 have P>0.05** and 4 have P≤0.05. The real original table therefore includes nonsignificant rows; this does not prove every SNP for every gene is represented.
+- Source `Number_of_variants_cis=835` for WASH7P but only first 79 original variants checked at this stage.
+- Importantly **NO `slope_se`, `MAF/EAF`, or per-celltype `N` columns** in this actual 13-column source table. Do **not** invent, directly reuse whole-cohort N=416, or set coloc ready. Need independently verified per-cell N and ancestry-matched allele frequencies for a p-value-based coloc sensitivity model, or validated SE inference with documented model and assumptions. No beta/SE-coloc ready.
+- The original `slope(ALT)` is the effect of ALT. Preserve original REF and ALT and indels; genome build GRCh38 requires validated liftOver to GRCh37 original GIGASTROKE with independent post-map reference check and harmonization.
+- [Original E-GEAD-420 cohort SDRF CI #43433142595](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43433142595) **SUCCESS, tests 6/6**: original 416 unique WGS/SDRF records, 79 healthy, 337 immune disease; age available 416/416, official SDRF MD5 independently matched. This is NOT evidence 416 were included in every 28 celltype eQTL association regression.
+- New scripts `validate_real_immuNexUT_13col_rows` and `first_gene_full_cis_block_probe` with synthetic tests preserve real header, mixed indels and multi-rsIDs, p/allele QC, no false SE/N claims. Follow-on first-gene block source vs 835 original tested variants CI [#43848328705](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43848328705) submitted; **do not claim its actual 835-variant completeness until run validated**.
+
+**Scientific gate:** EAS eQTL **P0 actual nominal source structure/data rows PASS** for a small bounded region. EAS **full tested cis coverage, usable summary SE/MAF/N and per-locus GWAS alignment HOLD**. Coloc.abf/SuSiE, MAGMA, LDSC-SEG **NOT_RUN**. Do not mistake unrelated immune-disease cohort eQTL for expression measured in ischemic stroke patients.
