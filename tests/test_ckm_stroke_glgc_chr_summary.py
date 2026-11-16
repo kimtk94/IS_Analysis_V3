@@ -50,7 +50,7 @@ class TestGLGCChromAggregate(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             folder=Path(d)
             for t in summary.TRAITS:
-                r=make(t)
+                r=make(t, chromosome="19")
                 if t=="LDL_C":
                     r["counts"]["original_rows"]=5
                     r["counts"]["p_underflow_zero"]=2
