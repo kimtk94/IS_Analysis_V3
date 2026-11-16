@@ -13,6 +13,7 @@ import csv
 from datetime import datetime,timezone
 import hashlib
 import io
+import math
 import json
 import os
 from pathlib import Path
@@ -171,6 +172,56 @@ def tar_first_member(data):
             "per_cell_type_N_not_inferred_from_archive_name":True}
 
 
+
+def count_tar_sample_header_probe(prefix):
+    """Count *only* fields in original CD16p_Mono count matrix first lines.
+
+    Do not export donor column names or expression measurements. A sample-like
+    header count may inform expression matrix dimensionality, never the number
+    of genotype/QTLtools-passing donors or case/control donors in the model.
+    """
+    if len(prefix)<512:
+        raise ValueError("Original expression count TAR too short")
+    h=prefix[:512]
+    name=h[:100].split(b"\0",1)[0].decode("utf-8","strict")
+    if name!="CD16p_Mono_count.txt":
+        raise ValueError("Unexpected first expression count TAR member")
+    size_raw=h[124:136].strip(b" \0")
+    if not re.fullmatch(rb"[0-7]+",size_raw):
+        raise ValueError("Malformed original matrix TAR header size")
+    size=int(size_raw,8)
+    start=512
+    first=prefix[start:start+min(len(prefix)-start,size)]
+    fragments=first.split(b"\n")
+    if len(fragments)<3:
+        raise ValueError("Bounded ZIP range did not contain two complete count matrix lines")
+    header=fragments[0].rstrip(b"\r").decode("utf-8","strict").split("\t")
+    data=fragments[1].rstrip(b"\r").decode("utf-8","strict").split("\t")
+    if len(header)<3 or len(data)!=len(header) or any(not x for x in header):
+        raise ValueError("Count matrix first line columns not consistent with data row")
+    numeric=0
+    for item in data[1:]:
+        try:
+            number=float(item)
+        except ValueError:
+            continue
+        if math.isfinite(number) and number>=0:
+            numeric+=1
+    # Some expression counts include gene names and sample IDs; we report
+    # only anonymous counts and structural fields, never column IDs.
+    return {
+        "source_gene_expression_file":name,
+        "source_first_matrix_header_fields":len(header),
+        "source_first_expression_data_fields":len(data),
+        "numeric_nonnegative_values_in_first_data_row_excluding_first_field":numeric,
+        "source_count_matrix_second_line_numeric_fraction":round(numeric/(len(data)-1),4),
+        "source_first_tar_member_declared_bytes":size,
+        "sample_identity_columns_not_exported":True,
+        "headers_not_proven_to_be_independent_unique_donors":True,
+        "count_matrix_column_count_not_equivalent_to_qtl_regression_N":True,
+        "per_celltype_eqtl_N":"NOT_VERIFIED",
+    }
+
 def run(out):
     result={"source":"E-GEAD-397 public ImmuNexUT expression archive",
             "checked_utc":datetime.now(timezone.utc).isoformat(),
@@ -202,6 +253,7 @@ def run(out):
                        "original_clinical_member_MD5":"PASS",
                        "clinical_structure":summarize_clinical(cbytes),
                        "count_tar_preview":tar_first_member(header),
+                       "CD16_monocyte_count_matrix_header_probe":count_tar_sample_header_probe(header),
                        "source_filelist_publisher_count_tar_MD5_ONLY":official["count.tar"]["publisher_md5"]})
     except (OSError,ValueError,TimeoutError,UnicodeDecodeError,urllib.error.URLError,zlib.error):
         result["status"]="SOURCE_OR_QC_HOLD"
@@ -216,7 +268,9 @@ def run(out):
         c=result["clinical_structure"]
         lines.extend([f"- Official clinical metadata rows: {c['public_metadata_rows']}",
                       f"- Public clinical header fields: {', '.join(c['header_fields'])}",
-                      f"- Actual count TAR first member: {result['count_tar_preview']['first_member_name']}"])
+                      f"- Actual count TAR first member: {result['count_tar_preview']['first_member_name']}",
+                      f"- CD16p_Mono source count-matrix header fields (NOT eQTL N): {result['CD16_monocyte_count_matrix_header_probe']['source_first_matrix_header_fields']}",
+                      f"- Nonnegative numeric expression values in first source row: {result['CD16_monocyte_count_matrix_header_probe']['numeric_nonnegative_values_in_first_data_row_excluding_first_field']}"])
     lines+=["","No original participant IDs emitted, original 286MB archive MD5 NOT independently verified.",
             "True per-cell eQTL N, variant MAF and stroke loci colocalization remain HOLD."]
     summary="\n".join(lines)+"\n"
