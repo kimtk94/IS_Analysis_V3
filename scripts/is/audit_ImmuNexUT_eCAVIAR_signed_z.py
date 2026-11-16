@@ -82,48 +82,97 @@ def signed_z_from_slope_p(beta,p):
 
 
 def convert_block(rows):
+    """Convert only original rows with unambiguous sequence alleles and finite p.
+
+    Count all source rows; do not fabricate a sequence allele for non-ACGT,
+    symbolic, dash or missing markers. These are SOURCE-format exclusions,
+    not failure of the original 835-row nominal association completeness.
+    """
+    from collections import Counter
     output=[]
     seen=set()
-    nonsig=0
+    reasons=Counter()
+    raw_nonsig=0
+    class_counts=Counter()
     for row in rows:
+        if len(row)!=13:
+            raise ValueError("Original row not 13 source fields")
         _,gene_symbol,chrom,tss,n_cis,rsid,ref,alt,vchr,beg,end,pval,slope=row
-        if chrom!=vchr or not chrom.startswith("chr") or not ref or not alt:
-            raise ValueError("Original variant alleles/chromosome inconsistent")
-        if set(ref)-set("ACGT") or set(alt)-set("ACGT") or ref==alt:
-            raise ValueError("Original eQTL alleles are not supported ACGT strings")
-        beg=int(beg);end=int(end)
-        if beg<1 or end<beg or int(n_cis)!=len(rows):
+        if chrom!=vchr or not chrom.startswith("chr"):
+            raise ValueError("Original variant chromosome inconsistent")
+        try:
+            beg=int(beg);end=int(end);reported=int(n_cis)
+        except ValueError as exc:
+            raise ValueError("Original gene cis count or coordinate not numeric") from exc
+        if beg<1 or end<beg or reported!=len(rows):
             raise ValueError("Original gene cis count or genomic coordinates invalid")
-        p=float(pval);beta=float(slope)
-        signed_z=signed_z_from_slope_p(beta,p)
         key=f"{vchr}:{beg}-{end}:{ref}>{alt}"
         if key in seen:
             raise ValueError("Duplicated original variant coordinate and allele key")
         seen.add(key)
-        nonsig+=(p>0.05)
+        try:
+            p=float(pval);beta=float(slope)
+        except ValueError:
+            reasons["non_numeric_p_or_slope"]+=1
+            continue
+        if not math.isfinite(p) or not 0<=p<=1 or not math.isfinite(beta):
+            reasons["non_finite_or_invalid_p_slope"]+=1
+            continue
+        raw_nonsig+=(p>0.05)
+        if not ref or not alt or ref==alt:
+            reasons["missing_or_identical_REF_ALT"]+=1
+            continue
+        if not (set(ref)<=set("ACGT") and set(alt)<=set("ACGT")):
+            reasons["noncanonical_OR_symbolic_REF_ALT"]+=1
+            continue
+        try:
+            signed_z=signed_z_from_slope_p(beta,p)
+        except ValueError:
+            reasons["no_finite_signed_z_from_p_and_slope"]+=1
+            continue
+        if len(ref)==len(alt)==1:
+            variant_class="SNV"
+        elif len(ref)!=len(alt):
+            variant_class="INDEL_UNNORMALIZED"
+        else:
+            variant_class="MNV_UNNORMALIZED"
+        class_counts[variant_class]+=1
         output.append({
             "original_grch38_variant_alleles":key,
             "original_gene_symbol":gene_symbol,
             "original_nominal_p":p,
             "original_ALT_effect_slope":beta,
             "derived_signed_z_two_sided_normal_assumption":signed_z,
-            "is_snp":len(ref)==len(alt)==1,
+            "variant_class_without_ref_genome_normalization":variant_class,
+            "downstream_GWAS_effect_orientation_ready":False,
         })
-    return output,{"real_original_gene_cis_rows":len(rows),
-                   "nonsignificant_p_gt_0_05":nonsig,
-                   "indel_records":sum(not item["is_snp"] for item in output),
-                   "positive_signed_z":sum(item["derived_signed_z_two_sided_normal_assumption"]>0 for item in output),
-                   "negative_signed_z":sum(item["derived_signed_z_two_sided_normal_assumption"]<0 for item in output),
-                   "all_original_cis_records_output":True,
-                   "original_publisher_z_scores":False,
-                   "two_sided_normal_p_to_z_assumption":True,
-                   "effect_allele":"ALT",
-                   "has_eQTL_study_MAF":False,
-                   "has_eQTL_study_effective_N":False,
-                   "LD_correlation_matrix_available":False,
-                   "GWAS_harmonized":False,
-                   "eCAVIAR_CLPP_calculated":False}
-
+    if not output:
+        raise ValueError("No usable original nominal rows for signed-Z source sentinel")
+    excluded=sum(reasons.values())
+    if len(output)+excluded!=len(rows) or len(seen)!=len(rows):
+        raise ValueError("Source row conservation failure during signed-Z classification")
+    return output,{
+        "real_original_gene_cis_rows":len(rows),
+        "source_rows_in_pilot_eligible_signed_z":len(output),
+        "source_rows_excluded_from_signed_z":excluded,
+        "source_exclusion_reasons":dict(reasons),
+        "source_variant_classes_used":dict(class_counts),
+        "nonsignificant_p_gt_0_05":raw_nonsig,
+        "indel_records":class_counts["INDEL_UNNORMALIZED"],
+        "positive_signed_z":sum(x["derived_signed_z_two_sided_normal_assumption"]>0 for x in output),
+        "negative_signed_z":sum(x["derived_signed_z_two_sided_normal_assumption"]<0 for x in output),
+        "all_original_cis_records_accounted_for":True,
+        "all_original_cis_records_output":excluded==0,
+        "excluded_rows_are_not_implicitly_recoded":True,
+        "original_publisher_z_scores":False,
+        "two_sided_normal_p_to_z_assumption":True,
+        "effect_allele":"ALT",
+        "has_eQTL_study_MAF":False,
+        "has_eQTL_study_effective_N":False,
+        "LD_correlation_matrix_available":False,
+        "GWAS_harmonized":False,
+        "eCAVIAR_CLPP_calculated":False
+    }
 
 def read_original_first_gene_prefix():
     manifest=source_filelist(get_small(FILELIST,6000))
@@ -179,6 +228,10 @@ def run(out):
             f"- Original first-gene records: {details['real_original_gene_cis_rows']}",
             f"- Nonsignificant original p-values: {details['nonsignificant_p_gt_0_05']}",
             f"- Indel records retained in source summary: {details['indel_records']}",
+            f"- Original source rows eligible for signed Z: {details['source_rows_in_pilot_eligible_signed_z']}",
+            f"- Source rows excluded without recoding: {details['source_rows_excluded_from_signed_z']}",
+            f"- Exclusion categories: {details['source_exclusion_reasons']}",
+            f"- Original source classes retained: {details['source_variant_classes_used']}",
             f"- Positive signed Z: {details['positive_signed_z']}; negative signed Z: {details['negative_signed_z']}",
             "- Z signs from original ALT slope; magnitudes from two-sided normal approximation of original nominal P.",
         ])
