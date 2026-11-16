@@ -1,0 +1,36 @@
+name: IS EAS ImmuNexUT original nominal-to-signed-Z eCAVIAR feasibility pilot
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_ImmuNexUT_eCAVIAR_signed_z.py'
+      - 'tests/is/test_ImmuNexUT_eCAVIAR_signed_z.py'
+      - '.github/workflows/is_ImmuNexUT_signed_z_pilot.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  original-eas-eqtl-signed-z-source-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin numerical normal-inverse routine for signed Z conversion
+        run: python3 -m pip install scipy==1.15.3
+      - name: Test source P and ALT slope to signed Z with indels and p extremes
+        run: python3 -m unittest discover -s tests/is -p 'test_ImmuNexUT_eCAVIAR_signed_z.py' -v
+      - name: Retrieve original first 835 variants from true EAS public ZIP64 archive
+        run: python3 scripts/is/audit_ImmuNexUT_eCAVIAR_signed_z.py --out-dir artifacts/is_ImmuNexUT_signed_Z_sentinel
+      - name: Save original-public-method Z evidence; this is NOT an eCAVIAR result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-EAS-ImmuNexUT-WASH7P-real-public-signed-Z-sentinel-NOT-coloc
+          path: artifacts/is_ImmuNexUT_signed_Z_sentinel/
+          retention-days: 45
+          if-no-files-found: warn
