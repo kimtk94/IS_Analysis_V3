@@ -1,38 +1,29 @@
 {
-  "schema": "ckm-glgc-expansion-approval-v1",
-  "scope": "GLGC_Graham2021_EUR_CHROMOSOME_SNP_ONLY_TECHNICAL_QC",
-  "first_batch_run_id": 43848671279,
-  "first_batch_source_commit": "fea2ce570e5abcad7f1dc80e5287e8639baed514",
+  "schema": "ckm-glgc-next-batch-approval-v2",
+  "scientific_status": "HOLD",
+  "prior_run_id": 43865163287,
   "prior_chromosomes": [
-    "21",
-    "20",
-    "19"
-  ],
-  "prior_aggregate_statuses": {
-    "19": "PASS",
-    "20": "PASS",
-    "21": "PASS"
-  },
-  "prior_independent_aggregate_job_ids": {
-    "19": 133281611484,
-    "20": 133281611549,
-    "21": 133281611508
-  },
-  "prior_aggregate_snp_rows": {
-    "19": 2947707,
-    "20": 2930879,
-    "21": 1750553
-  },
-  "next_chromosomes": [
     "18",
     "17",
     "16"
   ],
-  "expected_next_matrix_jobs": 9,
+  "next_chromosomes": [
+    "15",
+    "14",
+    "13"
+  ],
+  "expected_prior_source_commit": "856a6681b4b5e49449595680370d0f626c541a87",
+  "prior_aggregate_statuses": {
+    "16": "PASS",
+    "17": "PASS",
+    "18": "PASS"
+  },
+  "expected_prior_snp_rows": {
+    "16": 4237341,
+    "17": 3659008,
+    "18": 3649239
+  },
   "max_parallel_jobs": 3,
-  "scientific_status": "HOLD",
-  "underflow_chr19_source_rows_excluded": 369,
-  "preserve_original_SOURCE_QC_evidence": true,
-  "do_not_merge_draft_pr": true,
-  "approval_basis": "All 9 prior trait-source jobs and all 3 per-chromosome aggregate jobs completed SUCCESS; actual JSON fields independently verified via GitHub Actions logs; downstream P2-P6 remain NOT_RUN."
+  "expected_next_matrix_jobs": 9,
+  "approval_reason": "Prior run #43865163287 completed all 9 real-data source QC and 3 independent chromosome aggregate jobs SUCCESS. Actual aggregate JSON source SHA, per-trait counts, missing/duplicate/error checks independently verified; GitHub gate contract 42/42 PASS. Scientific readiness HOLD."
 }
