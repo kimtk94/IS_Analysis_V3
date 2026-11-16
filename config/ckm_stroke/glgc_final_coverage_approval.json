@@ -1,0 +1,28 @@
+{
+  "schema": "ckm-glgc-final-coverage-approval-v1",
+  "scientific_status": "HOLD",
+  "expected_chromosomes": 22,
+  "expected_trait_chromosome_jobs": 66,
+  "expected_total_retained_snp_rows": 128925825,
+  "prior_success_runs": [
+    43431051168,
+    43848671279,
+    43865163287,
+    43866716532,
+    43867261217,
+    43867962230,
+    43869303834,
+    43870196218
+  ],
+  "expected_source_commits": [
+    "91de63c4916a4f078ca5490b35c530b1b1709b31",
+    "fea2ce570e5abcad7f1dc80e5287e8639baed514",
+    "856a6681b4b5e49449595680370d0f626c541a87",
+    "12e71a567ff2768e8d41856c5b97062a8764a4fe",
+    "e8b5513b453d5074ed082ac3efb0154f84517de7",
+    "83820e3f2d0c95674588961c06f3fafd94ab844a",
+    "1e6417a1568ff054dc7e028fe49658426f1b2a21",
+    "a513fa5d77bf94822165878db660c172de02aef6"
+  ],
+  "approval_basis": "All 8 original GitHub runs SUCCESS, 1 chr22 original and 7 groups of 3 true independent chromosome aggregates. 22/22 autosomal aggregates inspected from real GitHub job logs. Final offline audit must separately read 22 original evidence artifacts, check 66 trait results, confirm exact source SHA and 128925825 SNP association rows, and explicitly retain scientific_status HOLD."
+}
