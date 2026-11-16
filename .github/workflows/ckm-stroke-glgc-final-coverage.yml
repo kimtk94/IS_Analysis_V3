@@ -124,7 +124,14 @@ jobs:
           assert report["ldsc_ready"]=="NOT_ASSESSED"
           assert report["mr_ready"]=="NOT_ASSESSED"
           assert not report["source_snp_export_scientific_ready"]
-          assert report["totals_verified_pass_only"]["retained_snp_rows"]>100000000
+          approved=json.loads(Path("config/ckm_stroke/glgc_final_coverage_approval.json").read_text())
+          assert approved["schema"]=="ckm-glgc-final-coverage-approval-v1"
+          assert approved["scientific_status"]=="HOLD"
+          assert approved["expected_chromosomes"]==22
+          assert approved["expected_trait_chromosome_jobs"]==66
+          assert report["totals_verified_pass_only"]["retained_snp_rows"]==approved["expected_total_retained_snp_rows"]
+          assert sorted(report["source_commits"])==sorted(approved["expected_source_commits"])
+          assert sorted(approved["prior_success_runs"])==sorted([43431051168,43848671279,43865163287,43866716532,43867261217,43867962230,43869303834,43870196218])
           print("GLGC all 22 autosomes x 3 EUR traits: TECHNICAL PASS, scientific HOLD")
           print("Per-phenotype SNP association rows:",report["totals_verified_pass_only"]["retained_snp_rows"])
           print("Source commits requiring cross-revision review:",report["source_commits"])
