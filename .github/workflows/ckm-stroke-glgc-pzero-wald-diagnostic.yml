@@ -1,0 +1,72 @@
+name: CKM Stroke chr19 LDL zero-P logdomain Wald diagnostics
+
+on:
+  push:
+    branches:
+      - research/ckm-stroke-staged-actions-20261111
+    paths:
+      - '.github/workflows/ckm-stroke-glgc-pzero-wald-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-glgc-pzero-wald-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-logp-versus-wald:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install stable normal log-tail implementation
+        run: |
+          python -m pip install scipy==1.16.3
+      - name: Test log-domain numerical consistency calculations
+        run: |
+          python -m py_compile scripts/ckm_stroke/glgc_zero_p_logdomain_wald.py
+          python -m unittest tests.test_ckm_stroke_glgc_zero_p_logdomain_wald -v
+      - name: Fetch original chr19 LDL-C zero-P source only (332 public variants)
+        uses: actions/download-artifact@v4
+        with:
+          name: ckm-glgc-chr19-ldlc-zero-p-source-evidence
+          run-id: '43872372345'
+          repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/source
+      - name: Compare original reported minus-logP with stable beta/SE normal tail
+        run: |
+          python -m scripts.ckm_stroke.glgc_zero_p_logdomain_wald \
+            --input artifacts/source/glgc_chr19_ldl_pzero_source_candidates.tsv.gz \
+            --expected-count 332 \
+            --json-output artifacts/ckm_stroke_chr19_ldl_pzero_wald_diagnostic.json \
+            --tsv-output artifacts/ckm_stroke_chr19_ldl_pzero_wald_by_variant.tsv.gz
+      - name: Validate all records and keep scientific HOLD
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("artifacts/ckm_stroke_chr19_ldl_pzero_wald_diagnostic.json").read_text())
+          assert d["status"]=="PASS",d.get("errors")
+          assert d["number_original_pzero_variants"]==332
+          assert d["scientific_status"]=="HOLD"
+          assert d["causal_or_mr_readiness"]=="NOT_ASSESSED"
+          assert not d["source_file_whole_genome_hash_verified"]
+          print("Diagnostic complete: median abs delta in -log10 P",d["source_vs_wald_abs_log10_delta_median"])
+          print("Discrepancies over 1/5/50 log10 units:",d["abs_delta_gt_1"],d["abs_delta_gt_5"],d["abs_delta_gt_50"])
+          print("No causal or scientific-MR PASS claimed.")
+          PY
+      - name: Preserve limited original-logP diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-chr19-ldlc-pzero-logdomain-wald-evidence
+          path: artifacts/ckm_stroke_chr19_ldl_pzero_*
+          retention-days: 30
+          if-no-files-found: warn
