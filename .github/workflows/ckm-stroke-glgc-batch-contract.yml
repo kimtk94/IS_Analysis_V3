@@ -5,6 +5,8 @@ on:
     paths:
       - 'scripts/ckm_stroke/plan_glgc_batch.py'
       - 'tests/test_ckm_stroke_glgc_batch_plan.py'
+      - 'scripts/ckm_stroke/verify_glgc_previous_batch.py'
+      - 'tests/test_ckm_stroke_verify_previous_batch.py'
       - '.github/workflows/ckm-stroke-glgc-batch-contract.yml'
   workflow_dispatch:
 
@@ -26,5 +28,5 @@ jobs:
           python-version: '3.11'
       - name: Check bounded batch gate syntax and regression tests
         run: |
-          python -m py_compile scripts/ckm_stroke/plan_glgc_batch.py tests/test_ckm_stroke_glgc_batch_plan.py
-          python -m unittest tests.test_ckm_stroke_glgc_batch_plan -v
+          python -m py_compile scripts/ckm_stroke/plan_glgc_batch.py scripts/ckm_stroke/verify_glgc_previous_batch.py tests/test_ckm_stroke_glgc_batch_plan.py tests/test_ckm_stroke_verify_previous_batch.py
+          python -m unittest tests.test_ckm_stroke_glgc_batch_plan tests.test_ckm_stroke_verify_previous_batch -v
