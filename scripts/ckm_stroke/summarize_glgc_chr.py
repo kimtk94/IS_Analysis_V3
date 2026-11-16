@@ -94,7 +94,12 @@ def main():
     args=parser.parse_args()
     summary=summarize(args.input_dir,args.chromosome)
     summary["timestamp_utc"]=dt.datetime.now(dt.timezone.utc).isoformat()
-    summary["source_commit"]=os.getenv("GITHUB_SHA","")
+    # Each evidence item came from the original GWAS QC job, which may
+    # have used a different commit than this later offline aggregator.
+    # Preserve source provenance separately from the summary generator.
+    commits={x.get("source_commit","") for x in summary["traits"].values()}
+    summary["source_commit"]=next(iter(commits)) if len(commits)==1 else ""
+    summary["summary_generated_from_commit"]=os.getenv("GITHUB_SHA","")
     target=Path(args.output)
     target.parent.mkdir(parents=True,exist_ok=True)
     target.write_text(json.dumps(summary,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")

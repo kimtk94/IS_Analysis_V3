@@ -5,9 +5,6 @@ on:
     paths:
       - 'scripts/ckm_stroke/glgc_chr_shard.py'
       - 'tests/test_ckm_stroke_glgc_chr_shard.py'
-      - 'tests/test_ckm_stroke_glgc_chr_summary.py'
-      - 'scripts/ckm_stroke/summarize_glgc_chr.py'
-      - '.github/workflows/ckm-stroke-glgc-chr-shard.yml'
   workflow_dispatch:
     inputs:
       chromosome:
