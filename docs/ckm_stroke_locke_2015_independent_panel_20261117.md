@@ -77,4 +77,14 @@ py -3 -m scripts.ckm_stroke.prepare_locke_2015_independent_panel --emit-candidat
 py -3 -m scripts.ckm_stroke.audit_locke_2015_reference_coordinates --candidate artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz --provenance artifacts/ckm_stroke/locke_2015_independent_panel_20261117.json --out artifacts/ckm_stroke/locke_2015_independent_reference_20261117.json
 ```
 
+## 5. Independent Linux source replication and exact cross-platform evidence
+
+**GitHub Actions [#43992267396](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43992267396)** completed **SUCCESS**, both jobs (14/14 source-independent regression fixtures and complete original-source/22-chromosome/Ensembl audit). Source artifact [#14288371627](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43992267396/artifacts/14288371627), 4,923-byte compact JSON-only archive, no full original source archives or derived variant tables.
+
+Actual Linux artifact contents were **downloaded and independently compared against Orca's original Windows results**:
+- **7/7 selected SNP panel audit fields exactly equal**, including `selected_rows=1070753`, source/ref hashes, all source counts, all fractional-N counts, N distribution and derived intermediate plaintext SHA-256 `a1cc5ec06cc81d2bb0a583eb76c0f7e81784cd5dc3f622270de61023f95de4bf`.
+- **10/10 reference-coordinate and Ensembl fields exactly equal**, including 1,290,028 original EUR LDscore rows, 1,070,753 uniquely matched reference loci, no reference rsID/coordinate duplicates, 22/22 chromosomes, 44/44 Ensembl GRCh37 allele-pair sentinels and 44 detailed public sentinel records.
+- Canonical public 44-sentinel JSON SHA-256 on both operating systems: `86c5f6cfec459855a70d0dceddbeb483ddb1d101304b9ec1f60202fe250f40cd`. Windows/Linux cross-check exited 0.
+- **Scientific analysis is unchanged**. A technical PASS and complete input provenance are not sufficient evidence for sample independence, correct final LDSC N across disparate GWAS, stable h², or a statistically interpretable rg.
+
 **Scientific review state:** `HOLD`, `ready_for_ldsc=false`; no new LDSC h², intercept, rg, MR or coloc computed. The N reported by Locke 2015 is sometimes fractional; full LDSC formatting, N setting, signed association scale, adequate LDSC h² precision, and cohort overlap with GIGASTROKE remain unapproved. In particular "before UK Biobank era" **does not mean** "independent of all GIGASTROKE participants". Continue cohort-wise overlap reconciliation (e.g. shared non-UKB GIANT and GIGASTROKE cohorts) and prespecified h²/intercept QC before considering rg. No Draft PR merge.
