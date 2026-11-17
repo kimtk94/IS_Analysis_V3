@@ -1,0 +1,147 @@
+name: CKM GLGC 1204 zero-P multi-trait source concordance
+
+on:
+  push:
+    branches:
+      - research/ckm-stroke-staged-actions-20261111
+    paths:
+      - .github/workflows/ckm-stroke-glgc-pzero-four-source-pilot.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-glgc-pzero-four-source-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-zero-p-and-wald:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - {chrom: '8', trait: HDL_C, original_rows: 2603353, expected_pzero: 286, qc_run: 43867962230, source_sha: '83820e3f2d0c95674588961c06f3fafd94ab844a'}
+          - {chrom: '8', trait: TG, original_rows: 2653852, expected_pzero: 341, qc_run: 43867962230, source_sha: '83820e3f2d0c95674588961c06f3fafd94ab844a'}
+          - {chrom: '2', trait: LDL_C, original_rows: 4039086, expected_pzero: 378, qc_run: 43870196218, source_sha: 'a513fa5d77bf94822165878db660c172de02aef6'}
+          - {chrom: '2', trait: TG, original_rows: 4055066, expected_pzero: 199, qc_run: 43870196218, source_sha: 'a513fa5d77bf94822165878db660c172de02aef6'}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned indexed-source reader and log-tail dependencies
+        run: |
+          python -m pip install pysam==0.23.3 scipy==1.16.3 certifi
+          python - <<'PY'
+          from pathlib import Path
+          import certifi
+          import os
+          ca=Path(certifi.where())
+          if not ca.is_file() or ca.stat().st_size<1000:
+              raise RuntimeError("trusted CA bundle unavailable")
+          with open(os.environ["GITHUB_ENV"],"a",encoding="utf-8") as out:
+              for key in ("CURL_CA_BUNDLE","SSL_CERT_FILE","REQUESTS_CA_BUNDLE"):
+                  out.write(key+"="+str(ca)+"\n")
+          PY
+      - name: Run fail-closed source and numerical offline tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/glgc_zero_p_probe.py scripts/ckm_stroke/glgc_zero_p_logdomain_wald.py
+          python -m unittest tests.test_ckm_stroke_glgc_zero_p_probe tests.test_ckm_stroke_glgc_zero_p_logdomain_wald -v
+      - name: Fetch original independent real-source QC JSON
+        uses: actions/download-artifact@v4
+        with:
+          repository: ${{ github.repository }}
+          run-id: ${{ matrix.qc_run }}
+          name: ckm-glgc-batch-${{ matrix.chrom }}-${{ matrix.trait }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/prior_qc
+      - name: Verify original source SHA, raw association rows and P-zero count
+        env:
+          CHROM: ${{ matrix.chrom }}
+          TRAIT: ${{ matrix.trait }}
+          ORIGINAL_ROWS: ${{ matrix.original_rows }}
+          EXPECT_PZERO: ${{ matrix.expected_pzero }}
+          SOURCE_SHA: ${{ matrix.source_sha }}
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          files=list(Path("artifacts/prior_qc").rglob("*.json"))
+          assert len(files)==1, "exactly one original QC artifact required"
+          d=json.loads(files[0].read_text(encoding="utf-8"))
+          assert d["chromosome"]==os.environ["CHROM"]
+          assert d["trait"]==os.environ["TRAIT"]
+          assert d["source_commit"]==os.environ["SOURCE_SHA"]
+          assert d["status"]=="PASS" and d["scientific_status"]=="HOLD"
+          assert d["variant_qc"]["status"]=="PASS" and d["header_evidence"]["status"]=="PASS"
+          assert d["counts"]["original_rows"]==int(os.environ["ORIGINAL_ROWS"])
+          assert d["counts"]["p_underflow_zero"]==int(os.environ["EXPECT_PZERO"])
+          assert d["variant_qc"]["duplicate_excess_rows"]==0
+          assert d["row_cap_reached"] is False
+          print("Original source QC PASS:",d["source_commit"])
+          PY
+      - name: Re-read actual original-source chromosome and preserve only P-zero SNPs
+        env:
+          CHROM: ${{ matrix.chrom }}
+          TRAIT: ${{ matrix.trait }}
+          ORIGINAL_ROWS: ${{ matrix.original_rows }}
+          EXPECT_PZERO: ${{ matrix.expected_pzero }}
+        run: |
+          mkdir -p artifacts/validated
+          python -m scripts.ckm_stroke.glgc_zero_p_probe \
+            --trait "$TRAIT" --chromosome "$CHROM" --max-rows 5000000 \
+            --expected-original-rows "$ORIGINAL_ROWS" --expected-pzero-rows "$EXPECT_PZERO" \
+            --json-output artifacts/validated/zero_p_source.json \
+            --tsv-output artifacts/validated/zero_p_source.tsv.gz
+      - name: Cross-validate source minus-logP versus beta/SE normal-log-tail statistic
+        env:
+          CHROM: ${{ matrix.chrom }}
+          TRAIT: ${{ matrix.trait }}
+          EXPECT_PZERO: ${{ matrix.expected_pzero }}
+        run: |
+          python -m scripts.ckm_stroke.glgc_zero_p_logdomain_wald \
+            --input artifacts/validated/zero_p_source.tsv.gz \
+            --expected-count "$EXPECT_PZERO" --chromosome "$CHROM" --trait "$TRAIT" \
+            --json-output artifacts/validated/wald_diagnostic.json \
+            --tsv-output artifacts/validated/wald_by_variant.tsv.gz
+      - name: Demand full record count and stable numerical agreement, preserve scientific HOLD
+        env:
+          CHROM: ${{ matrix.chrom }}
+          TRAIT: ${{ matrix.trait }}
+          EXPECT_PZERO: ${{ matrix.expected_pzero }}
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path("artifacts/validated")
+          a=json.loads((root/"zero_p_source.json").read_text())
+          d=json.loads((root/"wald_diagnostic.json").read_text())
+          c=os.environ["CHROM"];t=os.environ["TRAIT"];n=int(os.environ["EXPECT_PZERO"])
+          assert a["status"]=="PASS" and a["scientific_status"]=="HOLD"
+          assert a["chromosome"]==c and a["trait"]==t
+          assert a["source_pzero_canonical_snp_count"]==n
+          assert a["pzero_with_valid_original_logp"]==n
+          assert a["pzero_with_invalid_auxiliary_metadata"]==0
+          assert a["duplicate_zero_p_variant_keys"]==0
+          assert d["status"]=="PASS" and d["scientific_status"]=="HOLD"
+          assert d["chromosome"]==c and d["source_trait_asserted_by_workflow"]==t
+          assert d["number_original_pzero_variants"]==n
+          assert d["abs_delta_gt_1"]==0,"source -log10P vs Wald divergence"
+          assert d["causal_or_mr_readiness"]=="NOT_ASSESSED"
+          assert a["source_full_genome_checksum_verified"] is False
+          print("Verified",c,t,n,"P-zero canonical SNPs. Max |delta -log10P|:",
+                d["source_vs_wald_abs_log10_delta_max"])
+          PY
+      - name: Preserve public source evidence and diagnostic only, including HOLD logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-pzero-chr${{ matrix.chrom }}-${{ matrix.trait }}-evidence
+          path: artifacts/validated/*
+          retention-days: 30
+          if-no-files-found: warn
