@@ -17,7 +17,7 @@ VERIFIED_TOTAL=1536
 
 def inventory(folder):
     data={}
-    for path in sorted(Path(folder).glob("*.json")):
+    for path in sorted(Path(folder).rglob("*.json")):
         d=json.loads(path.read_text(encoding="utf-8"))
         if d.get("scope")!="ONE_FULL_CHROMOSOME_ONLY_NOT_WHOLE_GWAS":
             continue
