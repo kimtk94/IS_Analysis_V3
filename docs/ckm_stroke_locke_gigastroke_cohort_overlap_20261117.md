@@ -65,6 +65,14 @@ GIGASTROKE's published subtype h² precision differs strongly (original Cov-LDSC
 - GitHub workflow: `.github/workflows/ckm-stroke-locke-gigastroke-cohort-overlap.yml`. Fast fixture tests on push, independent original XLSX check triggered only by `[cohort-overlap-full]` or workflow dispatch. Raw publisher XLSX is read into memory only; uploaded artifact is aggregate JSON. 
 - Orca ignored report: `artifacts/ckm_stroke/locke_gigastroke_cohort_overlap_20261117.json`; technical source and alias result `PASS_FIRSTPARTY_TWO_SUPPLEMENT_COHORT_NAME_RECONCILIATION`.
 
+## 6. Independent CI evidence and cross-OS revalidation
+
+[GitHub Actions #44000371973](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44000371973) completed **SUCCESS** 2026-11-17 02:05:35 UTC (11:05:35 KST) with both `offline-contract` and `firstparty-originals` jobs passing. The pipeline ran 8/8 fail-closed tests and independently downloaded both original first-party XLSX files into memory (publisher SHA-256/size PASS), then exported **aggregate JSON only** as [Artifact #14291547788](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44000371973/artifacts/14291547788) (3,073-byte ZIP).
+
+The actual Linux artifact was downloaded into Orca's ignored `artifacts/ckm_stroke/cohort_overlap_linux_review/` and independently compared with the original Orca Windows report: **18/18 structured fields exactly equal**, including **133 distinct Locke 2015 study labels**, 44 GIGASTROKE EUR original cohorts, 10 direct cohort-name matches, 6 same-study-family-only links, 28 unmatched GIGASTROKE source names, every matched row's source identity and cases/controls, both publisher file SHA-256s and the hold flags. Comparison exited 0.
+
+**This cross-platform technical reproduction does not imply any actual person-level sample overlap measurement**, or a justified zero genetic covariance intercept. It demonstrates that the published tables and the conservative alias classification are reliably and independently re-readable.
+
 **Status:** Cohort-label provenance/technical audit **PASS**. Exact person-level overlap `UNKNOWN`; zero covariance intercept `NOT_APPROVED`; final LDSC h², rg, MR, coloc `NOT_RUN`; scientific `HOLD`. Draft PR #284 stays Draft, unmerged.
 
 ### Next permissible work
