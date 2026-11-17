@@ -41,6 +41,12 @@ class TestLogDomainZeroP(unittest.TestCase):
         self.assertEqual(report["status"],"HOLD")
         self.assertTrue(report["errors"])
 
+    def test_mismatched_chromosome_fails_closed(self):
+        r=source()
+        report,rows=compare([r],expected_count=1,expected_chromosome="8")
+        self.assertEqual(report["status"],"HOLD")
+        self.assertEqual(len(rows),0)
+
     def test_nonzero_source_p_fails_closed(self):
         report,rows=compare([source(p="0.05")],expected_count=1)
         self.assertEqual(report["status"],"HOLD")

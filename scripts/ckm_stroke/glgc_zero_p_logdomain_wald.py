@@ -26,9 +26,10 @@ def normal_two_sided_neglog10p(z):
     return -(LOG2+float(log_ndtr(-abs(z))))/LOG10
 
 
-def compare(rows,expected_count=None):
+def compare(rows,expected_count=None,expected_chromosome=None):
     observed=[]
     keys=set()
+    chromosomes=set()
     errors=[]
     for i,row in enumerate(rows,1):
         try:
@@ -41,6 +42,8 @@ def compare(rows,expected_count=None):
             sample_n=float(row["N"])
             pos=int(row["POS_b37"])
             chrom=str(row["CHROM"])
+            if expected_chromosome is not None and chrom!=str(expected_chromosome):
+                raise ValueError("unexpected chromosome in source zero-P evidence")
             ea=row["ALT"].strip().upper()
             nea=row["REF"].strip().upper()
             if not all(map(math.isfinite,(beta,se,logp,af,sample_n))) or se<=0 or logp<=0 or sample_n<=0 or not 0<=af<=1 or pos<=0 or ea==nea:
@@ -51,6 +54,7 @@ def compare(rows,expected_count=None):
             if key in keys:
                 raise ValueError("duplicate variant key")
             keys.add(key)
+            chromosomes.add(chrom)
             z=beta/se
             wald=normal_two_sided_neglog10p(z)
             observed.append({
@@ -65,12 +69,15 @@ def compare(rows,expected_count=None):
             errors.append({"row":i,"error":str(exc)[:200]})
     if expected_count is not None and len(observed)!=expected_count:
         errors.append({"row":"total","error":"unexpected number of original source zero-P SNPs"})
+    if len(chromosomes)>1:
+        errors.append({"row":"all","error":"mixed chromosomes in original source input"})
     diffs=sorted(abs(x["delta_log10_source_minus_wald"]) for x in observed)
     quantile=lambda q: diffs[min(len(diffs)-1,int((len(diffs)-1)*q))] if diffs else None
     return ({
         "status":"PASS" if not errors else "HOLD",
         "scientific_status":"HOLD",
-        "scope":"GLGC_CHR19_LDL_SOURCE_PZERO_WALD_LOGDOMAIN_DIAGNOSTIC_ONLY",
+        "scope":"GLGC_EUR_SOURCE_PZERO_LOGDOMAIN_WALD_DIAGNOSTIC_ONLY",
+        "chromosome":next(iter(chromosomes)) if len(chromosomes)==1 else None,
         "number_original_pzero_variants":len(observed),
         "source_vs_wald_abs_log10_delta_median":statistics.median(diffs) if diffs else None,
         "source_vs_wald_abs_log10_delta_p95":quantile(0.95),
@@ -93,10 +100,13 @@ def main():
     p.add_argument("--json-output",required=True)
     p.add_argument("--tsv-output",required=True)
     p.add_argument("--expected-count",type=int,default=332)
+    p.add_argument("--chromosome",default=None)
+    p.add_argument("--trait",choices=["LDL_C","HDL_C","TG"],default=None)
     args=p.parse_args()
     with gzip.open(args.input,"rt",encoding="utf-8") as f:
         input_rows=list(csv.DictReader(f,delimiter="\t"))
-    summary,records=compare(input_rows,args.expected_count)
+    summary,records=compare(input_rows,args.expected_count,args.chromosome)
+    summary["source_trait_asserted_by_workflow"]=args.trait
     out=Path(args.json_output)
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(summary,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
