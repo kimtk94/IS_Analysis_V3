@@ -1,0 +1,29 @@
+name: Master's eight scientific source gates 2026-11-18
+on:
+  push:
+    branches: [research/daily-20261118-scientific-gates]
+  pull_request:
+    paths:
+      - 'scripts/master_daily_20261118.py'
+      - '.github/workflows/master_daily_20261118.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-scientific-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        research: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Execute one bounded source audit (scientific HOLD until primary gates pass)
+        run: python3 scripts/master_daily_20261118.py "${{ matrix.research }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: master-gate-20261118-${{ matrix.research }}
+          path: results/
+          if-no-files-found: error
