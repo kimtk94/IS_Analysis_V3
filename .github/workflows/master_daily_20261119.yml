@@ -1,0 +1,29 @@
+name: Master's scientific input contracts 2026-11-19
+on:
+  push:
+    branches: [research/daily-20261119-scientific-input-contracts]
+  pull_request:
+    paths:
+      - 'scripts/master_daily_20261119.py'
+      - '.github/workflows/master_daily_20261119.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scientific-input-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        research: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit one research input contract (fail closed scientifically)
+        run: python3 scripts/master_daily_20261119.py "${{ matrix.research }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: master-input-contract-20261119-${{ matrix.research }}
+          path: results/${{ matrix.research }}.json
+          if-no-files-found: error
