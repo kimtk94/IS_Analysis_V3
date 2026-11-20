@@ -1,0 +1,33 @@
+name: MASTER DEGREE strict prerequisite gates 2026-11-21
+on:
+  push:
+    branches: [research/daily-20261121-strict-scientific-gates]
+  pull_request:
+    paths:
+      - scripts/master_daily_20261121.py
+      - .github/workflows/master_daily_20261121.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: master-daily-20261121-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  strict-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        research: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate one bounded scientific prerequisite
+        run: python3 scripts/master_daily_20261121.py "${{ matrix.research }}"
+      - name: Upload research evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: master-strict-gate-20261121-${{ matrix.research }}
+          path: results/${{ matrix.research }}.json
+          if-no-files-found: error
