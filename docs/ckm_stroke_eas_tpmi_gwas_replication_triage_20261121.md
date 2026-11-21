@@ -56,3 +56,19 @@ Published EUR GIGASTROKE original corrected supplement specifically includes Fin
 4. Prepare GRCh38-to-GRCh37 variant normalization, effect allele alignment, EAS-specific LD reference and candidate cis-pQTL MR/coloc gate separately. Do not use an arbitrary pooled case-control N for primary EUR LDSC.
 
 Automation code: scripts/ckm_stroke/audit_eas_tpmi_ais_phenotype_sources.py; tests/test_ckm_eas_tpmi_ais_phenotype_sources.py; .github/workflows/ckm-eas-tpmi-ais-phenotype-source.yml. Draft PR #284 remains unmerged.
+
+
+## Live official TPMI 433.21 original GWAS HEAD-only accessibility gate
+
+A second source-backed [GitHub Actions #44871483498](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44871483498) completed successfully with **14/14 negative and positive contract tests PASS**; [artifact #14694043597](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44871483498/artifacts/14694043597). Only official original PheWeb phenotype HTML was downloaded (small pages), and **HTTP HEAD** rather than GET for the actual large GWAS result files.
+
+| PheWeb 433.21 original association download | Advertised original source URL | HEAD | Reported compressed bytes | Result body downloaded? |
+| --- | --- | --- | ---: | --- |
+| Summary Statistics (PLINK2) | https://pheweb.ibms.sinica.edu.tw/download/gwas_plink2/433.21 | 200 | **58,302,393** | NO |
+| Summary Statistics (SAIGE GWAS) | https://pheweb.ibms.sinica.edu.tw/download/saige_gwas/433.21 | 200 | **816,992,833** | NO |
+
+Both HEAD requests remained on the official source hostname. HTTP 200 proves an advertised endpoint responded, **not** the file's internal format, full integrity, per-variant effect and sample-size columns, legal access authorization, or consistency with the 2026 Neurology early-onset IS discovery sample.
+
+Important distinction: 2025 TPMI PheWeb **433.21 9,249 cases and 304,660 controls** versus 2026 published TPMI early-onset IS **5,546 and 143,017**. The PGS Catalog uses yet another association count for a score of the same named phecode; none is promoted as original paper-to-portal equivalence.
+
+**Recommended next actual analysis gate:** obtain at most the smaller 58 MB PLINK2 source once, strictly respecting TPMI published download limits and terms, record response SHA256, verify the header and GRCh38 REF/ALT/BETA/SE/P/AF/missingness conventions, and compare the 433.21 ICD case definition. If the user opts to proceed with allowed downloads, carry out one reproducible CI or Drive-backed ingest. Do not run LDSC h2/rg or claim independent replication until overlap provenance and SNP-specific effective N are justified. The 817 MB SAIGE file is not required just to inspect access; avoid redundant downloads and do not bypass site throttling.
