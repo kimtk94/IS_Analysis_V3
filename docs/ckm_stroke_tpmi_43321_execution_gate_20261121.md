@@ -349,3 +349,37 @@ Progress: original 109,810 discrepancy is now explicitly classified as **between
 - **Do not report a SAIGE/EAS SNP matched count until the action's terminal JSON log is observed.** The PLINK2-based 1,507,261 matched-SNP number is a separate earlier result and is NOT a valid SAIGE overlap result.
 - After the run, evaluate: source counts and pinned SHA, QC PASS eligible bi-allelic SNVs, lifted unique coords, ambiguous coordinate count, non-palindromic allele matches, AF gap bins, INFO>=0.8 and MAF>=0.01 stratum. Independently verify output sanity (matched <= coordinate overlaps <= both source eligible counts); HOLD if missing.
 - **Science HOLD after technical PASS:** phenotype Phecode 433.21 versus broad AIS endpoint comparability, participant-level overlap, population LD reference, imputation quality, multiple testing, and LDSC/MR/coloc assumptions. Nominal binary N formula on SAIGE counts should not be conflated with an LD-score per-SNP or mixed-model adjusted effective N.
+
+## TPMI SAIGE vs GIGASTROKE EAS AIS full genome-wide harmonization — observed PASS and independent audit (2026-11-22 KST)
+
+**This section supersedes prior "SAIGE harmonization not executed" work-in-progress status. It does not supersede scientific HOLD.**
+
+- **Measured original full source Actions [#44920288867](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44920288867), run attempt 1 SUCCESS**, job `136894629496`, artifact `14714383855`. 11/11 offline tests PASS. Two pinned original GWAS inputs and official UCSC chain were read; no user-level data or per-SNP effect outputs exported.
+- **[Independent artifact audit Actions #44924780834](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44924780834) SUCCESS**, job `136908381166`, artifact `14715028415`; audit code verifies source provenance, original QC row conservation, Liftover partition, duplicate-coordinate conservation, EAS original source sample size, allele matches and AF bins, under `PASS_AGGREGATE_CONSERVATION_AND_PROVENANCE`.
+
+| TPMI SAIGE model vs GIGASTROKE EAS AIS | Verified result |
+|---|---:|
+| Original TPMI SAIGE rows | 15,588,353 |
+| SAIGE original `QC=PASS` | 8,042,797 |
+| SAIGE QC-PASS unambiguous source SNV candidates | 6,253,512 |
+| Successful unique Liftover input rows | 6,233,643 |
+| Distinct valid GRCh37 lifted SAIGE positions | 6,233,615 |
+| Source duplicated/ambiguous positions (excluded) | 28 |
+| Original GIGASTROKE EAS AIS GRCh37 records | 6,725,216 |
+| GRCh37 coordinate intersections | 5,228,391 |
+| Allele set matching, nonpalindromic | **5,228,340** |
+| Allele mismatches | 51 |
+| Matched SNPs `INFO >=0.8 AND SAIGE MAF >=0.01` | **5,212,867** |
+| Matched SNPs AF difference <=0.05 | 3,758,464 |
+| AF difference >0.05 | 1,469,876 (28.114%) |
+| AF difference >0.10 | 317,160 (6.066%) |
+| AF difference >0.20 | 4,851 |
+
+Source `QC=FAIL` variants 7,545,556, palindromic candidates 1,146,497, non-biallelic SNVs 641,367 and malformed marker IDs 1,421 were excluded. Source N_case=9,249 / N_ctrl=304,660 is model-specific to SAIGE, not PLINK2. `SAIGE_MAF >= 0.01` held for all allele-matched variants in the original source-QC-PASS run, but this does **not** imply LD score reference, genotyping INFO, or bias conditions are approved.
+
+**Interpretation and scientific decision:** A total of 5.228M original SNP pairs are *technically aligned* under conservative biallelic, nonpalindromic and source-QC-PASS constraints. **Do not claim independent variant-level association replication** from this match count. Taiwan and other East Asian populations can differ in allele frequency, and the >0.05 AF gap (28.114%) warrants allele-orientation and population-stratification sensitivity review. No systematic correction based only on an AF threshold is justified without a source-aware protocol. The number passing **joint INFO+MAF+AF <=0.05** is **not yet available** in attempt 1 and cannot be inferred from marginal counts.
+
+**Related but separate**: the prior TPMI **PLINK2** 1,507,261 matched SNPs came from a different GWAS variant universe and a different source model (`OBS_CT=204,099`). Never merge or re-label these results as SAIGE, and never use SAIGE N_case/N_ctrl to invent PLINK2 per-SNP case/control N.
+
+- A new [attempt 2 of #44920288867](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44920288867) was launched after [joint filtering code update](https://github.com/kimtk94/IS_Analysis_V3/commit/2bd565a89264779b950a6b2bee7794de2f1989c7) and [sensitivity negative test](https://github.com/kimtk94/IS_Analysis_V3/commit/abb2f1774e3ac7d719574169d57ae7f26caab3d1). **Do not report a joint INFO >=0.8, MAF >=0.01, AF difference <=0.05 SNP count without a terminal run result.**
+- **Scientific status HOLD**: exact clinical Phecode vs broad AIS endpoint harmonization, participant-level independence, suitable East Asian LD reference, model-specific LDSC LDSC-SEG/MAGMA assumptions, and MR/coloc causal constraints. No LD score, MR, or coloc analysis executed.
