@@ -1,0 +1,33 @@
+name: CKM BBJ ischemic stroke public source discovery
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-bbj-ischemic-stroke-source-discovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Parse official BBJ catalogs without assuming per-SNP coverage
+        run: |
+          python -m py_compile scripts/ckm_stroke/discover_bbj_stroke_source.py
+          python -m scripts.ckm_stroke.discover_bbj_stroke_source --out artifacts/tpmi/bbj_is_stroke_source_discovery_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-BBJ-IS-stroke-source-discovery-HOLD
+          path: artifacts/tpmi/bbj_is_stroke_source_discovery_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
