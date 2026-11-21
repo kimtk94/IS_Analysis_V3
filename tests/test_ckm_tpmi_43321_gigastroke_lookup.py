@@ -31,6 +31,9 @@ class LookupTests(unittest.TestCase):
         self.assertEqual(r["scientific_status"],"HOLD")
         self.assertEqual(r["TPMI_A1_logOR"],0.18)
         self.assertEqual(r["TPMI_source_SHA256"],EXPECTED_SHA)
+    def test_reject_nonfinite_effect(self):
+        x=fixture();x["lead_GRCh38"]["logOR_original_A1"]=float("nan")
+        with self.assertRaises(ValueError):prepare(x)
     def test_reject_missing_logor(self):
         x=fixture();del x["lead_GRCh38"]["logOR_original_A1"]
         with self.assertRaises(ValueError):prepare(x)
