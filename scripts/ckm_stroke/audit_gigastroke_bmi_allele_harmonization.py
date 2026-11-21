@@ -64,7 +64,7 @@ class HashCompressedReader:
 
 
 def build_bmi_coordinate_panel(candidate:Path,provenance:Path,
-                               original=iter_original_rows):
+                               original=iter_original_rows,collect_hrs=False):
     prior=json.loads(provenance.read_text(encoding="utf-8"))
     verified=inspect(candidate,prior)
     if verified["candidate_rows_verified"]!=EXPECTED_CANDIDATES:
@@ -81,6 +81,7 @@ def build_bmi_coordinate_panel(candidate:Path,provenance:Path,
     if len(known)!=EXPECTED_CANDIDATES:
         raise ValueError("candidate count changed")
     positions={}
+    hrs_by_coord={} if collect_hrs else None
     stats=Counter()
     for lineno,row in original():
         if lineno==0:
@@ -95,6 +96,19 @@ def build_bmi_coordinate_panel(candidate:Path,provenance:Path,
         if (row[3],row[4])!=known[snp]:
             raise ValueError("candidate allele orientation inconsistent with GIANT original")
         key=(chrom,pos)
+        if hrs_by_coord is not None:
+            raw_freq=row[5].strip()
+            if raw_freq in ("NA","NaN","nan",".","-",""):
+                hrs_ref=None
+                stats["HRS_reference_frequency_missing"]+=1
+            else:
+                hrs_ref=float(raw_freq)
+                if not math.isfinite(hrs_ref) or not 0<=hrs_ref<=1:
+                    raise ValueError("invalid pinned GIANT HRS tested-allele reference frequency")
+                stats["HRS_reference_frequency_available"]+=1
+            if key in hrs_by_coord and hrs_by_coord[key]!=hrs_ref:
+                raise ValueError("duplicate BMI rsID has inconsistent HRS reference frequency")
+            hrs_by_coord[key]=hrs_ref
         if key in positions:
             if positions[key]!=(snp,*known[snp]):
                 raise ValueError("ambiguous GIANT BMI coordinates with distinct rsIDs")
@@ -108,12 +122,21 @@ def build_bmi_coordinate_panel(candidate:Path,provenance:Path,
         raise ValueError("GIANT original source size changed")
     if len(positions)!=EXPECTED_CANDIDATES:
         raise ValueError("missing BMI candidate coordinates")
-    return positions,{
+    metadata={
         "candidate_plaintext_sha256":verified["candidate_plaintext_sha256"],
         "candidate_total":len(positions),
         "GIANT_original_rows":stats["GIANT_source_rows"],
         "GIANT_compressed_bytes":stats["GIANT_compressed_bytes"],
     }
+    if hrs_by_coord is not None:
+        if len(hrs_by_coord)!=len(positions):
+            raise ValueError("pinned BMI HRS frequency coordinate coverage changed")
+        metadata["GIANT_HRS_reference_frequency_available"] = stats["HRS_reference_frequency_available"]
+        metadata["GIANT_HRS_reference_frequency_missing"] = stats["HRS_reference_frequency_missing"]
+        metadata["GIANT_HRS_source_column"]="Freq_Tested_Allele_in_HRS"
+        metadata["GIANT_HRS_frequency_is_NOT_GIGASTROKE_cohort_frequency"]=True
+        return positions,metadata,hrs_by_coord
+    return positions,metadata
 
 
 def orientation(bmi_a1:str,bmi_a2:str,out_ea:str,out_oa:str)->str:
@@ -193,13 +216,14 @@ def chromosome_attrition(panel, by_coord, duplicate_coords):
     return [result[ch] for ch in range(1,23)]
 
 
-def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS,locke_alleles=None):
+def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS,locke_alleles=None,hrs_by_coord=None):
     """Streaming full rows, bounded error summaries. Does not retain SNP effects."""
     c=Counter()
     by_coord={}
     duplicate_coords=set()
     samples={}
     independent_by_coord={} if locke_alleles is not None else None
+    diagnostics_by_coord={} if hrs_by_coord is not None else None
     header=next(rows,None)
     if header is None or tuple(header.rstrip("\r\n").split("\t"))!=COLUMNS:
         raise ValueError("outcome original header changed")
@@ -248,10 +272,15 @@ def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS,locke_alleles=None):
             previous=by_coord.pop(coord)
             if independent_by_coord is not None:
                 independent_by_coord.pop(coord,None)
+            if diagnostics_by_coord is not None:
+                diagnostics_by_coord.pop(coord,None)
             c["unique_"+previous]-=1
             continue
         by_coord[coord]=label
         c["unique_"+label]+=1
+        if diagnostics_by_coord is not None and label in GOOD:
+            from scripts.ckm_stroke.audit_gigastroke_eaf_gc import diagnostic
+            diagnostics_by_coord[coord]=diagnostic(fields,hrs_by_coord.get(coord),label)
         if independent_by_coord is not None:
             old=locke_alleles.get(bmi[0])
             if label not in GOOD:
@@ -282,6 +311,12 @@ def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS,locke_alleles=None):
         raise ValueError("invalid candidate missingness count")
     answer={"counts":dict(c),"exclusion_examples":samples,
             "chr_attrition_pre_munge":chromosome_attrition(panel,by_coord,duplicate_coords)}
+    if diagnostics_by_coord is not None:
+        from scripts.ckm_stroke.audit_gigastroke_eaf_gc import summarize
+        eaf_evidence=summarize(diagnostics_by_coord)
+        if eaf_evidence["matched_original_source_SNPs_with_valid_EAF_and_Wald_inputs"]!=c["unique_harmonizable_BMI_positions"]:
+            raise ValueError("full original EAF/P-value diagnostic ledger mismatch")
+        answer["eaf_gc_source_descriptive"]=eaf_evidence
     if independent_by_coord is not None:
         categories=Counter(independent_by_coord.values())
         chromosome_rows={ch:Counter() for ch in range(1,23)}
@@ -310,7 +345,7 @@ def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS,locke_alleles=None):
     return answer
 
 
-def scan_full(row,panel,*,fetcher=urllib.request.urlopen,locke_alleles=None):
+def scan_full(row,panel,*,fetcher=urllib.request.urlopen,locke_alleles=None,hrs_by_coord=None):
     raw,meta,sums=source_urls(row)
     check_sidecars(row,get_text(meta,fetcher),get_text(sums,fetcher))
     request=urllib.request.Request(raw,headers={"User-Agent":"CKM-Stroke-IS-EUR-harmonization/1.0"})
@@ -331,7 +366,7 @@ def scan_full(row,panel,*,fetcher=urllib.request.urlopen,locke_alleles=None):
                     if len(rawline)>MAX_GZIP_LINE:
                         raise ValueError("outcome row longer than safe bound")
                     yield rawline.decode("utf-8-sig","strict")
-            matched=examine_outcome_rows(lines(),panel,locke_alleles=locke_alleles)
+            matched=examine_outcome_rows(lines(),panel,locke_alleles=locke_alleles,hrs_by_coord=hrs_by_coord)
         # Count/MD5 full original stream, not only the first requested prefix.
         while counter.read(1_048_576):
             pass
@@ -363,7 +398,7 @@ def scan_full(row,panel,*,fetcher=urllib.request.urlopen,locke_alleles=None):
         }
 
 
-def audit(candidate,provenance,manifest,*,phenotype="ALL",fetcher=urllib.request.urlopen,locke_candidate=None,locke_provenance=None):
+def audit(candidate,provenance,manifest,*,phenotype="ALL",fetcher=urllib.request.urlopen,locke_candidate=None,locke_provenance=None,eaf_gc=False):
     report={
         "schema":"ckm-stroke-gigastroke-eur-full-md5-bmi-harmonization-v1",
         "checked_utc":datetime.now(timezone.utc).isoformat(),
@@ -376,7 +411,11 @@ def audit(candidate,provenance,manifest,*,phenotype="ALL",fetcher=urllib.request
     }
     records=load_manifest(manifest)
     try:
-        panel,meta=build_bmi_coordinate_panel(candidate,provenance)
+        if eaf_gc:
+            panel,meta,hrs_reference=build_bmi_coordinate_panel(candidate,provenance,collect_hrs=True)
+        else:
+            panel,meta=build_bmi_coordinate_panel(candidate,provenance)
+            hrs_reference=None
         report["BMI_reference_panel"]=meta
         if (locke_candidate is None)!=(locke_provenance is None):
             raise ValueError("independent Locke candidate and provenance required together")
@@ -403,7 +442,7 @@ def audit(candidate,provenance,manifest,*,phenotype="ALL",fetcher=urllib.request
         if phenotype!="ALL" and row["phenotype"]!=phenotype:
             continue
         try:
-            report["outcomes"].append(scan_full(row,panel,fetcher=fetcher,locke_alleles=independent))
+            report["outcomes"].append(scan_full(row,panel,fetcher=fetcher,locke_alleles=independent,hrs_by_coord=hrs_reference))
         except Exception as exc:
             report["outcomes"].append({
                 "phenotype":row["phenotype"],"accession":row["accession"],
@@ -435,8 +474,9 @@ def main():
                    help="Optional independent 2015 BMI source candidate (ignored local artifact)")
     p.add_argument("--locke-provenance",type=Path,default=None,
                    help="Pinned original independent 2015 candidate metadata")
+    p.add_argument("--eaf-gc",action="store_true",help="Add original HRS reference and P versus Wald diagnostics; not a GC method inference")
     args=p.parse_args()
-    result=audit(args.candidate,args.provenance,args.manifest,phenotype=args.phenotype,locke_candidate=args.locke_candidate,locke_provenance=args.locke_provenance)
+    result=audit(args.candidate,args.provenance,args.manifest,phenotype=args.phenotype,locke_candidate=args.locke_candidate,locke_provenance=args.locke_provenance,eaf_gc=args.eaf_gc)
     args.out.parent.mkdir(parents=True,exist_ok=True)
     args.out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(json.dumps({
@@ -446,6 +486,7 @@ def main():
                      "md5_verified":r.get("raw_md5_verified",False),
                      "harmonizable":r.get("counts",{}).get("unique_harmonizable_BMI_positions"),
                      "2015_sign_reversals":r.get("locke_2015_independent_full_orientation",{}).get("2015_effect_sign_reversals"),
+                     "EAF_and_Wald_observations":r.get("eaf_gc_source_descriptive",{}).get("matched_original_source_SNPs_with_valid_EAF_and_Wald_inputs"),
                      "error":r.get("error_detail")} for r in result["outcomes"]],
         "scientific_status":result["scientific_status"]},ensure_ascii=False))
     if result.get("technical_status")!="PASS_ALL_REQUESTED_ORIGINAL_MD5_AND_ALLELE_COUNTS":
