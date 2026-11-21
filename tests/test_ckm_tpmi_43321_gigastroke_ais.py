@@ -7,6 +7,7 @@ def target():
     return {"schema":"ckm-TPMI43321-GIGASTROKE-GRCh37-target-request-v1",
       "technical_status":"PASS_VERIFIED_TARGET_ONLY",
       "target_build":"GRCh37","scientific_status":"HOLD",
+      "TPMI_source_SHA256":m.EXPECTED_SHA,
       "GIGASTROKE_original_row_matched":False,
       "binary_case_control_Neff_approved":False,
       "target_chr":"11","target_pos":10000,"target_REF":"A",
@@ -40,6 +41,9 @@ class TestAIS(unittest.TestCase):
         with patch.object(m,"SIZE",len(b)):
             with self.assertRaisesRegex(ValueError,"MD5"):
                 m.scan(io.BytesIO(b),target())
+    def test_target_without_pinned_tpmi_sha_rejected(self):
+        x=target();x["TPMI_source_SHA256"]="0"*64
+        with self.assertRaises(ValueError):m.target_gate(x)
     def test_missing_original_tpmi_effect_is_rejected(self):
         x=target();del x["TPMI_A1_logOR"]
         with self.assertRaises(ValueError):m.target_gate(x)
