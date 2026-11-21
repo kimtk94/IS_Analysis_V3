@@ -126,3 +126,27 @@ Original pinned lead extracted from real official TPMI PLINK2 GWAS:
 - Source filtering: `IS.auto.rsq07.mac10.txt.gz` is original published autosomal summary association after `Rsq>=0.7` and `MAC>=10` filtering, not an unfiltered complete catalog. A missing row can reflect QC/MAF/imputation/coverage criteria, not a null genetic association.
 - Independently, MD5-verified GIGASTROKE EUR AIS `GCST90104540` exact GRCh37 coordinate not present in two full source scans; PheWeb.jp 2021 BBJ exact PheWeb variant returned three other phenotypes but `IS` 0 rows; GRCh37 1000G phase-3 five EAS populations have no validated high-LD proxy with `r²>=0.80`.
 - **Decision:** the single lead TPMI `rs187759247` has no confirmed independent AIS outcome effect in the three evaluated public sources. Keep AIS replication, MR, coloc and LDSC **HOLD**; do not mix unrelated phenotypes, switch to physical-nearest-neighbor proxy, or claim null effect. Choose a new well-powered outcome GWAS with demonstrated variant coverage and no cohort overlap, or move to a genome-wide/multi-locus scientific design that is not contingent on this one rare SNP. If OpenGWAS `bbj-a-129` is reattempted, prove its exact source identity and SNP inclusion separately, not by assuming NBDC equivalence.
+
+## Genome-wide outcome pivot: GIGASTROKE 30 accessions and five EAS stroke outcomes (2026-11-21)
+
+The single TPMI lead rs187759247 is not a sufficient standalone outcome-replication design. The next workstream prioritises **ancestry- and subtype-specific original GWAS coverage**, matching alleles, SNP intersection and valid original metadata, with LDSC/MR/coloc scientific HOLD pending those gates.
+
+**Source-backed GitHub Actions:**
+- https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44888185252 attempt 1 **SUCCESS**, 30/30 original publisher GRCh37 sumstats returned HTTP HEAD PASS, but the old GWAS Catalog REST endpoint gave HTTP 410 Gone for all 30. The original REST API v1 was retired in August 2026, not proof that metadata was missing.
+- Same Action **attempt 2 SUCCESS** using official REST API v2; 25/30 study metadata HTTP PASS, 5 transient 429 Too Many Requests, while 30/30 original files remained available. Technical registry artifact ID 14701061482. This registry does not itself verify any SNP effects or sample independence.
+- https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44888444640 **SUCCESS**, direct v2 phenotype EFO ontology and exactly described East Asian case/control N were validated for **5/5** studies. Artifact ID 14701515076.
+
+| EAS discovery outcome | GWAS Catalog accession | Official EFO trait label | Cases | Controls |
+|---|---|---|---:|---:|
+| AS (any stroke) | GCST90104544 | stroke disorder | 27,413 | 237,242 |
+| AIS (any ischemic stroke) | GCST90104545 | Ischemic stroke | 19,032 | 237,242 |
+| CES (cardioembolic) | GCST90104546 | cardioembolic stroke | 926 | 237,242 |
+| LAS (large artery) | GCST90104547 | large artery stroke | 1,735 | 237,242 |
+| SVS (small vessel) | GCST90104548 | small vessel stroke | 5,532 | 237,242 |
+
+The study official AIS metadata separately lists replication: 8,304 EAS cases and 174,855 EAS controls; do not pool discovery and replication uncritically.
+
+**Priority outcome: GCST90104545 EAS AIS.** Smaller subtypes are secondary (especially CES n=926), and all have shared EAS controls. Cross-ancestry GIGASTROKE includes EAS samples, so its results are not independent of EAS-specific GWAS. An EAS discovery outcome is not automatically independent of the original TPMI cohort or suitable for MR.
+
+- Actual full original EAS AIS source QC has been started: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44888595169 . Until its result is inspected, original genomewide variant coverage, gzip integrity, chromosome distribution and rs187759247 exact presence remain NOT VERIFIED.
+- No approved per-SNP binary sample effective N, official cohort overlap clearance, TPMI genomewide GRCh38-to-GRCh37 harmonization or signed harmonized IV has yet been verified. **Scientific status: HOLD.**
