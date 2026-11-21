@@ -1,0 +1,30 @@
+name: CKM TPMI GIGASTROKE EAS AIS cohort independence evidence gate
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-eas-ais-independence-gate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cohort-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate independence evidence without assuming nonoverlap from separate publications
+        run: |
+          python -m py_compile scripts/ckm_stroke/gate_tpmi_gigastroke_independence.py
+          python -m scripts.ckm_stroke.gate_tpmi_gigastroke_independence \
+            --out artifacts/is/TPMI_GIGASTROKE_EAS_AIS_independence_gate_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI-GIGASTROKE-EAS-AIS-independence-gate-HOLD
+          path: artifacts/is/TPMI_GIGASTROKE_EAS_AIS_independence_gate_HOLD.json
+          retention-days: 30
