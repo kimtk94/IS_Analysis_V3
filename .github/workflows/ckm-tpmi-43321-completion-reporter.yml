@@ -1,0 +1,54 @@
+name: CKM TPMI 433.21 trusted completion reporter
+
+on:
+  workflow_run:
+    workflows:
+      - CKM TPMI 433.21 main dispatcher with pinned research code
+    types: [completed]
+
+permissions:
+  actions: read
+  issues: write
+  contents: read
+
+jobs:
+  summarize-tpmi-run:
+    if: github.event.workflow_run.event == 'issue_comment' && github.event.workflow_run.actor.login == 'kimtk94' && github.event.workflow_run.head_repository.full_name == 'kimtk94/IS_Analysis_V3'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Record evidence in summary and PR without checking out research source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ github.event.workflow_run.id }}
+          SOURCE_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          SOURCE_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          run_id=os.environ["SOURCE_RUN"]
+          raw=subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run_id}/jobs","--paginate"],text=True)
+          jobs=json.loads(raw).get("jobs",[])
+          wanted=("offline-allele-assembly-tests","extract-pinned-original-lead",
+                  "bidirectional-build-and-allele-map","prepare-gigastroke-grch37-target",
+                  "source-verified-gigastroke-ais-one-locus","report-ci-status")
+          states={name:next((j.get("conclusion") for j in jobs if j.get("name")==name),None)
+                  for name in wanted}
+          core=wanted[:4]
+          status=("PASS_SOURCE_AND_MAPPING" if all(states[x]=="success" for x in core)
+                  else "REVIEW")
+          ais=("PASS_AIS_ONE_LOCUS_JOB" if states[wanted[4]]=="success"
+               else "HOLD_AIS_UNVERIFIED")
+          body=("\\n".join([
+            "TPMI 433.21 trusted workflow_run report (technical only)",
+            f"Source run: {os.environ['SOURCE_URL']}",
+            f"Source workflow conclusion: {os.environ['SOURCE_CONCLUSION']}",
+            f"Job conclusions: {json.dumps(states,sort_keys=True)}",
+            f"Technical: {status}; AIS: {ais}; scientific interpretation: HOLD.",
+          ]))
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:
+            f.write(body+"\\n")
+          print(body)
+          subprocess.run(["gh","api",f"repos/{repo}/issues/284/comments","-f",f"body={body}"],check=True)
+          PY
