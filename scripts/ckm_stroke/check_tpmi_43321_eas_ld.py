@@ -59,10 +59,42 @@ def fetch(pop):
     if len(data)>2000000:raise ValueError("Ensembl LD response exceeds cap")
     return validate(json.loads(data.decode("utf-8")),pop)
 
+def variant_presence():
+    """Read Ensembl variation record and named EAS panel frequencies independently."""
+    url=f"{API}/variation/human/{QUERY}?pops=1"
+    req=urllib.request.Request(url,headers={"Accept":"application/json",
+                "User-Agent":"TPMI-43321-EAS-LD-audit/1.1"})
+    with urllib.request.urlopen(req,timeout=45) as response:
+        if response.status!=200 or response.geturl().split("/")[2]!="grch37.rest.ensembl.org":
+            raise ValueError("variation source endpoint changed")
+        b=response.read(3000001)
+    if len(b)>3000000: raise ValueError("variation source too large")
+    obj=json.loads(b)
+    mappings=obj.get("mappings",[])
+    exact=[m for m in mappings if isinstance(m,dict) and str(m.get("seq_region_name"))=="19"
+           and m.get("start")==15573379 and m.get("end")==15573379
+           and m.get("assembly_name")=="GRCh37"]
+    pops=obj.get("populations",[])
+    groups={}
+    for p in POPS:
+        name="1000GENOMES:phase_3:"+p
+        vals=[{"allele":item.get("allele"),"frequency":item.get("frequency")}
+              for item in pops if isinstance(item,dict) and item.get("population")==name]
+        groups[p]=vals[:10]
+    return {"ensembl_id":obj.get("name"),"exact_grch37_mapping":bool(exact),
+            "grch37_maps":exact[:3],"population_frequencies":groups,
+            "population_frequency_observed":any(groups.values())}
+
 def run():
     p=argparse.ArgumentParser()
     p.add_argument("--out",type=Path,required=True)
     args=p.parse_args()
+    try:
+        presence=variant_presence()
+        presence_status="PASS_VARIATION_RECORD_READ"
+    except Exception as exc:
+        presence={"error_type":type(exc).__name__,"error":str(exc)[:240]}
+        presence_status="HOLD_VARIATION_RECORD_UNAVAILABLE"
     rows=[];states={}
     for pop in POPS:
         try:
@@ -85,17 +117,19 @@ def run():
     out={"schema":"ckm-tpmi-43321-eas-ld-proxy-gate-v1",
          "query":QUERY,"source_build":BUILD,"target":TARGET,
          "reference":"Ensembl GRCh37 REST / 1000 Genomes phase 3",
-         "minimum_r2":MIN_R2,"populations":states,
+         "minimum_r2":MIN_R2,"variant_presence_status":presence_status,"variant_presence":presence,"populations":states,
          "high_ld_reference_pairs":len(rows),"distinct_high_ld_rsids":len(candidates),
          "candidates":candidates[:200],
          "candidates_truncated":len(candidates)>200,
-         "reference_evidence_status":("REFERENCE_PROXIES_FOUND_NOT_HARMONIZED" if candidates else
-           "HOLD_NO_PROVEN_PROXY"),
+         "reference_evidence_status":("HOLD_VARIANT_REFERENCE_NOT_CONFIRMED" if not presence.get("exact_grch37_mapping")
+                 or not presence.get("population_frequency_observed")
+                 else "REFERENCE_PROXIES_FOUND_NOT_HARMONIZED" if candidates
+                 else "HOLD_NO_HIGH_LD_PROXY_IN_QUERIED_REFERENCE"),
          "scientific_status":"HOLD",
          "note":"LD proxy candidates are not GIGASTROKE outcome matches; EAS phase and outcome locus/alleles, reference frequencies, and independence must be confirmed."}
     args.out.parent.mkdir(parents=True,exist_ok=True)
     args.out.write_text(json.dumps(out,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
     print(json.dumps({"status":out["reference_evidence_status"],"populations":states,
-                      "candidates":len(candidates),"science":"HOLD"}))
+                      "candidates":len(candidates),"variant_presence":presence_status,"science":"HOLD"}))
 if __name__=="__main__":
     run()
