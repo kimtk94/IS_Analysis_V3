@@ -10,7 +10,8 @@ def target():
       "GIGASTROKE_original_row_matched":False,
       "binary_case_control_Neff_approved":False,
       "target_chr":"11","target_pos":10000,"target_REF":"A",
-      "target_ALT":"G","target_A1":"G","target_variant_key":"11:10000:A:G"}
+      "target_ALT":"G","target_A1":"G","target_variant_key":"11:10000:A:G",
+      "TPMI_A1_logOR":0.18,"TPMI_A1_logOR_SE":0.03,"TPMI_original_P":1e-8}
 def mockgzip(effect="G",other="A",duplicate=False):
     hdr="\t".join(m.COLUMNS)+"\n"
     row="\t".join(["11","10000","0.3","0.12","0.05","0.016","1.1275","1.02","1.24",effect,other])+"\n"
@@ -26,9 +27,11 @@ class TestAIS(unittest.TestCase):
         self.assertEqual(r["signed_beta_to_TPMI_A1"],0.12)
         self.assertFalse(r["independent_replication_claimed"])
         self.assertFalse(r["GIGASTROKE_Neff_approved"])
+        self.assertTrue(r["observed_effect_direction_concordant"])
     def test_swapped_effect_sign(self):
         r=self.run_source(mockgzip("A","G"))
         self.assertEqual(r["signed_beta_to_TPMI_A1"],-0.12)
+        self.assertFalse(r["observed_effect_direction_concordant"])
     def test_duplicate_locus_is_rejected(self):
         with self.assertRaisesRegex(ValueError,"duplicate"):
             self.run_source(mockgzip(duplicate=True))
@@ -37,6 +40,9 @@ class TestAIS(unittest.TestCase):
         with patch.object(m,"SIZE",len(b)):
             with self.assertRaisesRegex(ValueError,"MD5"):
                 m.scan(io.BytesIO(b),target())
+    def test_missing_original_tpmi_effect_is_rejected(self):
+        x=target();del x["TPMI_A1_logOR"]
+        with self.assertRaises(ValueError):m.target_gate(x)
     def test_invalid_target_is_rejected(self):
         x=target();x["scientific_status"]="GO"
         with self.assertRaises(ValueError):m.target_gate(x)
