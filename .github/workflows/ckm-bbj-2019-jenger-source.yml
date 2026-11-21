@@ -1,0 +1,29 @@
+name: CKM BBJ Ishigaki 2019 JENGER original source access
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-bbj-2019-jenger-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bbj-2019-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Probe official BBJ Ishigaki original JENGER endpoint with bounded requests
+        run: |
+          python -m py_compile scripts/ckm_stroke/probe_jenger_ishigaki_is.py
+          python -m scripts.ckm_stroke.probe_jenger_ishigaki_is --out artifacts/tpmi/bbj_ishigaki_2019_original_source_access_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-BBJ-Ishigaki-2019-original-access-HOLD
+          path: artifacts/tpmi/bbj_ishigaki_2019_original_source_access_HOLD.json
+          retention-days: 30
