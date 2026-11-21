@@ -87,8 +87,31 @@ def record_fields(fields, counters, pairs, chr_counts):
     else:
         counters["invalid_beta_se_p"]+=1
     qc=fields[19]
+    # PheWeb SAIGE actually reports QC=FAIL in first verified 425 source
+    # records; numerical completeness is NOT equivalent to study QC=PASS.
+    counters["QC_STATUS_"+qc.upper()]+=1
+    if qc.upper()=="PASS":
+        counters["source_explicit_QC_PASS"]+=1
+        if all(math.isfinite(z) for z in nums) and se>0 and 0<=p<=1 and n_case is not None and n_ctrl is not None:
+            counters["QC_PASS_valid_N_beta_SE_P"]+=1
+    elif qc.upper()=="FAIL":
+        counters["source_explicit_QC_FAIL"]+=1
+    else:
+        counters["source_QC_UNRECOGNIZED"]+=1
     if qc not in ("", "NA",".","PASS","Pass","pass"):
         counters["nontrivial_QC_flag"]+=1
+    try:
+        imputation_info=float(fields[7])
+        if not math.isfinite(imputation_info) or imputation_info<0:
+            counters["imputation_info_invalid"]+=1
+        elif imputation_info<0.3:
+            counters["imputation_info_lt_0_3"]+=1
+        elif imputation_info<0.8:
+            counters["imputation_info_0_3_to_0_8"]+=1
+        else:
+            counters["imputation_info_ge_0_8"]+=1
+    except (TypeError,ValueError,OverflowError):
+        counters["imputation_info_invalid"]+=1
     counters["records"]+=1
 
 def full_audit():
@@ -142,6 +165,9 @@ def full_audit():
          "by_chr":dict(sorted(chr_counts.items())),
          "QC_counts":dict(counts),
          "distinct_case_control_pairs":len(pairs),
+         "source_explicit_QC_PASS_eligible_numeric_count":counts["QC_PASS_valid_N_beta_SE_P"],
+         "source_QC_PASS_is_required_for_any_downstream_SAIGE_matching":True,
+         "source_QC_FAIL_is_excluded_by_default":True,
          "most_frequent_case_control_pairs":[
              {"N_case":case,"N_ctrl":ctrl,"count":n,
               "sum":case+ctrl} for (case,ctrl),n in pairs.most_common(25)
