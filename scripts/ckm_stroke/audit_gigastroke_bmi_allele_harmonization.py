@@ -145,6 +145,54 @@ def aligned_effect(beta:float,se:float,label:str)->tuple[float,float]:
     return oriented,oriented/se
 
 
+def chromosome_attrition(panel, by_coord, duplicate_coords):
+    """Count original-data matched variants per chromosome; not an LDSC regression set.
+
+    panel is already pinned to the 2018 EUR BMI/HM3/LD-score source intersection.
+    Duplicated outcome positions are quarantined rather than selected.
+    Neither N_eff nor LDSC's post-munge/weight-LD merge is established.
+    """
+    if set(by_coord) & set(duplicate_coords):
+        raise ValueError("outcome duplicates were not quarantined")
+    if not set(by_coord).issubset(panel) or not set(duplicate_coords).issubset(panel):
+        raise ValueError("outcome coordinate not in pinned candidate")
+    result = {ch:{
+        "chromosome":ch, "candidate_reference_bmi_snps":0,
+        "unique_outcome_coordinate_snps":0,
+        "outcome_duplicate_coordinate_exclusions":0,
+        "candidate_not_in_outcome":0,
+        "allele_aligned_numeric_valid_pre_munge":0,
+        "nonaligned_or_numeric_invalid":0,
+    } for ch in range(1,23)}
+    for ch,pos in panel:
+        if ch not in result:
+            raise ValueError("non-autosomal candidate coordinate")
+        result[ch]["candidate_reference_bmi_snps"]+=1
+    for ch,pos in duplicate_coords:
+        result[ch]["outcome_duplicate_coordinate_exclusions"]+=1
+    for (ch,pos),label in by_coord.items():
+        row=result[ch]
+        row["unique_outcome_coordinate_snps"]+=1
+        if label in GOOD:
+            row["allele_aligned_numeric_valid_pre_munge"]+=1
+        else:
+            row["nonaligned_or_numeric_invalid"]+=1
+    for ch,row in result.items():
+        row["candidate_not_in_outcome"] = (
+            row["candidate_reference_bmi_snps"]
+            - row["unique_outcome_coordinate_snps"]
+            - row["outcome_duplicate_coordinate_exclusions"]
+        )
+        if min(row.values()) < 0:
+            raise ValueError("per-chromosome SNP accounting negative")
+        if row["unique_outcome_coordinate_snps"] != (
+            row["allele_aligned_numeric_valid_pre_munge"]
+            + row["nonaligned_or_numeric_invalid"]
+        ):
+            raise ValueError("per-chromosome alignment partition mismatch")
+    return [result[ch] for ch in range(1,23)]
+
+
 def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS):
     """Streaming full rows, bounded error summaries. Does not retain SNP effects."""
     c=Counter()
@@ -220,7 +268,8 @@ def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS):
     c["unique_orientation_sign_negative"]=c["unique_swapped"]+c["unique_complement_swapped"]
     if c["candidate_coordinates_not_in_outcome"]<0:
         raise ValueError("invalid candidate missingness count")
-    return {"counts":dict(c),"exclusion_examples":samples}
+    return {"counts":dict(c),"exclusion_examples":samples,
+            "chr_attrition_pre_munge":chromosome_attrition(panel,by_coord,duplicate_coords)}
 
 
 def scan_full(row,panel,*,fetcher=urllib.request.urlopen):

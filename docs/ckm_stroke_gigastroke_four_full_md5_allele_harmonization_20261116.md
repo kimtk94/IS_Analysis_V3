@@ -52,3 +52,12 @@ Future cross-platform comparison: both Windows Orca and Linux CI must report the
 5. SBP/T2D authenticated original sources remain independent HOLD and must not be bypassed.
 
 **Scientific status: HOLD; `ready_for_ldsc=false`. PR #284 Draft remains unmerged.**
+
+
+## 2026-11-21 pre-munge per-chromosome source intersection (distinct from LDSC regression SNP count)
+
+New code adds \`chr_attrition_pre_munge\` to the original four-GWAS MD5-checked streaming audit, partitioning the independently pinned 1,007,899 BMI 2018/HM3/EUR LD-score candidate coordinates for each chromosome 1–22. Every chromosome records candidate positions, unique outcome positions, invalid duplicate positions, absent positions, valid aligned/numeric positions and incompatible/invalid positions. The sum must equal the original whole-genome counts, and the identical candidate chromosome profile must be observed in all four outcome comparisons.
+
+The new independent summarizer \`scripts/ckm_stroke/audit_ldsc_chr_attrition.py\` verifies the existing whole-genome original publisher MD5 and allele-count reviewer first; it never trusts arbitrary counts from an unsigned JSON. Its own tests and the per-coordinate partition tests reject altered chr indices, missing chromosomes, incorrect subtotals, invalid source MD5 and subtype-specific panel mismatch.
+
+**Important:** pre-munge overlap is *not* the SNP set used in LDSC's h² regression. These counts are upper-bound candidates conditional on the Yengo 2018-derived panel, not independent whole-genome outcome HM3-universe counts. No unapproved case-control N, LD-score weight merge, effect Z threshold, large-chi-square exclusion, MAF or GC handling is inferred. Final regression SNP matching and h² remain **NOT_RUN/HOLD**. The official LDSC documentation warns about analyses with fewer than 200,000 merged regression SNPs and favors 600,000+ for stable precision (not a substitute for input approval).

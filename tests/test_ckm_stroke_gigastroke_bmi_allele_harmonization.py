@@ -12,7 +12,8 @@ import unittest
 from unittest.mock import patch
 
 from scripts.ckm_stroke.audit_gigastroke_bmi_allele_harmonization import (
-    COLUMNS,orientation,aligned_effect,examine_outcome_rows,scan_full,audit
+    COLUMNS,orientation,aligned_effect,examine_outcome_rows,scan_full,audit,
+    chromosome_attrition
 )
 from scripts.ckm_stroke.verify_gigastroke_raw import source_urls
 
@@ -132,6 +133,29 @@ class HarmonizationTests(unittest.TestCase):
         self.assertEqual(c["unique_harmonizable_BMI_positions"],4)
         self.assertEqual(c["unique_orientation_sign_positive"],2)
         self.assertEqual(c["unique_orientation_sign_negative"],2)
+
+    def test_per_chromosome_partition_matches_actual_coordinate_quarantine(self):
+        gz,_=fake_data()
+        with gzip.GzipFile(fileobj=io.BytesIO(gz),mode="rb") as f:
+            result=examine_outcome_rows((line.decode() for line in f),panel())
+        chr_rows=result["chr_attrition_pre_munge"]
+        self.assertEqual(len(chr_rows),22)
+        self.assertEqual(chr_rows[0]["candidate_reference_bmi_snps"],7)
+        self.assertEqual(chr_rows[0]["unique_outcome_coordinate_snps"],5)
+        self.assertEqual(chr_rows[0]["outcome_duplicate_coordinate_exclusions"],1)
+        self.assertEqual(chr_rows[0]["candidate_not_in_outcome"],1)
+        self.assertEqual(chr_rows[0]["allele_aligned_numeric_valid_pre_munge"],4)
+        self.assertEqual(chr_rows[0]["nonaligned_or_numeric_invalid"],1)
+        self.assertEqual(sum(r["allele_aligned_numeric_valid_pre_munge"] for r in chr_rows),4)
+        self.assertEqual(chr_rows[1]["candidate_reference_bmi_snps"],0)
+
+    def test_coordinate_attrition_fails_if_duplicate_not_quarantined(self):
+        with self.assertRaisesRegex(ValueError,"not quarantined"):
+            chromosome_attrition(panel(),{(1,100):"same"},{(1,100)})
+
+    def test_coordinate_attrition_fails_if_unlisted_position(self):
+        with self.assertRaisesRegex(ValueError,"not in pinned"):
+            chromosome_attrition(panel(),{(1,9999):"same"},set())
 
     def test_real_gzip_publisher_md5_pass_but_h2_hold(self):
         gz,md5=fake_data()
