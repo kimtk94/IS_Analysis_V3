@@ -9,6 +9,7 @@ def source():
       "technical_status":"PASS_PINNED_1739048_SOURCE_ROWS_ONE_SIGNIFICANT_VARIANT",
       "pinned_source_sha256_verified":m.SHA,
       "all_original_rows_verified":1739048,
+      "source_genome_build":"GRCh38",
       "source_genomewide_significant_count":1,
       "original_significant_associations":[{
           "chrom_GRCh38":"11","position_GRCh38":6700000,
@@ -43,6 +44,16 @@ class MappingTests(unittest.TestCase):
         x=source();x["pinned_source_sha256_verified"]="0"*64
         with self.assertRaisesRegex(ValueError,"unverified"):
             m.source_gate(x)
+    def test_wrong_original_build_rejected(self):
+        x=source();x["source_genome_build"]="GRCh37"
+        with self.assertRaisesRegex(ValueError,"unverified"):
+            m.source_gate(x)
+    def test_zero_or_negative_mapped_position_rejected(self):
+        for pos in (0,-1):
+            with self.subTest(pos=pos):
+                with self.assertRaisesRegex(ValueError,"precision"):
+                    m.parse_map(mapping("11",6700000,"GRCh38","11",pos,"GRCh37"),
+                                "11",6700000,"GRCh38","GRCh37")
     def test_missing_or_multi_Ensembl_map_refused(self):
         with self.assertRaisesRegex(ValueError,"no unique"):
             m.parse_map({"mappings":[]}, "11",6700000,"GRCh38","GRCh37")
