@@ -182,3 +182,30 @@ This stage replaces the scientifically unsupported "single rare lead as required
 4. Only aggregate outcome effect alleles matching the mapped TPMI ref/alt alleles; reject unresolved A/T and C/G palindromic SNPs; record swapped effect sign and AF discrepancy buckets. Upload **aggregate-only**, not a joint per-SNP effects dataset. Outcome variants remain unsuitable for causal inference until case definitions, sample independence, correct N and full harmonized summary QC are approved.
 
 **Completion criterion** for this stage: original source hashes, official chain checksum and expected known locus check all pass, whole-genome row counts match, actual coordinate and allele-matched overlap counts are observed in an Actions artifact. Code existence or workflow success alone is insufficient.
+
+## Whole-genome TPMI–GIGASTROKE EAS AIS allele overlap: observed result (2026-11-21)
+
+**Verified Actions execution:** https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44889274048 (job \`136801311574\`, **SUCCESS**; aggregate artifact \`14701104342\`). The original-source download checks, UCSC hg38ToHg19 chain MD5 gate, independent known lead mapping and offline allelic-orientation tests all completed before aggregate results were emitted.
+
+**Observed stdout, not projected coverage:**
+- TPMI original GRCh38 associations: **1,739,048**.
+- GIGASTROKE EAS AIS \`GCST90104545\` original GRCh37 associations: **6,725,216**.
+- TPMI mapped unique GRCh37 genomic positions: **1,722,752**.
+- Intersecting genomic-coordinate association rows: **1,507,267**.
+- Non-palindromic direct allele-matched intersecting rows: **1,507,261**.
+- **6** coordinate rows with allele mismatch were rejected.
+- Frequency deviation bins across matched rows, comparing TPMI A1_FREQ with harmonized EAS effect allele frequency:
+  - absolute delta <=0.05: **1,087,668**
+  - >0.05 through <=0.10: **328,074**
+  - >0.10 through <=0.20: **90,338**
+  - >0.20: **1,181**.
+  - Thus **419,593/1,507,261 (~27.84%)** have absolute delta >0.05 and **91,519/1,507,261 (~6.07%)** have absolute delta >0.10. These are QC indicators and not an a priori reason for genome-wide exclusion across different ancestry samples.
+- Script technical status: \`PASS_ORIGINAL_BUILD_AND_ALLELE_AGGREGATE_QC\`; source error \`null\`; scientific status **HOLD**. These counts are public summary-statistics aggregate only; no per-SNP merged association file was published.
+
+**Interpretation boundary:** The 1,507,261 figure is a *technical allele-matched intersection*, not an approved LDSC/MAGMA/MR/coloc analysis set. Effect-size/SE/p-value eligibility per SNP, ambiguous allele resolution, ancestry-specific LD reference choice, QC of high-frequency-discrepancy subsets, input coverage beyond the matched SNPs, and cohort overlap remain separate gates. One rare TPMI lead \`rs187759247\` is still **absent** at the exact GRCh37 locus in EAS AIS and cannot be called independently replicated.
+
+**N and phenotype HOLD (previous independent Actions):** https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44889438772 confirmed TPMI portal n=313,909 (9,249 cases and 304,660 controls) versus original PLINK2 \`OBS_CT=204,099\`, a discrepancy of **109,810**. The 204,099 model observations have no proven case/control breakdown; no valid TPMI per-SNP binary \`N_eff\` has been established. TPMI Phecode \`433.21\` ("Cerebral artery occlusion, with cerebral infarction") is not operationally identical to GIGASTROKE's broad "Any ischemic stroke".
+
+**Next scientific gates:**
+1. Reconcile actual association-level N, effect-size/SE/p-value valid count, the high-AF-discrepancy subsets, and EAS LD reference suitability. The frequency comparisons should be checked on valid, unambiguous, matched SNPs and may reflect ancestry differences.
+2. Verify sample-overlap independence and an approvable case/control N_eff from genuine source metadata; preserve LDSC/MAGMA/MR/coloc HOLD until all relevant gates pass.
