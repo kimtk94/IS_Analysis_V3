@@ -1,0 +1,30 @@
+name: CKM TPMI SAIGE original QC labels preflight
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-saige-qc-labels.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-original-qc-labels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Decode genuine TPMI 43321 SAIGE QC label and INFO flag semantics
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_tpmi_saige_qc_prefix_values.py
+          python -m scripts.ckm_stroke.audit_tpmi_saige_qc_prefix_values \
+            --out artifacts/is/TPMI43321_SAIGE_source_QC_label_prefix_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI43321-SAIGE-source-QC-label-prefix-HOLD
+          path: artifacts/is/TPMI43321_SAIGE_source_QC_label_prefix_HOLD.json
+          retention-days: 30
