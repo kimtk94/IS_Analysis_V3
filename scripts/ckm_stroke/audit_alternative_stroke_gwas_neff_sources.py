@@ -64,7 +64,17 @@ def fetch(url,limit,fetcher=urllib.request.urlopen,hosts=None):
         data=response.read(limit+1)
         if len(data)>limit:
             raise ValueError("official bounded documentation/manifest exceeded limit")
-        return data.decode("utf-8-sig","strict"),hashlib.sha256(data).hexdigest()
+        # The legacy consortium HTML page may use Windows-1252 smart quotes.
+        # Preserve SHA of original bytes; fail closed on malformed official
+        # Markdown/manifest rather than silently replacing N/schema characters.
+        if parsed.hostname in ("www.megastroke.org","megastroke.org"):
+            try:
+                plain=data.decode("utf-8-sig","strict")
+            except UnicodeDecodeError:
+                plain=data.decode("cp1252","strict")
+        else:
+            plain=data.decode("utf-8-sig","strict")
+        return plain,hashlib.sha256(data).hexdigest()
 
 def check_finn_schema(doc):
     columns=[x for x in FINN_COLS if re.search(r"(?<![A-Za-z0-9_])"+re.escape(x)+r"(?![A-Za-z0-9_])",doc)]
