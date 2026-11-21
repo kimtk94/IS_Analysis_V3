@@ -43,11 +43,13 @@ def definition():
 
 def controls():
     return workbook([
-        ("I9_STR_EXH","","","I9_ICH"),
-        ("I9_STR","","","I9_STR_EXH"),
-        ("I9_STR_EMBOLIC","","","I9_CEREBVASC"),
-        ("I9_STR_EMBOLIC_WITH_FLIMMER","","","I9_AF"),
-    ])
+        ("I9_STR_EXH","I9_TIA",""),
+        ("I9_STR","I9_STR_EXH|I9_TIA",""),
+        ("I9_STR_EMBOLIC","I9_CEREBVASC",""),
+        ("I9_STR_EMBOLIC_WITH_FLIMMER","","!I9_AF"),
+        ("I9_ICH","I9_TIA",""),
+        ("I9_SAH","I9_TIA",""),
+    ], header=("NAME","CONTROL_EXCLUDE","CONTROL_CONDITIONS"))
 
 def cohort():
     items=[]
