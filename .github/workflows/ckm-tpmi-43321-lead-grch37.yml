@@ -8,6 +8,8 @@ on:
       - 'scripts/ckm_stroke/map_tpmi_43321_lead_ensembl.py'
       - 'tests/test_ckm_tpmi_43321_significant_lead.py'
       - 'tests/test_ckm_tpmi_43321_lead_liftover.py'
+      - 'scripts/ckm_stroke/prepare_tpmi_43321_gigastroke_lookup.py'
+      - 'tests/test_ckm_tpmi_43321_gigastroke_lookup.py'
   workflow_dispatch:
     inputs:
       run_original_source:
@@ -39,6 +41,8 @@ jobs:
           python -m py_compile scripts/ckm_stroke/map_tpmi_43321_lead_ensembl.py
           python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_significant_lead.py' -v
           python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_lead_liftover.py' -v
+          python -m py_compile scripts/ckm_stroke/prepare_tpmi_43321_gigastroke_lookup.py
+          python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_gigastroke_lookup.py' -v
 
   extract-pinned-original-lead:
     if: (github.event_name == 'workflow_dispatch' && inputs.run_original_source == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[tpmi-lead-original]'))
@@ -104,5 +108,31 @@ jobs:
         with:
           name: ckm-TPMI43321-lead-Ensembl-GRCh37-provenance-HOLD
           path: artifacts/tpmi/tpmi_43321_GRCh37_Ensembl_bidirectional_map_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  prepare-gigastroke-grch37-target:
+    needs: bidirectional-build-and-allele-map
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-TPMI43321-lead-Ensembl-GRCh37-provenance-HOLD
+          path: artifacts/tpmi
+      - name: Generate GRCh37 lookup locus without pretending GIGASTROKE effect was matched
+        run: |
+          python -m scripts.ckm_stroke.prepare_tpmi_43321_gigastroke_lookup \
+            --mapped artifacts/tpmi/tpmi_43321_GRCh37_Ensembl_bidirectional_map_HOLD.json \
+            --out artifacts/tpmi/tpmi_43321_GRCh37_GIGASTROKE_target_only_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-TPMI43321-GIGASTROKE-lookup-target-HOLD
+          path: artifacts/tpmi/tpmi_43321_GRCh37_GIGASTROKE_target_only_HOLD.json
           if-no-files-found: warn
           retention-days: 30
