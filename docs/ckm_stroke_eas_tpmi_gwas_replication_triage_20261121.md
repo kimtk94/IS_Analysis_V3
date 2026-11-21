@@ -105,3 +105,34 @@ Important distinction: 2025 TPMI PheWeb **433.21 9,249 cases and 304,660 control
 **Scientific status remains HOLD** for claiming independent EAS AIS replication: the 433.21 clinical ICD-code case definition, sample disjointness with GIGASTROKE, original 2026 Neurology stroke paper identity and whole-genome association QC remain pending. The original GIGASTROKE EUR SNP-wise meta-analysis effective N is still HOLD. No new LDSC h2/intercept/rg, MR, colocalization or causal inference is reported.
 
 Workflow .github/workflows/ckm-tpmi-43321-original-header-once.yml, code scripts/ckm_stroke/inspect_tpmi_43321_original_sumstats_once.py, tests/test_ckm_tpmi_43321_original_once.py. This is a source ingest/QC milestone, **not research result replication**; the file was deliberately not redistributed or uploaded to repository artifacts to respect source use, download limits and space.
+
+
+## 2026-11-21 UPDATED: full TPMI 433.21 original PLINK2 association QC and denominator discordance
+
+The earlier 200-row original-file source check above has been **superseded for full row coverage** by [source-backed GitHub Actions #44872892525](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44872892525) **SUCCESS** with 11/11 offline source mutation and error tests PASS. Original-source aggregate artifact [#14694881855](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44872892525/artifacts/14694881855) includes no per-SNP effect values. It read the original compressed source from the same official TPMI PheWeb PLINK2 GWAS URL **once**, verified its complete **58,302,393 bytes** and pinned prior SHA256 **ce14daef23f9fadf921030d9ed2429383d927f6da391c620d9abf870045b2e62**, decompressed and validated all original 1,739,048 association TSV records across 22 chromosomes, and deleted the original local gzip after the audit. The SHA is our repeat-verification anchor, not a separately published TPMI expected checksum. No SAIGE 817 MB file or variant effects were uploaded.
+
+| Original source metric | Reproduced value |
+| --- | ---: |
+| All original chr1–22 variant/test rows | **1,739,048** |
+| PASS numeric ADD + unflagged test (ERRCODE ".") + REF/ALT/A1 + AF + OR>0 + LOG(OR)_SE>0 + Z + valid P | **1,739,048** |
+| Duplicate variant/test 128-bit digest | 0 (cryptographic digest collision caveat; not exact string identity proof) |
+| Coordinate order violations | 0 |
+| SNP P <= 5e-8 | **1** (aggregate count, not locus identity or replication evidence) |
+| Original A1_FREQ MAF >= 0.05 | **1,235,405** |
+| 0.01 <= MAF < 0.05 | **502,760** |
+| 0.001 <= MAF < 0.01 | **883** |
+| P=0 numerical underflow | 0 |
+| P-versus-Z | All 1,739,048 source rows numerically comparable; none differed by >=0.1 in -log10(P) |
+| Observed PLINK2 variant-wise OBS_CT | **204,099 exactly** in all 1,739,048 rows |
+
+CRITICAL: Original PheWeb phenotype page reports 9,249 cases and 304,660 controls (**313,909 sum**), whereas the original **PLINK2 regression output OBS_CT is constant 204,099**. The gap is **109,810 samples, 34.98148% of published phenotype sample sum**. This is **not** proof of cohort data error, and it is not resolved by treating the page counts as the PLINK2 regression counts. The actual number of cases among those 204,099 regression observations is unknown. Never compute an "approved" binary N_eff from either 313,909 or 204,099 without source-specific analysis sample case/control metadata. A valid source N_eff case-control analysis requires Ncase and Ncontrol for the actual analysis, not just total OBS_CT.
+
+Potential explanation (not proven): TPMI's 2025 Nature cohort methods report 205,779 independent versus 62,304 related participants, and PLINK2 Firth association on an independent subset: https://www.nature.com/articles/s41586-025-09680-x . The 204,099 original PLINK2 regression observation count is close to but 1,680 below the paper's 205,779 independent individuals. One cannot assume equality or infer the actual case/control breakdown, and the PheWeb page phenotype N may refer to different cohort inclusion or SAIGE results. This is a reproducible **sample denominator provenance HOLD**.
+
+Independent fail-closed re-evaluation of the entire original aggregate JSON (without re-downloading the 58MB source) was performed by [GitHub Actions #44873247155](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44873247155) **SUCCESS**, 9/9 contract tests PASS, source-derived [artifact #14695131212](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44873247155/artifacts/14695131212). It reproduces chromosome/MAF and effect QC totals, single genome-wide significant P, and explicitly preserves the 34.98148% sample mismatch and scientific HOLD.
+
+**Methodological next gate:** obtain original PLINK2 actual-analysis Ncase/Ncontrol for 433.21 from official authors/metadata (or reproducible analysis cohort source), clinically validate phecode to AIS, independently verify GIGASTROKE participant disjointness, and then implement ancestry-specific EAS LD plus GRCh38/37 and original A1/logOR harmonization. A single aggregate genomewide-significant hit is not sufficient to claim population-level independent replication or validate a causal MR instrument. No new LDSC h2, intercept, rg, MR or coloc executed. The previously verified GIGASTROKE EUR SNP-specific N_eff remains unresolved independently of this TPMI audit. Draft PR #284 remains unmerged.
+
+Reproducible code and workflows:
+- scripts/ckm_stroke/audit_tpmi_43321_full_gwas_qc.py and tests/test_ckm_tpmi_43321_full_gwas_qc.py; .github/workflows/ckm-tpmi-43321-full-gwas-qc.yml
+- scripts/ckm_stroke/verify_tpmi_43321_source_obsct_discrepancy.py and tests/test_ckm_tpmi_43321_obsct_discrepancy.py; .github/workflows/ckm-tpmi-43321-obsct-source-gate.yml
