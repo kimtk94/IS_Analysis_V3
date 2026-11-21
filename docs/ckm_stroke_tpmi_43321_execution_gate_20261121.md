@@ -246,3 +246,31 @@ This stage replaces the scientifically unsupported "single rare lead as required
 4. We have **not established a complete, study-specific GIGASTROKE EAS AIS discovery cohort list**, their individual overlap with TPMI, or a custodian-confirmed overlap count. Keep independent replication and cross-sample analyses that require independence at **HOLD**. Before a non-overlap claim, evaluate the original GIGASTROKE supplementary study-population methods, specifically whether TPMI or any shared contributing GWAS study belongs to the EAS AIS discovery sample rather than independent follow-up or PGS validation.
 
 **Unresolved regression N:** TPMI PheWeb `433.21` reports **9,249 cases, 304,660 controls (313,909 total)** but the verified PLINK2 summary has `OBS_CT=204,099`. Per [PLINK2 source format documentation](https://www.cog-genomics.org/plink/2.0/formats), `OBS_CT` denotes samples in regression, *not* the number of cases, controls, or binary `N_eff`. The **109,810 difference** does not identify which samples were removed or the case/control distribution. No inferential case/control split was computed or approved. `LDSC/MR/coloc` remain **HOLD**.
+
+## Original GIGASTROKE EAS AIS discovery cohorts and sample count VERIFIED — 2026-11-21
+
+This source-backed finding supersedes earlier "complete EAS AIS discovery cohort roster not verified" statements, but does **not** establish subject-level independence.
+
+- [Action #44899518851](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44899518851) SUCCESS: GIGASTROKE primary XML identifies original supplement 41586_2022_5165_MOESM4_ESM.xlsx (Supplementary Tables 1–56).
+- [Action #44899624455](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44899624455) SUCCESS, attempt 2: downloaded original [Springer publisher XLSX](https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-022-05165-3/MediaObjects/41586_2022_5165_MOESM4_ESM.xlsx), verified that Supplementary Table 1, EAS rows 50–65, columns K (AIS cases) and P (shared controls) contain the actual cohort contributions.
+- [Action #44899774706](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44899774706) SUCCESS: independent CI totals matched original Table 1 and GWAS Catalog. Artifact ID 14705337599. Scientific HOLD for individual overlap and N_eff.
+
+| EAS AIS discovery cohort | AIS cases (K) | Shared controls (P) |
+|---|---:|---:|
+| BIOBANK_JAPAN | 17,651 | 159,610 |
+| HISAYAMA_FSR | 1,113 | 901 |
+| INTERSTROKE_ASN | 222 | 698 |
+| KCPS2_ASN | 46 | 12,366 |
+| **Case-contributing subtotal** | **19,032** | **173,575** |
+| CKBB_ASN ten regional study cohorts (AIS cases NA) | — | 63,667 |
+| **Verified EAS AIS discovery total** | **19,032** | **237,242** |
+
+EAS row 60 HISAYAMA_ASN is incident-only and explicitly not in the global combined incident/prevalent meta-analysis; do not include its cases in EAS AIS discovery. CKBB regional cohorts provide shared controls and any-stroke cases, but their AIS case entries are NA, **not zero-risk associations**. Original source row TOTAL EAS (row 65) confirms exact totals.
+
+**No TPMI or Taiwan Biobank (TWB) study appears within this original EAS AIS discovery cohort roster.** The GIGASTROKE primary paper's use of TWB for iPGS validation is distinct from the discovery GWAS. The 2026 Taiwan paper's approximate 1% TPMI–TWB participant overlap **does not imply** that the GIGASTROKE discovery sample uses TWB or that TPMI participants overlap with BBJ/Hisayama/INTERSTROKE/KCPS2.
+
+**Two-level independence outcome:** Source-cohort roster PASS with no named TPMI/TWB discovery contribution; participant-level nonoverlap remains **HOLD** pending individual overlap/custodian evidence. Do not claim verified zero overlap.
+
+**Other unresolved scientific gates:** TPMI Phecode 433.21 portal cases 9,249 + controls 304,660 = 313,909, but PLINK2 association OBS_CT 204,099 (109,810 difference). No source-supported case/control regression N_eff. Operational Phecode "Cerebral artery occlusion, with cerebral infarction" is related to, but not identical to, GIGASTROKE broad AIS. Keep LDSC/MR/coloc at HOLD.
+
+Earlier independent allele/quantitative summary QC PASS: 1,507,261 SNP pairs. This remains a technical overlap, not an approved causal or independent replication result.
