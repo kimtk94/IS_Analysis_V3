@@ -178,3 +178,14 @@ The original GIGASTROKE fields BETA, SE and P define a descriptive per-SNP P-vs-
 Source code: scripts/ckm_stroke/audit_gigastroke_eaf_gc.py and extensions to scripts/ckm_stroke/audit_gigastroke_bmi_allele_harmonization.py. Fail-closed fixture checks: tests/test_ckm_stroke_gigastroke_eaf_gc.py. GitHub Actions pipeline: .github/workflows/ckm-stroke-gigastroke-four-full-md5-harmonization.yml with [gigastroke-full4] opt-in. The old pinned original MD5, full allele direction and chromosome ledgers are rechecked. Only bounded aggregate JSON is uploaded, never per-SNP effects/frequencies.
 
 **Approval boundary:** A successful descriptive audit is not an approved N_eff, not a validated GC correction coefficient, not a final post-munge LDSC regression SNP count and not a completed h2 or rg. Keep scientific HOLD. Original LDSC munge behavior: https://github.com/bulik/ldsc/blob/master/munge_sumstats.py .
+
+
+## GC provenance and original GIGASTROKE methods (checked 2026-11-21)
+
+The original Nature 2022 GIGASTROKE study (Mishra et al., https://doi.org/10.1038/s41586-022-05165-3) explicitly reports using covariate-adjusted LDSC (cov-LDSC) on ancestry-specific GWAS meta-analyses WITHOUT genomic-control correction to test for genomic inflation and estimate SNP heritability. This published analysis description does NOT prove that the corresponding public GWAS Catalog EBI file has identical normalization to the internal discovery input, nor does it document per-SNP effect or meta-analysis effective N.
+
+The new full-source EAF/P-Wald diagnostic distinguishes source EAF and the independent GIANT original column Freq_Tested_Allele_in_HRS. HRS frequency is a cohort-specific descriptive reference, NOT the corresponding original GIGASTROKE cohort EAF. Only compare after verified effect allele coding orientation; observed frequency discrepancies do NOT establish genotype strand errors or ancestry admixture without other supporting evidence.
+
+Reported P versus beta/SE-derived Wald P differences are descriptive. Separate underflowed original P=0 and DO NOT impute arbitrary numerical P. Original P, BETA and SE are never silently modified by an inferred genomic-control correction or an estimated inflation coefficient; marked divergences are REVIEW, not a final GC diagnostic.
+
+Outstanding gates remain the original EBI publicly provided effect scaling / GC provenance, valid SNP-specific case-control meta-analysis effective N, ancestry-specific sample overlap, independently validated LDSC regression-weight reference SNP merge, final post-munge counts and h2/rg. Science remains HOLD, no LDSC/h2/rg/MR performed by this QC workflow.
