@@ -10,6 +10,8 @@ on:
       - 'tests/test_ckm_tpmi_43321_lead_liftover.py'
       - 'scripts/ckm_stroke/prepare_tpmi_43321_gigastroke_lookup.py'
       - 'tests/test_ckm_tpmi_43321_gigastroke_lookup.py'
+      - 'scripts/ckm_stroke/match_tpmi_43321_gigastroke_ais.py'
+      - 'tests/test_ckm_tpmi_43321_gigastroke_ais.py'
   pull_request:
     paths:
       - '.github/workflows/ckm-tpmi-43321-lead-grch37.yml'
@@ -19,10 +21,17 @@ on:
       - 'tests/test_ckm_tpmi_43321_significant_lead.py'
       - 'tests/test_ckm_tpmi_43321_lead_liftover.py'
       - 'tests/test_ckm_tpmi_43321_gigastroke_lookup.py'
+      - 'scripts/ckm_stroke/match_tpmi_43321_gigastroke_ais.py'
+      - 'tests/test_ckm_tpmi_43321_gigastroke_ais.py'
   workflow_dispatch:
     inputs:
       run_original_source:
         description: 'Authorize one pinned 58 MB TPMI source retrieval and lead liftover'
+        required: true
+        type: boolean
+        default: false
+      run_gigastroke_ais:
+        description: 'Authorize one 283 MB publisher-MD5 verified AIS outcome scan after TPMI liftover'
         required: true
         type: boolean
         default: false
@@ -52,6 +61,8 @@ jobs:
           python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_lead_liftover.py' -v
           python -m py_compile scripts/ckm_stroke/prepare_tpmi_43321_gigastroke_lookup.py
           python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_gigastroke_lookup.py' -v
+          python -m py_compile scripts/ckm_stroke/match_tpmi_43321_gigastroke_ais.py
+          python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_gigastroke_ais.py' -v
 
   extract-pinned-original-lead:
     if: (github.event_name == 'workflow_dispatch' && inputs.run_original_source == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[tpmi-lead-original]'))
@@ -143,5 +154,32 @@ jobs:
         with:
           name: ckm-TPMI43321-GIGASTROKE-lookup-target-HOLD
           path: artifacts/tpmi/tpmi_43321_GRCh37_GIGASTROKE_target_only_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  source-verified-gigastroke-ais-one-locus:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_original_source == true && inputs.run_gigastroke_ais == true
+    needs: prepare-gigastroke-grch37-target
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-TPMI43321-GIGASTROKE-lookup-target-HOLD
+          path: artifacts/tpmi
+      - name: Download one official AIS outcome once, check publisher MD5 and extract only exact SNP
+        run: |
+          python -m scripts.ckm_stroke.match_tpmi_43321_gigastroke_ais \
+            --target artifacts/tpmi/tpmi_43321_GRCh37_GIGASTROKE_target_only_HOLD.json \
+            --out artifacts/tpmi/tpmi_43321_GIGASTROKE_AIS_single_original_locus_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-TPMI43321-GIGASTROKE-AIS-one-locus-HOLD
+          path: artifacts/tpmi/tpmi_43321_GIGASTROKE_AIS_single_original_locus_HOLD.json
           if-no-files-found: warn
           retention-days: 30
