@@ -3,7 +3,7 @@ from __future__ import annotations
 from unittest.mock import patch
 import unittest
 from scripts.ckm_stroke.audit_ldsc_weight_reference_merge import (
-    reconcile_reference,verify_neff_source,EXPECTED_SUPPLEMENT_SHA256,
+    reconcile_reference,verify_neff_source,EXPECTED_SUPPLEMENT_SHA256,normalizer_coverage,
 )
 
 def fake_cohort():
@@ -41,6 +41,27 @@ def fake_review():
                         for ph in ("AIS","LAA","CE","SVD")]}
 
 class ReferenceMergeTests(unittest.TestCase):
+    def test_original_reference_has_standard_M_5_50_without_optional_M(self):
+        r=normalizer_coverage({}, {i:1 for i in range(1,23)})
+        self.assertTrue(r["standard_common_SNP_M_5_50_complete"])
+        self.assertEqual(r["optional_M_files_present"],0)
+        self.assertTrue(r["M_file_omission_is_source_observation"])
+        self.assertFalse(r["LDSC_not_M_5_50_override_supported_by_this_archive"])
+
+    def test_incomplete_M_5_50_source_fails_closed(self):
+        with self.assertRaisesRegex(ValueError,"M_5_50"):
+            normalizer_coverage({}, {i:1 for i in range(1,22)})
+
+    def test_partial_optional_M_source_fails_closed(self):
+        with self.assertRaisesRegex(ValueError,"partial optional M"):
+            normalizer_coverage({1:2}, {i:1 for i in range(1,23)})
+
+    def test_full_optional_M_source_is_distinguishable(self):
+        r=normalizer_coverage({i:2 for i in range(1,23)},
+                              {i:1 for i in range(1,23)})
+        self.assertTrue(r["LDSC_not_M_5_50_override_supported_by_this_archive"])
+        self.assertEqual(r["optional_M_files_present"],22)
+
     def test_cohortwise_and_pooled_not_approved(self):
         result=verify_neff_source(fake_cohort())
         self.assertEqual(len(result),4)
