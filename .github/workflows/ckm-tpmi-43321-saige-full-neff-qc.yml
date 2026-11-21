@@ -1,0 +1,30 @@
+name: CKM TPMI 43321 SAIGE full original case control N QC
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-saige-full-neff-qc.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  full-original-saige:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate full official 817MB SAIGE 433.21 original, gzip CRC and SNP-specific N_case N_ctrl
+        run: |
+          python -m py_compile scripts/ckm_stroke/qc_tpmi_43321_saige_full_casecontrol.py
+          python -m scripts.ckm_stroke.qc_tpmi_43321_saige_full_casecontrol \
+            --out artifacts/is/TPMI43321_SAIGE_full_casecontrol_N_QC_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI43321-SAIGE-full-original-casecontrol-QC-HOLD
+          path: artifacts/is/TPMI43321_SAIGE_full_casecontrol_N_QC_HOLD.json
+          retention-days: 30
