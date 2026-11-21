@@ -1,0 +1,30 @@
+name: CKM TPMI 43321 original PLINK2 and SAIGE headers
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-plink2-saige-headers.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-method-headers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inspect only bounded compressed header bytes of two original TPMI 433.21 GWAS methods
+        run: |
+          python -m py_compile scripts/ckm_stroke/probe_tpmi_43321_saige_plink2_headers.py
+          python -m scripts.ckm_stroke.probe_tpmi_43321_saige_plink2_headers \
+            --out artifacts/is/TPMI43321_SAIGE_PLINK2_official_headers_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI43321-original-PLINK2-SAIGE-headers-HOLD
+          path: artifacts/is/TPMI43321_SAIGE_PLINK2_official_headers_HOLD.json
+          retention-days: 30
