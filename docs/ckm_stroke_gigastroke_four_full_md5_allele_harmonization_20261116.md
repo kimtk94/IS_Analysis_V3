@@ -122,3 +122,25 @@ Detailed exclusions from the actual 22-chromosome report:
 ## 2026-11-21 independent effect-allele order study challenge
 
 The 2026-11-21 original GIGASTROKE four-file MD5 check found all shared Yengo-2018 candidate SNPs in the source same orientation. Uniform alignment to a harmonized reference does not prove biological effect allele orientation. An additional source audit independently recreates original Locke-2015 BMI SNP/A1/A2 using only Locke and pinned HM3/LD references, without using Yengo selection; retains 11,506 fractional N observations and verifies the exact independent candidate SHA. It recreates the separately pinned Yengo-2018 candidate and chromosome coordinates, then compares original source A1/A2 across shared rsIDs and four EBI 128KiB GWAS prefixes (strictly validated beta ~ log OR). This bounded sample is not a genome-wide independent effect direction certification, does not retest source whole-file MD5 in this job and must never be called sample or participant independence. Only aggregate orientation counts are emitted. Unit tests prove reversed, complement and nonmatching allele handling; no h2/rg/N_eff approved. Code: scripts/ckm_stroke/audit_locke_yengo_gigastroke_allele_order.py; CI: ckm-stroke-ldsc-singletrait-preregression.yml; new evidence artifact: gigastroke_independent_2015_allele_order_ci.json.
+
+
+## Independent 2015 vs 2018 vs GIGASTROKE original-data result — 2026-11-21 verified
+
+**Exact CI:** [GitHub Actions #44855617332](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44855617332) SUCCESS; new full-source code commit b189dd5205ba44970b1c88e56a280e755c9b76f6. Combined offline contract 28/28 PASS. Small JSON result artifact [#14687228228](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44855617332/artifacts/14687228228) (includes gigastroke_independent_2015_allele_order_ci.json).
+
+* **Locke 2015:** SHA-256 verified independent 1,070,753 rows; 11,506 preserve fractional N; no Yengo SNP selection, original Locke source completely reverified.
+* **Yengo 2018:** SHA-256 verified 1,007,899 candidates from independently rebuilt GIANT EUR source with pinned EUR LDscore/HM3 references.
+* **Two independent BMI source effect A1/A2 orders:** exactly 1,007,858 rsIDs in both; 516,430 have the same A1/A2 order; **491,428 have swapped order (48.7596% of shared SNPs)**; 41 Yengo candidates absent from Locke independent candidate. Complement categories: zero for these direct pair-matched nonpalindromic candidates. Thus source-study allele order is demonstrably *not* invariant, even with independently matching alleles.
+* **Four EBI source gzip prefixes:** 128KiB per trait, original GRCh37 association header, 13,201 *complete* rows and beta approximately log(OR) validated. **Only 1,858 rows** coincide with both independently constructed BMI panels, so source-prefix summary is not a random genome-wide sample or whole-genome effect-direction certification.
+
+| GIGASTROKE EUR trait | Complete source prefix rows | Three-study shared prefix rsIDs | Source effect A1 vs Yengo A1 same | Source effect A1 vs Locke A1 swapped | Locke reversal proportion within three-way subset |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| AIS | 3,413 | 424 | 424 | 190 | 44.81% |
+| LAA | 3,256 | 493 | 493 | 226 | 45.84% |
+| CE | 3,273 | 455 | 455 | 205 | 45.05% |
+| SVD | 3,259 | 486 | 486 | 226 | 46.50% |
+| **Total** | **13,201** | **1,858** | **1,858** | **847** | **45.59%** |
+
+**Scientific interpretation:** The full original GIGASTROKE vs Yengo candidate audit's 100% same A1/A2 is not a general property of independently published BMI effect alleles. The original Locke A1 orientation differs at nearly half of jointly available BMI loci, and the direction difference recurs in sampled original GIGASTROKE associations. Correct cross-trait analyses MUST explicitly choose, document and verify a single study effect-allele orientation and sign-flip signed Z/BETA when necessary. Source A1 matching alone cannot certify causal correctness, whole-genome consistency or sample independence.
+
+**Limitations / HOLD:** Whole-file MD5 for all four GIGASTROKE outcomes passed separately in #44853148970; this bounded experiment does NOT repeat those full source hashes, nor analyze all original stroke variants. The first 128KiB of each file are not claimed to be an unbiased sample. Full SNP-by-SNP allele harmonization, effect-frequency QC, GC-correction equivalence, post-munge LDSC SNP merge, outcome meta-analysis N_eff and single-trait h²/rg remain unapproved and not run. PR #284 stays Draft.
