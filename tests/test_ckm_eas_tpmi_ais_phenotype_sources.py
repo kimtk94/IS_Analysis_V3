@@ -60,6 +60,22 @@ class TestEASPhenotypeSource(unittest.TestCase):
     def test_invalid_source_count_fails(self):
         with self.assertRaisesRegex(ValueError,"source guard"):
             a.parse_gwas_page("tpmi_433_3",cases("Cerebral ischemia",1200001,304660))
+    def test_official_sumstats_anchor_discovered_without_downloading(self):
+        html=('<html><h1>433.21 Cerebral artery occlusion, with cerebral infarction</h1>'
+              '<p>9249 cases, 304660 controls</p>'
+              '<a href="/download/433.21">Summary Statistics (PLINK2)</a></html>')
+        r=a.parse_gwas_page("tpmi_433_21",page(html))
+        links=r["on_page_advertised_summary_stats_links_metadata_only"]
+        self.assertEqual(len(links),1)
+        self.assertTrue(links[0]["url"].startswith("https://pheweb.ibms.sinica.edu.tw/"))
+        self.assertFalse(r["raw_GWAS_full_summary_statistics_downloaded"])
+        self.assertFalse(r["sumstats_variant_schema_or_SNP_Neff_verified"])
+
+    def test_nonofficial_sumstats_link_fails_closed(self):
+        html='<a href="https://example.com/stroke.gz">Summary Statistics</a>'
+        with self.assertRaisesRegex(ValueError,"off official host"):
+            a.advertised_download_anchors("tpmi_433_21",html)
+
     def test_live_portal_absent_pgs_not_promoted(self):
         r=a.parse_pgs("pgs_019250",{"status":"HTTP_429","text":None})
         self.assertFalse(r["is_original_GWAS_summary_statistics"])

@@ -76,6 +76,46 @@ def safe_fetch(url,fetcher=urlopen):
         return {"status":"NETWORK_ERROR","source_sha256":None,"text":None,
                 "error_type":type(exc).__name__}
 
+class DownloadAnchors(HTMLParser):
+    """Metadata-only discovery of public anchor labels; never open large files."""
+    def __init__(self):
+        super().__init__()
+        self.entries=[]
+        self.current=None
+    def handle_starttag(self,tag,attrs):
+        if tag=="a":
+            href=dict(attrs).get("href")
+            self.current={"href":href,"label":""} if href else None
+    def handle_data(self,data):
+        if self.current is not None:
+            self.current["label"]+=data
+    def handle_endtag(self,tag):
+        if tag=="a" and self.current is not None:
+            self.entries.append(self.current)
+            self.current=None
+
+def advertised_download_anchors(key,html):
+    if key not in URLS:
+        raise ValueError("unknown official phenotype URL")
+    from urllib.parse import urljoin
+    host=urlsplit(URLS[key]).hostname
+    p=DownloadAnchors()
+    p.feed(html)
+    selected=[]
+    for item in p.entries:
+        if "summary statistics" not in item["label"].lower():
+            continue
+        url=urljoin(URLS[key],item["href"])
+        parts=urlsplit(url)
+        if parts.scheme!="https" or parts.hostname!=host:
+            raise ValueError("public source download anchor points off official host")
+        selected.append({"label":" ".join(item["label"].split())[:90],"url":url,
+                         "sumstats_response_or_header_has_NOT_been_downloaded":True})
+    if len(selected)>6:
+        raise ValueError("unexpected excess summary statistics download anchors")
+    return selected
+
+
 def clean_html(source):
     p=HtmlText()
     p.feed(source)
@@ -106,6 +146,7 @@ def parse_gwas_page(key,web):
             raise ValueError("public phenotype N exceeds source guard")
         return n
     cases,controls=(asint(match.group(1)),asint(match.group(2)))
+    download_anchors=advertised_download_anchors(key,web["text"])
     return {
         "phenotype":key,"clinical_category":pattern["category"],
         "status":"PASS_ORIGINAL_SOURCE_PHENOTYPE_COUNT",
@@ -115,6 +156,9 @@ def parse_gwas_page(key,web):
         "not_proven_same_original_2026_TPMI_early_onset_GWAS":True,
         "not_proven_TOAST_or_imaging_adjudicated":True,
         "source_sha256":web["source_sha256"],
+        "on_page_advertised_summary_stats_links_metadata_only":download_anchors,
+        "raw_GWAS_full_summary_statistics_downloaded":False,
+        "sumstats_variant_schema_or_SNP_Neff_verified":False,
         "exact_phenotype_definition_approved":False,
     }
 
