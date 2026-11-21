@@ -11,7 +11,8 @@ def fixture():
       "liftover_reverse_verified":True,
       "scientific_status":"HOLD","ready_for_ldsc":False,
       "GIGASTROKE_EUR_source_effect_at_target_observed":False,
-      "lead_GRCh38":{"original_OBS_CT":204099,"P_original":1e-8,"reported_rsid":"rs123"},
+      "lead_GRCh38":{"original_OBS_CT":204099,"P_original":1e-8,"reported_rsid":"rs123",
+                      "logOR_original_A1":0.18,"LOGOR_SE_original":0.03},
       "mapped_GRCh37":{
          "chrom_GRCh37":"11","pos_GRCh37":6590000,
          "REF_GRCh37":"A","ALT_GRCh37":"G","A1_effect_allele_GRCh37":"G",
@@ -28,6 +29,10 @@ class LookupTests(unittest.TestCase):
         self.assertFalse(r["GIGASTROKE_original_row_matched"])
         self.assertFalse(r["binary_case_control_Neff_approved"])
         self.assertEqual(r["scientific_status"],"HOLD")
+        self.assertEqual(r["TPMI_A1_logOR"],0.18)
+    def test_reject_missing_logor(self):
+        x=fixture();del x["lead_GRCh38"]["logOR_original_A1"]
+        with self.assertRaises(ValueError):prepare(x)
     def test_reject_wrong_pinned_hash(self):
         x=fixture();x["original_source_SHA256_verified"]="0"*64
         with self.assertRaises(ValueError):prepare(x)
