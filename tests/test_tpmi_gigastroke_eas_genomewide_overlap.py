@@ -1,12 +1,24 @@
 """Offline unit tests for GWAS build/strand/allele harmonization safety."""
 import unittest
 from scripts.ckm_stroke.tpmi_gigastroke_eas_genomewide_overlap import (
-    allele_align,translate_snv,is_snv,unique_lift
+    allele_align,translate_snv,is_snv,unique_lift,association_numeric_qc
 )
 class FakeLifter:
     def __init__(self,results):self.results=results
     def convert_coordinate(self,c,p):return self.results
 class TestGenomewideOverlap(unittest.TestCase):
+    def test_numeric_eligibility(self):
+        status,diff=association_numeric_qc(1.2,0.03,0.01,204099,0.1823,0.04,0.002,1.2)
+        self.assertEqual(status,"PASS_FINITE_RANGE")
+        self.assertLess(diff,0.001)
+    def test_numeric_bad_se(self):
+        self.assertEqual(association_numeric_qc(1.2,0,0.01,204099,0.18,0.04,0.002,1.2)[0],"OUT_OF_RANGE")
+    def test_numeric_bad_p(self):
+        self.assertEqual(association_numeric_qc(1.2,0.03,1.1,204099,0.18,0.04,0.002,1.2)[0],"OUT_OF_RANGE")
+    def test_numeric_nan(self):
+        self.assertEqual(association_numeric_qc(1.2,0.03,0.01,204099,float("nan"),0.04,0.002,1.2)[0],"NONFINITE")
+    def test_numeric_non_numeric(self):
+        self.assertEqual(association_numeric_qc(1.2,0.03,0.01,204099,"NA",0.04,0.002,1.2)[0],"NON_NUMERIC")
     def test_same_orientation(self):
         r=allele_align("T","C","C",0.21,"C","T",0.20)
         self.assertEqual(r[0],"MATCHED")
