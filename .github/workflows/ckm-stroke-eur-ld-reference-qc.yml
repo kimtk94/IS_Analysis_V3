@@ -1,0 +1,52 @@
+name: CKM EUR GRCh37 LDSC LD score reference integrity
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-eur-ld-reference-qc.yml'
+      - 'scripts/ckm_stroke/audit_eur_ldscore_zenodo.py'
+      - 'tests/test_ckm_stroke_eur_ldscore_zenodo.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-eur-ld-reference-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate archive safety and fail-closed fixtures
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_eur_ldscore_zenodo.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_eur_ldscore_zenodo.py' -v
+
+  full-eur-reference:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[eurld-full]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Stream and verify Zenodo EUR 22 chromosome scores (no archive retention)
+        run: |
+          python scripts/ckm_stroke/audit_eur_ldscore_zenodo.py --out artifacts/ckm_stroke/eur_ldscore_reference_ci.json
+      - name: Publish compact JSON reference QC evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-eur-ldscore-zenodo-evidence
+          path: artifacts/ckm_stroke/eur_ldscore_reference_ci.json
+          if-no-files-found: warn
+          retention-days: 30

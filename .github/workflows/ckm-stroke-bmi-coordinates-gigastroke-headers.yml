@@ -1,0 +1,93 @@
+name: CKM BMI EUR reference coordinate and GIGASTROKE publisher header audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-bmi-coordinates-gigastroke-headers.yml'
+      - 'scripts/ckm_stroke/audit_bmi_ldscore_coordinates.py'
+      - 'scripts/ckm_stroke/probe_gigastroke_eur_header.py'
+      - 'tests/test_ckm_stroke_bmi_ldscore_coordinates.py'
+      - 'tests/test_ckm_stroke_probe_gigastroke_eur_header.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-coordinate-gigastroke-head-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and run source-independent coordinate/outcome fixtures
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_bmi_ldscore_coordinates.py scripts/ckm_stroke/probe_gigastroke_eur_header.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_bmi_ldscore_coordinates.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_probe_gigastroke_eur_header.py' -v
+
+  full-coordinate:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[bmi-coordinate-full]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build temporary conservative BMI 1M-SNP candidate
+        run: |
+          python -m scripts.ckm_stroke.prepare_bmi_ldsc_candidate \
+            --out artifacts/ckm_stroke/bmi_candidate_coordinate_ci.json \
+            --emit-candidate artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz
+      - name: Compare every BMI candidate chr BP against pinned 22 EUR LDscore files
+        run: |
+          python -m scripts.ckm_stroke.audit_bmi_ldscore_coordinates \
+            --candidate artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz \
+            --provenance artifacts/ckm_stroke/bmi_candidate_coordinate_ci.json \
+            --out artifacts/ckm_stroke/bmi_candidate_coordinates_ci.json
+      - name: Delete candidate gzip including partials after validation
+        if: always()
+        run: |
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz').unlink(missing_ok=True)"
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz.partial').unlink(missing_ok=True)"
+      - name: Publish compact coordinate JSON evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-bmi-eur-ldscore-coordinate-evidence
+          path: |
+            artifacts/ckm_stroke/bmi_candidate_coordinate_ci.json
+            artifacts/ckm_stroke/bmi_candidate_coordinates_ci.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  gigastroke-publisher-headers:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[gigastroke-header-full]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check four exact EUR accession publisher YAML MD5 and bounded gzip headers
+        run: |
+          python -m scripts.ckm_stroke.probe_gigastroke_eur_header \
+            --out artifacts/ckm_stroke/gigastroke_eur_four_headers_ci.json
+      - name: Publish outcome metadata and header evidence (not raw sources)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-gigastroke-eur-four-header-evidence
+          path: artifacts/ckm_stroke/gigastroke_eur_four_headers_ci.json
+          if-no-files-found: warn
+          retention-days: 30

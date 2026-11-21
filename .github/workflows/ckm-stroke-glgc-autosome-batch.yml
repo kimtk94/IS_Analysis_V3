@@ -1,0 +1,190 @@
+name: CKM Stroke P1 GLGC bounded autosome batch (manual, gated)
+
+on:
+  # Branch-only workflows are not always available for workflow_dispatch
+  # until merged to default. A dedicated, scoped approval-file PUSH lets
+  # us launch the next gated batch on the Draft PR branch without merging.
+  # DO NOT add or update the approval file before prior 3/3 aggregate PASS.
+  push:
+    branches:
+      - research/ckm-stroke-staged-actions-20261111
+    paths:
+      - 'config/ckm_stroke/glgc_next_batch_approval.json'
+  workflow_dispatch:
+    inputs:
+      chr22_run_id:
+        description: 'Verified chr22 technical PASS run, for initial batch'
+        type: string
+        default: '43431051168'
+        required: false
+      prior_run_id:
+        description: 'Completed previous batch run; required for batch 2 and later'
+        type: string
+        required: false
+      prior_chromosomes:
+        description: 'Previous three, e.g. 21,20,19'
+        type: string
+        default: '21,20,19'
+        required: false
+      chromosomes:
+        description: 'Next contiguous descending 1-3 chromosomes (e.g. 18,17,16)'
+        type: string
+        default: '21,20,19'
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-glgc-autosome-batch-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-chr22-and-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      chromosomes: ${{ steps.plan.outputs.chromosomes }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Parse approval file for this push with bounded metadata
+        id: approval
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          python -m unittest tests.test_ckm_stroke_parse_glgc_batch_approval -v
+          python -m scripts.ckm_stroke.parse_glgc_batch_approval \
+            --input config/ckm_stroke/glgc_next_batch_approval.json
+      - name: Fetch chr22 original technical PASS (initial batch only)
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.prior_run_id }}
+        uses: actions/download-artifact@v4
+        with:
+          name: ckm-glgc-chr-aggregate
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.chr22_run_id || '43431051168' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/chr22_gate
+      - name: Fetch all prior batch chromosome summaries (subsequent batches)
+        if: ${{ github.event_name == 'push' || inputs.prior_run_id != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-summary-*
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event_name == 'push' && steps.approval.outputs.prior_run_id || inputs.prior_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/prior_gate
+          merge-multiple: true
+      - name: Verify prior real-data PASS and strictly limit batch
+        id: plan
+        env:
+          CHROMOSOMES: ${{ github.event_name == 'push' && steps.approval.outputs.next_chromosomes || inputs.chromosomes || '21,20,19' }}
+          PRIOR_CHROMOSOMES: ${{ github.event_name == 'push' && steps.approval.outputs.prior_chromosomes || inputs.prior_chromosomes || '21,20,19' }}
+          PRIOR_RUN_ID: ${{ github.event_name == 'push' && steps.approval.outputs.prior_run_id || inputs.prior_run_id }}
+          APPROVED_SOURCE_COMMIT: ${{ steps.approval.outputs.expected_prior_commit }}
+          APPROVED_SNP_COUNTS: ${{ steps.approval.outputs.expected_prior_snp_rows_json }}
+        run: |
+          python -m unittest tests.test_ckm_stroke_glgc_batch_plan tests.test_ckm_stroke_verify_previous_batch tests.test_ckm_stroke_parse_glgc_batch_approval -v
+          if [ -n "$PRIOR_RUN_ID" ]; then
+            python -m scripts.ckm_stroke.verify_glgc_previous_batch \
+              --prior-dir artifacts/prior_gate \
+              --prior-chromosomes "$PRIOR_CHROMOSOMES" \
+              --next-chromosomes "$CHROMOSOMES" \
+              --expected-prior-commit "$APPROVED_SOURCE_COMMIT" \
+              --expected-snp-rows-json "$APPROVED_SNP_COUNTS" \
+              --output artifacts/ckm_stroke/batch_plan.json
+          else
+            python -m scripts.ckm_stroke.plan_glgc_batch \
+              --chromosomes "$CHROMOSOMES" \
+              --chr22-gate artifacts/chr22_gate/glgc_chr22-aggregate.json \
+              --output artifacts/ckm_stroke/batch_plan.json
+          fi
+      - name: Save bounded work plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-batch-plan
+          path: artifacts/ckm_stroke/batch_plan.json
+          retention-days: 30
+
+  chromosome-trait-snp-qc:
+    needs: verify-chr22-and-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.verify-chr22-and-plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned htslib bindings and CA bundle
+        run: |
+          python -m pip install pysam==0.23.3 certifi
+      - name: Configure SSL verification
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import certifi
+          import os
+          ca = Path(certifi.where())
+          if not ca.is_file() or ca.stat().st_size < 1000:
+              raise RuntimeError("certifi trust store missing")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as f:
+              for key in ("CURL_CA_BUNDLE", "SSL_CERT_FILE", "REQUESTS_CA_BUNDLE"):
+                  f.write(key + "=" + str(ca) + "\n")
+          PY
+      - name: Run full selected chromosome SNP audit (not a whole GWAS)
+        env:
+          TRAIT: ${{ matrix.trait }}
+          CHROMOSOME: ${{ matrix.chromosome }}
+        run: |
+          python -m scripts.ckm_stroke.glgc_chr_shard \
+            --trait "$TRAIT" --chromosome "$CHROMOSOME" --max-rows 5000000 \
+            --out "artifacts/ckm_stroke/glgc_$TRAIT-chr$CHROMOSOME-snp-qc.json"
+      - name: Save audit metadata even when HOLD
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-batch-${{ matrix.chromosome }}-${{ matrix.trait }}
+          path: artifacts/ckm_stroke/glgc_*.json
+          retention-days: 30
+          if-no-files-found: warn
+
+  aggregate-by-chromosome:
+    if: ${{ always() && needs.verify-chr22-and-plan.result == 'success' }}
+    needs: [verify-chr22-and-plan, chromosome-trait-snp-qc]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        chromosome: ${{ fromJSON(needs.verify-chr22-and-plan.outputs.chromosomes) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download this chromosome's three trait artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-${{ matrix.chromosome }}-*
+          path: artifacts/per_chromosome
+          merge-multiple: true
+      - name: Aggregate all three source-matched traits (HOLD if missing)
+        env:
+          CHROMOSOME: ${{ matrix.chromosome }}
+        run: |
+          python -m scripts.ckm_stroke.summarize_glgc_chr \
+            --input-dir artifacts/per_chromosome \
+            --chromosome "$CHROMOSOME" \
+            --output "artifacts/ckm_stroke/glgc_chr$CHROMOSOME-aggregate.json"
+      - name: Upload independent per-chromosome summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-batch-summary-${{ matrix.chromosome }}
+          path: artifacts/ckm_stroke/glgc_chr*-aggregate.json
+          retention-days: 30
+          if-no-files-found: warn

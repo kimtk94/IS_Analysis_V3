@@ -1,0 +1,65 @@
+name: CKM GIGASTROKE EAF Wald source-artifact secondary review
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-gigastroke-eaf-wald-artifact-review.yml'
+      - 'scripts/ckm_stroke/review_gigastroke_eaf_wald_anomalies.py'
+      - 'tests/test_ckm_stroke_gigastroke_eaf_wald_anomalies.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  review-original-aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate original source CI success and immutable commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          run=44860586028
+          expected="7c1ca53a57f3e44b1cdb8e2cf19753b943cf45ba"
+          reply=subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True)
+          data=json.loads(reply)
+          if data.get("head_sha")!=expected or data.get("conclusion")!="success" or data.get("repository",{}).get("full_name")!=repo:
+              raise SystemExit("original publisher-MD5 source run not verified")
+          print("Pinned EAF/Wald source verified")
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-four-gigastroke-eur-md5-bmi-orientation
+          run-id: 44860586028
+          github-token: ${{ github.token }}
+          path: artifacts/ckm_stroke
+      - name: Test fail-closed chromosome anomaly review
+        run: |
+          python -m py_compile scripts/ckm_stroke/review_gigastroke_eaf_wald_anomalies.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_eaf_wald_anomalies.py' -v
+      - name: Recompute source-backed EAF and Wald anomaly table without original GWAS downloads
+        run: |
+          python -m scripts.ckm_stroke.review_gigastroke_eaf_wald_anomalies \
+            --full-source-evidence artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json \
+            --independent-review artifacts/ckm_stroke/gigastroke_four_eaf_hrs_wald_review_ci.json \
+            --out artifacts/ckm_stroke/gigastroke_four_eaf_wald_anomaly_review_ci.json \
+            --markdown artifacts/ckm_stroke/gigastroke_four_eaf_wald_anomaly_review_ci.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-gigastroke-eaf-wald-chromosome-anomaly-review
+          path: |
+            artifacts/ckm_stroke/gigastroke_four_eaf_wald_anomaly_review_ci.json
+            artifacts/ckm_stroke/gigastroke_four_eaf_wald_anomaly_review_ci.md
+          if-no-files-found: warn
+          retention-days: 30

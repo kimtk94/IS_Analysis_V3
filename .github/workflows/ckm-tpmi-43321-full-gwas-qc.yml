@@ -1,0 +1,69 @@
+name: CKM TPMI 433.21 full original GWAS all-SNP QC without inference
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-full-gwas-qc.yml'
+      - 'scripts/ckm_stroke/audit_tpmi_43321_full_gwas_qc.py'
+      - 'tests/test_ckm_tpmi_43321_full_gwas_qc.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-tpmi-43321-complete-source-snp-qc-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-negative-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate source error guards, OR/SE/P, allele orientation and scientific HOLD
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_tpmi_43321_full_gwas_qc.py
+          python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_full_gwas_qc.py' -v
+
+  full-original-genomewide-source:
+    needs: offline-negative-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify original TPMI publisher source 58MB acquisition and pinned source commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          run=44871738962
+          sha="028fdb7ff76afac537284418f57796de2056e18c"
+          data=json.loads(subprocess.check_output(
+              ["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+          if (data.get("conclusion")!="success" or data.get("head_sha")!=sha or
+              data.get("repository",{}).get("full_name")!=repo):
+              raise SystemExit("TPMI original compressed source SHA provenance unverified")
+          print("TPMI 433.21 ORIGINAL ONE-SHOT 58MB HEADER SHA PINNED")
+          PY
+      - name: Download original 58MB once, independently verify full SHA and stream ALL SNPs
+        run: |
+          python -m scripts.ckm_stroke.audit_tpmi_43321_full_gwas_qc \
+            --out artifacts/ckm_stroke/tpmi_43321_full_original_all_SNP_QC_HOLD.json
+      - name: Upload only aggregate source QC flags; do not export genomewide effects
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-TPMI43321-original-full-SNP-aggregate-QC-HOLD
+          path: artifacts/ckm_stroke/tpmi_43321_full_original_all_SNP_QC_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30

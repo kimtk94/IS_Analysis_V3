@@ -1,0 +1,113 @@
+name: CKM TPMI rs187759247 vs four publisher-MD5 GIGASTROKE EUR GWAS
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-gigastroke-rs187759247-targeted.yml'
+      - 'scripts/ckm_stroke/probe_gigastroke_tpmi_43321_lead.py'
+      - 'scripts/ckm_stroke/review_tpmi_gigastroke_four_targeted.py'
+      - 'tests/test_ckm_tpmi_gigastroke_targeted_crossancestry.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-tpmi-rs187759247-four-original-target-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  no-network-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile allele orientation and four-source provenance gates; test fail-closed conditions
+        run: |
+          python -m py_compile scripts/ckm_stroke/probe_gigastroke_tpmi_43321_lead.py
+          python -m py_compile scripts/ckm_stroke/review_tpmi_gigastroke_four_targeted.py
+          python -m unittest discover -s tests -p 'test_ckm_tpmi_gigastroke_targeted_crossancestry.py' -v
+
+  publisher-original-four:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[tpmi-source-four]')
+    needs: no-network-tests
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        trait: [AIS, LAA, CE, SVD]
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin original TPMI GRCh37 mapping and 2022 publisher source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          pins={
+              44873979328:"ca727193133e940d441387a003d07cded588ddd9",
+              44860586028:"7c1ca53a57f3e44b1cdb8e2cf19753b943cf45ba",
+          }
+          for run,sha in pins.items():
+              x=json.loads(subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+              if (x.get("conclusion")!="success" or x.get("head_sha")!=sha
+                  or x.get("repository",{}).get("full_name")!=repo):
+                  raise SystemExit("previous source or original allele mapping unverified")
+          print("PUBLISHER EUR ORIGINAL AND TPMI VARIANT MAPPING RUNS PINNED")
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-TPMI43321-lead-Ensembl-GRCh37-provenance-HOLD
+          run-id: 44873979328
+          github-token: ${{ github.token }}
+          path: artifacts/mapping
+      - name: Stream original published GIGASTROKE EUR trait, verify MD5 and target location only
+        run: |
+          python -m scripts.ckm_stroke.probe_gigastroke_tpmi_43321_lead \
+            --trait ${{ matrix.trait }} \
+            --mapped artifacts/mapping/tpmi_43321_GRCh37_Ensembl_bidirectional_map_HOLD.json \
+            --out artifacts/targets/probe_${{ matrix.trait }}.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-tpmi-rs187759247-gigastroke-${{ matrix.trait }}
+          path: artifacts/targets/probe_${{ matrix.trait }}.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  review-four:
+    needs: publisher-original-four
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-tpmi-rs187759247-gigastroke-*
+          merge-multiple: true
+          path: artifacts/targets
+      - name: Independently reconcile original four publisher MD5/row counts and aligned SNP outcome availability
+        run: |
+          python -m scripts.ckm_stroke.review_tpmi_gigastroke_four_targeted \
+            --folder artifacts/targets \
+            --out artifacts/targets/TPMI_rs187759247_GIGASTROKE_four_original_comparison_ci.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-TPMI-rs187759247-four-EUR-source-compare-HOLD
+          path: artifacts/targets/TPMI_rs187759247_GIGASTROKE_four_original_comparison_ci.json
+          if-no-files-found: warn
+          retention-days: 30

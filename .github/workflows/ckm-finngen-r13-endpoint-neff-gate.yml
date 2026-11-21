@@ -1,0 +1,79 @@
+name: CKM FinnGen R13 clinical endpoints and GIGASTROKE N_eff sensitivity source gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-finngen-r13-endpoint-neff-gate.yml'
+      - 'scripts/ckm_stroke/audit_finngen_r13_endpoint_definitions_neff.py'
+      - 'tests/test_ckm_finngen_r13_endpoint_definitions_neff.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-finngen-r13-definition-n-sensitive-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail-closed clinical definition, metadata, Neff and no-automatic-LDSC tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_finngen_r13_endpoint_definitions_neff.py
+          python -m unittest discover -s tests -p 'test_ckm_finngen_r13_endpoint_definitions_neff.py' -v
+
+  official-r13-clinical-source:
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm immutable original publisher 44-EUR-cohort supplement analysis
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          checks={
+             44855617332:"b189dd5205ba44970b1c88e56a280e755c9b76f6",
+             44860586028:"7c1ca53a57f3e44b1cdb8e2cf19753b943cf45ba",
+          }
+          for run,sha in checks.items():
+              data=json.loads(subprocess.check_output(
+                  ["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+              if (data.get("conclusion")!="success" or data.get("head_sha")!=sha or
+                  data.get("repository",{}).get("full_name")!=repo):
+                  raise SystemExit("original source integrity run not verified: "+str(run))
+          print("ORIGINAL COHORT AND FOUR OUTCOME SOURCE COMMITS PINNED")
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-stroke-LDSC-preregression-source-and-HOLD-evidence
+          run-id: 44855617332
+          github-token: ${{ github.token }}
+          path: artifacts/ckm_stroke
+      - name: Verify official DF13 case/control definitions and R13 public GWAS manifest; calculate descriptive N scenarios
+        run: |
+          python -m scripts.ckm_stroke.audit_finngen_r13_endpoint_definitions_neff \
+            --original-cohort-evidence artifacts/ckm_stroke/gigastroke_corrected_primary_ci.json \
+            --out artifacts/ckm_stroke/finngen_R13_DF13_stroke_definition_case_control_and_gigastroke_neff_ci.json
+      - name: Upload only bounded public metadata and scientific HOLD report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-finngen-R13-stroke-case-definition-and-N-eff-HOLD
+          path: artifacts/ckm_stroke/finngen_R13_DF13_stroke_definition_case_control_and_gigastroke_neff_ci.json
+          if-no-files-found: warn
+          retention-days: 30

@@ -1,0 +1,29 @@
+{
+  "schema": "ckm-glgc-next-batch-approval-v2",
+  "scientific_status": "HOLD",
+  "prior_run_id": 43869303834,
+  "prior_chromosomes": [
+    "6",
+    "5",
+    "4"
+  ],
+  "next_chromosomes": [
+    "3",
+    "2",
+    "1"
+  ],
+  "expected_prior_source_commit": "1e6417a1568ff054dc7e028fe49658426f1b2a21",
+  "prior_aggregate_statuses": {
+    "4": "PASS",
+    "5": "PASS",
+    "6": "PASS"
+  },
+  "expected_prior_snp_rows": {
+    "4": 9120584,
+    "5": 8391709,
+    "6": 8099563
+  },
+  "max_parallel_jobs": 3,
+  "expected_next_matrix_jobs": 9,
+  "approval_reason": "First 9 live source jobs and all 3 independent per-chromosome aggregate jobs of run #43869303834 completed SUCCESS. Original per-chromosome aggregate JSON verified: all technical PASS, scientific HOLD, same 40-character source commit, no missing/error, exact SNP totals. Continue final chr3/2/1 technical GWAS audit, not scientific MR."
+}

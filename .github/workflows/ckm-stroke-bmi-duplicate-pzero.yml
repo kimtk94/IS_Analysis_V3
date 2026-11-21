@@ -1,0 +1,53 @@
+name: CKM BMI original exact duplicate and zero P value reconciliation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-bmi-duplicate-pzero.yml'
+      - 'scripts/ckm_stroke/audit_bmi_duplicate_zero_p.py'
+      - 'tests/test_ckm_stroke_bmi_duplicate_zero_p.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-bmi-duplicate-pzero-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail-closed duplicates and P-underflow tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_bmi_duplicate_zero_p.py
+          python -m unittest discover -s tests -p test_ckm_stroke_bmi_duplicate_zero_p.py -v
+
+  source-evidence:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[bmi-dup-full]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compare raw BMI duplicate association rows and zero-P beta/SE in two pinned passes
+        run: |
+          python -m scripts.ckm_stroke.audit_bmi_duplicate_zero_p \
+            --out artifacts/ckm_stroke/bmi_duplicate_zero_p_ci.json
+      - name: Upload small original-data QC JSON only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-bmi-duplicate-pzero-evidence
+          path: artifacts/ckm_stroke/bmi_duplicate_zero_p_ci.json
+          if-no-files-found: warn
+          retention-days: 30

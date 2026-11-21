@@ -1,0 +1,5 @@
+phenotype	ancestry	accession	reported_trait	build	sample_total	published_raw_md5	metadata_url	verification
+AIS	EUR	GCST90104540	Ischemic stroke	GRCh37	1296908	1bfe4ae8a5042fb24cb0a562b05b0d2f	https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104540/GCST90104540_buildGRCh37.tsv.gz-meta.yaml	METADATA_VERIFIED_RAW_HASH_UNCHECKED
+LAA	EUR	GCST90104542	Large artery stroke	GRCh37	1241207	71ea9fd7c06791a831861053b6a1cfbe	https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104542/GCST90104542_buildGRCh37.tsv.gz-meta.yaml	METADATA_VERIFIED_RAW_HASH_UNCHECKED
+CE	EUR	GCST90104541	Cardioembolic stroke	GRCh37	1245612	c252262586a6ea84b985f30dd7ab32be	https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104541/GCST90104541_buildGRCh37.tsv.gz-meta.yaml	METADATA_VERIFIED_RAW_HASH_UNCHECKED
+SVD	EUR	GCST90104543	Small vessel stroke	GRCh37	1241619	f41bc5f55b3cab238e305e3e86363f69	https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104543/GCST90104543_buildGRCh37.tsv.gz-meta.yaml	METADATA_VERIFIED_RAW_HASH_UNCHECKED

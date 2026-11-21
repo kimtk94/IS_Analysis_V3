@@ -1,0 +1,64 @@
+name: CKM Stroke P1 GLGC pysam indexed fallback
+
+on:
+  push:
+    paths:
+      - 'scripts/ckm_stroke/glgc_pysam_probe.py'
+      - 'tests/test_ckm_stroke_glgc_pysam_probe.py'
+      - '.github/workflows/ckm-stroke-glgc-pysam.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  glgc-pysam-indexed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        trait: [LDL_C, HDL_C, TG]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned HTSlib Python bindings without apt repositories
+        run: |
+          python -m pip install pysam==0.23.3 certifi
+      - name: Configure verified TLS CA bundle for HTSlib and Python
+        run: |
+          python - <<'PY'
+          import certifi
+          import os
+          import ssl
+          from pathlib import Path
+          p = Path(certifi.where())
+          if not p.is_file() or p.stat().st_size < 1000:
+              raise RuntimeError("verified certificate bundle is missing")
+          print("certifi CA bundle:", p)
+          print("system SSL defaults:", ssl.get_default_verify_paths())
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as f:
+              f.write("CURL_CA_BUNDLE=" + str(p) + "\n")
+              f.write("SSL_CERT_FILE=" + str(p) + "\n")
+              f.write("REQUESTS_CA_BUNDLE=" + str(p) + "\n")
+          PY
+      - name: Validate indexed-region logic using mocked source
+        run: |
+          python -m unittest tests.test_ckm_stroke_glgc_region_probe tests.test_ckm_stroke_glgc_pysam_probe -v
+      - name: Query official GLGC EUR BGZF index (small window only)
+        env:
+          TRAIT: ${{ matrix.trait }}
+        run: |
+          python -m scripts.ckm_stroke.glgc_pysam_probe \
+            --trait "$TRAIT" --chrom 22 --start 20000000 --end 20050000 \
+            --out "artifacts/ckm_stroke/glgc_pysam_$TRAIT.json"
+      - name: Upload remote probe metadata
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-pysam-${{ matrix.trait }}
+          path: artifacts/ckm_stroke/glgc_pysam_*.json
+          retention-days: 30
+          if-no-files-found: warn

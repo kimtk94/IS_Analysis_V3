@@ -1,0 +1,78 @@
+name: CKM BMI conservative MRCIEU Zenodo LDscore candidate input audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-hm3-triple-candidate.yml'
+      - 'scripts/ckm_stroke/audit_hm3_zenodo_catalog_diff.py'
+      - 'scripts/ckm_stroke/prepare_bmi_ldsc_candidate.py'
+      - 'scripts/ckm_stroke/verify_bmi_ldsc_candidate.py'
+      - 'tests/test_ckm_stroke_hm3_zenodo_catalog_diff.py'
+      - 'tests/test_ckm_stroke_prepare_bmi_ldsc_candidate.py'
+      - 'tests/test_ckm_stroke_verify_bmi_ldsc_candidate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-hm3-triple-candidate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail-closed allele and candidate conversion fixtures
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_hm3_zenodo_catalog_diff.py scripts/ckm_stroke/prepare_bmi_ldsc_candidate.py scripts/ckm_stroke/verify_bmi_ldsc_candidate.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_hm3_zenodo_catalog_diff.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_prepare_bmi_ldsc_candidate.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_verify_bmi_ldsc_candidate.py' -v
+
+  real-source-evidence:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[hm3-triple-full]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Actual MRCIEU vs Zenodo 22-chromosome SNP and allele catalog
+        run: |
+          python -m scripts.ckm_stroke.audit_hm3_zenodo_catalog_diff \
+            --out artifacts/ckm_stroke/hm3_zenodo_catalog_ci.json
+      - name: BMI conservative candidate transformation with temporary local gzip
+        run: |
+          python -m scripts.ckm_stroke.prepare_bmi_ldsc_candidate \
+            --out artifacts/ckm_stroke/bmi_ldsc_candidate_ci.json \
+            --emit-candidate artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz
+      - name: Independently verify candidate content and plain SHA-256
+        run: |
+          python -m scripts.ckm_stroke.verify_bmi_ldsc_candidate \
+            --candidate artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz \
+            --provenance artifacts/ckm_stroke/bmi_ldsc_candidate_ci.json \
+            --out artifacts/ckm_stroke/bmi_candidate_independent_ci.json
+      - name: Delete temporary derived candidate before artifact upload
+        if: always()
+        run: |
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz').unlink(missing_ok=True)"
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz.partial').unlink(missing_ok=True)"
+      - name: Upload small evidence JSON only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-hm3-triple-bmi-candidate-evidence
+          path: |
+            artifacts/ckm_stroke/hm3_zenodo_catalog_ci.json
+            artifacts/ckm_stroke/bmi_ldsc_candidate_ci.json
+            artifacts/ckm_stroke/bmi_candidate_independent_ci.json
+          if-no-files-found: warn
+          retention-days: 30

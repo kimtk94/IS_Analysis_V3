@@ -1,0 +1,143 @@
+name: CKM Stroke GLGC source SNP export (manual, prior-QC gated)
+
+on:
+  workflow_dispatch:
+    inputs:
+      trait:
+        description: 'GLGC EUR lipid phenotype'
+        type: choice
+        required: true
+        options: ['LDL_C', 'HDL_C', 'TG']
+      chromosome:
+        description: 'Autosome; source must have prior full-chr technical PASS'
+        type: choice
+        required: true
+        options: ['22', '21', '20', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1']
+      source_qc_run_id:
+        description: 'Completed source technical-PASS run ID (chr22 43431051168, other chromosomes from batch)'
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-glgc-source-snp-export-${{ github.ref }}-${{ inputs.chromosome }}-${{ inputs.trait }}
+  cancel-in-progress: false
+
+jobs:
+  export-one-provenance-checked-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch prior real source QC (strict PASS prerequisite)
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.chromosome == '22' && format('ckm-glgc-chr-qc-{0}', inputs.trait) || format('ckm-glgc-batch-{0}-{1}', inputs.chromosome, inputs.trait) }}
+          run-id: ${{ inputs.source_qc_run_id }}
+          repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/prior_source
+      - name: Verify original source identity, completeness and QC PASS
+        env:
+          CHROM: ${{ inputs.chromosome }}
+          TRAIT: ${{ inputs.trait }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          files=list(Path("artifacts/prior_source").rglob("*.json"))
+          if len(files)!=1:
+              raise RuntimeError("expected exactly one prior GLGC QC JSON artifact")
+          data=json.loads(files[0].read_text(encoding="utf-8"))
+          if data.get("status")!="PASS" or data.get("variant_qc",{}).get("status")!="PASS":
+              raise RuntimeError("prior source technical QC not PASS")
+          if (data.get("trait")!=os.environ["TRAIT"] or
+                  str(data.get("chromosome"))!=os.environ["CHROM"] or
+                  data.get("source")!="GLGC_Graham2021" or
+                  data.get("ancestry")!="EUR" or
+                  data.get("row_cap_reached") or
+                  not data.get("source_commit")):
+              raise RuntimeError("prior source metadata identity or completeness failure")
+          print("Independent source-QC gate PASS:", data["source_commit"])
+          PY
+      - name: Install source-indexed reader with TLS-verifying CA
+        run: |
+          python -m pip install pysam==0.23.3 certifi
+          python - <<'PY'
+          import certifi
+          import os
+          from pathlib import Path
+          ca=Path(certifi.where())
+          if not ca.is_file() or ca.stat().st_size<1000:
+              raise RuntimeError("verified CA bundle missing")
+          with open(os.environ["GITHUB_ENV"],"a",encoding="utf-8") as dest:
+              for key in ("CURL_CA_BUNDLE","SSL_CERT_FILE","REQUESTS_CA_BUNDLE"):
+                  dest.write(key+"="+str(ca)+"\n")
+          PY
+      - name: Re-read verified source and retain N/EAF/logP/rsID SNP input
+        env:
+          TRAIT: ${{ inputs.trait }}
+          CHROM: ${{ inputs.chromosome }}
+        run: |
+          python -m scripts.ckm_stroke.glgc_chr_shard \
+            --trait "$TRAIT" --chromosome "$CHROM" --max-rows 5000000 \
+            --export-source-snp-dir artifacts/source_snps \
+            --out artifacts/ckm_glgc_export_qc.json
+      - name: Compare original source QC and new export including checksum
+        env:
+          TRAIT: ${{ inputs.trait }}
+          CHROM: ${{ inputs.chromosome }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          prior=json.loads(next(Path("artifacts/prior_source").rglob("*.json")).read_text())
+          current=json.loads(Path("artifacts/ckm_glgc_export_qc.json").read_text())
+          for key in ("trait","chromosome","source_url","source","ancestry"):
+              if current.get(key)!=prior.get(key):
+                  raise RuntimeError("source export identity changed: "+key)
+          for key in ("original_rows","retained_autosomal_snp","non_snp",
+                      "symbolic_or_ambiguous_non_snp","invalid_alleles"):
+              if current.get("counts",{}).get(key)!=prior.get("counts",{}).get(key):
+                  raise RuntimeError("source data changed since prior QC: "+key)
+          if current.get("status")!="PASS" or current.get("source_snp_export_status")!="PASS":
+              raise RuntimeError("source SNP export not independently PASS")
+          if current.get("analysis_ready_data_persisted") is not False or current.get("full_file_source_sha256_verified") is not False:
+              raise RuntimeError("MR readiness or source integrity overstated")
+          paths=list(Path("artifacts/source_snps").glob("*.tsv.gz"))
+          if len(paths)!=1:
+              raise RuntimeError("expected one exported GLGC SNP file")
+          p=paths[0]
+          digest=hashlib.file_digest(p.open("rb"),"sha256").hexdigest()
+          if digest!=current.get("source_snp_export_sha256"):
+              raise RuntimeError("export bytes failed SHA-256 verification")
+          print("Verified original/new same SNP QC counts and exported GZIP SHA-256:",digest)
+          PY
+      - name: Upload provenance-checked public SNP source input (not harmonized)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: glgc-source-snps-${{ inputs.trait }}-chr${{ inputs.chromosome }}
+          path: |
+            artifacts/source_snps/*.tsv.gz
+            artifacts/ckm_glgc_export_qc.json
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload diagnostic JSON on HOLD / failure when available
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: glgc-source-snp-export-hold-${{ inputs.trait }}-chr${{ inputs.chromosome }}
+          path: artifacts/ckm_glgc_export_qc.json
+          retention-days: 30
+          if-no-files-found: warn

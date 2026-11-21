@@ -1,0 +1,149 @@
+name: CKM Stroke GLGC all-22-autosome real-evidence technical audit
+
+on:
+  # The final single marker is deliberately absent until all real chr3/2/1
+  # source QC AND 3 independent chromosome summaries are validated.
+  push:
+    branches:
+      - research/ckm-stroke-staged-actions-20261111
+    paths:
+      - config/ckm_stroke/glgc_final_coverage_approval.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-glgc-all22-evidence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  all-22-official-aggregate-artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Offline completeness, missing-source, and scientific-HOLD regression checks
+        run: |
+          python -m unittest tests.test_ckm_stroke_audit_glgc_autosomes -v
+          python -m py_compile scripts/ckm_stroke/audit_glgc_autosomes.py
+      - name: Fetch chr22 original technical-PASS source
+        uses: actions/download-artifact@v4
+        with:
+          name: ckm-glgc-chr-aggregate
+          repository: ${{ github.repository }}
+          run-id: '43431051168'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/verified_aggregates
+      - name: Fetch chr21-19 first batch
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-summary-*
+          repository: ${{ github.repository }}
+          run-id: '43848671279'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/verified_aggregates
+          merge-multiple: true
+      - name: Fetch chr18-16 second batch
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-summary-*
+          repository: ${{ github.repository }}
+          run-id: '43865163287'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/verified_aggregates
+          merge-multiple: true
+      - name: Fetch chr15-13 third batch
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-summary-*
+          repository: ${{ github.repository }}
+          run-id: '43866716532'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/verified_aggregates
+          merge-multiple: true
+      - name: Fetch chr12-10 fourth batch
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-summary-*
+          repository: ${{ github.repository }}
+          run-id: '43867261217'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/verified_aggregates
+          merge-multiple: true
+      - name: Fetch chr9-7 fifth batch
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-summary-*
+          repository: ${{ github.repository }}
+          run-id: '43867962230'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/verified_aggregates
+          merge-multiple: true
+      - name: Fetch chr6-4 sixth batch
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-summary-*
+          repository: ${{ github.repository }}
+          run-id: '43869303834'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/verified_aggregates
+          merge-multiple: true
+      - name: Fetch chr3-1 final batch (must actually be completed first)
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ckm-glgc-batch-summary-*
+          repository: ${{ github.repository }}
+          run-id: '43870196218'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/verified_aggregates
+          merge-multiple: true
+      - name: Require EXACTLY 22 unique real chromosome aggregates and truthful science HOLD
+        run: |
+          python -m scripts.ckm_stroke.audit_glgc_autosomes \
+            --input-dir artifacts/verified_aggregates \
+            --output artifacts/ckm_glgc_all22_technical_evidence.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path("artifacts/ckm_glgc_all22_technical_evidence.json").read_text())
+          assert report["status"]=="PASS", report.get("errors")
+          assert report["scientific_status"]=="HOLD"
+          assert report["observed_chromosome_pass"]==22
+          assert report["missing_chromosome_count"]==0
+          assert report["hold_chromosome_count"]==0
+          assert report["trait_chromosome_pass"]==66
+          assert report["expected_trait_chromosome_jobs"]==66
+          assert len(report["coverage"])==22
+          assert all(x["status"]=="PASS" and len(x["traits"])==3 for x in report["coverage"])
+          assert not report["whole_source_checksum_verified"]
+          assert report["ldsc_ready"]=="NOT_ASSESSED"
+          assert report["mr_ready"]=="NOT_ASSESSED"
+          assert not report["source_snp_export_scientific_ready"]
+          approved=json.loads(Path("config/ckm_stroke/glgc_final_coverage_approval.json").read_text())
+          assert approved["schema"]=="ckm-glgc-final-coverage-approval-v1"
+          assert approved["scientific_status"]=="HOLD"
+          assert approved["expected_chromosomes"]==22
+          assert approved["expected_trait_chromosome_jobs"]==66
+          assert report["totals_verified_pass_only"]["retained_snp_rows"]==approved["expected_total_retained_snp_rows"]
+          assert sorted(report["source_commits"])==sorted(approved["expected_source_commits"])
+          assert sorted(approved["prior_success_runs"])==sorted([43431051168,43848671279,43865163287,43866716532,43867261217,43867962230,43869303834,43870196218])
+          print("GLGC all 22 autosomes x 3 EUR traits: TECHNICAL PASS, scientific HOLD")
+          print("Per-phenotype SNP association rows:",report["totals_verified_pass_only"]["retained_snp_rows"])
+          print("Source commits requiring cross-revision review:",report["source_commits"])
+          print("Unreported historical underflow fields:",report["totals_verified_pass_only"]["underflow_unreported_legacy_trait_chromosome_results"])
+          PY
+      - name: Upload all aggregate source provenance and derived technical coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-all22-technical-audit-evidence
+          path: |
+            artifacts/verified_aggregates/glgc_chr*-aggregate.json
+            artifacts/ckm_glgc_all22_technical_evidence.json
+          retention-days: 30
+          if-no-files-found: warn

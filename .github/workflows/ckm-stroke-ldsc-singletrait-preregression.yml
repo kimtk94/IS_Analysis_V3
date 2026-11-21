@@ -1,0 +1,111 @@
+name: CKM Stroke single-trait LDSC preregression statistical input gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-ldsc-singletrait-preregression.yml'
+      - 'scripts/ckm_stroke/audit_ldsc_preregression_readiness.py'
+      - 'scripts/ckm_stroke/audit_gigastroke_logor_prefix.py'
+      - 'scripts/ckm_stroke/audit_locke_yengo_gigastroke_allele_order.py'
+      - 'tests/test_ckm_stroke_audit_locke_yengo_gigastroke_allele_order.py'
+      - 'tests/test_ckm_stroke_ldsc_preregression_readiness.py'
+      - 'tests/test_ckm_stroke_gigastroke_logor_prefix.py'
+      - 'config/ckm_stroke/gigastroke_eur_official.tsv'
+      - 'docs/ckm_stroke_ldsc_singletrait_preregression_gate_20261117.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-stroke-ldsc-preregression-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile input gate and exact effect scale verifier
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_ldsc_preregression_readiness.py scripts/ckm_stroke/audit_gigastroke_logor_prefix.py
+      - name: Fail-closed input, signed effect, N/allele and pinned EUR HM3/LD reference tests
+        run: |
+          python -m unittest discover -s tests -p 'test_ckm_stroke_ldsc_preregression_readiness.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_logor_prefix.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_audit_locke_yengo_gigastroke_allele_order.py' -v
+
+  original-sources:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[ldsc-preregression-full]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Rebuild 2015 independent BMI exposure with original GIANT and HM3/EUR LDscore
+        run: |
+          python -m scripts.ckm_stroke.prepare_locke_2015_independent_panel \
+            --emit-candidate artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz \
+            --out artifacts/ckm_stroke/locke_2015_independent_provenance_ci.json
+      - name: Independently rebuild 2018 BMI candidate from corrected GIANT source
+        run: |
+          python -m scripts.ckm_stroke.prepare_bmi_ldsc_candidate \
+            --emit-candidate artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz \
+            --out artifacts/ckm_stroke/bmi_2018_candidate_provenance_ci.json
+      - name: Read 2022 corrected GIGASTROKE primary cohort/table3 source
+        run: |
+          python -m scripts.ckm_stroke.audit_gigastroke_supplement_cohort_neff \
+            --out artifacts/ckm_stroke/gigastroke_corrected_primary_ci.json
+      - name: Independently read original Locke 2015 and GIGASTROKE 2022 study cohort sources
+        run: |
+          python -m scripts.ckm_stroke.audit_locke_gigastroke_cohort_overlap \
+            --out artifacts/ckm_stroke/locke_gigastroke_cohort_overlap_ci.json
+      - name: Check original 4 stroke EUR effect beta matches log-odds (128 KB each)
+        run: |
+          python -m scripts.ckm_stroke.audit_gigastroke_logor_prefix \
+            --out artifacts/ckm_stroke/gigastroke_eur_prefix_logor_ci.json
+      - name: Only calculate descriptive BMI Z2 and strict four-stroke outcome scientific HOLD
+        run: |
+          python -m scripts.ckm_stroke.audit_ldsc_preregression_readiness \
+            --locke artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz \
+            --locke-evidence artifacts/ckm_stroke/locke_2015_independent_provenance_ci.json \
+            --yengo artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz \
+            --yengo-evidence artifacts/ckm_stroke/bmi_2018_candidate_provenance_ci.json \
+            --cohort-file artifacts/ckm_stroke/gigastroke_corrected_primary_ci.json \
+            --probe-file artifacts/ckm_stroke/gigastroke_eur_prefix_logor_ci.json \
+            --overlap-file artifacts/ckm_stroke/locke_gigastroke_cohort_overlap_ci.json \
+            --out artifacts/ckm_stroke/ldsc_singletrait_input_preflight_ci.json
+      - name: Independently cross-check Locke 2015, Yengo 2018, original stroke bounded allele order
+        run: |
+          python -m scripts.ckm_stroke.audit_locke_yengo_gigastroke_allele_order \
+            --locke artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz \
+            --locke-provenance artifacts/ckm_stroke/locke_2015_independent_provenance_ci.json \
+            --yengo artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz \
+            --yengo-provenance artifacts/ckm_stroke/bmi_2018_candidate_provenance_ci.json \
+            --out artifacts/ckm_stroke/gigastroke_independent_2015_allele_order_ci.json
+      - name: Delete intermediate GWAS candidate tables before artifact upload
+        if: always()
+        run: |
+          python -c "from pathlib import Path; [p.unlink(missing_ok=True) for p in [Path('artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz'),Path('artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz'),Path('artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz.partial'),Path('artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz.partial')]]"
+      - name: Preserve aggregate-only evidence (no sample genotypes, original GWAS or candidate tables)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-stroke-LDSC-preregression-source-and-HOLD-evidence
+          path: |
+            artifacts/ckm_stroke/locke_2015_independent_provenance_ci.json
+            artifacts/ckm_stroke/bmi_2018_candidate_provenance_ci.json
+            artifacts/ckm_stroke/gigastroke_corrected_primary_ci.json
+            artifacts/ckm_stroke/locke_gigastroke_cohort_overlap_ci.json
+            artifacts/ckm_stroke/gigastroke_eur_prefix_logor_ci.json
+            artifacts/ckm_stroke/ldsc_singletrait_input_preflight_ci.json
+            artifacts/ckm_stroke/gigastroke_independent_2015_allele_order_ci.json
+          if-no-files-found: warn
+          retention-days: 30

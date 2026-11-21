@@ -1,0 +1,75 @@
+name: CKM TPMI full GWAS OBS_CT vs phenotype sample denominator gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-obsct-source-gate.yml'
+      - 'scripts/ckm_stroke/verify_tpmi_43321_source_obsct_discrepancy.py'
+      - 'tests/test_ckm_tpmi_43321_obsct_discrepancy.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-tpmi-obsct-independent-report-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify independent N discrepancy calculations and fail closed on QC drift
+        run: |
+          python -m py_compile scripts/ckm_stroke/verify_tpmi_43321_source_obsct_discrepancy.py
+          python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_obsct_discrepancy.py' -v
+
+  source-aggregate:
+    needs: fixture
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin full original TPMI 1.739M SNP source run and source commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          run=44872892525
+          sha="8a52ee0dd780041eb8d95ff2aee5e978fb7eb8bb"
+          result=json.loads(subprocess.check_output(
+             ["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+          if (result.get("conclusion")!="success" or result.get("head_sha")!=sha or
+              result.get("repository",{}).get("full_name")!=repo):
+              raise SystemExit("whole original source GWAS PASS integrity evidence is missing")
+          print("PINNED 1,739,048 ORIGINAL TPMI SNP SOURCE VERIFIED")
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-TPMI43321-original-full-SNP-aggregate-QC-HOLD
+          run-id: 44872892525
+          github-token: ${{ github.token }}
+          path: artifacts/tpmi
+      - name: Compare the original PheWeb ncase+ncontrol to actual constant PLINK2 OBS_CT
+        run: |
+          python -m scripts.ckm_stroke.verify_tpmi_43321_source_obsct_discrepancy \
+            --full-source-artifact artifacts/tpmi/tpmi_43321_full_original_all_SNP_QC_HOLD.json \
+            --out artifacts/tpmi/tpmi_43321_original_OBS_CT_vs_case_control_source_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-tpmi-43321-sample-N-discrepancy-HOLD
+          path: artifacts/tpmi/tpmi_43321_original_OBS_CT_vs_case_control_source_HOLD.json
+          retention-days: 30
+          if-no-files-found: warn

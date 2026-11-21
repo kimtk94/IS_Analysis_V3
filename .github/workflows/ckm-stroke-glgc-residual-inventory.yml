@@ -1,0 +1,46 @@
+name: CKM GLGC remaining zero-P candidate inventory
+
+on:
+  push:
+    branches:
+      - research/ckm-stroke-staged-actions-20261111
+    paths:
+      - .github/workflows/ckm-stroke-glgc-residual-inventory.yml
+      - scripts/ckm_stroke/inventory_glgc_zero_p_residual.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  reconcile-original-aggregates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download source-linked original final 22-autosome evidence
+        uses: actions/download-artifact@v4
+        with:
+          repository: ${{ github.repository }}
+          run-id: '43871252114'
+          name: ckm-glgc-all22-technical-audit-evidence
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/final
+      - name: Check prior evidence and categorize 1096 residual candidates
+        run: |
+          python -m py_compile scripts/ckm_stroke/inventory_glgc_zero_p_residual.py
+          python -m scripts.ckm_stroke.inventory_glgc_zero_p_residual \
+            --input-dir artifacts/final \
+            --output-prefix artifacts/residual/glgc_residual_inventory
+      - name: Retain provenance and fail-closed classification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-residual-candidate-inventory
+          path: artifacts/residual/*
+          retention-days: 30
+          if-no-files-found: warn

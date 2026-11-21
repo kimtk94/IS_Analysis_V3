@@ -1,0 +1,170 @@
+name: CKM GLGC residual 1096 source zero-P Wald revalidation
+
+on:
+  push:
+    branches:
+      - research/ckm-stroke-staged-actions-20261111
+    paths:
+      - .github/workflows/ckm-stroke-glgc-residual-source-wald.yml
+      - scripts/ckm_stroke/plan_glgc_residual_recheck.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-glgc-residual-source-wald-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download 22 original chromosome aggregates
+        uses: actions/download-artifact@v4
+        with:
+          repository: ${{ github.repository }}
+          run-id: '43871252114'
+          name: ckm-glgc-all22-technical-audit-evidence
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/original
+      - name: Build exact dynamic matrix covering all 1096 candidates
+        id: plan
+        run: |
+          python -m scripts.ckm_stroke.plan_glgc_residual_recheck \
+            --evidence artifacts/original --matrix artifacts/residual/matrix.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-residual-1096-source-matrix
+          path: artifacts/residual/matrix.json
+          retention-days: 30
+  source-wald:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned numerical and indexed source readers
+        run: |
+          python -m pip install pysam==0.23.3 scipy==1.16.3 certifi
+          python - <<'PY'
+          import os,certifi
+          from pathlib import Path
+          ca=Path(certifi.where())
+          assert ca.is_file() and ca.stat().st_size>1000
+          with open(os.environ["GITHUB_ENV"],"a") as f:
+              for key in ("CURL_CA_BUNDLE","SSL_CERT_FILE","REQUESTS_CA_BUNDLE"):
+                  f.write(key+"="+str(ca)+"\n")
+          PY
+      - name: Original independent per-trait QC evidence
+        uses: actions/download-artifact@v4
+        with:
+          repository: ${{ github.repository }}
+          run-id: ${{ matrix.qc_run }}
+          name: ckm-glgc-batch-${{ matrix.chrom }}-${{ matrix.trait }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/prior
+      - name: Cross-check original QC schema and prepare exact observed zero-P expectation
+        env:
+          CHROM: ${{ matrix.chrom }}
+          TRAIT: ${{ matrix.trait }}
+          SOURCE_SHA: ${{ matrix.source_sha }}
+          OTHER: ${{ matrix.expected_other }}
+          REPORTED: ${{ matrix.expected_total_pzero }}
+          PREVIOUS: ${{ matrix.previously_verified }}
+          RESIDUAL: ${{ matrix.candidate_residual }}
+          SCHEMA: ${{ matrix.schema }}
+        run: |
+          mkdir -p artifacts/validated
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          files=list(Path("artifacts/prior").rglob("*.json"))
+          assert len(files)==1,files
+          d=json.loads(files[0].read_text())
+          assert d["chromosome"]==os.environ["CHROM"] and d["trait"]==os.environ["TRAIT"]
+          assert d["source_commit"]==os.environ["SOURCE_SHA"]
+          assert d["status"]=="PASS" and d["scientific_status"]=="HOLD"
+          assert d["header_evidence"]["status"]=="PASS" and d["variant_qc"]["status"]=="PASS"
+          assert d["row_cap_reached"] is False
+          counts=d["counts"]
+          assert counts["p_underflow_zero"]>=0
+          assert counts["p_underflow_zero"]<=int(os.environ["OTHER"])
+          assert int(os.environ["OTHER"])-int(os.environ["PREVIOUS"])==int(os.environ["RESIDUAL"])
+          if os.environ["SCHEMA"]=="REPORTED":
+              assert counts["p_underflow_zero"]==int(os.environ["REPORTED"])
+          assert counts["p_underflow_zero"]>=int(os.environ["PREVIOUS"])
+          n=counts["p_underflow_zero"]
+          Path("artifacts/validated/original_qc_evidence.json").write_text(json.dumps({
+              "original_rows":counts["original_rows"],"total_source_pzero":n,
+              "other_candidates":int(os.environ["OTHER"]),
+              "other_nonzero_reasons":int(os.environ["OTHER"])-n,
+              "previous_verified":int(os.environ["PREVIOUS"]),
+              "new_pzero_expected":n-int(os.environ["PREVIOUS"]),
+              "classification":os.environ["SCHEMA"],
+              "chromosome":d["chromosome"],"trait":d["trait"],
+              "source_commit":d["source_commit"],
+              "scientific_status":"HOLD"},indent=2)+"\n")
+          with open(os.environ["GITHUB_ENV"],"a") as f:
+              f.write("SOURCE_ROWS="+str(counts["original_rows"])+"\n")
+              f.write("TOTAL_PZERO="+str(n)+"\n")
+              f.write("NEW_PZERO="+str(n-int(os.environ["PREVIOUS"]))+"\n")
+          print("Original QC verification:",d["chromosome"],d["trait"],"zeroP",n,"nonzero-other",int(os.environ["OTHER"])-n)
+          PY
+      - name: Re-read whole original chromosome source and compare exact count
+        env:
+          CHROM: ${{ matrix.chrom }}
+          TRAIT: ${{ matrix.trait }}
+        run: |
+          python -m scripts.ckm_stroke.glgc_zero_p_probe \
+            --trait "$TRAIT" --chromosome "$CHROM" --max-rows 5000000 \
+            --expected-original-rows "$SOURCE_ROWS" --expected-pzero-rows "$TOTAL_PZERO" \
+            --json-output artifacts/validated/zero_p_source.json \
+            --tsv-output artifacts/validated/zero_p_source.tsv.gz
+      - name: Verify all source zero-P entries against log-domain Wald
+        env:
+          CHROM: ${{ matrix.chrom }}
+          TRAIT: ${{ matrix.trait }}
+        run: |
+          python -m scripts.ckm_stroke.glgc_zero_p_logdomain_wald \
+            --input artifacts/validated/zero_p_source.tsv.gz \
+            --expected-count "$TOTAL_PZERO" --chromosome "$CHROM" --trait "$TRAIT" \
+            --json-output artifacts/validated/wald_diagnostic.json \
+            --tsv-output artifacts/validated/wald_by_variant.tsv.gz
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads(Path("artifacts/validated/wald_diagnostic.json").read_text())
+          a=json.loads(Path("artifacts/validated/zero_p_source.json").read_text())
+          assert a["status"]=="PASS" and d["status"]=="PASS"
+          assert a["pzero_with_valid_original_logp"]==int(os.environ["TOTAL_PZERO"])
+          assert a["duplicate_zero_p_variant_keys"]==0
+          assert d["abs_delta_gt_1"]==0
+          assert d["causal_or_mr_readiness"]=="NOT_ASSESSED"
+          assert d["scientific_status"]=="HOLD"
+          print("PASS candidate new zeroP:",os.environ["NEW_PZERO"],
+                "max abs delta:",d["source_vs_wald_abs_log10_delta_max"])
+          PY
+      - name: Preserve independent source and numerical evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-glgc-residual-chr${{ matrix.chrom }}-${{ matrix.trait }}
+          path: artifacts/validated/*
+          retention-days: 30
+          if-no-files-found: warn

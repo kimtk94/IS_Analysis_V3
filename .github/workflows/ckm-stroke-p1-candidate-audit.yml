@@ -1,0 +1,56 @@
+name: CKM P1 BMI SBP T2D source candidate landing audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-p1-candidate-audit.yml'
+      - 'scripts/ckm_stroke/audit_p1_gwas_candidates.py'
+      - 'scripts/ckm_stroke/probe_primary_file_links.py'
+      - 'scripts/ckm_stroke/probe_bmi_raw_header.py'
+      - 'tests/test_ckm_stroke_p1_gwas_candidates.py'
+      - 'tests/test_ckm_stroke_probe_primary_file_links.py'
+      - 'tests/test_ckm_stroke_probe_bmi_raw_header.py'
+      - 'config/ckm_stroke/p1_exact_source_endpoints.tsv'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-p1-source-metadata-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Offline fail-closed regression tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_p1_gwas_candidates.py scripts/ckm_stroke/probe_primary_file_links.py scripts/ckm_stroke/probe_bmi_raw_header.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_p1_gwas_candidates.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_probe_primary_file_links.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_probe_bmi_raw_header.py' -v
+      - name: Inspect official source pages only
+        run: |
+          python scripts/ckm_stroke/audit_p1_gwas_candidates.py --out artifacts/ckm_stroke/p1_candidate_sources.json
+          python scripts/ckm_stroke/probe_primary_file_links.py --output artifacts/ckm_stroke/p1_primary_source_links.json
+      - name: Inspect small compressed BMI header prefix only
+        run: |
+          if python scripts/ckm_stroke/probe_bmi_raw_header.py --out artifacts/ckm_stroke/p1_bmi_header.json; then
+            echo 'BMI_HEADER=PASS_HEADER_ONLY; scientific HOLD'
+          else
+            echo 'BMI_HEADER=SOURCE_UNAVAILABLE_OR_SCHEMA_REVIEW; scientific HOLD'
+          fi
+      - name: Archive metadata-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-p1-bmi-sbp-t2d-candidate-audit
+          path: artifacts/ckm_stroke/p1_*.json
+          if-no-files-found: warn
+          retention-days: 30

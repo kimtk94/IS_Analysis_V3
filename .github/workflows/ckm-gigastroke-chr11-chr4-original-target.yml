@@ -1,0 +1,90 @@
+name: CKM original GIGASTROKE chr11 SNP identity and chr4 Wald precision QC
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-gigastroke-chr11-chr4-original-target.yml'
+      - 'scripts/ckm_stroke/audit_gigastroke_chr11_chr4_source_triage.py'
+      - 'tests/test_ckm_stroke_chr11_chr4_source_triage.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-gigastroke-original-chr11-chr4-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail-closed original SNP identity and P rounding tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_gigastroke_chr11_chr4_source_triage.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_chr11_chr4_source_triage.py' -v
+
+  targeted-four-original-md5:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[chr4-chr11-full]')
+    needs: offline-fixture
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify immutable previous whole-original MD5/EAF SUCCESS run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          run=44860586028
+          exact="7c1ca53a57f3e44b1cdb8e2cf19753b943cf45ba"
+          result=json.loads(subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+          if result.get("head_sha")!=exact or result.get("conclusion")!="success":
+              raise SystemExit("previous original publisher-MD5 source evidence not pinned")
+          if result.get("repository",{}).get("full_name")!=repo:
+              raise SystemExit("previous evidence from unexpected repository")
+          print("PINNED FULL ORIGINAL EAF/WALD REFERENCE VERIFIED")
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-four-gigastroke-eur-md5-bmi-orientation
+          run-id: 44860586028
+          github-token: ${{ github.token }}
+          path: artifacts/ckm_stroke
+      - name: Reproduce pinned Yengo2018 BMI candidates and source SHA for coordinate lookup
+        run: |
+          python -m scripts.ckm_stroke.prepare_bmi_ldsc_candidate \
+            --out artifacts/ckm_stroke/bmi_candidate_target_chr4_11_ci.json \
+            --emit-candidate artifacts/ckm_stroke/bmi_candidate_target_chr4_11.sumstats.gz
+      - name: Stream original four GWAS once, reconfirm publisher MD5 and SHA, extract bounded SNP QC
+        run: |
+          python -m scripts.ckm_stroke.audit_gigastroke_chr11_chr4_source_triage \
+            --candidate artifacts/ckm_stroke/bmi_candidate_target_chr4_11.sumstats.gz \
+            --provenance artifacts/ckm_stroke/bmi_candidate_target_chr4_11_ci.json \
+            --manifest config/ckm_stroke/gigastroke_eur_official.tsv \
+            --previous-original-evidence artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json \
+            --out artifacts/ckm_stroke/targeted_chr11_chr4_variant_identity_ci.json
+      - name: Delete temporary candidate even on failure
+        if: always()
+        run: |
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/bmi_candidate_target_chr4_11.sumstats.gz').unlink(missing_ok=True)"
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/bmi_candidate_target_chr4_11.sumstats.gz.partial').unlink(missing_ok=True)"
+      - name: Upload only bounded targeted identifiers and QC flags (no original summary effects)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-gigastroke-original-chr11-identity-chr4-wald
+          path: artifacts/ckm_stroke/targeted_chr11_chr4_variant_identity_ci.json
+          if-no-files-found: warn
+          retention-days: 30

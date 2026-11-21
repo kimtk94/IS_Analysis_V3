@@ -1,0 +1,118 @@
+name: CKM GIGASTROKE 4 EUR full publisher MD5 and BMI allele alignment
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-gigastroke-four-full-md5-harmonization.yml'
+      - 'scripts/ckm_stroke/audit_gigastroke_bmi_allele_harmonization.py'
+      - 'scripts/ckm_stroke/review_gigastroke_full_evidence.py'
+      - 'tests/test_ckm_stroke_gigastroke_bmi_allele_harmonization.py'
+      - 'tests/test_ckm_stroke_review_gigastroke_full_evidence.py'
+      - 'scripts/ckm_stroke/audit_ldsc_chr_attrition.py'
+      - 'scripts/ckm_stroke/audit_locke_yengo_gigastroke_allele_order.py'
+      - 'scripts/ckm_stroke/audit_gigastroke_independent_full_direction.py'
+      - 'scripts/ckm_stroke/audit_gigastroke_eaf_gc.py'
+      - 'tests/test_ckm_stroke_gigastroke_eaf_gc.py'
+      - 'tests/test_ckm_stroke_gigastroke_independent_full_direction.py'
+      - 'tests/test_ckm_stroke_ldsc_chr_attrition.py'
+      - 'docs/ckm_stroke_gigastroke_four_full_md5_allele_harmonization_20261116.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-gigastroke-four-md5-align-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and verify fail-closed direction / MD5 / duplicate tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_gigastroke_bmi_allele_harmonization.py scripts/ckm_stroke/review_gigastroke_full_evidence.py scripts/ckm_stroke/audit_gigastroke_eaf_gc.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_bmi_allele_harmonization.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_review_gigastroke_full_evidence.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_ldsc_chr_attrition.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_independent_full_direction.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_eaf_gc.py' -v
+
+  original-four-outcomes:
+    # Avoid downloading ~1.014 GB of originals on ordinary pushes.
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[gigastroke-full4]')
+    needs: offline-fixture
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Rebuild independently selected 2015 BMI panel (without 2018 variant selection)
+        run: |
+          python -m scripts.ckm_stroke.prepare_locke_2015_independent_panel \
+            --emit-candidate artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz \
+            --out artifacts/ckm_stroke/locke_2015_independent_provenance_ci.json
+      - name: Reproduce pinned 1007899 SNP BMI candidate in temporary ignored folder
+        run: |
+          python -m scripts.ckm_stroke.prepare_bmi_ldsc_candidate \
+            --out artifacts/ckm_stroke/bmi_candidate_four_original_ci.json \
+            --emit-candidate artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz
+      - name: Stream 4 official EUR GIGASTROKE original gzip files, full published MD5, and allele directions
+        run: |
+          python -m scripts.ckm_stroke.audit_gigastroke_bmi_allele_harmonization \
+            --phenotype ALL \
+            --candidate artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz \
+            --provenance artifacts/ckm_stroke/bmi_candidate_four_original_ci.json \
+            --locke-candidate artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz \
+            --locke-provenance artifacts/ckm_stroke/locke_2015_independent_provenance_ci.json \
+            --eaf-gc \
+            --out artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json
+      - name: Independently review all 4 outcome checksums and allele-count invariants
+        run: |
+          python -m scripts.ckm_stroke.review_gigastroke_full_evidence \
+            --evidence artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json \
+            --out artifacts/ckm_stroke/gigastroke_four_independent_review_ci.json
+      - name: Independently audit all 22 chromosome SNP partitions without LDSC N_eff
+        run: |
+          python -m scripts.ckm_stroke.audit_ldsc_chr_attrition \
+            --full-source-evidence artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json \
+            --out artifacts/ckm_stroke/gigastroke_four_chr_pre_munge_attrition_ci.json
+      - name: Independently verify full-length original 2015-to-2018-to-stroke direction counters
+        run: |
+          python -m scripts.ckm_stroke.audit_gigastroke_independent_full_direction \
+            --evidence artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json \
+            --out artifacts/ckm_stroke/gigastroke_four_locke_full_direction_review_ci.json
+      - name: Independently verify whole-original EAF distribution, HRS reference differences and P-vs-Wald without assuming GC
+        run: |
+          python -m scripts.ckm_stroke.audit_gigastroke_eaf_gc \
+            --evidence artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json \
+            --out artifacts/ckm_stroke/gigastroke_four_eaf_hrs_wald_review_ci.json
+      - name: Delete local temporary candidate before publishing evidence
+        if: always()
+        run: |
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz').unlink(missing_ok=True)"
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz.partial').unlink(missing_ok=True)"
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz').unlink(missing_ok=True)"
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz.partial').unlink(missing_ok=True)"
+      - name: Upload compact, aggregate-only evidence JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-four-gigastroke-eur-md5-bmi-orientation
+          path: |
+            artifacts/ckm_stroke/bmi_candidate_four_original_ci.json
+            artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json
+            artifacts/ckm_stroke/gigastroke_four_independent_review_ci.json
+            artifacts/ckm_stroke/gigastroke_four_chr_pre_munge_attrition_ci.json
+            artifacts/ckm_stroke/gigastroke_four_locke_full_direction_review_ci.json
+            artifacts/ckm_stroke/gigastroke_four_eaf_hrs_wald_review_ci.json
+            artifacts/ckm_stroke/locke_2015_independent_provenance_ci.json
+          if-no-files-found: warn
+          retention-days: 30

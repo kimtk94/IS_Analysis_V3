@@ -1,0 +1,41 @@
+name: CKM Stroke GLGC bounded-batch gate contract
+
+on:
+  push:
+    paths:
+      - 'scripts/ckm_stroke/plan_glgc_batch.py'
+      - 'tests/test_ckm_stroke_glgc_batch_plan.py'
+      - 'scripts/ckm_stroke/verify_glgc_previous_batch.py'
+      - 'tests/test_ckm_stroke_verify_previous_batch.py'
+      - 'scripts/ckm_stroke/parse_glgc_batch_approval.py'
+      - 'tests/test_ckm_stroke_parse_glgc_batch_approval.py'
+      - '.github/workflows/ckm-stroke-glgc-autosome-batch.yml'
+      - 'scripts/ckm_stroke/audit_glgc_autosomes.py'
+      - 'tests/test_ckm_stroke_audit_glgc_autosomes.py'
+      - 'scripts/ckm_stroke/summarize_glgc_chr.py'
+      - 'tests/test_ckm_stroke_glgc_chr_summary.py'
+      - '.github/workflows/ckm-stroke-glgc-batch-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-glgc-batch-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check bounded batch gate syntax and regression tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/plan_glgc_batch.py scripts/ckm_stroke/verify_glgc_previous_batch.py tests/test_ckm_stroke_glgc_batch_plan.py tests/test_ckm_stroke_verify_previous_batch.py
+          python -m py_compile scripts/ckm_stroke/audit_glgc_autosomes.py tests/test_ckm_stroke_audit_glgc_autosomes.py
+          python -m py_compile scripts/ckm_stroke/parse_glgc_batch_approval.py tests/test_ckm_stroke_parse_glgc_batch_approval.py
+          python -m unittest tests.test_ckm_stroke_glgc_batch_plan tests.test_ckm_stroke_verify_previous_batch tests.test_ckm_stroke_parse_glgc_batch_approval tests.test_ckm_stroke_audit_glgc_autosomes tests.test_ckm_stroke_glgc_chr_summary -v

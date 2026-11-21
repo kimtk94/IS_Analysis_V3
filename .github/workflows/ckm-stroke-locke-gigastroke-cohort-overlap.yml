@@ -1,0 +1,53 @@
+name: CKM Locke 2015 vs GIGASTROKE official cohort overlap audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-locke-gigastroke-cohort-overlap.yml'
+      - 'scripts/ckm_stroke/audit_locke_gigastroke_cohort_overlap.py'
+      - 'tests/test_ckm_stroke_locke_gigastroke_cohort_overlap.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-locke-gigastroke-original-cohorts-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and audit source identifiers, alias tiers, ambiguous and missing cohorts
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_locke_gigastroke_cohort_overlap.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_locke_gigastroke_cohort_overlap.py' -v
+
+  firstparty-originals:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[cohort-overlap-full]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify both source XLSX checksums and reconcile study labels from exact published tables
+        run: |
+          python -m scripts.ckm_stroke.audit_locke_gigastroke_cohort_overlap \
+            --out artifacts/ckm_stroke/locke_gigastroke_cohort_overlap_ci.json
+      - name: Upload bounded cohort-name evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-locke-gigastroke-verified-cohort-name-evidence
+          path: artifacts/ckm_stroke/locke_gigastroke_cohort_overlap_ci.json
+          if-no-files-found: warn
+          retention-days: 30

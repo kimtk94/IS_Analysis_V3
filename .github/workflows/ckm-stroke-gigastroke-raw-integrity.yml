@@ -1,0 +1,60 @@
+name: CKM Stroke original GIGASTROKE raw MD5 audit
+
+on:
+  push:
+    paths:
+      - 'scripts/ckm_stroke/verify_gigastroke_raw.py'
+      - 'tests/test_ckm_stroke_gigastroke_raw.py'
+      - '.github/workflows/ckm-stroke-gigastroke-raw-integrity.yml'
+  workflow_dispatch:
+    inputs:
+      phenotype:
+        description: Single EUR outcome for original raw source verification
+        type: choice
+        required: true
+        options: [AIS, LAA, CE, SVD]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-gigastroke-raw-integrity-${{ github.ref }}-${{ inputs.phenotype || 'test' }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run offline fixture verification
+        run: |
+          python -m py_compile scripts/ckm_stroke/verify_gigastroke_raw.py tests/test_ckm_stroke_gigastroke_raw.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_raw.py' -v
+
+  raw-md5:
+    if: github.event_name == 'workflow_dispatch'
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch and hash publisher original source (no archives retained)
+        run: |
+          python scripts/ckm_stroke/verify_gigastroke_raw.py \
+            --phenotype "${{ inputs.phenotype }}" \
+            --out artifacts/ckm_stroke/raw_integrity_${{ inputs.phenotype }}.json
+      - name: Archive bounded JSON evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-gigastroke-raw-integrity-${{ inputs.phenotype }}
+          path: artifacts/ckm_stroke/raw_integrity_*.json
+          if-no-files-found: warn
+          retention-days: 30

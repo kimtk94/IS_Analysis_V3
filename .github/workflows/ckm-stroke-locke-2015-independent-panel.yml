@@ -1,0 +1,70 @@
+name: CKM Locke 2015 independently selected EUR BMI SNP panel and reference coordinates
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-locke-2015-independent-panel.yml'
+      - 'scripts/ckm_stroke/prepare_locke_2015_independent_panel.py'
+      - 'scripts/ckm_stroke/audit_locke_2015_reference_coordinates.py'
+      - 'tests/test_ckm_stroke_locke_2015_independent_panel.py'
+      - 'tests/test_ckm_stroke_locke_2015_reference_coordinates.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ckm-locke-independent-2015-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and test independent source universe, fractional N and 22 chr coordinates
+        run: |
+          python -m py_compile scripts/ckm_stroke/prepare_locke_2015_independent_panel.py scripts/ckm_stroke/audit_locke_2015_reference_coordinates.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_locke_2015_independent_panel.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_locke_2015_reference_coordinates.py' -v
+
+  full-independent-source:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[locke-2015-independent-full]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Derive 2015-only EUR HM3 LDscore intersected candidate, without 2018 variants
+        run: |
+          python -m scripts.ckm_stroke.prepare_locke_2015_independent_panel \
+            --emit-candidate artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz \
+            --out artifacts/ckm_stroke/locke_2015_independent_panel_ci.json
+      - name: Verify every candidate maps uniquely to canonical EUR 22 chr LDscore and 44 Ensembl GRCh37 bases
+        run: |
+          python -m scripts.ckm_stroke.audit_locke_2015_reference_coordinates \
+            --candidate artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz \
+            --provenance artifacts/ckm_stroke/locke_2015_independent_panel_ci.json \
+            --out artifacts/ckm_stroke/locke_2015_independent_reference_ci.json
+      - name: Delete all temporary candidate association tables before upload
+        if: always()
+        run: |
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz').unlink(missing_ok=True)"
+          python -c "from pathlib import Path; Path('artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz.partial').unlink(missing_ok=True)"
+      - name: Upload compact aggregate QC evidence, not source GWAS data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-locke2015-independent-22chr-44-enesembl-evidence
+          path: |
+            artifacts/ckm_stroke/locke_2015_independent_panel_ci.json
+            artifacts/ckm_stroke/locke_2015_independent_reference_ci.json
+          if-no-files-found: warn
+          retention-days: 30
