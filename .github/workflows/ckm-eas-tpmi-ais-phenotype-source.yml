@@ -1,0 +1,70 @@
+name: CKM EAS AIS official TPMI PheWeb phenotype and original-source independence
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-eas-tpmi-ais-phenotype-source.yml'
+      - 'scripts/ckm_stroke/audit_eas_tpmi_ais_phenotype_sources.py'
+      - 'tests/test_ckm_eas_tpmi_ais_phenotype_sources.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-tpmi-eas-ais-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-negative-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail closed on PGS vs GWAS, wrong phenotype and overlapping study claims
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_eas_tpmi_ais_phenotype_sources.py
+          python -m unittest discover -s tests -p 'test_ckm_eas_tpmi_ais_phenotype_sources.py' -v
+
+  source-backed-Taiwan-HanChinese-portal:
+    needs: offline-negative-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reconfirm original prior GIGASTROKE publisher GWAS and FinnGen source audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          exact={
+            44860586028:"7c1ca53a57f3e44b1cdb8e2cf19753b943cf45ba",
+            44870212469:"67df9815a55facb275d693bce9be976db9039d17",
+          }
+          for run,sha in exact.items():
+              d=json.loads(subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+              if (d.get("conclusion")!="success" or d.get("head_sha")!=sha
+                  or d.get("repository",{}).get("full_name")!=repo):
+                  raise SystemExit("pinned publisher source audit unexpected: "+str(run))
+          print("GIGASTROKE and FinnGen original source evidence pinned")
+          PY
+      - name: Inspect only bounded public original TPMI PheWeb, CKB and PGS metadata pages
+        run: |
+          python -m scripts.ckm_stroke.audit_eas_tpmi_ais_phenotype_sources \
+            --out artifacts/ckm_stroke/tpmi_EAS_stroke_pheweb_source_overlap_review_ci.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-EAS-TPMI-stroke-phenotype-source-not-independent-HOLD
+          path: artifacts/ckm_stroke/tpmi_EAS_stroke_pheweb_source_overlap_review_ci.json
+          if-no-files-found: warn
+          retention-days: 30
