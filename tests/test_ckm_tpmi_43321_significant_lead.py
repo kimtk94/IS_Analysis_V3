@@ -63,6 +63,14 @@ class TestLead(unittest.TestCase):
         cols=line(3,p="1e-8",a1="C").split("\t")
         with self.assertRaisesRegex(ValueError,"genotype"):
             m.parse_significant(cols)
+    def test_significant_identical_REF_ALT_refused(self):
+        cols=line(3,p="1e-8",ref="A",alt="A",a1="A").split("\t")
+        with self.assertRaisesRegex(ValueError,"genotype"):
+            m.parse_significant(cols)
+    def test_significant_non_ACGT_allele_refused(self):
+        cols=line(3,p="1e-8",ref="N",alt="G",a1="G").split("\t")
+        with self.assertRaisesRegex(ValueError,"genotype"):
+            m.parse_significant(cols)
     def test_significant_missing_or_invalid_N_refused(self):
         cols=line(3,p="1e-8",obs="99999").split("\t")
         with self.assertRaisesRegex(ValueError,"N mismatch"):
