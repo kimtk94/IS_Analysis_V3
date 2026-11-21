@@ -1,0 +1,40 @@
+name: CKM audit SAIGE EAS AIS genomewide artifact conservation
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-saige-eas-audit-existing-artifact.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify-original-run-aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download exact source-run aggregate artifact rather than recompute the 2 GWAS files
+        uses: actions/download-artifact@v4
+        with:
+          name: is-TPMI-SAIGE-GIGASTROKE-EAS-AIS-genomewide-QC-PASS-allele-overlap-HOLD
+          run-id: 44920288867
+          github-token: ${{ github.token }}
+          path: audit_input
+      - name: Fail closed on original QC source counts, liftOver, alleles and AF-bin conservation
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_tpmi_saige_eas_ais_aggregate.py
+          python -m scripts.ckm_stroke.audit_tpmi_saige_eas_ais_aggregate \
+            --input audit_input/TPMI_SAIGE_EAS_AIS_full_original_allele_overlap_aggregate_HOLD.json \
+            --out artifacts/is/TPMI_SAIGE_EAS_AIS_aggregate_independent_audit_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI-SAIGE-EAS-AIS-independent-conservation-audit-HOLD
+          path: artifacts/is/TPMI_SAIGE_EAS_AIS_aggregate_independent_audit_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
