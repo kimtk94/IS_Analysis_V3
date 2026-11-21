@@ -1,0 +1,34 @@
+name: CKM GIGASTROKE East Asian AIS original coverage QC
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-gigastroke-eas-ais-original-coverage.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-verified-eas-ais:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: One full official EAS AIS GIGASTROKE gzip integrity and exact SNP coverage scan
+        run: |
+          python -m py_compile scripts/ckm_stroke/qc_gigastroke_eas_ais_original.py
+          python -m scripts.ckm_stroke.qc_gigastroke_eas_ais_original \
+            --out artifacts/is/GIGASTROKE_GCST90104545_EAS_AIS_full_original_coverage_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-GIGASTROKE-GCST90104545-EAS-AIS-original-QC-HOLD
+          path: artifacts/is/GIGASTROKE_GCST90104545_EAS_AIS_full_original_coverage_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
