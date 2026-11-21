@@ -189,3 +189,21 @@ The new full-source EAF/P-Wald diagnostic distinguishes source EAF and the indep
 Reported P versus beta/SE-derived Wald P differences are descriptive. Separate underflowed original P=0 and DO NOT impute arbitrary numerical P. Original P, BETA and SE are never silently modified by an inferred genomic-control correction or an estimated inflation coefficient; marked divergences are REVIEW, not a final GC diagnostic.
 
 Outstanding gates remain the original EBI publicly provided effect scaling / GC provenance, valid SNP-specific case-control meta-analysis effective N, ancestry-specific sample overlap, independently validated LDSC regression-weight reference SNP merge, final post-munge counts and h2/rg. Science remains HOLD, no LDSC/h2/rg/MR performed by this QC workflow.
+
+
+## 2026-11-21 original GIGASTROKE EAF / P-Wald full-source results and secondary audit
+
+**Verified original-source workflow**: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44860586028 SUCCESS; immutable source commit 7c1ca53a57f3e44b1cdb8e2cf19753b943cf45ba. Compact full original MD5 + EAF/GC evidence artifact ID 14689563883. EAF/Wald technical status PASS_ORIGINAL_MD5_FOUR_EAF_AND_WALD_DESCRIPTIVE_ONLY. Scientific status HOLD, no LDSC or downstream causal interpretation. No per-SNP GWAS effects released.
+
+| Phenotype | Matched pre-munge SNPs | Original MAF below 0.05 | abs EAF vs GIANT HRS reference >= 0.05 | HRS >= 0.10 | HRS >= 0.20 | abs -log10(P) vs beta/SE Wald delta 0.1 to 1 | Delta >= 1 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| AIS | 1,006,932 | 71,858 | 1,835 | 95 | 1 | 14 | 0 |
+| LAA | 956,929 | 29,737 | 301 | 86 | 1 | 0 | 0 |
+| CE | 996,662 | 64,994 | 332 | 88 | 1 | 14 | 0 |
+| SVD | 967,356 | 39,757 | 308 | 88 | 1 | 0 | 0 |
+
+**Primary review targets**: each outcome has *one* >0.20 absolute original EAF versus GIANT HRS reference frequency discrepancy on **chromosome 11**. This is repeated CHROMOSOME identity, not proof of the same SNP. P-vs-Wald discrepancies in the 0.1–1 log10 band: AIS chr1=1, chr4=9, chr9=1, chr12=3; CE chr4=14; none in LAA/SVD. No phenotype has a P-vs-Wald discrepancy >=1 log10. Original BETA = log(OR) to strict 1e-10 accuracy for all valid matched SNPs.
+
+**Follow-up workflow**: .github/workflows/ckm-gigastroke-eaf-wald-artifact-review.yml, triggered by changes to its own source/tests or via workflow_dispatch. It verifies that the input source run completed successfully on its exact pinned commit, downloads only its trusted preexisting compact JSON artifact and reruns the independent publisher-MD5/source-ledger reviewer; no extra original GWAS download or SNP-level effect upload. Publishes JSON and Markdown chromosome-level anomaly summaries. Code scripts/ckm_stroke/review_gigastroke_eaf_wald_anomalies.py; tests/test_ckm_stroke_gigastroke_eaf_wald_anomalies.py.
+
+**Scientific restriction**: GIANT HRS is a separate frequency reference, not GIGASTROKE outcome cohort EAF. Frequency differences cannot prove strand errors or ancestry mismatch by themselves. P-Wald differences are not evidence of a GC correction factor. Aggregate source matches are *not* final post-munge LDSC regression SNP counts; outcome per-SNP N_eff remains unknown, and h2, intercept, rg, MR and coloc are NOT RUN. Do not modify original effect sizes/P-values based on this descriptive audit.
