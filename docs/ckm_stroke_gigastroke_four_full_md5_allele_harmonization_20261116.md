@@ -340,3 +340,36 @@ Source-verified executable: scripts/ckm_stroke/audit_alternative_stroke_gwas_nef
 The actual FinnGen manifest fields in this test did not provide published phenotype-description labels, so NONE of the three candidate endpoints is yet validated as the clinical GIGASTROKE AIS or CE subtype. No LAA- or SVD-specific phenotype was verified. Any FinnGen replication will need the R13 endpoint dictionary/ICD code definitions, sufficient case counts, and explicit cohort-overlap assessment. R13 effect alleles use GRCh38 ALT and require validated build/allele harmonization to original GRCh37 outcomes, not direct positional joining.
 
 **Scientifically decisive negative result:** no alternative source has yet demonstrated a per-SNP case/control/effective N for approved primary LDSC h2/rg. The source checks **do not authorize an arbitrary constant N or pooled 4*Ncase*Ncontrol/Ntotal**. However, MR/coloc pipelines using properly harmonized effect sizes and uncertainties may be assessed separately subject to their own QC; LDSC Neff HOLD does not itself disprove those designs. No new h2/intercept/rg, causal inference or experimental result is asserted. Draft PR #284 remains unmerged.
+
+
+## 2026-11-21 FinnGen R13 original clinical definitions + released GWAS eligibility — SOURCE VERIFIED
+
+[**GitHub Actions #44869603525**](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44869603525) SUCCESS; source-backed [artifact #14693172602](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44869603525/artifacts/14693172602); 10/10 offline positive/negative tests PASS. Exact official original input sources:
+
+- Public DF13 endpoint case definitions (original 2025-08-14): https://www.finngen.fi/sites/default/files/inline-files/FINNGEN_ENDPOINTS_DF13_Final_2025-08-14_public.xlsx ; SHA256 0004624f727b96b4a56c6fac75ff182eb8bc3daf78cdf690bdad276b31fca6c7.
+- Public DF13 control definitions: https://www.finngen.fi/sites/default/files/inline-files/Controls_FINNGEN_ENDPOINTS_DF13_Final_2025-08-14_public.xlsx ; SHA256 7cbbf9072296e34f6bde44b2958c7520c7caedeade924d941e5bbc4fa89cc29b.
+- Official R13 public GWAS manifest (2,754 GWAS phenotypes): https://storage.googleapis.com/finngen-public-data-r13/summary_stats/finngen_R13_manifest.tsv ; SHA256 c9caafa9b98ee5ef050a705766bd1c451fc2154fb8e81b069022012a2f75ae20. Actual headers: phenocode, phenotype, category, num_cases, num_controls, path_bucket, path_https. Endpoint case/control counts are **release-level phenotype sample metadata**, not per-SNP effective N.
+
+| Endpoint | R13 manifest cases | R13 manifest controls | Original DF13 case ICD-10 / inclusion | Original DF13 control definition | Released R13 GWAS? | Role |
+| --- | ---: | ---: | --- | --- | --- | --- |
+| I9_STR_EXH | NA | NA | I63 and I64, excludes I636; includes I9_STR_EMBOLIC | Control exclude I9_TIA | **NO** (definition exists; not listed among GWAS files) | Clinically preferable hemorrhage-excluded stroke, BUT NO R13 GWAS result; I64 is *unspecified stroke*, so even this definition cannot be called imaging-confirmed AIS |
+| I9_STR | 36,461 | 446,552 | **I61**, I63, I64 | Control exclude I9_STR_EXH and I9_TIA | YES | Broad stroke phenotype **including intracerebral hemorrhage**; NOT directly eligible for strict GIGASTROKE AIS replication |
+| I9_STR_EMBOLIC | 1,919 | 450,257 | I631 (cerebral infarction due to embolism) | Control exclude I9_CEREBVASC | YES | Candidate embolic-stroke direction replication only; NOT proven TOAST CE equivalent |
+| I9_STR_EMBOLIC_WITH_FLIMMER | 1,041 | 432,403 | Includes I9_STR_EMBOLIC AND requires I9_AF | **Control conditions: not I9_AF** | YES | AF-associated embolic-stroke candidate; compare cautiously because the control group explicitly excludes AF and differs from base embolic-stroke controls |
+| I9_ICH | 5,576 | 446,545 | I61 | Control exclude I9_STR_EXH and I9_TIA | YES | EXCLUDE, hemorrhagic stroke |
+| I9_SAH | 4,365 | 446,966 | I60 | Control exclude I9_STR_EXH and I9_TIA | YES | EXCLUDE, subarachnoid hemorrhage |
+
+**Correction to earlier shortlist:** The earlier keyword-driven manifest shortlist listed I9_STR, I9_STR_EMBOLIC and I9_STR_EMBOLIC_WITH_FLIMMER only. Official DF13 clinical source reveals **I9_STR_EXH**, but **its public R13 GWAS is not listed** in the pinned manifest. It is a definition/available GWAS mismatch, not a missing record to invent or impute. The I9_STR definition is mixed because it directly includes I61 intracerebral hemorrhage; do not use it as clean ischemic stroke. R13 has no demonstrated published LAA/SVD-specific GWAS in these verified endpoints. These are clinical definitions, not ground-truth TOAST stroke subtypes, and sample overlap with the GIGASTROKE 2022 consortium remains unverified. Do not claim independent replication without overlap accounting.
+
+**GIGASTROKE original corrected 44-cohort N_eff scenarios are descriptive only** (pinned source SHA256 7c688f864c73ec2e9624bde9f53ac48a9880a6a08e59f5e1266690e243618ba4):
+
+| Stroke subtype | Pooled case/control harmonic illustration | Sum of cohortwise known-control harmonic illustrations | Relative difference | Cases with missing cohort control count |
+| --- | ---: | ---: | ---: | ---: |
+| AIS | 236,505.833 | 195,570.717 | 17.3083% | 103 |
+| LAA | 25,464.041 | 23,149.571 | 9.0892% | 0 |
+| CE | 42,841.160 | 39,605.585 | 7.5525% | 28 |
+| SVD | 27,094.551 | 23,758.723 | 12.3118% | 39 |
+
+**Do not mislabel these as lower/upper bounds** for true SNP-level effective sample sizes; both omit variant-specific contributing studies/weights and some cohort control denominators are unobserved. The 44-cohort source comparison demonstrates sensitivity to sample-size definition but does not license assigning either number to the original 11-column stroke GWAS for primary LDSC h2 or rg. No new LDSC h2/intercept/rg or MR/coloc was executed.
+
+**Next research gate:** If FinnGen CE-direction replication is desired, request/obtain the official accessible R13 summary-stat files (not only the metadata), verify SHA/build/ALT allele and proper phenotyping, assess statistical power with 1,919/1,041 cases and possible overlap with GIGASTROKE, and avoid equating AF-enriched case/control ascertainment to TOAST CE. For primary AIS replication, identify another independently source-verifiable stroke GWAS that excludes hemorrhage and provides variantwise N / credible N method, instead of substituting FinnGen I9_STR. Run original GIGASTROKE MR/coloc only under its separate statistical/effect-harmonization QC: LDSC N_eff HOLD is not a blanket prohibition on all methods. Draft PR #284 remains unmerged.
