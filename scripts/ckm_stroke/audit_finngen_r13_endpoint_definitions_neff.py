@@ -93,7 +93,7 @@ def manifest_review(data):
             "I9_STR_EXH_in_R13_GWAS_manifest":"I9_STR_EXH" in selected,
             "I9_STR_is_not_ischaemic_specific_by_name":True,
             "manifest_N_case_column_candidates":[x for x in cols if re.search(
-                r"(?:^|_)n_?cases?$|case_?count|n_?controls?$|control_?count",x,re.I)],
+                r"(?:^|_)(?:n|num)_?cases?$|(?:^|_)(?:n|num)_?controls?$|case_?count|control_?count",x,re.I)],
             "manifest_is_not_per_variant_Neff":True}
 
 def _colnum(cellref):

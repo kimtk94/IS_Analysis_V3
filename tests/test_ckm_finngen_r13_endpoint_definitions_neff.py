@@ -36,10 +36,10 @@ def definition():
         ("I9_STR_EXH","I63|I64","", "I9_STR_SAH"),
         ("I9_STR","I61|I63|I64","","I9_STR_EXH"),
         ("I9_STR_EMBOLIC","I63.1","","I9_CEREBVASC"),
-        ("I9_STR_EMBOLIC_WITH_FLIMMER","","I9_STR_EMBOLIC",""),
+        ("I9_STR_EMBOLIC_WITH_FLIMMER","","I9_STR_EMBOLIC","I9_AF"),
         ("I9_ICH","I61","",""),
         ("I9_SAH","I60","",""),
-    ])
+    ],header=("NAME","HD_ICD_10","INCLUDE","CONDITIONS"))
 
 def controls():
     return workbook([
