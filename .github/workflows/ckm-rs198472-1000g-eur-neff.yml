@@ -1,0 +1,75 @@
+name: CKM rs198472 independent 1000G EUR and stroke Neff provenance
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-rs198472-1000g-eur-neff.yml'
+      - 'scripts/ckm_stroke/verify_rs198472_independent_EUR_and_neff.py'
+      - 'tests/test_ckm_stroke_rs198472_independent_EUR_neff.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-rs198472-1000g-eur-neff-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail closed on GRCh38/allele/population/Neff mistakes
+        run: |
+          python -m py_compile scripts/ckm_stroke/verify_rs198472_independent_EUR_and_neff.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_rs198472_independent_EUR_neff.py' -v
+
+  verified-original-eur-source:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[rs198472-eur-full]')
+    needs: offline-fixture
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm pinned 2026-11-21 original GIGASTROKE whole-source MD5/SHA PASS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import subprocess,json
+          repo="kimtk94/IS_Analysis_V3"
+          data=json.loads(subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/44863365730"],text=True))
+          if (data.get("conclusion")!="success" or
+              data.get("head_sha")!="4860eff034949d82802aeeb0e9c32294f03d0669" or
+              data.get("repository",{}).get("full_name")!=repo):
+              raise SystemExit("original 4-source pinned integrity evidence missing")
+          print("ORIGINAL 4-GWAS PUBLISHER MD5 AND SHA PINNED")
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-gigastroke-original-chr11-identity-chr4-wald
+          run-id: 44863365730
+          github-token: ${{ github.token }}
+          path: artifacts/ckm_stroke
+      - name: Stream pinned GIANT original and independently query GRCh37 1000G EUR allele frequencies
+        run: |
+          python -m scripts.ckm_stroke.verify_rs198472_independent_EUR_and_neff \
+            --verified-original-target artifacts/ckm_stroke/targeted_chr11_chr4_variant_identity_ci.json \
+            --out artifacts/ckm_stroke/rs198472_grch37_1000genomes_eur_neff_hold_ci.json
+      - name: Upload compact independent EUR reference and Neff HOLD evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-rs198472-1000g-eur-original-allele-neff-hold
+          path: artifacts/ckm_stroke/rs198472_grch37_1000genomes_eur_neff_hold_ci.json
+          if-no-files-found: warn
+          retention-days: 30
