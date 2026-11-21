@@ -274,3 +274,10 @@ EAS row 60 HISAYAMA_ASN is incident-only and explicitly not in the global combin
 **Other unresolved scientific gates:** TPMI Phecode 433.21 portal cases 9,249 + controls 304,660 = 313,909, but PLINK2 association OBS_CT 204,099 (109,810 difference). No source-supported case/control regression N_eff. Operational Phecode "Cerebral artery occlusion, with cerebral infarction" is related to, but not identical to, GIGASTROKE broad AIS. Keep LDSC/MR/coloc at HOLD.
 
 Earlier independent allele/quantitative summary QC PASS: 1,507,261 SNP pairs. This remains a technical overlap, not an approved causal or independent replication result.
+
+## Primary GIGASTROKE AIS cohort gate rerun with recovered source table — 2026-11-21
+
+- Scientific cohort gate [Action #44893035771](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44893035771) attempt 2 **SUCCESS**, job 136833365591; output artifact 14706045108.
+- Unlike prior attempt 1 (which lacked a cohort roster), the latest gate **re-parses the actual publisher Supplementary Table 1**, imports its 14 EAS discovery cohort rows and verifies the reported 19,032 AIS cases / 237,242 shared controls before judging the independence evidence.
+- **Observed:** cohort_list_documented=true, custodian_proven_no_overlap=false, status=HOLD_INDEPENDENCE_NOT_PROVEN, LDSC_MR_coloc_enabled=false.
+- Source roster does not list TPMI or TWB in AIS discovery; that is evidence against direct inclusion of their named studies, **not** verified zero participant overlap. TPMI observed regression cases/controls remain unavailable, so effective N is not approved.
