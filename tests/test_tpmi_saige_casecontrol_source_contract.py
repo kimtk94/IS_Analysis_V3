@@ -33,6 +33,27 @@ class SourceContract(unittest.TestCase):
         self.assertEqual(counts["records"],1)
         self.assertEqual(counts["matches_phenotype_page_N"],0)
         self.assertEqual(pairs[(8500,304660)],1)
+    def test_source_qc_fail_must_not_be_approved(self):
+        r=synthetic_row()
+        r[19]="FAIL"
+        counts,pairs,chrom=Counter(),Counter(),Counter()
+        record_fields(r,counts,pairs,chrom)
+        self.assertEqual(counts["source_explicit_QC_FAIL"],1)
+        self.assertEqual(counts["QC_PASS_valid_N_beta_SE_P"],0)
+        self.assertEqual(counts["finite_beta_positive_se_valid_p"],1)
+    def test_source_qc_pass_can_be_numerically_eligible(self):
+        r=synthetic_row()
+        counts,pairs,chrom=Counter(),Counter(),Counter()
+        record_fields(r,counts,pairs,chrom)
+        self.assertEqual(counts["source_explicit_QC_PASS"],1)
+        self.assertEqual(counts["QC_PASS_valid_N_beta_SE_P"],1)
+    def test_unknown_source_qc_not_auto_pass(self):
+        r=synthetic_row()
+        r[19]="CUSTOM"
+        counts,pairs,chrom=Counter(),Counter(),Counter()
+        record_fields(r,counts,pairs,chrom)
+        self.assertEqual(counts["source_QC_UNRECOGNIZED"],1)
+        self.assertEqual(counts["QC_PASS_valid_N_beta_SE_P"],0)
     def test_invalid_p_is_counted_not_approved(self):
         r=synthetic_row()
         r[12]="1.7"
