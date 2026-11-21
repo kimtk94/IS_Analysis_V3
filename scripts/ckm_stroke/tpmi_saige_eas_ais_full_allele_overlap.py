@@ -188,6 +188,11 @@ def compare(conn):
         if min(af,1-af)>=0.01:c["SAIGE_MAF_GE_0.01"]+=1
         if info>=0.8 and min(af,1-af)>=0.01:
             c["INFO_GE_0.8_AND_SAIGE_MAF_GE_0.01"]+=1
+            if delta<=0.05:
+                c["INFO_GE_0.8_MAF_GE_0.01_AF_DELTA_LE_0.05"]+=1
+            if delta<=0.10:
+                c["INFO_GE_0.8_MAF_GE_0.01_AF_DELTA_LE_0.10"]+=1
+        if delta>0.05:c["AF_DELTA_GT_0.05"]+=1
         if delta>0.1:c["AF_DELTA_GT_0.1"]+=1
     return dict(c),dict(freq),dict(chr_match)
 
@@ -239,8 +244,9 @@ def execute():
            "matched_by_chromosome":bychr,
            "effective_N_SAIGE_case":SAIGE_CASES,
            "effective_N_SAIGE_control":SAIGE_CONTROLS,
-           "binary_effective_N_from_verified_case_control_counts":
+           "unadjusted_binary_harmonic_N_nominal_not_LDSC_Neff":
                4*SAIGE_CASES*SAIGE_CONTROLS/(SAIGE_CASES+SAIGE_CONTROLS),
+           "unadjusted_harmonic_N_not_approved_for_LDSC":True,
            "effective_N_is_model_specific":True,
            "LDSC_MR_coloc_performed":False,
            "EAS_sample_overlap_certified":False,
