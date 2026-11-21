@@ -30,6 +30,7 @@ class LookupTests(unittest.TestCase):
         self.assertFalse(r["binary_case_control_Neff_approved"])
         self.assertEqual(r["scientific_status"],"HOLD")
         self.assertEqual(r["TPMI_A1_logOR"],0.18)
+        self.assertEqual(r["TPMI_source_SHA256"],EXPECTED_SHA)
     def test_reject_missing_logor(self):
         x=fixture();del x["lead_GRCh38"]["logOR_original_A1"]
         with self.assertRaises(ValueError):prepare(x)
