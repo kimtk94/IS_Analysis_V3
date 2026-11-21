@@ -66,3 +66,13 @@ Original pinned lead extracted from real official TPMI PLINK2 GWAS:
 - Successfully mapped to **GRCh37 `19:15573379:T:C`**, effect A1 C, reverse liftover and source/mapped reference alleles verified.
 - No SNP effect from GIGASTROKE AIS GCST90104540 has yet been checked at the locus, and independence/actual case/control N remain unverified. **Scientific HOLD** for replication, LDSC, MR and coloc.
 - Updated narrow milestone: original source integrity and coordinate mapping TECHNICAL PASS; GIGASTROKE comparison/outcome causal interpretation HOLD.
+
+## Executed GIGASTROKE AIS exact-locus check — 2026-11-21
+
+- Executed run: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44880059442
+- Offline tests, source extraction, Ensembl liftover and target generation: **SUCCESS**.
+- The `source-verified-gigastroke-ais-one-locus` job (`136773836212`) completed with **HOLD_NO_EXACT_GIGASTROKE_COORDINATE** for `19:15573379:T:C`; the generated HOLD artifact was `14698280048`.
+- This HOLD state is emitted by the source parser only after completing the compressed input scan and matching the pinned original file size and published MD5. No beta, standard error or risk-allele alignment can be claimed from an exact target SNP in this GWAS file.
+- **The exact locus is absent in this specific GIGASTROKE AIS EUR release**. This is not evidence of no biological effect, and it is not a failure of coordinate mapping.
+- Do not run exact-coordinate retries indefinitely. Before any proxy analysis, inspect available nearby variants in the source, define a defensible East Asian LD panel with declared build/population, validate proxy r² and allele phase, confirm allele frequency and independence, then harmonize the proxy effect. A nearby physical locus alone is not a proxy.
+- AIS source-backed direct SNP replication: **HOLD_NO_EXACT_COORDINATE**; CKM/IS LDSC, MR and coloc: **HOLD**, as previously.
