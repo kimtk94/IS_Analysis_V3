@@ -140,6 +140,9 @@ def classify_finn_manifest(body):
     codeidx=next(i for i,h in enumerate(header)
                  if h in ("phenocode","phenotype","trait","endpoint","phenotype_code"))
     candidates=[]
+    matched_metadata=[]
+    description_idx=next((i for i,h in enumerate(header)
+                          if h in ("phenostring","description","phenotype_description","phenotype_name","trait_name")),None)
     for index,line in enumerate(lines[1:],start=1):
         parts=line.split("\t")
         if len(parts)!=len(header):
@@ -149,11 +152,22 @@ def classify_finn_manifest(body):
             raise ValueError("invalid FinnGen phenotype code")
         if STROKE_PAT.search(ph):
             candidates.append(ph)
+            matched_metadata.append({
+                "phenocode":ph,
+                "manifest_label":parts[description_idx][:160].strip() if description_idx is not None else None,
+                "clinical_case_definition_verified":False,
+            })
     if len(candidates)>1000:
         raise ValueError("candidate endpoints exceed source review cap")
     return {"manifest_retrieved":True,"manifest_entries":len(lines)-1,
             "likely_stroke_endpoint_codes":sorted(set(candidates))[:80],
+            "likely_stroke_endpoint_labels":sorted(matched_metadata,key=lambda d:d["phenocode"])[:80],
             "likely_stroke_endpoint_count":len(set(candidates)),
+            "ischemic_stroke_candidate_codes_require_definition_review":[x for x in
+                ("I9_STR","I9_STR_EMBOLIC","I9_STR_EMBOLIC_WITH_FLIMMER") if x in candidates],
+            "hemorrhagic_endpoint_codes_EXCLUDED_from_ischemic_stroke":[x for x in
+                ("I9_ICH","I9_SAH","I9_STR_SAH","I9_SAHANEUR") if x in candidates],
+            "no_verified_LAA_or_SVD_specific_endpoint_claim":True,
             "endpoint_code_match_is_not_validated_stroke_case_definition":True,
             "per_variant_N_eff_verified_from_manifest":False,
             "per_variant_full_sumstats_header_read":False}
@@ -197,7 +211,7 @@ def review_sources(mega,finn_schema,finn_access,manifest=None,manifest_error=Non
         **f,**access,"manifest":stat,
         "per_variant_N_eff_available_from_documented_schema":False,
         "case_count_endpoint_metadata_is_NOT_SNP_specific_N":True,
-        "possible_role":"phenotype-defined Finnish independent-cohort replication",
+        "possible_role":"Finnish phenotype-defined replication candidate, subject to source phenotype and sample overlap validation",
         "requires_GRCh38_to_GRCh37_harmonization_before_cross_GWAS_merge":True,
         "scientific_approval":"HOLD_ENDPOINT_SELECTION_N_VALIDATION_AND_ACCESS",
       },
