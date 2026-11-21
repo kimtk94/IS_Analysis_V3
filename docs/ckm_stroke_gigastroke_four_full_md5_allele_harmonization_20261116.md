@@ -56,8 +56,64 @@ Future cross-platform comparison: both Windows Orca and Linux CI must report the
 
 ## 2026-11-21 pre-munge per-chromosome source intersection (distinct from LDSC regression SNP count)
 
-New code adds \`chr_attrition_pre_munge\` to the original four-GWAS MD5-checked streaming audit, partitioning the independently pinned 1,007,899 BMI 2018/HM3/EUR LD-score candidate coordinates for each chromosome 1–22. Every chromosome records candidate positions, unique outcome positions, invalid duplicate positions, absent positions, valid aligned/numeric positions and incompatible/invalid positions. The sum must equal the original whole-genome counts, and the identical candidate chromosome profile must be observed in all four outcome comparisons.
+New code adds `chr_attrition_pre_munge` to the original four-GWAS MD5-checked streaming audit, partitioning the independently pinned 1,007,899 BMI 2018/HM3/EUR LD-score candidate coordinates for each chromosome 1–22. Every chromosome records candidate positions, unique outcome positions, invalid duplicate positions, absent positions, valid aligned/numeric positions and incompatible/invalid positions. The sum must equal the original whole-genome counts, and the identical candidate chromosome profile must be observed in all four outcome comparisons.
 
-The new independent summarizer \`scripts/ckm_stroke/audit_ldsc_chr_attrition.py\` verifies the existing whole-genome original publisher MD5 and allele-count reviewer first; it never trusts arbitrary counts from an unsigned JSON. Its own tests and the per-coordinate partition tests reject altered chr indices, missing chromosomes, incorrect subtotals, invalid source MD5 and subtype-specific panel mismatch.
+The new independent summarizer `scripts/ckm_stroke/audit_ldsc_chr_attrition.py` verifies the existing whole-genome original publisher MD5 and allele-count reviewer first; it never trusts arbitrary counts from an unsigned JSON. Its own tests and the per-coordinate partition tests reject altered chr indices, missing chromosomes, incorrect subtotals, invalid source MD5 and subtype-specific panel mismatch.
 
 **Important:** pre-munge overlap is *not* the SNP set used in LDSC's h² regression. These counts are upper-bound candidates conditional on the Yengo 2018-derived panel, not independent whole-genome outcome HM3-universe counts. No unapproved case-control N, LD-score weight merge, effect Z threshold, large-chi-square exclusion, MAF or GC handling is inferred. Final regression SNP matching and h² remain **NOT_RUN/HOLD**. The official LDSC documentation warns about analyses with fewer than 200,000 merged regression SNPs and favors 600,000+ for stable precision (not a substitute for input approval).
+
+
+## Verified full original-input source audit: 2026-11-21 completed run
+
+The original full-source CI [#44853148970](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44853148970) finished **SUCCESS** at 2026-11-21 02:10:47 UTC, Git commit [9465210c](https://github.com/kimtk94/IS_Analysis_V3/commit/9465210cd6bb7638b858e8ac9c83464b5b6181c7). It independently rebuilt the pinned Yengo 2018 conservative source panel from 2,336,269 GIANT original rows; independently streamed all four original EUR stroke GWAS gzip files with complete publisher MD5 checks; passed four-source global invariants and the new 22-chromosome partition invariants. Unit tests: **12 + 8 + 7 = 27/27 PASS**.
+
+Source evidence artifact (four aggregate-only JSON files): [#14686313611](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44853148970/artifacts/14686313611). Its content was downloaded and independently summed by chromosome, matching the existing whole-genome counts for all four outcomes.
+
+### Actual original-source per-chromosome pre-munge overlap (not h² regression SNPs)
+
+The counts below are the original GWAS SNPs uniquely aligned by chr:position and allele with the **preselected BMI 2018 EUR/HM3/LD-score intersection**. They are **not** the final LDSC weight-LD merged SNP counts.
+
+| Chr | BMI × HM3/EUR LD-score 후보 | AIS | LAA | CE | SVD |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 80,163 | 80,070 | 75,734 | 78,986 | 76,497 |
+| 2 | 86,907 | 86,812 | 82,614 | 85,750 | 83,464 |
+| 3 | 70,820 | 70,757 | 67,499 | 70,141 | 68,206 |
+| 4 | 63,805 | 63,745 | 60,544 | 63,132 | 61,303 |
+| 5 | 64,621 | 64,578 | 61,531 | 64,011 | 62,402 |
+| 6 | 62,832 | 62,794 | 59,964 | 62,285 | 60,670 |
+| 7 | 56,037 | 55,997 | 53,394 | 55,528 | 53,957 |
+| 8 | 56,550 | 56,512 | 53,855 | 56,009 | 54,562 |
+| 9 | 47,013 | 46,960 | 44,588 | 46,416 | 44,959 |
+| 10 | 55,000 | 54,962 | 52,605 | 54,467 | 52,845 |
+| 11 | 52,284 | 52,222 | 49,708 | 51,732 | 50,212 |
+| 12 | 49,529 | 49,471 | 46,977 | 48,934 | 47,495 |
+| 13 | 39,098 | 39,061 | 37,081 | 38,676 | 37,591 |
+| 14 | 33,835 | 33,778 | 32,033 | 33,427 | 32,405 |
+| 15 | 30,439 | 30,414 | 28,668 | 30,062 | 28,966 |
+| 16 | 30,409 | 30,384 | 28,656 | 30,018 | 29,030 |
+| 17 | 26,049 | 26,027 | 24,552 | 25,727 | 24,784 |
+| 18 | 30,619 | 30,597 | 28,900 | 30,306 | 29,369 |
+| 19 | 16,906 | 16,882 | 15,792 | 16,668 | 15,967 |
+| 20 | 26,375 | 26,346 | 25,010 | 26,085 | 25,313 |
+| 21 | 14,314 | 14,286 | 13,689 | 14,165 | 13,762 |
+| 22 | 14,294 | 14,277 | 13,535 | 14,137 | 13,597 |
+| **합계** | **1,007,899** | **1,006,932** | **956,929** | **996,662** | **967,356** |
+
+Detailed exclusions from the actual 22-chromosome report:
+
+| Outcome | Candidate absent from outcome | Outcome duplicated candidate positions | Aligned candidate numeric/allele invalid | Pre-munge aligned share |
+|---|---:|---:|---:|---:|
+| AIS | 967 | 0 | 0 | 99.90406% |
+| LAA | 50,970 | 0 | 0 | 94.94295% |
+| CE | 11,237 | 0 | 0 | 98.88511% |
+| SVD | 40,543 | 0 | 0 | 95.97747% |
+
+**Newly reviewed allele-orientation warning:** the full-source aggregate JSON classifies **all matched SNPs for every subtype as 'same'** (AIS 1,006,932, LAA 956,929, CE 996,662, SVD 967,356), with **zero** swapped, complement-same or complement-swapped calls. The existing independent review sets `uniform_allele_orientation_needs_independent_review=true`. This is technically internally consistent with the two aligned sources; it is **not independent proof** that underlying GWAS effect signs are correctly harmonized. Check the original GIANT tested-allele convention and EBI harmonized outcome effect-allele convention against an independent variant/reference orientation source before any signed rg/MR/coloc or LDSC cross-trait interpretation. Do not silently treat uniformly aligned status as evidence of strand/exposure correctness.
+
+**Strict scope and scientific conclusion:** This is a verified **pre-munge input intersection** only. It does **not** establish post-munging SNP counts, the precise LD-score-weighted regression SNP universe, outcome case/control meta-analysis effective N, original GC correction equivalence, nor h² accuracy. All four outcomes retain `scientific_status=HOLD`, `ready_for_ldsc=false`; **h², intercept, rg, MR and coloc were not run**.
+
+### Next independently actionable gates
+
+1. Compare GIANT tested-allele and EBI/GWAS Catalog effect-allele definitions at a small independently referenced, allele-strand-anchored sample. Separate plausible shared allele convention from a sign inversion or strand error.
+2. For each subtype, inspect post-munge proxy SNP loss and LD-score-weight intersections **without inventing N_eff**; report bounds until the data model permits valid munging.
+3. Resolve case/control meta-analysis effective-N assumptions, per-variant cohort participation, and public GWAS genomic-control provenance. Only then approve one-trait h² QC, followed by cross-trait rg.
