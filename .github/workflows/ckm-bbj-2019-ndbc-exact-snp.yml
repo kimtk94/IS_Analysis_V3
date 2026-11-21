@@ -1,0 +1,29 @@
+name: CKM BBJ 2019 NBDC cerebral infarction original exact locus
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-bbj-2019-ndbc-exact-snp.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scan-original-single-locus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch only original NBDC BBJ IS autosomal ZIP member and validate CRC and SNP
+        run: |
+          python -m py_compile scripts/ckm_stroke/scan_ndbc_2019_bbj_is_locus.py
+          python -m scripts.ckm_stroke.scan_ndbc_2019_bbj_is_locus --out artifacts/tpmi/bbj2019_NHA000096_original_rs187759247_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-BBJ-2019-NBDC-CI-original-single-SNP-HOLD
+          path: artifacts/tpmi/bbj2019_NHA000096_original_rs187759247_HOLD.json
+          retention-days: 30
