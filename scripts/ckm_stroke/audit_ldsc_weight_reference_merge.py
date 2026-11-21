@@ -60,6 +60,22 @@ def verified_candidate(candidate:Path,provenance:dict):
         raise ValueError("candidate original SNP count wrong")
     return seen
 
+def normalizer_coverage(m_files,m50_files):
+    """Standard LDSC M_5_50 required. Original archive may omit all nonstandard M."""
+    if set(m50_files)!=CHROMOSOMES:
+        raise ValueError("default M_5_50 regression reference normalizers are incomplete")
+    observed=set(m_files)
+    if observed and observed!=CHROMOSOMES:
+        raise ValueError("partial optional M reference normalizer set is not trusted")
+    return {
+        "standard_common_SNP_M_5_50_complete":True,
+        "optional_M_files_present":len(observed),
+        "M_file_omission_is_source_observation":len(observed)==0,
+        "LDSC_not_M_5_50_override_supported_by_this_archive":len(observed)==22,
+        "M_5_50_set_does_not_establish_final_regression_SNP_count":True,
+    }
+
+
 def archive_reference(opener=urllib.request.urlopen,*,required_meta=True):
     """Strict full-archive scan, no disk extraction and no reused SNP contents."""
     if required_meta:read_record(opener)
@@ -124,9 +140,9 @@ def archive_reference(opener=urllib.request.urlopen,*,required_meta=True):
         "archive_tar_member_count":members,
     }
     print("REFERENCE_ARCHIVE_INTEGRITY_DIAG="+json.dumps(diagnosis,sort_keys=True))
+    normalizers=normalizer_coverage(counts["M"],counts["M_5_50"])
     if (reader.nbytes!=SIZE or reader.md5.hexdigest()!=EXPECTED_MD5 or
         reader.sha256.hexdigest()!=EXPECTED_SHA256 or set(by_chr)!=CHROMOSOMES or
-        set(counts["M"])!=CHROMOSOMES or set(counts["M_5_50"])!=CHROMOSOMES or
         hm3 is None):
         raise ValueError("publisher 22-chromosome LD reference checksum/member completeness drift: "+
                          json.dumps(diagnosis,sort_keys=True))
@@ -137,7 +153,10 @@ def archive_reference(opener=urllib.request.urlopen,*,required_meta=True):
         all_ids.update(ids)
     return by_chr,set(hm3),{"record":"Zenodo 8182036","publisher_archive_bytes":reader.nbytes,
         "publisher_archive_md5_verified":True,"publisher_archive_sha256_verified":True,
-        "reference_LD_score_chromosomes":22,"M_and_M_5_50_chromosomes":22,
+        "reference_LD_score_chromosomes":22,
+        "observed_optional_M_chromosomes":len(counts["M"]),
+        "standard_M_5_50_chromosomes":22,
+        "reference_normalizer_file_mode":normalizers,
         "total_reference_LD_score_unique_SNPs":len(all_ids),
         "HM3_reference_unique_SNPs":len(hm3),
         "M_5_50_per_chromosome":{str(k):counts["M_5_50"][k] for k in sorted(counts["M_5_50"])},
