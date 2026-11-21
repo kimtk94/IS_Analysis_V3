@@ -1,0 +1,37 @@
+name: CKM TPMI SAIGE EAS AIS full genomewide source-QC PASS allele overlap
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-saige-eas-ais-full-genomewide-overlap.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  saige-grch38-vs-eas-grch37:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned GRCh38 to GRCh37 liftOver library
+        run: |
+          python -m pip install --disable-pip-version-check "pyliftover==0.4.1"
+      - name: Verify source QC PASS allele2 orientation and duplicate-coordinate gates
+        run: |
+          python -m py_compile scripts/ckm_stroke/tpmi_saige_eas_ais_full_allele_overlap.py
+          python -m unittest discover -s tests -p 'test_tpmi_saige_eas_ais_full_allele_overlap.py' -v
+      - name: Recompute genuine 8M QC PASS SAIGE GRCh38 to GIGASTROKE GRCh37 SNP overlap with 2 pinned GWAS originals
+        run: |
+          python -m scripts.ckm_stroke.tpmi_saige_eas_ais_full_allele_overlap \
+            --out artifacts/is/TPMI_SAIGE_EAS_AIS_full_original_allele_overlap_aggregate_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI-SAIGE-GIGASTROKE-EAS-AIS-genomewide-QC-PASS-allele-overlap-HOLD
+          path: artifacts/is/TPMI_SAIGE_EAS_AIS_full_original_allele_overlap_aggregate_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
