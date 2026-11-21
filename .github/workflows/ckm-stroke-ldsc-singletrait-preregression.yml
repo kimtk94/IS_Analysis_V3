@@ -8,6 +8,8 @@ on:
       - 'scripts/ckm_stroke/audit_gigastroke_logor_prefix.py'
       - 'tests/test_ckm_stroke_ldsc_preregression_readiness.py'
       - 'tests/test_ckm_stroke_gigastroke_logor_prefix.py'
+      - 'config/ckm_stroke/gigastroke_eur_official.tsv'
+      - 'docs/ckm_stroke_ldsc_singletrait_preregression_gate_20261117.md'
   workflow_dispatch:
 
 permissions:
