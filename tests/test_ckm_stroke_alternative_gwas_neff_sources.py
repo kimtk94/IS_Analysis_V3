@@ -65,6 +65,22 @@ class OriginalSourceGateTests(unittest.TestCase):
         self.assertEqual(r["likely_stroke_endpoint_codes"],["I9_CEREBINFARCT","I9_STR"])
         self.assertFalse(r["per_variant_N_eff_verified_from_manifest"])
         self.assertTrue(r["endpoint_code_match_is_not_validated_stroke_case_definition"])
+    def test_hemorrhagic_not_promoted_to_ischemic_replication(self):
+        synthetic=("phenocode\tphenostring\tsample_info\n"
+                   "I9_STR\tStroke unspecified\tna\n"
+                   "I9_STR_EMBOLIC\tEmbolic stroke\tna\n"
+                   "I9_ICH\tIntracerebral hemorrhage\tna\n"
+                   "I9_SAH\tSubarachnoid hemorrhage\tna\n")
+        # Interpret fixture escape sequences as TSV, preserving source parser.
+        r=classify_finn_manifest(synthetic.replace("\\\\t","\\t").replace("\\\\n","\\n"))
+        self.assertEqual(r["ischemic_stroke_candidate_codes_require_definition_review"],
+                         ["I9_STR","I9_STR_EMBOLIC"])
+        self.assertEqual(r["hemorrhagic_endpoint_codes_EXCLUDED_from_ischemic_stroke"],
+                         ["I9_ICH","I9_SAH"])
+        self.assertTrue(r["no_verified_LAA_or_SVD_specific_endpoint_claim"])
+        self.assertTrue(all(x["clinical_case_definition_verified"] is False
+                            for x in r["likely_stroke_endpoint_labels"]))
+
     def test_mutated_manifest_header_fails_closed(self):
         with self.assertRaisesRegex(ValueError,"phenotype code"):
             classify_finn_manifest("wrong\tlabel\nI9_STR\tStroke\n")
