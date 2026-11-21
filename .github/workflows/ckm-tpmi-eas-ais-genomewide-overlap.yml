@@ -1,0 +1,40 @@
+name: CKM TPMI vs GIGASTROKE EAS AIS genomewide allele-overlap gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-eas-ais-genomewide-overlap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-full-original-genomewide-overlap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned coordinate liftOver library
+        run: |
+          python -m pip install --disable-pip-version-check "pyliftover==0.4.1"
+      - name: Run fail-closed coordinate, palindrome, orientation and strand unit tests
+        run: |
+          python -m py_compile scripts/ckm_stroke/tpmi_gigastroke_eas_genomewide_overlap.py
+          python -m unittest discover -s tests -p 'test_tpmi_gigastroke_eas_genomewide_overlap.py' -v
+      - name: Pin and process two full GWAS original files plus UCSC MD5 verified assembly chain
+        run: |
+          python -m scripts.ckm_stroke.tpmi_gigastroke_eas_genomewide_overlap \
+            --out artifacts/is/TPMI43321_EAS_AIS_GRCh37_allele_overlap_aggregate_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI43321-EAS-AIS-genomewide-allele-overlap-HOLD
+          path: artifacts/is/TPMI43321_EAS_AIS_GRCh37_allele_overlap_aggregate_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
