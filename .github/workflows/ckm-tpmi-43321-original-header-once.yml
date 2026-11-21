@@ -1,0 +1,67 @@
+name: CKM TPMI 433.21 one-time small original PLINK2 GWAS header and SHA
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-original-header-once.yml'
+      - 'scripts/ckm_stroke/inspect_tpmi_43321_original_sumstats_once.py'
+      - 'tests/test_ckm_tpmi_43321_original_once.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-tpmi-43321-one-original-access-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-parser-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check original compressed source parser/size/schema and scientific HOLD
+        run: |
+          python -m py_compile scripts/ckm_stroke/inspect_tpmi_43321_original_sumstats_once.py
+          python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_original_once.py' -v
+
+  one-shot-official-original-PLINK2:
+    needs: offline-parser-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify original HEAD-only TPMI source identity and 14 tests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          run=44871483498
+          sha="7ea2e06dde20d497f14a4f595431e1d76de3772f"
+          data=json.loads(subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+          if data.get("conclusion")!="success" or data.get("head_sha")!=sha or data.get("repository",{}).get("full_name")!=repo:
+              raise SystemExit("original TPMI HEAD source provenance must be verified")
+          print("PINNED SINGLE TPMI SOURCE HEAD 200 PROVENANCE PASS")
+          PY
+      - name: Download 58MB official TPMI 433.21 PLINK2 once only, hash, inspect bounded rows and delete
+        run: |
+          python -m scripts.ckm_stroke.inspect_tpmi_43321_original_sumstats_once \
+            --out artifacts/ckm_stroke/tpmi_43321_one_original_gwas_header_sha_technical_hold_ci.json
+      - name: Upload ONLY compact QC evidence (no full original GWAS or effect table)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-TPMI-43321-one-original-header-sha-HOLD
+          path: artifacts/ckm_stroke/tpmi_43321_one_original_gwas_header_sha_technical_hold_ci.json
+          if-no-files-found: warn
+          retention-days: 30
