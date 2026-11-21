@@ -128,6 +128,7 @@ def compare_rows(records, locke, yengo_positions):
         counts["triple_intersection"]+=1
         if len(examples)<5:
             examples.append({"2018_class":label2018,"2015_independent_class":label2015})
+    counts["triple_intersection"]+=0  # explicit zero when no independent source matches
     if counts["source_complete_rows"]!=sum(counts[k] for k in (
        "nonautosomal_or_invalid","no_2018_candidate",
        "no_2015_independent_candidate","triple_intersection")):
