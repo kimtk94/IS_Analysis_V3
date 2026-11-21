@@ -109,7 +109,7 @@ class EAFGCInputTests(unittest.TestCase):
             review_diagnostics(r)
         r=full()
         e=r["outcomes"][1]["eaf_gc_source_descriptive"]
-        e["by_chr"][0]["categories"]["maf_ge_005"]-=1
+        e["by_chr"][21]["categories"]["maf_ge_005"]-=1
         with self.assertRaisesRegex(ValueError,"chromosome"):
             review_diagnostics(r)
 
