@@ -33,7 +33,7 @@ def parse_significant(columns):
     if not (chrom.isdecimal() and 1<=int(chrom)<=22
             and pos.isdecimal() and int(pos)>0
             and set(ref).issubset(set("ACGT")) and ref
-            and set(alt).issubset(set("ACGT")) and alt
+            and set(alt).issubset(set("ACGT")) and alt and ref!=alt
             and a1 in (ref,alt) and model=="ADD" and err=="." and obs.isdecimal()):
         raise ValueError("significant GWAS source association unexpected genotype or error convention")
     try:
