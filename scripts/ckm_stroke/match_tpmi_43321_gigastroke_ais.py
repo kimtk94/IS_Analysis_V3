@@ -43,6 +43,12 @@ def target_gate(t):
         and ref!=alt and a1 in (ref,alt)
         and t.get("target_variant_key")==f"{ch}:{pos}:{ref}:{alt}"):
         raise ValueError("invalid source target locus or allele")
+    tpmi_beta=t.get("TPMI_A1_logOR")
+    tpmi_se=t.get("TPMI_A1_logOR_SE")
+    tpmi_p=t.get("TPMI_original_P")
+    if (not all(type(v) in (float,int) and math.isfinite(v) for v in (tpmi_beta,tpmi_se,tpmi_p))
+        or tpmi_se<=0 or not 0<=tpmi_p<=5e-8):
+        raise ValueError("missing valid TPMI original A1 logOR, SE or P")
     return str(ch),pos,ref,alt,a1
 
 class HashReader:
@@ -92,11 +98,18 @@ def scan(source,target):
         not 0<=eaf<=1 or se<=0 or not 0<=p<=1 or odds<=0):
         raise ValueError("invalid outcome effect or frequency")
     orientation,sign=orient(a1,alt if a1==ref else ref,ea,oa,eaf)
-    out.update({"GIGASTROKE_effect_allele":ea,"GIGASTROKE_other_allele":oa,
+    signed=beta*sign if sign is not None else None
+    tpmi_beta=target["TPMI_A1_logOR"]
+    same_direction=(signed*tpmi_beta>0) if signed is not None and tpmi_beta!=0 and signed!=0 else None
+    out.update({"TPMI_original_A1_logOR":tpmi_beta,
+                "TPMI_original_A1_SE":target["TPMI_A1_logOR_SE"],
+                "observed_effect_direction_concordant":same_direction,
+                "effect_direction_concordance_is_not_independent_replication":True,
+                "GIGASTROKE_effect_allele":ea,"GIGASTROKE_other_allele":oa,
                 "GIGASTROKE_raw_beta":beta,"GIGASTROKE_raw_SE":se,
                 "GIGASTROKE_raw_P":p,"GIGASTROKE_raw_EAF":eaf,
                 "effect_allele_orientation":orientation,
-                "signed_beta_to_TPMI_A1":beta*sign if sign is not None else None,
+                "signed_beta_to_TPMI_A1":signed,
                 "technical_status":"PASS_EXACT_LOCUS_AND_ALLELE_MATCH" if sign is not None else "HOLD_ALLELE_ORIENTATION"})
     return out
 
