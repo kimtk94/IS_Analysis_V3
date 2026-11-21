@@ -5,6 +5,7 @@ Does not claim a GIGASTROKE effect or independence, and never fabricates N_eff.
 from __future__ import annotations
 import argparse
 import json
+import math
 from pathlib import Path
 
 EXPECTED_SHA="ce14daef23f9fadf921030d9ed2429383d927f6da391c620d9abf870045b2e62"
@@ -34,6 +35,12 @@ def prepare(data):
         raise ValueError("mapped target locus, reference alleles or A1 not validated")
     if source.get("original_OBS_CT")!=204099:
         raise ValueError("original PLINK2 observation count changed")
+    beta=source.get("logOR_original_A1")
+    se=source.get("LOGOR_SE_original")
+    p=source.get("P_original")
+    if (not all(type(x) in (int,float) and math.isfinite(x) for x in (beta,se,p))
+        or se<=0 or not 0<=p<=5e-8):
+        raise ValueError("original TPMI A1 logOR, SE or significant P unavailable")
     return {
        "schema":"ckm-TPMI43321-GIGASTROKE-GRCh37-target-request-v1",
        "technical_status":"PASS_VERIFIED_TARGET_ONLY",
@@ -42,7 +49,9 @@ def prepare(data):
        "target_REF":ref,"target_ALT":alt,"target_A1":a1,
        "target_variant_key":f"{chrom}:{pos}:{ref}:{alt}",
        "TPMI_reported_rsid":source.get("reported_rsid"),
-       "TPMI_original_P":source.get("P_original"),
+       "TPMI_original_P":p,
+       "TPMI_A1_logOR":beta,
+       "TPMI_A1_logOR_SE":se,
        "TPMI_original_OBS_CT_not_Neff":204099,
        "GIGASTROKE_original_row_matched":False,
        "GIGASTROKE_EUR_effect_allele_harmonized":False,
