@@ -6,6 +6,8 @@ on:
       - '.github/workflows/ckm-stroke-ldsc-singletrait-preregression.yml'
       - 'scripts/ckm_stroke/audit_ldsc_preregression_readiness.py'
       - 'scripts/ckm_stroke/audit_gigastroke_logor_prefix.py'
+      - 'scripts/ckm_stroke/audit_locke_yengo_gigastroke_allele_order.py'
+      - 'tests/test_ckm_stroke_audit_locke_yengo_gigastroke_allele_order.py'
       - 'tests/test_ckm_stroke_ldsc_preregression_readiness.py'
       - 'tests/test_ckm_stroke_gigastroke_logor_prefix.py'
       - 'config/ckm_stroke/gigastroke_eur_official.tsv'
@@ -35,6 +37,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_ckm_stroke_ldsc_preregression_readiness.py' -v
           python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_logor_prefix.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_audit_locke_yengo_gigastroke_allele_order.py' -v
 
   original-sources:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[ldsc-preregression-full]')
@@ -79,6 +82,14 @@ jobs:
             --probe-file artifacts/ckm_stroke/gigastroke_eur_prefix_logor_ci.json \
             --overlap-file artifacts/ckm_stroke/locke_gigastroke_cohort_overlap_ci.json \
             --out artifacts/ckm_stroke/ldsc_singletrait_input_preflight_ci.json
+      - name: Independently cross-check Locke 2015, Yengo 2018, original stroke bounded allele order
+        run: |
+          python -m scripts.ckm_stroke.audit_locke_yengo_gigastroke_allele_order \
+            --locke artifacts/ckm_stroke/locke_2015_independent.candidate.tsv.gz \
+            --locke-provenance artifacts/ckm_stroke/locke_2015_independent_provenance_ci.json \
+            --yengo artifacts/ckm_stroke/bmi_3way_conservative.sumstats.gz \
+            --yengo-provenance artifacts/ckm_stroke/bmi_2018_candidate_provenance_ci.json \
+            --out artifacts/ckm_stroke/gigastroke_independent_2015_allele_order_ci.json
       - name: Delete intermediate GWAS candidate tables before artifact upload
         if: always()
         run: |
@@ -95,5 +106,6 @@ jobs:
             artifacts/ckm_stroke/locke_gigastroke_cohort_overlap_ci.json
             artifacts/ckm_stroke/gigastroke_eur_prefix_logor_ci.json
             artifacts/ckm_stroke/ldsc_singletrait_input_preflight_ci.json
+            artifacts/ckm_stroke/gigastroke_independent_2015_allele_order_ci.json
           if-no-files-found: warn
           retention-days: 30
