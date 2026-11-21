@@ -1,0 +1,29 @@
+name: CKM BBJ 2019 NBDC cerebral infarction ZIP member metadata
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-bbj-2019-ndbc-zip-members.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-zip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inspect public official 2.3GB source ZIP directory by byte ranges only
+        run: |
+          python -m py_compile scripts/ckm_stroke/probe_ndbc_2019_is_zip.py
+          python -m scripts.ckm_stroke.probe_ndbc_2019_is_zip --out artifacts/tpmi/bbj_ndbc_2019_cerebral_infarction_original_zip_members_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-BBJ-2019-NBDC-CI-official-ZIP-members-HOLD
+          path: artifacts/tpmi/bbj_ndbc_2019_cerebral_infarction_original_zip_members_HOLD.json
+          retention-days: 30
