@@ -115,6 +115,25 @@ def allele_align(source_ref,source_alt,source_a1,source_freq,ea,oa,eaf):
         return "BAD_ALLELE_FREQUENCY",None,None
     return "MATCHED",sign,abs(source_freq-expected_freq)
 
+def association_numeric_qc(or_value,tpmi_se,tpmi_p,tpmi_n,ais_beta,ais_se,ais_p,ais_or):
+    """Numerical eligibility for allele-matched pairs, no N_eff or causality claims."""
+    try:
+        values=(float(or_value),float(tpmi_se),float(tpmi_p),float(tpmi_n),
+                float(ais_beta),float(ais_se),float(ais_p),float(ais_or))
+    except (TypeError, ValueError, OverflowError):
+        return "NON_NUMERIC",None
+    odds,s1,p1,n,beta,s2,p2,odds2=values
+    if not all(math.isfinite(x) for x in values):
+        return "NONFINITE",None
+    if not (odds>0 and s1>0 and 0<=p1<=1 and n>0 and
+            s2>0 and 0<=p2<=1 and odds2>0):
+        return "OUT_OF_RANGE",None
+    logor1=math.log(odds)
+    # Some providers use SPA/Firth-adjusted p; flag large drift but do not
+    # silently revise or discard source P based on a Wald approximation.
+    odds_drift=abs(math.log(odds2)-beta)
+    return "PASS_FINITE_RANGE",odds_drift
+
 def unique_lift(lifter,chrom,pos):
     matches=lifter.convert_coordinate("chr"+chrom,pos-1)
     if not matches:return "UNMAPPED",None
@@ -170,7 +189,7 @@ def tpmi_index(path,lifter):
             if {r37,a37} in ({"A","T"},{"C","G"}):
                 mapstat["PALINDROMIC"]+=1;continue
             key=(c37,p37)
-            idx.setdefault(key,[]).append((r37,a37,eff37,freq))
+            idx.setdefault(key,[]).append((r37,a37,eff37,freq,or_value,se_val,pval,nobs))
             mapstat["UNIQUE_MAPPED_VALID_SNV"]+=1
         if rows!=TPMI_ROWS or significant!=1:
             raise ValueError("TPMI full row count or genome-wide lead drift")
@@ -203,7 +222,7 @@ def scan_eas(path,idx):
             counts["COORDINATE_ROW_INTERSECTIONS"]+=1
             if len(options)!=1:
                 counts["TPMI_MULTIALLELIC_COORDINATE_AMBIGUOUS"]+=1;continue
-            ref,alt,a1,tpmi_freq=options[0]
+            ref,alt,a1,tpmi_freq,tpmi_or,tpmi_se,tpmi_p,tpmi_n=options[0]
             try:eaf=float(cols[2])
             except ValueError:
                 counts["OUTCOME_INVALID_EAF"]+=1;continue
@@ -215,6 +234,18 @@ def scan_eas(path,idx):
                 raise ValueError("duplicate matched EAS coordinates")
             used_keys.add(key)
             matched_per_chrom[chrom]+=1
+            num_status,or_drift=association_numeric_qc(
+                tpmi_or,tpmi_se,tpmi_p,tpmi_n,
+                cols[3],cols[4],cols[5],cols[6])
+            counts["NUMERIC_"+num_status]+=1
+            if or_drift is not None:
+                if or_drift>0.05:counts["EAS_LOGOR_BETA_DIFF_GT_0.05"]+=1
+                if or_drift>0.005:counts["EAS_LOGOR_BETA_DIFF_GT_0.005"]+=1
+            if num_status=="PASS_FINITE_RANGE":
+                counts["NUMERIC_ELIGIBLE_MATCHES"]+=1
+                if delta>0.20:counts["NUMERIC_AF_DIFF_GT_0.20"]+=1
+                if delta>0.10:counts["NUMERIC_AF_DIFF_GT_0.10"]+=1
+                if delta>0.05:counts["NUMERIC_AF_DIFF_GT_0.05"]+=1
             if delta>0.20:frequency_diff["ABS_DIFF_GT_0.20"]+=1
             elif delta>0.10:frequency_diff["ABS_DIFF_GT_0.10_LE_0.20"]+=1
             elif delta>0.05:frequency_diff["ABS_DIFF_GT_0.05_LE_0.10"]+=1
@@ -264,6 +295,8 @@ def execute():
             "EAS_by_chromosome_original_rows":outcome_by_chr,
             "matched_by_chromosome":matched_by_chr,
             "frequency_delta_buckets":freqdiff,
+            "numeric_qc_is_necessary_not_sufficient_for_MR_LDSC":True,
+            "official_binary_Neff_still_unapproved":True,
             "source_rare_lead_GRCh37_in_EAS_AIS":lead_saw,
             "source_rare_lead_eligible_for_independent_replication":False,
             "cohort_independence_verified":False,
