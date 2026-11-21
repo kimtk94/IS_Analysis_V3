@@ -82,7 +82,7 @@ class TestOfficialEndpointSources(unittest.TestCase):
 
     def test_cohort_sha_tamper_fails_closed(self):
         c=cohort();c["publisher_source_sha256"]="0"*64
-        with self.assertRaisesRegex(ValueError,"source"):
+        with self.assertRaisesRegex(ValueError,"publisher-supplement cohort evidence mismatch"):
             r.validated_cohort_sensitivity(c)
 
     def test_invalid_cases_never_approved(self):
