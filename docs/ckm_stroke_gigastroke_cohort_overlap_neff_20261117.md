@@ -90,3 +90,21 @@ The public original EUR GWAS Catalog outcome files lack rsID and per-variant N. 
 New code: scripts/ckm_stroke/audit_gigastroke_ldsc_neff_method_gate.py and tests/test_ckm_stroke_gigastroke_ldsc_neff_method_gate.py. The existing GitHub Actions cohort workflow now runs ten additional negative/positive source-policy tests, re-downloads only the SHA256-pinned corrected publisher XLSX (~0.757MB), checks four original EBI gzip 131072-byte prefixes, and publishes a metadata-only evidence JSON. Scenario differences are labelled *illustrative_not_approved_for_LDSC*. Wrong accessions, false SNP-level sample N, missing controls treated as zero, nonfinite N calculations, unsupported sample overlap and wrong log odds scale cause CI failure. The only valid result is technical PASS with scientific HOLD, never a new h2/intercept/rg estimate.
 
 Next: identify defendable meta-analysis N_eff convention with actual weights/variant missingness, independently document GC differences and audit final full reference-matched regression SNP counts. Keep Draft PR #284 unmerged until scientific review.
+
+
+## 8. Reproduced 2026-11-21 Linux source-policy result: technical PASS, scientific HOLD
+
+GitHub Actions run [#44851463193](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44851463193) completed **SUCCESS** at commit [ad31b364](https://github.com/kimtk94/IS_Analysis_V3/commit/ad31b364917240def3386b9aec641d9057d915b1). Original 2022 corrected Springer Supplementary Table 1/3 was independently re-downloaded and SHA256 checked; four original EBI EUR GWAS bounded effect prefixes checked for log(OR) and missing per-SNP N. Existing publisher-source contract tests **8/8 PASS**, new N_eff method/policy tests **10/10 PASS**. Technical output: PASS_ORIGINAL_META_NEFF_EVIDENCE_BLOCKS_UNJUSTIFIED_N. Aggregate-only original source JSON artifact: [#14685063730](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44851463193/artifacts/14685063730).
+
+The source-derived numerical differences between two **illustrative, unapproved** effective-N arithmetic scenarios:
+
+| Trait | Pooled total-first arithmetic N_eff | Sum of cohort harmonics with reported controls | Relative difference | Valid outcome LDSC N_eff? |
+| --- | ---: | ---: | ---: | --- |
+| AIS | 236,505.83 | 195,570.72 | **17.308%** | **NO** |
+| LAA | 25,464.04 | 23,149.57 | **9.089%** | **NO** |
+| CE | 42,841.16 | 39,605.59 | **7.552%** | **NO** |
+| SVD | 27,094.55 | 23,758.72 | **12.312%** | **NO** |
+
+These differences do not constitute a statistical sensitivity analysis of h² or validate either sample-size definition. The smaller cohortwise number excludes cases missing control counts, and neither method addresses variant-level coverage, inverse-variance weighting or method-dependent N. Explicitly HOLD all 4 outcomes rather than inserting pooled total N, total-first arithmetic N_eff, cohort harmonics, or EAC in the LDSC N column.
+
+**Next safe task:** independent final regression SNP-universe attrition using pinned chromosome-specific EUR LDscore and original GWAS allele/coordinate QC, producing only count summaries before any h². Separately search for official sample-size/weight methods and compare original cov-LDSC without GC correction to public harmonized summary statistic provenance. Draft PR #284 remains unmerged.
