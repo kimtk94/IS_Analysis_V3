@@ -1,0 +1,31 @@
+name: CKM TPMI 433.21 phenotype code definition audit
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-phenotype-definition.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-phenotype-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate phenotype description and distinguish Phecode from ICD9-CM
+        run: |
+          python -m py_compile scripts/ckm_stroke/validate_tpmi_phecode_43321_label.py
+          python -m scripts.ckm_stroke.validate_tpmi_phecode_43321_label \
+            --out artifacts/is/tpmi_43321_exact_phenotype_definition_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI-Phecode-43321-phenotype-definition-HOLD
+          path: artifacts/is/tpmi_43321_exact_phenotype_definition_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
