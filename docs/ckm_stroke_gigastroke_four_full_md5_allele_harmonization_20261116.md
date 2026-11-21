@@ -246,3 +246,29 @@ To obtain an INDEPENDENT European population reference, fetch rs198472 via the o
 **Case/control and N_eff evidence:** The published source reports AIS 62,100 cases / 1,234,808 controls, LAA 6,399 / 1,234,808, CE 10,804 / 1,234,808, and SVD 6,811 / 1,234,808. Illustrative 4*Ncase*Ncontrol/(Ncase+Ncontrol) is computed for transparent arithmetic only and must NEVER be inserted as original per-SNP effective N in a multi-study inverse-variance meta-analysis. Public original EUR files have exactly eleven columns and no per-variant case count, control count or N_eff, whereas the meta-analysis combines many heterogeneous cohorts and variant availability differs across contributing studies. Total N is not equivalent to effective N for highly imbalanced binary outcomes. Exact contributor N_eff, GC transformation provenance and LDSC regression-weight SNP merge remain HOLD. Reference: https://www.nature.com/articles/s41586-022-05165-3 .
 
 Execution code: scripts/ckm_stroke/verify_rs198472_independent_EUR_and_neff.py, tests/test_ckm_stroke_rs198472_independent_EUR_neff.py and .github/workflows/ckm-rs198472-1000g-eur-neff.yml. Never publish raw per-variant effects, and never merge Draft PR #284 without approval.
+
+
+## 2026-11-21 rs198472 independent 1000 Genomes Phase 3 EUR original-source resolution — VERIFIED
+
+**Original-independent CI:** [GitHub Actions #44865055885](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44865055885), SUCCESS, 9/9 fail-closed offline tests PASS; [immutable evidence artifact #14691656333](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44865055885/artifacts/14691656333). Research code commit 6f897a2df785e19e015aad0da6b64eee7941236d. The original GIGASTROKE four-subtype chr11 identity source was pinned to original verified workflow #44863365730. The Yengo 2018 GIANT original gzip was independently streamed with its previously pinned source SHA256, confirming rs198472, GRCh37 chr11:61,527,266, tested allele **A**, other allele G and HRS tested-A frequency 0.5341. Ensembl **GRCh37** original variation REST returned rs198472 A/G mapping and independent `1000GENOMES:phase_3:EUR` A frequency **0.7554672** (G frequency **0.2445328**), and passed a strict EUR biallelic sum-to-one gate. Neither GRCh38 nor a different effect allele was used.
+
+| Cohort reference / phenotype | Allele A frequency | Absolute deviation vs 1000G EUR A |
+| --- | ---: | ---: |
+| 1000 Genomes Phase 3 EUR | **0.7554672** | 0 |
+| GIANT Yengo 2018 HRS | 0.5341 | **0.2213672** |
+| GIGASTROKE AIS | 0.7749 | **0.0194328** |
+| GIGASTROKE LAA | 0.7534 | **0.0020672** |
+| GIGASTROKE CE | 0.7575 | **0.0020328** |
+| GIGASTROKE SVD | 0.7588 | **0.0033328** |
+
+**Decision:** The previously reported ~20 percentage point difference between GIGASTROKE EUR and the distinct GIANT HRS reference is **NOT reproduced against independent 1000 Genomes Phase 3 EUR**. The first-pass 'large between-study EAF discrepancy' must therefore NOT be classified as a GIGASTROKE strand/allele-coding error. HRS-specific source frequency is an open provenance/QC question, not evidence that the stroke frequency is wrong. 1000G EUR Phase 3 includes its own European reference samples and is not identical to the stroke study cohorts; AIS still differs by ~1.94 percentage points, not a perfect match. No original per-SNP effects or genotypes were exported.
+
+**GIGASTROKE effective N decision:** the source meta-analysis comprises EUR cohorts and shows only 11 columns (no per-variant N/Ncase/Ncontrol). The phenotype total N values and illustrative harmonic 4*Ncase*Ncontrol/(Ncase+Ncontrol) calculations are:
+- AIS cases=62,100 controls=1,234,808 total=1,296,908; illustrative N_eff=236,505.83
+- LAA cases=6,399 controls=1,234,808 total=1,241,207; illustrative N_eff=25,464.04
+- CE cases=10,804 controls=1,234,808 total=1,245,612; illustrative N_eff=42,841.16
+- SVD cases=6,811 controls=1,234,808 total=1,241,619; illustrative N_eff=27,094.55
+
+These are population-wide arithmetic illustrations, **NOT effective N per SNP**, and do not account for variant-specific missingness, imputation or per-contributing-study case/control balance. They are NOT approved for LDSC munging or regression. The original Mishra 2022 GIGASTROKE study used cross-cohort meta-analysis and cov-LDSC; exact original phenotype-specific allele coverage and cov-LDSC settings cannot be assumed from the published N totals alone. **Scientific HOLD remains**, `ready_for_ldsc=false`, no h2/intercept/rg/MR/coloc executed.
+
+**Next practical scientific gate:** identify a defensible per-variant N_eff source, or explicitly design a prespecified sensitivity-only constant-N analysis (label unvalidated and separate from primary) after confirming methodology and a source-identical population reference, then perform actual outcome munging and independent 22 chromosome EUR LD-score/weight SNP merge. Prefer a stroke GWAS with documented per-variant N_eff when the original EUR meta-analysis does not expose it. Draft PR #284 remains unmerged.
