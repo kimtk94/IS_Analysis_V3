@@ -1,0 +1,37 @@
+name: CKM TPMI GRCh37 EAS LD proxy gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-eas-ld-proxy.yml'
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  eas-reference-ld:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && github.event.issue.number == 284 && github.event.comment.user.login == 'kimtk94' && github.event.comment.body == '/tpmi-run-eas-ld-20261121')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run GRCh37 EAS reference LD audit without inventing GIGASTROKE matches
+        run: |
+          python -m py_compile scripts/ckm_stroke/check_tpmi_43321_eas_ld.py
+          python -m scripts.ckm_stroke.check_tpmi_43321_eas_ld --out artifacts/tpmi/tpmi_43321_eas_grch37_ld_proxy_evidence_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-TPMI43321-EAS-LD-proxy-audit-HOLD
+          path: artifacts/tpmi/tpmi_43321_eas_grch37_ld_proxy_evidence_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
