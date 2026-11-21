@@ -79,3 +79,14 @@ py -3 -m scripts.ckm_stroke.audit_gigastroke_supplement_cohort_neff --out artifa
 2. Resolve case-control meta-analysis N / effective N using original methodology, per-cohort coverage and, where possible, available study-level N; carry alternative Neff choices as **assumption sensitivity**, not an arbitrary fixed constant.
 3. Develop an individual-variant QC report for 4 GIGASTROKE outcome sign effects while keeping raw data access and metadata provenance reproducible.
 4. Run **h² / mean χ² / intercept QC only after** legal/reference and effective-N assumptions are documented; prioritize AIS/CE for initial power checks, flag LAA and potentially SVD for limited genetic heritability precision. Prohibit rg inference when diagnostics indicate poor h² estimability.
+
+
+## 7. Effective-N methodology and original-source policy gate (2026-11-21)
+
+Mishra et al., Nature 2022, doi:10.1038/s41586-022-05165-3 describes fixed-effect inverse-variance GWAS meta-analysis and reports covariate-adjusted LD-score regression (cov-LDSC) on ancestry-specific meta-analysis statistics without genomic-control (GC) correction. Their original variant quality control uses effective allele count (EAC = 2 × cohort case count × MAF × imputation quality); **EAC is not LDSC sample N_eff**. Paper method statements are sourced to the published research, not machine re-fetched during CI.
+
+The public original EUR GWAS Catalog outcome files lack rsID and per-variant N. The corrected 44-cohort Table 1 reports EUR phenotype-level cases and controls, not SNP-specific contributing cohorts, inverse-variance meta-analysis weights or per-SNP effective samples. Shared UKB and other cohort membership does not quantify individual-level overlap. Published Cov-LDSC h2 values and public harmonized GWAS inputs are not confirmed identically GC-corrected/preprocessed.
+
+New code: scripts/ckm_stroke/audit_gigastroke_ldsc_neff_method_gate.py and tests/test_ckm_stroke_gigastroke_ldsc_neff_method_gate.py. The existing GitHub Actions cohort workflow now runs ten additional negative/positive source-policy tests, re-downloads only the SHA256-pinned corrected publisher XLSX (~0.757MB), checks four original EBI gzip 131072-byte prefixes, and publishes a metadata-only evidence JSON. Scenario differences are labelled *illustrative_not_approved_for_LDSC*. Wrong accessions, false SNP-level sample N, missing controls treated as zero, nonfinite N calculations, unsupported sample overlap and wrong log odds scale cause CI failure. The only valid result is technical PASS with scientific HOLD, never a new h2/intercept/rg estimate.
+
+Next: identify defendable meta-analysis N_eff convention with actual weights/variant missingness, independently document GC differences and audit final full reference-matched regression SNP counts. Keep Draft PR #284 unmerged until scientific review.

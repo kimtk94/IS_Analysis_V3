@@ -6,6 +6,9 @@ on:
       - '.github/workflows/ckm-stroke-gigastroke-cohort-neff-audit.yml'
       - 'scripts/ckm_stroke/audit_gigastroke_supplement_cohort_neff.py'
       - 'tests/test_ckm_stroke_gigastroke_supplement_cohort_neff.py'
+      - 'scripts/ckm_stroke/audit_gigastroke_ldsc_neff_method_gate.py'
+      - 'tests/test_ckm_stroke_gigastroke_ldsc_neff_method_gate.py'
+      - 'docs/ckm_stroke_gigastroke_cohort_overlap_neff_20261117.md'
       - 'config/ckm_stroke/gigastroke_eur_official.tsv'
   workflow_dispatch:
 
@@ -29,6 +32,7 @@ jobs:
         run: |
           python -m py_compile scripts/ckm_stroke/audit_gigastroke_supplement_cohort_neff.py
           python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_supplement_cohort_neff.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_stroke_gigastroke_ldsc_neff_method_gate.py' -v
 
   corrected-primary:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[gigastroke-cohort-full]')
@@ -45,11 +49,24 @@ jobs:
           python -m scripts.ckm_stroke.audit_gigastroke_supplement_cohort_neff \
             --manifest config/ckm_stroke/gigastroke_eur_official.tsv \
             --out artifacts/ckm_stroke/gigastroke_corrected_cohort_neff_ci.json
+      - name: Probe original four EUR GWAS effect scales and missing per-variant N
+        run: |
+          python -m scripts.ckm_stroke.audit_gigastroke_logor_prefix \
+            --out artifacts/ckm_stroke/gigastroke_neff_effect_prefix_ci.json
+      - name: Reject unapproved meta-analysis N eff in original study evidence
+        run: |
+          python -m scripts.ckm_stroke.audit_gigastroke_ldsc_neff_method_gate \
+            --cohort artifacts/ckm_stroke/gigastroke_corrected_cohort_neff_ci.json \
+            --prefix artifacts/ckm_stroke/gigastroke_neff_effect_prefix_ci.json \
+            --out artifacts/ckm_stroke/gigastroke_neff_method_gate_ci.json
       - name: Publish aggregate-only UKB, effective-N scenario and published LDSC benchmarks
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ckm-gigastroke-corrected-primary-UKB-neff-gate
-          path: artifacts/ckm_stroke/gigastroke_corrected_cohort_neff_ci.json
+          path: |
+            artifacts/ckm_stroke/gigastroke_corrected_cohort_neff_ci.json
+            artifacts/ckm_stroke/gigastroke_neff_effect_prefix_ci.json
+            artifacts/ckm_stroke/gigastroke_neff_method_gate_ci.json
           if-no-files-found: warn
           retention-days: 30
