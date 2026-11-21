@@ -1,0 +1,69 @@
+name: CKM FinnGen R9/R10 AIS original manifest and source cohort overlap triage
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-finngen-older-ais-manifest-overlap.yml'
+      - 'scripts/ckm_stroke/audit_finngen_older_ais_manifest_overlap.py'
+      - 'tests/test_ckm_finngen_older_ais_manifest_overlap.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-finngen-older-AIS-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  no-network-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate prior release availability without inferring cohort independence or N_eff
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_finngen_older_ais_manifest_overlap.py
+          python -m unittest discover -s tests -p 'test_ckm_finngen_older_ais_manifest_overlap.py' -v
+
+  official-public-source:
+    needs: no-network-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reconfirm previous publisher-corrected GIGASTROKE 44-cohort source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          for run,sha in [
+              (44855617332,"b189dd5205ba44970b1c88e56a280e755c9b76f6"),
+              (44869603525,"ec91d4b53d49aadfc90efd6dd25c7e7eabbb1b73"),
+          ]:
+              obj=json.loads(subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+              if (obj.get("conclusion")!="success" or obj.get("head_sha")!=sha or
+                  obj.get("repository",{}).get("full_name")!=repo):
+                  raise SystemExit("Source CI run/commit not approved: "+str(run))
+          print("CORRECTED 44-COHORT SOURCE AND R13 CLINICAL DEFINITIONS PINNED")
+          PY
+      - name: Query R9/R10/R13 public manifest and metadata-only GCS HEAD; verify old publisher cohort workbook
+        run: |
+          python -m scripts.ckm_stroke.audit_finngen_older_ais_manifest_overlap \
+            --out artifacts/ckm_stroke/finngen_R9_R10_R13_AIS_manifest_access_and_overlap_ci.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-FinnGen-R9-R10-AIS-release-overlap-provenance
+          path: artifacts/ckm_stroke/finngen_R9_R10_R13_AIS_manifest_access_and_overlap_ci.json
+          if-no-files-found: warn
+          retention-days: 30
