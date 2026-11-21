@@ -150,3 +150,24 @@ The study official AIS metadata separately lists replication: 8,304 EAS cases an
 
 - Actual full original EAS AIS source QC has been started: https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44888595169 . Until its result is inspected, original genomewide variant coverage, gzip integrity, chromosome distribution and rs187759247 exact presence remain NOT VERIFIED.
 - No approved per-SNP binary sample effective N, official cohort overlap clearance, TPMI genomewide GRCh38-to-GRCh37 harmonization or signed harmonized IV has yet been verified. **Scientific status: HOLD.**
+
+## Official EAS AIS whole-file QC and exact TPMI phenotype clarification (2026-11-21)
+
+### Whole-file EAS AIS original verified
+- GitHub Actions https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44888595169 **SUCCESS**; job 136799230332; artifact 14701455627.
+- Public original: EBI GWAS Catalog \`GCST90104545_buildGRCh37.tsv.gz\`. Full gzip stream was consumed and gzip CRC/integrity checked, the official URL and Content-Length matched the actual downloaded bytes, and a reproducible **computed** full-source SHA-256 was recorded: \`c521d5695414bdedcc84d2ea21d588e330c75a672f36a87c3fd092b4c55687a3\`. A separately published checksum was **not** independently matched; do not claim it was.
+- Exactly **6,725,216 variants** scanned in the source; **143,669 chromosome 19 records**; **0** rows at the verified TPMI GRCh37 coordinate \`19:15573379\`. Log technical status \`PASS_SOURCE_VERIFIED_NO_EXACT_LOCUS\`. This does not imply absence of biological effect.
+- Distinguish full genomewide GWAS usability from *single rare TPMI SNP* replication failure. EAS AIS outcome access and full source schema are verified; original effect of TPMI rare lead absent; genomewide GRCh38↔GRCh37 TPMI overlap and complete allele harmonization have **not** been performed.
+
+### Phenotype identity is not ICD-9-CM identity
+- GitHub Actions https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44888783440 **SUCCESS**; job 136799805352; artifact 14700697258.
+- Actual TPMI PheWeb source page \`https://pheweb.ibms.sinica.edu.tw/pheno/433.21\` and corresponding \`pheno-filter\` were separately checked via live HTTP 200.
+- **TPMI Phecode 433.21: "Cerebral artery occlusion, with cerebral infarction"**, **9,249 cases**, **304,660 controls**, circulatory-system category. These figures are direct phenotype-page metadata, not \`OBS_CT\` effective N.
+- **ICD-9-CM code 433.21 is different**: "Occlusion and stenosis of vertebral artery with cerebral infarction." The TPMI identifier here is Phecode, not ICD-9-CM; do **not** use the ICD-9 definition to re-label the PheWeb trait.
+- GIGASTROKE EAS AIS is "any ischemic stroke", 19,032 discovery cases and 237,242 controls. TPMI Phecode 433.21 and GIGASTROKE AIS are related but **not the same operational case definition**, and neither is automatically equivalent to TOAST CES/LAS/SVS.
+- The source \`OBS_CT=204099\` remains inconsistent with phenotype-page case+control total \`313,909\`; the source effective sample size is unapproved. Confirm model- and SNP-specific observation counts, covariates and Phecode inclusion/exclusion definitions before any LDSC, LDSC-SEG, MAGMA, MR or coloc claim.
+
+### Next required gates
+1. Select thesis-level scientifically matched AIS phenotype(s), compare case ascertainment and sources/overlap, and document the different outcome definitions.
+2. Harmonize all available TPMI GRCh38 summary variants to verified EAS AIS GRCh37 (or validate an official GRCh38 outcome file), record allele/strand QC and overlap counts, without assuming that a rare lead absent from the EAS outcome is replicated.
+3. Explicitly approve phenotype-specific and SNP-specific effective N / LDSC preconditions **only when supported by source data**, otherwise HOLD.
