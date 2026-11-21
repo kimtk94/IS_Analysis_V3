@@ -1,0 +1,34 @@
+name: CKM TPMI EAS AIS original sample N effective gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-eas-ais-neff-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-source-n-and-phenotype:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Crosscheck official TPMI phenotype total versus verified PLINK2 OBS_CT and EAS case N
+        run: |
+          python -m py_compile scripts/ckm_stroke/validate_tpmi_eas_ais_neff_gate.py
+          python -m scripts.ckm_stroke.validate_tpmi_eas_ais_neff_gate \
+            --out artifacts/is/TPMI43321_GIGASTROKE_EAS_AIS_sample_Neff_gate_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI-EAS-AIS-sample-Neff-evidence-HOLD
+          path: artifacts/is/TPMI43321_GIGASTROKE_EAS_AIS_sample_Neff_gate_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
