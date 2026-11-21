@@ -63,7 +63,7 @@ class ReferenceMergeTests(unittest.TestCase):
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.audit_attrition")
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.verify_neff_source")
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.EXPECTED_SNP_COUNT",3)
-    def test_real_22chr_ids_intersection_still_scientific_hold(self,_expected,neff,source_review):
+    def test_real_22chr_ids_intersection_still_scientific_hold(self,neff,source_review):
         source_review.return_value=fake_review()
         neff.return_value=[{"phenotype":"AIS","difference_percent":17.3}]
         ids={"rs1","rs2","rs3"}
@@ -79,7 +79,7 @@ class ReferenceMergeTests(unittest.TestCase):
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.audit_attrition")
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.verify_neff_source")
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.EXPECTED_SNP_COUNT",3)
-    def test_missing_reference_chr_snp_fails(self,_expected,neff,source_review):
+    def test_missing_reference_chr_snp_fails(self,neff,source_review):
         source_review.return_value=fake_review()
         ids={"rs1","rs2","rs3"}
         ref={i:set() for i in range(1,23)}
@@ -90,7 +90,7 @@ class ReferenceMergeTests(unittest.TestCase):
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.audit_attrition")
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.verify_neff_source")
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.EXPECTED_SNP_COUNT",3)
-    def test_different_reference_chromosome_bins_fail(self,_expected,neff,source_review):
+    def test_different_reference_chromosome_bins_fail(self,neff,source_review):
         source_review.return_value=fake_review()
         ids={"rs1","rs2","rs3"}
         ref={i:set() for i in range(1,23)}
@@ -101,7 +101,7 @@ class ReferenceMergeTests(unittest.TestCase):
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.audit_attrition")
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.verify_neff_source")
     @patch("scripts.ckm_stroke.audit_ldsc_weight_reference_merge.EXPECTED_SNP_COUNT",3)
-    def test_reference_SNP_in_multiple_chr_is_not_same_as_unique_merge(self,_expected,neff,source_review):
+    def test_reference_SNP_in_multiple_chr_is_not_same_as_unique_merge(self,neff,source_review):
         source_review.return_value=fake_review()
         ids={"rs1","rs2","rs3"}
         ref={i:set() for i in range(1,23)}
