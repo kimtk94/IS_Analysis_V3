@@ -1,0 +1,31 @@
+name: CKM GIGASTROKE EAS AIS original cohort total verification
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-gigastroke-eas-ais-cohort-total.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-original-eas-ais-cohorts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reconcile actual Supplementary Table 1 EAS AIS 19032 cases and 237242 controls
+        run: |
+          python -m py_compile scripts/ckm_stroke/read_gigastroke_eas_cohort_supplement.py
+          python -m py_compile scripts/ckm_stroke/verify_gigastroke_eas_ais_discovery_cohorts.py
+          python -m scripts.ckm_stroke.verify_gigastroke_eas_ais_discovery_cohorts \
+            --out artifacts/is/GIGASTROKE_EAS_AIS_discovery_exact_cohorts_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-GIGASTROKE-EAS-AIS-official-cohort-totals-HOLD
+          path: artifacts/is/GIGASTROKE_EAS_AIS_discovery_exact_cohorts_HOLD.json
+          retention-days: 30
