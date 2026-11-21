@@ -1,0 +1,30 @@
+name: CKM TPMI 43321 PLINK versus SAIGE effective N evidence
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-observed-n-methods.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-phenotype-N-methodology:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Trace original phenotype page links and source primary GWAS methods
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_tpmi_plink_saige_sample_definitions.py
+          python -m scripts.ckm_stroke.audit_tpmi_plink_saige_sample_definitions \
+            --out artifacts/is/TPMI43321_PLINK2_vs_SAIGE_casecontrol_N_evidence_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI43321-PLINK2-SAIGE-casecontrol-N-source-HOLD
+          path: artifacts/is/TPMI43321_PLINK2_vs_SAIGE_casecontrol_N_evidence_HOLD.json
+          retention-days: 30
