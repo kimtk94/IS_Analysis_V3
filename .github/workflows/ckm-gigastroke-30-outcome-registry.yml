@@ -1,0 +1,34 @@
+name: CKM GIGASTROKE 30-study original outcome registry
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-gigastroke-30-outcome-registry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-ancestry-subtypes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inspect publisher GWAS Catalog metadata for all 30 GIGASTROKE outcomes
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_gigastroke_all_30_outcomes.py
+          python -m scripts.ckm_stroke.audit_gigastroke_all_30_outcomes \
+            --out artifacts/is/gigastroke_2022_30_outcome_registry_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-GIGASTROKE-30-outcome-provenance-registry-HOLD
+          path: artifacts/is/gigastroke_2022_30_outcome_registry_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
