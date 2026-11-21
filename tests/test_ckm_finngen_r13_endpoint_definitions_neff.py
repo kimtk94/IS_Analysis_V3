@@ -9,7 +9,7 @@ from scripts.ckm_stroke import audit_finngen_r13_endpoint_definitions_neff as r
 from scripts.ckm_stroke.audit_gigastroke_supplement_cohort_neff import EXPECTED_SUBTYPES
 
 def manifest():
-    header="phenocode\tn_cases\tn_controls\n"
+    header="phenocode\tnum_cases\tnum_controls\n"
     src=["I9_STR\t36461\t446552\n",
          "I9_STR_EMBOLIC\t1150\t440000\n",
          "I9_STR_EMBOLIC_WITH_FLIMMER\t900\t440000\n"]
@@ -133,8 +133,8 @@ class TestOfficialEndpointSources(unittest.TestCase):
         m=manifest()
         with patch.object(r,"R13_MANIFEST_SHA",hashlib.sha256(m).hexdigest()):
             out=r.manifest_review(m)
-        self.assertEqual(out["requested_endpoint_rows"]["I9_STR"]["n_cases"],"36461")
-        self.assertIn("n_cases",out["manifest_N_case_column_candidates"])
+        self.assertEqual(out["requested_endpoint_rows"]["I9_STR"]["num_cases"],"36461")
+        self.assertIn("num_cases",out["manifest_N_case_column_candidates"])
         self.assertTrue(out["manifest_is_not_per_variant_Neff"])
 
 if __name__=="__main__":
