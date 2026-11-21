@@ -26,7 +26,7 @@ def source_gate(source):
         or source.get("pinned_source_sha256_verified")!=SHA
         or source.get("all_original_rows_verified")!=1739048
         or source.get("source_genomewide_significant_count")!=1
-        or source.get("source_genome_build")!="GRCh38"
+        or source.get("original_source_genome_build")!="GRCh38"
         or source.get("scientific_status")!="HOLD"
         or source.get("ready_for_ldsc") is not False):
         raise ValueError("unverified published TPMI one-SNP original source")
