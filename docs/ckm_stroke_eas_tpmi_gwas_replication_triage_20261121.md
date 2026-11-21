@@ -72,3 +72,36 @@ Both HEAD requests remained on the official source hostname. HTTP 200 proves an 
 Important distinction: 2025 TPMI PheWeb **433.21 9,249 cases and 304,660 controls** versus 2026 published TPMI early-onset IS **5,546 and 143,017**. The PGS Catalog uses yet another association count for a score of the same named phecode; none is promoted as original paper-to-portal equivalence.
 
 **Recommended next actual analysis gate:** obtain at most the smaller 58 MB PLINK2 source once, strictly respecting TPMI published download limits and terms, record response SHA256, verify the header and GRCh38 REF/ALT/BETA/SE/P/AF/missingness conventions, and compare the 433.21 ICD case definition. If the user opts to proceed with allowed downloads, carry out one reproducible CI or Drive-backed ingest. Do not run LDSC h2/rg or claim independent replication until overlap provenance and SNP-specific effective N are justified. The 817 MB SAIGE file is not required just to inspect access; avoid redundant downloads and do not bypass site throttling.
+
+
+## Original TPMI 433.21 compressed PLINK2 association source downloaded ONCE — verified 2026-11-21
+
+[**GitHub Actions #44871738962**](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44871738962) **SUCCESS**, offline tests **9/9 PASS**. [Original header/full-compressed-byte SHA evidence artifact #14694277054](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44871738962/artifacts/14694277054). The official 58,302,393-byte original https://pheweb.ibms.sinica.edu.tw/download/gwas_plink2/433.21 was requested **one time only**, streamed to a temporary local file, full compressed bytes SHA-256 calculated, first 200 uncompressed association rows parsed, and source deleted before completing CI. Original source SHA-256 is **ce14daef23f9fadf921030d9ed2429383d927f6da391c620d9abf870045b2e62**. Compressed type **gzip text**. The original source publisher does not provide an independent expected full-file checksum in the verified endpoint page; this hash pins the verified current retrieval but is not an external publisher-checksum comparison.
+
+**Exact original header order:**
+
+1. #CHROM
+2. POS
+3. ID
+4. REF
+5. ALT
+6. PROVISIONAL_REF?
+7. A1
+8. OMITTED
+9. A1_FREQ
+10. TEST
+11. OBS_CT
+12. OR
+13. LOG(OR)_SE
+14. Z_STAT
+15. P
+16. ERRCODE
+17. rsID
+
+**Input interpretation:** The file provides an original **OR** and **LOG(OR)_SE** rather than a direct BETA column. A downstream, validated association preprocessing step could represent the effect as log(OR) for the original PLINK2 *A1* tested allele, but must first confirm TEST type, OR>0, source REF/ALT/A1 orientation, missing alleles, finite SE, P-vs-Wald consistency, possible variant duplication and association-model/error flags. None of these full-genome harmonization steps is marked PASS here. A1_FREQ is the source tested-allele frequency; it is not automatically MAF without computing min(f, 1-f).
+
+**Per-SNP sample-size nuance:** OBS_CT **is present** in the source PLINK2 file, but is an observation count per variant/test, **not** a variant-specific case/control breakdown and **not by itself an approved effective N** for a case-control binary association. Across the first 200 variant records, all 200 P values parsed into [0,1] and there were 0 record-width/coordinate QC errors. The full decompressed genomewide association records were NOT processed or QC-approved in this preflight; first 200-row consistency does not prove whole-file content validity.
+
+**Scientific status remains HOLD** for claiming independent EAS AIS replication: the 433.21 clinical ICD-code case definition, sample disjointness with GIGASTROKE, original 2026 Neurology stroke paper identity and whole-genome association QC remain pending. The original GIGASTROKE EUR SNP-wise meta-analysis effective N is still HOLD. No new LDSC h2/intercept/rg, MR, colocalization or causal inference is reported.
+
+Workflow .github/workflows/ckm-tpmi-43321-original-header-once.yml, code scripts/ckm_stroke/inspect_tpmi_43321_original_sumstats_once.py, tests/test_ckm_tpmi_43321_original_once.py. This is a source ingest/QC milestone, **not research result replication**; the file was deliberately not redistributed or uploaded to repository artifacts to respect source use, download limits and space.
