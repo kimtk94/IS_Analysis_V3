@@ -32,6 +32,7 @@ def target_gate(t):
     if (t.get("schema")!="ckm-TPMI43321-GIGASTROKE-GRCh37-target-request-v1"
         or t.get("technical_status")!="PASS_VERIFIED_TARGET_ONLY"
         or t.get("target_build")!="GRCh37"
+        or t.get("TPMI_source_SHA256")!=EXPECTED_SHA
         or t.get("scientific_status")!="HOLD"
         or t.get("GIGASTROKE_original_row_matched") is not False
         or t.get("binary_case_control_Neff_approved") is not False):
