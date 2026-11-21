@@ -75,7 +75,7 @@ class TestIndependentEUR(unittest.TestCase):
             verify_giant_tested_allele(fake,expected_source_rows=1)
     def test_bad_original_source_rs_or_frequency_fails_closed(self):
         s=source();s["chr11_source_outlier_frequency_cross_trait_details"][1]["rsid_from_pinned_GIANT"]="rs0"
-        with self.assertRaisesRegex(ValueError,"identity"):
+        with self.assertRaisesRegex(ValueError,"source allele/frequency drift"):
             verified_target_artifact(s)
     def test_full_comparison_keeps_scientific_hold(self):
         r=audit(source(),ensembl(),giant())
