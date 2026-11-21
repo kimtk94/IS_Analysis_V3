@@ -123,6 +123,7 @@ def archive_reference(opener=urllib.request.urlopen,*,required_meta=True):
         "HM3_present":hm3 is not None,
         "archive_tar_member_count":members,
     }
+    print("REFERENCE_ARCHIVE_INTEGRITY_DIAG="+json.dumps(diagnosis,sort_keys=True))
     if (reader.nbytes!=SIZE or reader.md5.hexdigest()!=EXPECTED_MD5 or
         reader.sha256.hexdigest()!=EXPECTED_SHA256 or set(by_chr)!=CHROMOSOMES or
         set(counts["M"])!=CHROMOSOMES or set(counts["M_5_50"])!=CHROMOSOMES or
