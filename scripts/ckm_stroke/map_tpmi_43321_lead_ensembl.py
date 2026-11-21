@@ -26,6 +26,7 @@ def source_gate(source):
         or source.get("pinned_source_sha256_verified")!=SHA
         or source.get("all_original_rows_verified")!=1739048
         or source.get("source_genomewide_significant_count")!=1
+        or source.get("source_genome_build")!="GRCh38"
         or source.get("scientific_status")!="HOLD"
         or source.get("ready_for_ldsc") is not False):
         raise ValueError("unverified published TPMI one-SNP original source")
@@ -64,6 +65,7 @@ def parse_map(data,source_chrom,source_pos,from_build,to_build):
         or str(ori.get("seq_region_name"))!=str(source_chrom)
         or ori.get("start")!=source_pos or ori.get("end")!=source_pos
         or target.get("start")!=target.get("end")
+        or type(target.get("start")) is not int or target["start"]<=0
         or target.get("strand") not in (-1,1)
         or ori.get("strand") not in (-1,1)
         or not str(target.get("seq_region_name","")).isdecimal()
