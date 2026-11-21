@@ -136,3 +136,55 @@ Independent fail-closed re-evaluation of the entire original aggregate JSON (wit
 Reproducible code and workflows:
 - scripts/ckm_stroke/audit_tpmi_43321_full_gwas_qc.py and tests/test_ckm_tpmi_43321_full_gwas_qc.py; .github/workflows/ckm-tpmi-43321-full-gwas-qc.yml
 - scripts/ckm_stroke/verify_tpmi_43321_source_obsct_discrepancy.py and tests/test_ckm_tpmi_43321_obsct_discrepancy.py; .github/workflows/ckm-tpmi-43321-obsct-source-gate.yml
+
+
+## 2026-11-21 SOURCE-VERIFIED TPMI sentinel rs187759247 and four-original GIGASTROKE EUR locus check
+
+**Completed successful source-backed GitHub Actions:**
+
+- [#44873979328 — one original TPMI source lead + bidirectional official Ensembl GRCh37 mapping](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44873979328) SUCCESS, 8+8 offline tests PASS; public original TPMI lead [artifact #14695301070](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44873979328/artifacts/14695301070), Ensembl exact map [artifact #14695296126](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44873979328/artifacts/14695296126).
+- [#44874466311 — four original publisher-MD5 GIGASTROKE EUR association files and independent four-trait review](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44874466311) SUCCESS, 10/10 offline test cases PASS, all four publisher original full compressed MD5 + original outcome whole-row count PASS. Combined comparison [artifact #14695641965](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44874466311/artifacts/14695641965). Shards read 1,014 MB of original GWAS gzip source in total, but uploaded only compact public variant presence/absence and original checksum metadata. The original files were not redistributed.
+
+**TPMI 433.21 original PLINK2 GWAS lead variant (one genomewide SNP with P <= 5e-8, among 1,739,048 original records):**
+
+| Field | Original association |
+| --- | --- |
+| rsID | **rs187759247** |
+| GRCh38 | **chr19:15,462,568 T>C** |
+| Original ID | chr19_15462568_T_C |
+| A1 tested effect allele | **C** (original REF T, ALT C) |
+| A1_FREQ | **0.0212101** |
+| OR per C | **1.68467** |
+| log(OR) | **0.5215696989** |
+| log(OR) SE | **0.0662893** |
+| Z | **7.86808** |
+| P | **3.60115×10^-15** |
+| PLINK2 OBS_CT | **204,099** (binary effective N not derived) |
+| GRCh37 mapped coordinate | **chr19:15,573,379 T>C** |
+| GRCh38→GRCh37→GRCh38 | **PASS unique bidirectional coordinate** |
+| Official GRCh38 and GRCh37 Ensembl reference T | **PASS both genome builds** |
+| A1 C preserved | **PASS same forward orientation** |
+
+Coordinate conversion used official Ensembl REST mapping https://rest.ensembl.org/documentation/info/assembly_map with a reciprocal https://grch37.rest.ensembl.org map and both reference sequence bases. This establishes only the genotype reference locus and effect-allele orientation; it does not establish genomic or clinical relevance of the SNP.
+
+**Original published GIGASTROKE EUR exact-position check — ALL original compressed MD5 validated:**
+
+| GIGASTROKE phenotype | GWAS accession | Original source association rows scanned | chr19:15,573,379 rows with original REF/ALT | Clinical inference |
+| --- | --- | ---: | ---: | --- |
+| AIS | GCST90104540 | 7,482,032 | **0** | NOT OBSERVED IN PUBLISHED EUR SOURCE |
+| LAA | GCST90104542 | 5,784,788 | **0** | NOT OBSERVED IN PUBLISHED EUR SOURCE |
+| CE | GCST90104541 | 6,659,793 | **0** | NOT OBSERVED IN PUBLISHED EUR SOURCE |
+| SVD | GCST90104543 | 5,974,028 | **0** | NOT OBSERVED IN PUBLISHED EUR SOURCE |
+
+**Interpretation:** TPMI 433.21 has a genuine, single strong public association in the validated Han Chinese GRCh38 PLINK2 summary statistics; it has no *direct same-coordinate* comparison in the four public GIGASTROKE EUR original GWAS sources. “Not present in a particular published summary file” **does NOT mean the allele is absent from all Europeans, does NOT establish a null effect, and must not be coded as beta 0, P=1 or nonreplication**. Original EUR GWAS variant QC/MAF/imputation/participating-cohort coverage could explain missingness; these reasons are NOT verified. rs187759247 was not shown to be causal or the relevant biological driver, and the one lead SNP cannot support MR/colocalization by itself.
+
+**Other unresolved gates:**
+
+1. TPMI PheWeb 433.21 has 9,249 cases and 304,660 controls (total 313,909); every original PLINK2 variant has OBS_CT 204,099. Difference 109,810 (34.98148%) is still **not reconciled by actual analysis-case/control source counts**. Neither denominator can be silently used to assign effective case/control N.
+2. TPMI phenotype 433.21 is clinically coded cerebral artery occlusion with infarction, not strictly adjudicated GIGASTROKE TOAST AIS. Exact clinical case and exclusion definitions plus the 2026 Neurology early-onset analysis lineage remain unverified.
+3. TPMI individual-level sample disjointness from all GIGASTROKE contributors has NOT been demonstrated. Comparison across EAS vs EUR additionally requires suitable ancestry-specific LD and a pre-registered harmonization/replication design.
+4. Original GIGASTROKE EUR meta-analysis per-SNP N_eff, actual LDSC post-munge regression variants and published study correction provenance are still HOLD. No LDSC h2/intercept/rg, MR or colocalization was calculated in this step.
+
+**Best next research gate:** assess whether a validated **LD proxy** exists for rs187759247 in EUR and/or EAS and whether the locus appears in another genuinely independent clinically defined EAS AIS GWAS. Do not choose an LD proxy only by physical distance, and do not impute a direct EUR original source association without appropriate reference LD. Separately, resolve 433.21 original analysis case/control counts. The scientific replication decision remains **HOLD**, although original source and coordinate technical QC are now PASS.
+
+Reproducible scripts: scripts/ckm_stroke/identify_tpmi_43321_lead_variant.py, scripts/ckm_stroke/map_tpmi_43321_lead_ensembl.py, scripts/ckm_stroke/probe_gigastroke_tpmi_43321_lead.py, scripts/ckm_stroke/review_tpmi_gigastroke_four_targeted.py; CI workflows .github/workflows/ckm-tpmi-43321-lead-grch37.yml and .github/workflows/ckm-tpmi-gigastroke-rs187759247-targeted.yml. Existing Draft PR #284 must remain unmerged without review.
