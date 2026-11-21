@@ -1,0 +1,30 @@
+name: CKM TPMI SAIGE EAS AIS distinct-model harmonization preflight
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-saige-eas-ais-harmonization-preflight.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-separate-model-schemas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify separate authentic TPMI SAIGE and EAS AIS source formats without PLINK2 model mixing
+        run: |
+          python -m py_compile scripts/ckm_stroke/saige_eas_harmonization_preflight.py
+          python -m scripts.ckm_stroke.saige_eas_harmonization_preflight \
+            --out artifacts/is/TPMI_SAIGE_EAS_AIS_distinct_model_harmonization_preflight_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI-SAIGE-EAS-AIS-harmonization-preflight-HOLD
+          path: artifacts/is/TPMI_SAIGE_EAS_AIS_distinct_model_harmonization_preflight_HOLD.json
+          retention-days: 30
