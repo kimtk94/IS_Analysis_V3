@@ -36,3 +36,14 @@ Workflow: `.github/workflows/ckm-tpmi-43321-lead-grch37.yml` in branch `research
 - New one-SNP extraction, Ensembl liftover, GIGASTROKE matched effect: **UNVERIFIED, HOLD**.
 - Scientific independent replication and effective-N: **HOLD**.
 - New workflow run: **not confirmed** from available GitHub commit workflow-run/status lookups (which do not enumerate all events). Do not interpret an empty lookup as proof of zero runs.
+
+## Additional targeted AIS source matching implementation
+
+Code: `scripts/ckm_stroke/match_tpmi_43321_gigastroke_ais.py`, with offline cases `tests/test_ckm_tpmi_43321_gigastroke_ais.py`.
+
+The main TPMI workflow now includes an **optional** manual input `run_gigastroke_ais=true`, guarded by `run_original_source=true`. It downloads the official 283,482,604-byte GCST90104540 GRCh37 gzip **once**, verifies publisher MD5 `1bfe4ae8a5042fb24cb0a562b05b0d2f` after scanning all rows, enforces exact mapped coordinates and uniqueness, and extracts only one target association and raw effect orientation.
+
+- On no target locus, ambiguous allele pair, duplicates, wrong published hash, or invalid numeric input, the job returns HOLD or fails closed.
+- On a valid source coordinate plus non-palindromic allele match, the single-locus **technical** gate can PASS; sample independence, valid binary N_eff, independent replication and LDSC remain HOLD.
+- No successful run, target rsID, numeric original AIS beta or allele direction has been observed from this new code at the time this section was committed.
+- A draft/feature-branch workflow may not be available through GitHub's manual Run workflow button until registered on the default branch. This is a deployment constraint, not proof the code passed its tests.
