@@ -44,6 +44,7 @@ def prepare(data):
     return {
        "schema":"ckm-TPMI43321-GIGASTROKE-GRCh37-target-request-v1",
        "technical_status":"PASS_VERIFIED_TARGET_ONLY",
+       "TPMI_source_SHA256":EXPECTED_SHA,
        "target_build":"GRCh37",
        "target_chr":chrom,"target_pos":pos,
        "target_REF":ref,"target_ALT":alt,"target_A1":a1,
