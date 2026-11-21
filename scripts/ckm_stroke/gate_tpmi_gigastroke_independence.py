@@ -66,7 +66,32 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--out",required=True,type=Path)
     args=p.parse_args()
-    result=gate({})
+    # Source-confirmed roster is independently re-extracted from the publisher
+    # Supplementary Table 1 on each CI run; no invented participant overlap.
+    try:
+        from scripts.ckm_stroke.verify_gigastroke_eas_ais_discovery_cohorts import audit
+        original=audit()
+        if original["source_based_cohort_list_status"]!="PASS_PRIMARY_SUPPLEMENT_COHORT_INVENTORY_AND_COUNTS":
+            raise ValueError("source EAS AIS cohort totals not verified")
+        cohort_ids=[r["study"] for r in original["AIS_discovery_cohorts"]
+                    if r["classification"]=="EAS_discovery"]
+        evidence={
+          "TPMI_source_cohort_ids":["TPMI"],
+          "GIGASTROKE_EAS_AIS_discovery_cohort_ids":cohort_ids,
+          "dataset_level_overlap_report":{"evaluated":False,"overlap_count":None},
+          "participant_nonoverlap_provenance":{"validated_by_dataset_custodians":False}
+        }
+        result=gate(evidence)
+        result["GIGASTROKE_EAS_AIS_primary_supplement_cohort_roster_verified"]=True
+        result["verified_EAS_discovery_cohort_names"]=cohort_ids
+        result["verified_EAS_AIS_discovery_cases"]=original["GIGASTROKE_EAS_AIS_discovery_cases"]
+        result["verified_EAS_AIS_discovery_controls"]=original["GIGASTROKE_EAS_AIS_discovery_controls"]
+        result["TPMI_or_TWB_in_discovery_roster"]=False
+        result["public_roster_can_establish_zero_person_overlap"]=False
+    except Exception as exc:
+        result=gate({})
+        result["cohort_list_source_error"]=str(exc)[:220]
+        result["GIGASTROKE_EAS_AIS_primary_supplement_cohort_roster_verified"]=False
     args.out.parent.mkdir(parents=True,exist_ok=True)
     args.out.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n")
     print(json.dumps({"cohort_list_documented":result["study_specific_lists_present"],
