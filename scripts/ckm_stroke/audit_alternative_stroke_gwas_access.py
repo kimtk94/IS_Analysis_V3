@@ -17,17 +17,17 @@ def fetch(c):
     req=urllib.request.Request(c["url"],headers={"User-Agent":"Stroke-GWAS-access-audit/1.0"})
     try:
         with urllib.request.urlopen(req,timeout=35) as r:
-            raw=r.read(500001)
+            raw=r.read(12000001)
             body=raw.decode("utf-8",errors="replace")
             if c["id"]=="bbj-a-129":
                 # Search public metadata only. Not the GWAS full summary file.
-                positive=all(s in body.lower() for s in ("ischemic stroke","17,671","192,383"))
-                return {"access":"PASS_HTTP","http":r.status,"metadata_text_consistent":positive,
+                positive=("ischemic stroke" in body.lower() and "bbj-a-129" in body.lower())
+                return {"access":"PASS_HTTP","http":r.status,"dataset_identifier_and_trait_visible":positive,
                         "snp_coverage":"NOT_QUERIED","observed_bytes":len(raw)}
             marker="I9_STR_EXH"
             rows=[ln[:500] for ln in body.splitlines() if marker in ln]
             return {"access":"PASS_HTTP","http":r.status,"endpoint_manifest_rows_in_first_500kb":rows[:5],
-                    "manifest_truncated":len(raw)>=500001,"snp_coverage":"NOT_QUERIED",
+                    "manifest_truncated":len(raw)>=12000001,"snp_coverage":"NOT_QUERIED",
                     "observed_bytes":len(raw)}
     except Exception as e:
         return {"access":"HOLD_HTTP","error_type":type(e).__name__,"error":str(e)[:220],
