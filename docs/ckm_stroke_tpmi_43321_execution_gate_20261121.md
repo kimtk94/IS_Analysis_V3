@@ -47,3 +47,22 @@ The main TPMI workflow now includes an **optional** manual input `run_gigastroke
 - On a valid source coordinate plus non-palindromic allele match, the single-locus **technical** gate can PASS; sample independence, valid binary N_eff, independent replication and LDSC remain HOLD.
 - No successful run, target rsID, numeric original AIS beta or allele direction has been observed from this new code at the time this section was committed.
 - A draft/feature-branch workflow may not be available through GitHub's manual Run workflow button until registered on the default branch. This is a deployment constraint, not proof the code passed its tests.
+
+## Verified executed TPMI source and GRCh37 mapping — 2026-11-21
+
+**Source-backed GitHub Actions run:** https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44878942971
+
+Individual GitHub job API conclusions:
+- `offline-allele-assembly-tests`: **SUCCESS** (job 136769756519).
+- `extract-pinned-original-lead`: **SUCCESS** (job 136769807292), artifact 14697201895, full pinned original SHA verified, 1,739,048 records, one source P <= 5e-8.
+- `bidirectional-build-and-allele-map`: **SUCCESS** (job 136770356497), artifact 14697022641, Ensembl forward/reverse and both assembly REF bases checked.
+- `prepare-gigastroke-grch37-target`: **SUCCESS** (job 136770422991), artifact 14696224277.
+- `source-verified-gigastroke-ais-one-locus`: **SKIPPED** (not yet harmonized with GIGASTROKE original).
+- `report-ci-status`: **FAILED** (job 136770469771) with `gh: Resource not accessible by integration (HTTP 403)` when attempting a PR #284 comment, unrelated to original GWAS parsing or Ensembl mapping. The overall run is therefore failure even though the four scientific-data preprocessing jobs passed. The main workflow was corrected in follow-up commit `288c109a4cde7ec9772e658d8a72b75c68fd5dd4` to write only to `GITHUB_STEP_SUMMARY`.
+
+Original pinned lead extracted from real official TPMI PLINK2 GWAS:
+- `rs187759247`, source `chr19_15462568_T_C`; GRCh38 `19:15462568:T:C`; A1 effect allele C.
+- Source A1 frequency `0.0212101`, OR `1.68467`, log(OR) `0.5215696989267228`, log(OR) SE `0.0662893`, Z `7.86808`, P `3.60115e-15`, OBS_CT `204099` (not effective N).
+- Successfully mapped to **GRCh37 `19:15573379:T:C`**, effect A1 C, reverse liftover and source/mapped reference alleles verified.
+- No SNP effect from GIGASTROKE AIS GCST90104540 has yet been checked at the locus, and independence/actual case/control N remain unverified. **Scientific HOLD** for replication, LDSC, MR and coloc.
+- Updated narrow milestone: original source integrity and coordinate mapping TECHNICAL PASS; GIGASTROKE comparison/outcome causal interpretation HOLD.
