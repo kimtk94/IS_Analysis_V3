@@ -193,12 +193,13 @@ def chromosome_attrition(panel, by_coord, duplicate_coords):
     return [result[ch] for ch in range(1,23)]
 
 
-def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS):
+def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS,locke_alleles=None):
     """Streaming full rows, bounded error summaries. Does not retain SNP effects."""
     c=Counter()
     by_coord={}
     duplicate_coords=set()
     samples={}
+    independent_by_coord={} if locke_alleles is not None else None
     header=next(rows,None)
     if header is None or tuple(header.rstrip("\r\n").split("\t"))!=COLUMNS:
         raise ValueError("outcome original header changed")
@@ -245,10 +246,21 @@ def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS):
             c["outcome_multiple_rows_same_BMI_coordinate"]+=1
             duplicate_coords.add(coord)
             previous=by_coord.pop(coord)
+            if independent_by_coord is not None:
+                independent_by_coord.pop(coord,None)
             c["unique_"+previous]-=1
             continue
         by_coord[coord]=label
         c["unique_"+label]+=1
+        if independent_by_coord is not None:
+            old=locke_alleles.get(bmi[0])
+            if label not in GOOD:
+                category="yengo_numeric_or_allele_invalid"
+            elif old is None:
+                category="not_in_locke_2015"
+            else:
+                category="2015_"+orientation(old[0],old[1],fields[9].upper(),fields[10].upper())
+            independent_by_coord[coord]=category
         if label in GOOD and len(samples.setdefault("directional_examples",[]))<MAX_ERROR_EXAMPLES:
             samples["directional_examples"].append({
                 "chr":chrnum,"pos":pos,"rsid":bmi[0],
@@ -268,11 +280,37 @@ def examine_outcome_rows(rows,panel,*,max_rows=MAX_ROWS):
     c["unique_orientation_sign_negative"]=c["unique_swapped"]+c["unique_complement_swapped"]
     if c["candidate_coordinates_not_in_outcome"]<0:
         raise ValueError("invalid candidate missingness count")
-    return {"counts":dict(c),"exclusion_examples":samples,
+    answer={"counts":dict(c),"exclusion_examples":samples,
             "chr_attrition_pre_munge":chromosome_attrition(panel,by_coord,duplicate_coords)}
+    if independent_by_coord is not None:
+        categories=Counter(independent_by_coord.values())
+        chromosome_rows={ch:Counter() for ch in range(1,23)}
+        for (ch,pos),classification in independent_by_coord.items():
+            chromosome_rows[ch][classification]+=1
+        if sum(categories.values())!=len(by_coord):
+            raise ValueError("independent full outcome coordinate accounting mismatch")
+        for ch,row in chromosome_rows.items():
+            expected=sum(1 for coord in by_coord if coord[0]==ch)
+            if sum(row.values())!=expected:
+                raise ValueError("independent chromosome direction partition mismatch")
+        shared=sum(categories["2015_"+key] for key in GOOD)
+        answer["locke_2015_independent_full_orientation"]={
+            "unique_original_outcome_candidate_positions":len(by_coord),
+            "categories":dict(categories),
+            "aligned_to_both_2015_and_2018":shared,
+            "2015_effect_sign_reversals":categories["2015_swapped"]+categories["2015_complement_swapped"],
+            "by_chr":[{"chr":ch,"categories":dict(chromosome_rows[ch]),
+                       "candidate_positions":sum(chromosome_rows[ch].values())}
+                      for ch in range(1,23)],
+            "effect_allele_order_reference":"Locke 2015 tested allele from independent SHA-pinned source",
+            "complete_original_source_scanned":True,
+            "source_MD5_validated_by_caller":True,
+            "approved_LDSC_analysis":False,
+        }
+    return answer
 
 
-def scan_full(row,panel,*,fetcher=urllib.request.urlopen):
+def scan_full(row,panel,*,fetcher=urllib.request.urlopen,locke_alleles=None):
     raw,meta,sums=source_urls(row)
     check_sidecars(row,get_text(meta,fetcher),get_text(sums,fetcher))
     request=urllib.request.Request(raw,headers={"User-Agent":"CKM-Stroke-IS-EUR-harmonization/1.0"})
@@ -293,7 +331,7 @@ def scan_full(row,panel,*,fetcher=urllib.request.urlopen):
                     if len(rawline)>MAX_GZIP_LINE:
                         raise ValueError("outcome row longer than safe bound")
                     yield rawline.decode("utf-8-sig","strict")
-            matched=examine_outcome_rows(lines(),panel)
+            matched=examine_outcome_rows(lines(),panel,locke_alleles=locke_alleles)
         # Count/MD5 full original stream, not only the first requested prefix.
         while counter.read(1_048_576):
             pass
@@ -325,7 +363,7 @@ def scan_full(row,panel,*,fetcher=urllib.request.urlopen):
         }
 
 
-def audit(candidate,provenance,manifest,*,phenotype="ALL",fetcher=urllib.request.urlopen):
+def audit(candidate,provenance,manifest,*,phenotype="ALL",fetcher=urllib.request.urlopen,locke_candidate=None,locke_provenance=None):
     report={
         "schema":"ckm-stroke-gigastroke-eur-full-md5-bmi-harmonization-v1",
         "checked_utc":datetime.now(timezone.utc).isoformat(),
@@ -340,6 +378,22 @@ def audit(candidate,provenance,manifest,*,phenotype="ALL",fetcher=urllib.request
     try:
         panel,meta=build_bmi_coordinate_panel(candidate,provenance)
         report["BMI_reference_panel"]=meta
+        if (locke_candidate is None)!=(locke_provenance is None):
+            raise ValueError("independent Locke candidate and provenance required together")
+        independent=None
+        if locke_candidate is not None:
+            # Internal import avoids a circular module load, and preserves the
+            # original source-only workflow's backward-compatible default.
+            from scripts.ckm_stroke.audit_locke_yengo_gigastroke_allele_order import (
+                original_locke_2015_panel,compare_source_orders
+            )
+            independent,oldmeta=original_locke_2015_panel(locke_candidate,locke_provenance)
+            cross=compare_source_orders(independent,panel)
+            if (cross["both_original_BMI_order_comparable"]!=1007858
+                or cross["2015_order_reversed_vs_2018"]!=491428):
+                raise ValueError("independently reported 2015/2018 allele order count drift")
+            report["independent_locke_panel_evidence"]=oldmeta
+            report["independent_2015_vs_2018_order_evidence"]=cross
     except Exception as exc:
         report["technical_status"]="HOLD_BMI_PANEL_PREPARATION"
         report["error_type"]=type(exc).__name__
@@ -349,7 +403,7 @@ def audit(candidate,provenance,manifest,*,phenotype="ALL",fetcher=urllib.request
         if phenotype!="ALL" and row["phenotype"]!=phenotype:
             continue
         try:
-            report["outcomes"].append(scan_full(row,panel,fetcher=fetcher))
+            report["outcomes"].append(scan_full(row,panel,fetcher=fetcher,locke_alleles=independent))
         except Exception as exc:
             report["outcomes"].append({
                 "phenotype":row["phenotype"],"accession":row["accession"],
@@ -377,8 +431,12 @@ def main():
     p.add_argument("--manifest",type=Path,default=Path("config/ckm_stroke/gigastroke_eur_official.tsv"))
     p.add_argument("--phenotype",choices=("ALL","AIS","LAA","CE","SVD"),default="ALL")
     p.add_argument("--out",type=Path,required=True)
+    p.add_argument("--locke-candidate",type=Path,default=None,
+                   help="Optional independent 2015 BMI source candidate (ignored local artifact)")
+    p.add_argument("--locke-provenance",type=Path,default=None,
+                   help="Pinned original independent 2015 candidate metadata")
     args=p.parse_args()
-    result=audit(args.candidate,args.provenance,args.manifest,phenotype=args.phenotype)
+    result=audit(args.candidate,args.provenance,args.manifest,phenotype=args.phenotype,locke_candidate=args.locke_candidate,locke_provenance=args.locke_provenance)
     args.out.parent.mkdir(parents=True,exist_ok=True)
     args.out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(json.dumps({
@@ -387,6 +445,7 @@ def main():
         "outcomes":[{"phenotype":r["phenotype"],"status":r["technical_status"],
                      "md5_verified":r.get("raw_md5_verified",False),
                      "harmonizable":r.get("counts",{}).get("unique_harmonizable_BMI_positions"),
+                     "2015_sign_reversals":r.get("locke_2015_independent_full_orientation",{}).get("2015_effect_sign_reversals"),
                      "error":r.get("error_detail")} for r in result["outcomes"]],
         "scientific_status":result["scientific_status"]},ensure_ascii=False))
     if result.get("technical_status")!="PASS_ALL_REQUESTED_ORIGINAL_MD5_AND_ALLELE_COUNTS":
