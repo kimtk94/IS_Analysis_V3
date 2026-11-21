@@ -28,7 +28,7 @@ jobs:
           import json,os,subprocess
           repo="kimtk94/IS_Analysis_V3"
           run_id=os.environ["SOURCE_RUN"]
-          raw=subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run_id}/jobs","--paginate"],text=True)
+          raw=subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run_id}/jobs","-f","per_page=100"],text=True)
           jobs=json.loads(raw).get("jobs",[])
           wanted=("offline-allele-assembly-tests","extract-pinned-original-lead",
                   "bidirectional-build-and-allele-map","prepare-gigastroke-grch37-target",
@@ -40,7 +40,7 @@ jobs:
                   else "REVIEW")
           ais=("PASS_AIS_ONE_LOCUS_JOB" if states[wanted[4]]=="success"
                else "HOLD_AIS_UNVERIFIED")
-          body=("\\n".join([
+          body=("\n".join([
             "TPMI 433.21 trusted workflow_run report (technical only)",
             f"Source run: {os.environ['SOURCE_URL']}",
             f"Source workflow conclusion: {os.environ['SOURCE_CONCLUSION']}",
@@ -48,7 +48,11 @@ jobs:
             f"Technical: {status}; AIS: {ais}; scientific interpretation: HOLD.",
           ]))
           with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:
-            f.write(body+"\\n")
+            f.write(body+"\n")
           print(body)
-          subprocess.run(["gh","api",f"repos/{repo}/issues/284/comments","-f",f"body={body}"],check=True)
+          try:
+            subprocess.run(["gh","api",f"repos/{repo}/issues/284/comments",
+                            "--method","POST","-f",f"body={body}"],check=True)
+          except subprocess.CalledProcessError as exc:
+            print(f"Reporter PR comment unavailable: {exc}; Actions summary is authoritative.")
           PY
