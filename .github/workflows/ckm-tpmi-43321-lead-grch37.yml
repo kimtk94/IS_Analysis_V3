@@ -9,6 +9,12 @@ on:
       - 'tests/test_ckm_tpmi_43321_significant_lead.py'
       - 'tests/test_ckm_tpmi_43321_lead_liftover.py'
   workflow_dispatch:
+    inputs:
+      run_original_source:
+        description: 'Authorize one pinned 58 MB TPMI source retrieval and lead liftover'
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -35,7 +41,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_lead_liftover.py' -v
 
   extract-pinned-original-lead:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[tpmi-lead-original]')
+    if: (github.event_name == 'workflow_dispatch' && inputs.run_original_source == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[tpmi-lead-original]'))
     needs: offline-allele-assembly-tests
     runs-on: ubuntu-latest
     timeout-minutes: 24
