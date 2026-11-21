@@ -78,12 +78,13 @@ def scan():
         with gzip.open(fp,"rt",encoding="utf-8") as handle:
             for line in handle:
                 if not header:
-                    header=re.split(r"\\s+",line.strip())
+                    header=line.split()
+                    print("SOURCE_HEADER",json.dumps(header))
                     if not {"CHR","POS","Allele1","Allele2","BETA","SE","p.value"}.issubset(header):
                         raise ValueError("unexpected BBJ source schema")
                     index={name:i for i,name in enumerate(header)}
                     continue
-                fields=re.split(r"\\s+",line.rstrip("\n"))
+                fields=line.split()
                 rows+=1
                 if len(fields)!=len(header):raise ValueError("source record field count drift")
                 if fields[index["CHR"]]!=CHR or fields[index["POS"]]!=str(POS):continue
