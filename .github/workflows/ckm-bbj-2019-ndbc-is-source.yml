@@ -1,0 +1,29 @@
+name: CKM BBJ NBDC 2019 cerebral infarction dataset identifier
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-bbj-2019-ndbc-is-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  identify-bbj-is-file:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Scan all 40 official NBDC hum0014 v17 disease datasets for cerebral infarction
+        run: |
+          python -m py_compile scripts/ckm_stroke/find_ndbc_bbj_2019_cerebral_infarction_file.py
+          python -m scripts.ckm_stroke.find_ndbc_bbj_2019_cerebral_infarction_file --out artifacts/tpmi/ndbc_bbj_2019_cerebral_infarction_source_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-BBJ-2019-NBDC-cerebral-infarction-source-HOLD
+          path: artifacts/tpmi/ndbc_bbj_2019_cerebral_infarction_source_HOLD.json
+          retention-days: 30
