@@ -1,0 +1,101 @@
+name: CKM EUR LDSC 22chr reference and case-control N provenance gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-eur-ldsc-ref-weight-neff-gate.yml'
+      - 'scripts/ckm_stroke/audit_ldsc_weight_reference_merge.py'
+      - 'tests/test_ckm_stroke_ldsc_weight_reference_merge.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-eur-ldsc-ref-weight-neff-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail-closed LD score chromosome / original cohort N and no-LDSC assertions
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_ldsc_weight_reference_merge.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_ldsc_weight_reference_merge.py' -v
+
+  original-reference-and-cohort:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[ldsc-weight-22chr]')
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm immutable original source and corrected official supplement CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          runs={
+           44860586028:"7c1ca53a57f3e44b1cdb8e2cf19753b943cf45ba",
+           44855617332:"b189dd5205ba44970b1c88e56a280e755c9b76f6",
+          }
+          for run,sha in runs.items():
+              data=json.loads(subprocess.check_output(
+                  ["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+              if (data.get("conclusion")!="success" or
+                  data.get("head_sha")!=sha or
+                  data.get("repository",{}).get("full_name")!=repo):
+                  raise SystemExit(f"Pinned original CI {run} provenance mismatch")
+              print(f"PINNED SUCCESS RUN {run} SOURCE VERIFIED")
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-four-gigastroke-eur-md5-bmi-orientation
+          run-id: 44860586028
+          github-token: ${{ github.token }}
+          path: artifacts/ckm_stroke
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-stroke-LDSC-preregression-source-and-HOLD-evidence
+          run-id: 44855617332
+          github-token: ${{ github.token }}
+          path: artifacts/ckm_stroke
+      - name: Rebuild SHA-pinned GIANT 2018 candidate with source HM3 EUR LDscore
+        run: |
+          python -m scripts.ckm_stroke.prepare_bmi_ldsc_candidate \
+            --emit-candidate artifacts/ckm_stroke/bmi_2018_weight_reference_candidate.sumstats.gz \
+            --out artifacts/ckm_stroke/bmi_2018_weight_reference_provenance_ci.json
+      - name: Independently verify 22 EUR LDscore + HM3 + M and M_5_50, merge original candidate SNPs
+        run: |
+          python -m scripts.ckm_stroke.audit_ldsc_weight_reference_merge \
+            --candidate artifacts/ckm_stroke/bmi_2018_weight_reference_candidate.sumstats.gz \
+            --provenance artifacts/ckm_stroke/bmi_2018_weight_reference_provenance_ci.json \
+            --original-four-evidence artifacts/ckm_stroke/gigastroke_four_full_md5_bmi_allele_ci.json \
+            --corrected-cohort-evidence artifacts/ckm_stroke/gigastroke_corrected_primary_ci.json \
+            --out artifacts/ckm_stroke/eur_weight_ldscore_22chr_and_44cohort_Neff_hold_ci.json
+      - name: Remove large GWAS candidate / intermediate files before output
+        if: always()
+        run: |
+          python -c "from pathlib import Path; [p.unlink(missing_ok=True) for p in [Path('artifacts/ckm_stroke/bmi_2018_weight_reference_candidate.sumstats.gz'),Path('artifacts/ckm_stroke/bmi_2018_weight_reference_candidate.sumstats.gz.partial')]]"
+      - name: Publish compact pre-munge reference + original cohort N gates only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-eur-22chr-weight-reference-and-cohort-neff-hold
+          path: |
+            artifacts/ckm_stroke/eur_weight_ldscore_22chr_and_44cohort_Neff_hold_ci.json
+            artifacts/ckm_stroke/bmi_2018_weight_reference_provenance_ci.json
+          if-no-files-found: warn
+          retention-days: 30
