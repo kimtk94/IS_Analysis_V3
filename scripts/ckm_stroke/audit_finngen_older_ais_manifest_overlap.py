@@ -20,7 +20,8 @@ from scripts.ckm_stroke.audit_finngen_r13_endpoint_definitions_neff import (
     FINN_R13_MANIFEST, R13_MANIFEST_SHA, manifest_review,
 )
 from scripts.ckm_stroke.audit_gigastroke_supplement_cohort_neff import (
-    download_source, workbook_cells, EXPECTED_SHA256 as SUPPLEMENT_SHA
+    download_source, workbook_cells, EXPECTED_SHA256 as SUPPLEMENT_SHA,
+    EXPECTED_SUBTYPES,
 )
 
 MANIFESTS={
@@ -129,8 +130,8 @@ def head_check(url,opener=urllib.request.urlopen):
             "clinical_data_access_approval_inferred":False}
 
 def cohort_review(blob):
-    # The reusable upstream parser verifies the original 756910-byte publisher
-    # supplement SHA256, workbook sheet names and source sheet cells.
+    # The upstream workbook reader independently checks the full publisher
+    # 756910-byte file SHA256, workbook structure, and official source cells.
     cohort,_=workbook_cells(blob)
     rows=[]
     for i in range(5,49):
@@ -141,17 +142,62 @@ def cohort_review(blob):
     if len(rows)!=44 or not any(x["name"]=="UKBiobank" for x in rows):
         raise ValueError("not original 44 EUR cohort source rows")
     hits=[x for x in rows if COHORT_KEYWORDS.search(x["name"])]
+    expected_names={"FINNGEN_HOSPITAL**","FINNGEN_Population**"}
+    explicit=[x for x in rows if x["name"] in expected_names]
+    if {x["name"] for x in explicit}!=expected_names:
+        raise ValueError("two original GIGASTROKE FinnGen cohort labels not verified")
+    per_cohort=[]
+    for rec in explicit:
+        row=cohort[rec["source_row"]]
+        case_values={}
+        for ph,metadata in EXPECTED_SUBTYPES.items():
+            item=str(row.get(metadata["supp_col"],"")).strip()
+            if item and not item.isdecimal() and item.upper() not in ("NA","N/A","-"):
+                raise ValueError("original GIGASTROKE FinnGen case source cell not numeric or NA")
+            case_values[ph]=int(item) if item.isdecimal() else None
+        ctrl=str(row.get("P","")).strip()
+        if ctrl and not ctrl.isdecimal() and ctrl.upper() not in ("NA","N/A","-"):
+            raise ValueError("original GIGASTROKE FinnGen controls source cell invalid")
+        per_cohort.append({
+            "source_row":rec["source_row"],"cohort_label":rec["name"],
+            "published_original_EUR_trait_cases":case_values,
+            "published_reported_controls":int(ctrl) if ctrl.isdecimal() else None,
+            "cohort_cases_and_controls_are_not_overlap_count":True
+        })
+    per_trait=[]
+    for ph,metadata in EXPECTED_SUBTYPES.items():
+        values=[r["published_original_EUR_trait_cases"][ph] for r in per_cohort]
+        numeric=sum(x for x in values if x is not None)
+        missing=sum(x is None for x in values)
+        if numeric>metadata["cases"]:
+            raise ValueError("FinnGen named cohort cases exceed publisher EUR outcome total")
+        per_trait.append({
+            "phenotype":ph,
+            "published_original_EUR_cases":metadata["cases"],
+            "sum_cases_in_two_FinnGen_named_cohorts_if_reported":numeric if missing==0 else None,
+            "known_cases_in_named_FinnGen_cohorts":numeric,
+            "missing_cohort_case_cells":missing,
+            "known_case_fraction_of_original_EUR_percent":round(100*numeric/metadata["cases"],5),
+            "this_fraction_is_NOT_verified_overlap_with_later_FinnGen_R13":True,
+        })
     return {
        "corrected_GIGASTROKE_supplement_SHA256":SUPPLEMENT_SHA,
        "EUR_cohort_rows":44,
        "explicit_Nordic_Finnish_named_cohort_candidates":hits,
-       "explicit_label_FinnGen":any(x["name"].lower()=="finngen" for x in rows),
-       "absence_of_FinnGen_label_proves_zero_overlap":False,
+       "original_publisher_cohort_label_FinnGen_exact_names_verified":True,
+       "explicit_source_FinnGen_named_cohorts":per_cohort,
+       "original_GIGASTROKE_FinnGen_named_case_contribution_by_trait":per_trait,
+       "named_FinnGen_cohorts_overlap_risk":"KNOWN_SHARED_STUDY_ORIGIN_NOT_INDIVIDUAL_IDS",
+       "direct_use_as_independent_FinnGen_R13_replication":False,
        "participant_ID_overlap_quantified":False,
+       "individual_ID_overlap_percentage_known":False,
+       "ancestry_and_release_phenotype_cohort_reuse_quantified":False,
+       "absence_of_FinnGen_label_proves_zero_overlap":False,
        "independent_FinnGen_replication_cohort_claim_approved":False,
        "UKBiobank_cohort_present":True,
        "cohort_names_not_individual_participant_IDs":True,
     }
+
 
 def audit(manifest_sources,cohort,head_checker=head_check):
     if set(manifest_sources)!=set(MANIFESTS):

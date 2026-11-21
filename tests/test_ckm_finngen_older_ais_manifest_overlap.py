@@ -63,12 +63,25 @@ class TestOlderReleaseSource(unittest.TestCase):
         table={i:{"B":"Cohort-%s"%i} for i in range(5,49)}
         table[15]["B"]="UKBiobank"
         table[19]["B"]="Helsinki-Stroke"
+        table[27]={"B":"FINNGEN_HOSPITAL**","K":"120","L":"20","M":"NA","N":"3","P":"50000"}
+        table[46]={"B":"FINNGEN_Population**","K":"80","L":"30","M":"4","N":"NA","P":"75000"}
         with patch.object(m,"workbook_cells",return_value=(table,{})):
             result=m.cohort_review(b"mock")
         self.assertEqual(result["EUR_cohort_rows"],44)
-        self.assertEqual(len(result["explicit_Nordic_Finnish_named_cohort_candidates"]),1)
-        self.assertFalse(result["absence_of_FinnGen_label_proves_zero_overlap"])
+        self.assertEqual(len(result["explicit_Nordic_Finnish_named_cohort_candidates"]),3)
+        self.assertTrue(result["original_publisher_cohort_label_FinnGen_exact_names_verified"])
+        self.assertEqual(result["original_GIGASTROKE_FinnGen_named_case_contribution_by_trait"][0]["known_cases_in_named_FinnGen_cohorts"],200)
+        self.assertEqual(result["original_GIGASTROKE_FinnGen_named_case_contribution_by_trait"][0]["missing_cohort_case_cells"],0)
+        self.assertFalse(result["direct_use_as_independent_FinnGen_R13_replication"])
         self.assertFalse(result["participant_ID_overlap_quantified"])
+        self.assertFalse(result["individual_ID_overlap_percentage_known"])
+    def test_shared_cohort_source_missing_is_fail_closed(self):
+        table={i:{"B":"Cohort-%s"%i} for i in range(5,49)}
+        table[15]["B"]="UKBiobank"
+        with patch.object(m,"workbook_cells",return_value=(table,{})):
+            with self.assertRaisesRegex(ValueError,"FinnGen cohort labels"):
+                m.cohort_review(b"mock")
+
     def test_suspect_official_redirect_is_rejected(self):
         class Fake:
             status=200
