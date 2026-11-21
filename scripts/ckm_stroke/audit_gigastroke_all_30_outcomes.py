@@ -18,7 +18,7 @@ import urllib.parse
 import urllib.request
 
 ACCESSIONS = tuple(f"GCST{i}" for i in range(90104534, 90104564))
-API_BASE = "https://www.ebi.ac.uk/gwas/rest/api/studies/"
+API_BASE = "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/"
 FTP_BASE = ("https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/"
             "GCST90104001-GCST90105000/")
 SOURCE_TRAITS = ("stroke", "cerebral", "infarction", "ischaemic", "ischemic")
@@ -59,10 +59,15 @@ def extract_study_metadata(raw):
               "discoverySampleAncestry", "replicationSampleAncestry",
               "ancestry", "reportedTrait", "trait", "publicationInfo",
               "genotypingTechnology", "studyAccession",
-              "accessionId", "diseaseTraitId")
+              "accessionId", "diseaseTraitId", "accession_id",
+              "reported_trait", "discovery_sample_desc", "initial_sample_size",
+              "replication_sample_size", "ancestries", "efo_traits",
+              "study_id", "association_count", "full_summary_statistics")
     return {
         "response_keys": list(raw)[:40],
         "api_evidence": {k: safe_text(raw[k]) for k in fields if k in raw},
+        "response_summary": safe_text({k: v for k, v in raw.items()
+                                      if k not in ("_links", "links")}),
         "raw_text_excerpt": json.dumps(
             {k: raw[k] for k in fields if k in raw},
             ensure_ascii=False, default=str)[:2200],
