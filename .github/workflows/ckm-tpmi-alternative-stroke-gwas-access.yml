@@ -1,0 +1,33 @@
+name: CKM TPMI alternative stroke GWAS source access
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-alternative-stroke-gwas-access.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-source-access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check BBJ and FinnGen official public source access without claiming SNP coverage
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_alternative_stroke_gwas_access.py
+          python -m scripts.ckm_stroke.audit_alternative_stroke_gwas_access --out artifacts/tpmi/tpmi_stroke_alternative_gwas_access_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-TPMI43321-alternative-stroke-source-access-HOLD
+          path: artifacts/tpmi/tpmi_stroke_alternative_gwas_access_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
