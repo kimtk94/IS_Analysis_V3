@@ -23,6 +23,8 @@ on:
       - 'tests/test_ckm_tpmi_43321_gigastroke_lookup.py'
       - 'scripts/ckm_stroke/match_tpmi_43321_gigastroke_ais.py'
       - 'tests/test_ckm_tpmi_43321_gigastroke_ais.py'
+  issue_comment:
+    types: [created]
   workflow_dispatch:
     inputs:
       run_original_source:
@@ -46,6 +48,7 @@ concurrency:
 
 jobs:
   offline-allele-assembly-tests:
+    if: github.event_name != 'issue_comment' || (github.event_name == 'issue_comment' && github.event.issue.number == 284 && github.event.comment.user.login == 'kimtk94' && github.event.comment.body == '/tpmi-run-source-20261121')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -67,7 +70,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_gigastroke_ais.py' -v
 
   extract-pinned-original-lead:
-    if: (github.event_name == 'workflow_dispatch' && inputs.run_original_source == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[tpmi-lead-original]'))
+    if: (github.event_name == 'workflow_dispatch' && inputs.run_original_source == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[tpmi-lead-original]')) || (github.event_name == 'issue_comment' && github.event.issue.number == 284 && github.event.comment.user.login == 'kimtk94' && github.event.comment.body == '/tpmi-run-source-20261121')
     needs: offline-allele-assembly-tests
     runs-on: ubuntu-latest
     timeout-minutes: 24
@@ -195,7 +198,7 @@ jobs:
           retention-days: 30
 
   report-ci-status:
-    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[tpmi-lead-original]')))
+    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[tpmi-lead-original]')) || (github.event_name == 'issue_comment' && github.event.issue.number == 284 && github.event.comment.user.login == 'kimtk94' && github.event.comment.body == '/tpmi-run-source-20261121'))
     needs:
       - offline-allele-assembly-tests
       - extract-pinned-original-lead
