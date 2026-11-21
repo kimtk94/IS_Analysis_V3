@@ -28,7 +28,7 @@ jobs:
           import json,os,subprocess
           repo="kimtk94/IS_Analysis_V3"
           run_id=os.environ["SOURCE_RUN"]
-          raw=subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run_id}/jobs","-f","per_page=100"],text=True)
+          raw=subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100"],text=True)
           jobs=json.loads(raw).get("jobs",[])
           wanted=("offline-allele-assembly-tests","extract-pinned-original-lead",
                   "bidirectional-build-and-allele-map","prepare-gigastroke-grch37-target",
