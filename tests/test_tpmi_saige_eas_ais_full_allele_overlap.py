@@ -56,8 +56,22 @@ class TestSaigeEasJoin(unittest.TestCase):
    stats,af,bychr=compare(conn)
    self.assertEqual(stats["MATCHED"],1)
    self.assertEqual(stats["INFO_GE_0.8_AND_SAIGE_MAF_GE_0.01"],1)
+   self.assertEqual(stats["INFO_GE_0.8_MAF_GE_0.01_AF_DELTA_LE_0.05"],1)
+   self.assertEqual(stats["INFO_GE_0.8_MAF_GE_0.01_AF_DELTA_LE_0.10"],1)
    self.assertEqual(af["DELTA_LE_0.05"],1)
    self.assertEqual(bychr["1"],1)
+   conn.close()
+ def test_joint_filter_excludes_large_af_discrepancy(self):
+  with tempfile.TemporaryDirectory() as d:
+   conn=make_sqlite(Path(d)/"db.sqlite")
+   conn.execute("INSERT INTO saige(chrom,pos,r,a,eff,freq,info,beta,se,pval) VALUES (?,?,?,?,?,?,?,?,?,?)",
+      ("1",999,"A","G","G",.4,.99,.15,.02,.001))
+   conn.execute("INSERT INTO outcome(chrom,pos,ea,oa,eaf,beta,se,pval) VALUES (?,?,?,?,?,?,?,?)",
+      ("1",999,"G","A",.9,.17,.03,.002))
+   stats,af,_=compare(conn)
+   self.assertEqual(stats["MATCHED"],1)
+   self.assertEqual(stats.get("INFO_GE_0.8_MAF_GE_0.01_AF_DELTA_LE_0.05",0),0)
+   self.assertEqual(stats["AF_DELTA_GT_0.1"],1)
    conn.close()
  def test_ambiguous_same_coordinate_is_not_counted(self):
   with tempfile.TemporaryDirectory() as d:
