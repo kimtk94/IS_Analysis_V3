@@ -73,10 +73,19 @@ def xml_book(b):
     vals=" | ".join(v for k,v in row)
     if any(t in vals.lower() for t in keywords):
      flagged.append({"range":row[0][0], "cells":row[:15]})
+   if name=="Suppl.Table1":
+    # Supplementary Table 1 carries separate incident / combined / follow-up cohorts.
+    # Return actual source row positions rather than classify any cohort by name.
+    report_eas=[]
+    for row in rows:
+     m=re.search(r"([0-9]+)",row[0][0])
+     if m and 45<=int(m.group(1))<=76:
+      report_eas.append(row)
+   else:report_eas=[]
    report.append({"sheet":name,"nonempty_rows":len(rows),
                   "first_rows":[x[:15] for x in rows[:6]],
                   "keyword_rows_count":len(flagged),
-                  "keyword_rows":flagged[:85]})
+                  "keyword_rows":flagged[:85], "supp_table1_rows_45_to_76":report_eas})
   return report
 def main():
  p=argparse.ArgumentParser();p.add_argument("--out",type=Path,required=True);a=p.parse_args()
@@ -103,6 +112,7 @@ def main():
  print(json.dumps({"status":r.get("source_status"),
     "url":r.get("source_url"),
     "sheets":[{"sheet":s["sheet"],"nonempty_rows":s["nonempty_rows"],
-               "first_rows":s["first_rows"][:3],"keyword_rows":s["keyword_rows"][:15]} for s in r.get("sheets",[])[:12]],
+               "first_rows":s["first_rows"][:3],"keyword_rows":s["keyword_rows"][:15],
+               "EAS_segment":s.get("supp_table1_rows_45_to_76",[])} for s in r.get("sheets",[])[:12]],
     "attempts":r.get("attempts"),"science":"HOLD"},ensure_ascii=False))
 if __name__=="__main__":main()
