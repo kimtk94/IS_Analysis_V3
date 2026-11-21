@@ -1,4 +1,4 @@
-name: CKM BBJ ischemic stroke public source discovery
+name: CKM BBJ stroke variant endpoint and source size probe
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Parse official BBJ catalogs without assuming per-SNP coverage
+      - name: Probe official BBJ public ZIP and exact-locus variant API
         run: |
           python -m py_compile scripts/ckm_stroke/discover_bbj_stroke_source.py
           python -m scripts.ckm_stroke.discover_bbj_stroke_source --out artifacts/tpmi/bbj_is_stroke_source_discovery_HOLD.json
