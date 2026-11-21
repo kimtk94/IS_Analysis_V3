@@ -1,0 +1,30 @@
+name: CKM TPMI GIGASTROKE original cohort evidence review
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-gigastroke-primary-cohort-evidence.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cohort-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify primary full-text cohort references and classify PGS vs discovery
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_gigastroke_tpmi_cohort_literature.py
+          python -m scripts.ckm_stroke.audit_gigastroke_tpmi_cohort_literature \
+            --out artifacts/is/TPMI_GIGASTROKE_original_cohort_evidence_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI-GIGASTROKE-primary-cohort-evidence-HOLD
+          path: artifacts/is/TPMI_GIGASTROKE_original_cohort_evidence_HOLD.json
+          retention-days: 30
