@@ -209,3 +209,12 @@ This stage replaces the scientifically unsupported "single rare lead as required
 **Next scientific gates:**
 1. Reconcile actual association-level N, effect-size/SE/p-value valid count, the high-AF-discrepancy subsets, and EAS LD reference suitability. The frequency comparisons should be checked on valid, unambiguous, matched SNPs and may reflect ancestry differences.
 2. Verify sample-overlap independence and an approvable case/control N_eff from genuine source metadata; preserve LDSC/MAGMA/MR/coloc HOLD until all relevant gates pass.
+
+## Genome-wide effect-statistic eligibility audit (additional verification)
+
+- The independently verified aggregate baseline is **1,507,261 allele-matched autosomal SNP pairs**, from Actions [#44889274048](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44889274048) attempt 1.
+- The matcher was extended at research commit `4c918199229ba1fea39d7db6837f6fe80469fff8` to retain, in memory only, TPMI original OR, LOG(OR)_SE, P, and OBS_CT, plus EAS AIS original beta, SE, P and OR for numeric QC of **the same allele-aligned pairs**. Bad/NA/non-finite/negative SE or invalid P cannot pass the numeric gate; EAS reported OR-vs-beta discrepancy is counted. No per-variant effects are exported.
+- Negative unit tests added in `6e97fffb9313a13d46ec062b2f9c8a776f503146`.
+- The existing pinned-original workflow [#44889274048](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44889274048) was directly rerun using the GitHub rerun-job API (attempt 2). **Do not report a new validated eligible-pair count before inspecting that attempt's terminal scientific audit log.**
+- Any numerical PASS is a necessary but insufficient prerequisite for LDSC, MAGMA, MR, coloc. The relevant LD reference, QC on allele-frequency discrepancies, diagnosis equivalence and case/control observations remain unresolved.
+- Cohort independence is not established merely because published cohort names differ. TPMI is a Taiwan-based clinical cohort (Nature 2025), while GIGASTROKE uses several EAS source cohorts (Nature 2022). The cohort contribution and participant-level duplication must be independently substantiated before a cross-dataset replication claim. **No independence PASS by assumption.**
