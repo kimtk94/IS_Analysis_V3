@@ -34,6 +34,18 @@ def get(url):
     req=urllib.request.Request(url,headers={"User-Agent":"TPMI43321-BBJ-public-source-discovery/1.0"})
     with urllib.request.urlopen(req,timeout=45) as r:
         return r.read(2500000).decode("utf-8",errors="replace"),r.geturl(),r.status
+def probe(url,method="GET"):
+    req=urllib.request.Request(url,method=method,headers={"User-Agent":"TPMI43321-BBJ-target-probe/1.0","Accept":"application/json,text/plain,*/*"})
+    try:
+        with urllib.request.urlopen(req,timeout=30) as r:
+            b=r.read(20000) if method=="GET" else b""
+            return {"status":"PASS_HTTP","http":r.status,"url":r.geturl(),
+                    "content_type":r.headers.get("Content-Type"),
+                    "content_length":r.headers.get("Content-Length"),
+                    "accept_ranges":r.headers.get("Accept-Ranges"),
+                    "sample_prefix":b[:500].decode("utf-8",errors="replace")}
+    except Exception as e:return {"status":"HOLD_HTTP","error_type":type(e).__name__,"error":str(e)[:180]}
+
 def run():
     p=argparse.ArgumentParser();p.add_argument("--out",type=Path,required=True);a=p.parse_args()
     out={"schema":"bbj_is_stroke_source_discovery_v1",
@@ -52,6 +64,9 @@ def run():
             "jwt_required_by_provider":True,"rsid_in_full_outcome_file":"NOT_QUERIED",
             "bbj_dataset_marker":("bbj-a-129" in html.lower())}
     except Exception as e:out["opengwas"]={"status":"HOLD_HTTP","error":str(e)[:240]}
+    out["actual_pheweb_bbj_zip_head"]=probe("https://humandbs.dbcls.jp/files/hum0197/hum0197.v3.BBJ.IS.v1.zip","HEAD")
+    out["pheweb_variant_api"]=probe("https://pheweb.jp/api/variant/19:15573379:T:C")
+    out["pheweb_variant_page"]=probe("https://pheweb.jp/variant/19:15573379:T:C")
     a.out.parent.mkdir(parents=True,exist_ok=True)
     a.out.write_text(json.dumps(out,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
     print(json.dumps(out,ensure_ascii=False))
