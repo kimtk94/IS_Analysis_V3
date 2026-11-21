@@ -1,0 +1,30 @@
+name: CKM TPMI 43321 SAIGE per-SNP case/control prefix evidence
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-saige-casecontrol-prefix.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  saige-ncase-ncontrol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify publisher original SAIGE 43321 N_case N_ctrl on byte-limited source
+        run: |
+          python -m py_compile scripts/ckm_stroke/sample_tpmi_43321_saige_casecontrol.py
+          python -m scripts.ckm_stroke.sample_tpmi_43321_saige_casecontrol \
+            --out artifacts/is/TPMI43321_SAIGE_casecontrol_original_prefix_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-TPMI43321-SAIGE-casecontrol-prefix-HOLD
+          path: artifacts/is/TPMI43321_SAIGE_casecontrol_original_prefix_HOLD.json
+          retention-days: 30
