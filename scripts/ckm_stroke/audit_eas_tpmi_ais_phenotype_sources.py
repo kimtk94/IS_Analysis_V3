@@ -186,6 +186,56 @@ def parse_pgs(key,web):
             "not_validated_per_SNP_effect_estimates_of_outcome":True,
             "source_sha256":web["source_sha256"]}
 
+def head_only_download_preflight(anchors,opener=urlopen):
+    """Metadata-only HEAD, at most 2 links. No GWAS file content is read."""
+    if len(anchors)>2:
+        raise ValueError("too many TPMI original candidate HEAD links")
+    out=[]
+    for item in anchors:
+        url=item["url"].strip()
+        p=urlsplit(url)
+        if (p.scheme!="https" or p.hostname!=TPMI
+            or not p.path.startswith("/download/")
+            or p.query or p.fragment):
+            raise ValueError("TPMI source download path not an approved origin")
+        req=Request(url,method="HEAD",
+                    headers={"User-Agent":"CKM-Stroke-Original-TPMI-HEAD-Only/1.0"})
+        try:
+            with opener(req,timeout=25) as result:
+                actual=urlsplit(result.geturl())
+                is_official=actual.scheme=="https" and actual.hostname==TPMI
+                length=result.headers.get("Content-Length","")
+                out.append({
+                  "label":item["label"],"original_link":url,
+                  "http_status":result.status,
+                  "final_redirect_hostname_official":is_official,
+                  "content_length":int(length) if length.isdecimal() else None,
+                  "request_method":"HEAD_ONLY",
+                  "download_body_bytes_read":0,
+                  "source_GWAS_variant_schema_verified":False,
+                  "license_and_source_use_requirements_still_apply":True
+                })
+        except HTTPError as exc:
+            if exc.code not in (401,403,404,405,429,503):
+                raise
+            out.append({
+              "label":item["label"],"original_link":url,
+              "http_status":exc.code,"request_method":"HEAD_ONLY",
+              "download_body_bytes_read":0,
+              "source_GWAS_variant_schema_verified":False,
+              "license_and_source_use_requirements_still_apply":True
+            })
+        except URLError as exc:
+            out.append({
+              "label":item["label"],"original_link":url,
+              "http_status":None,"network_error_type":type(exc).__name__,
+              "request_method":"HEAD_ONLY","download_body_bytes_read":0,
+              "source_GWAS_variant_schema_verified":False,
+              "license_and_source_use_requirements_still_apply":True
+            })
+    return out
+
+
 def evidence(source):
     about=parse_about(source["tpmi_about"])
     targets={x:parse_gwas_page(x,source[x]) for x in CLINICAL}
@@ -230,6 +280,11 @@ def main():
     try:
         source={key:safe_fetch(url) for key,url in URLS.items()}
         report=evidence(source)
+        selected=report["original_public_endpoint_checks"]["tpmi_433_21"]
+        links=selected.get("on_page_advertised_summary_stats_links_metadata_only",[])
+        report["TPMI_433_21_original_GWAS_access_HEAD_only"]=head_only_download_preflight(links)
+        report["TPMI_full_GWAS_downloaded"]=False
+        report["original_outcome_beta_se_p_and_SNP_Neff_schema_verified"]=False
     except Exception as exc:
         report={"technical_status":"HOLD_ORIGINAL_EAS_SOURCE_UNVERIFIED",
                 "error_type":type(exc).__name__,"error_detail":str(exc)[:250],
@@ -239,6 +294,7 @@ def main():
     print(json.dumps({"status":report["technical_status"],
                       "phenotype_evidence":{k:{"status":v["status"],"n_cases":v["n_cases"],"n_controls":v["n_controls"]} for k,v in report.get("original_public_endpoint_checks",{}).items()},
                       "data_source_only_no_LDSC":report.get("ready_for_ldsc") is False,
+                      "tpmi_433_21_HEAD_results":[{"http_status":x.get("http_status"),"label":x["label"],"size":x.get("content_length")} for x in report.get("TPMI_433_21_original_GWAS_access_HEAD_only",[])],
                       "error":report.get("error_detail")}))
     if report["technical_status"]!="PASS_OFFICIAL_PHEWEB_SOURCE_PROVENANCE_WITH_PER_PHENOTYPE_GATES":
         raise SystemExit(1)

@@ -76,6 +76,36 @@ class TestEASPhenotypeSource(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"off official host"):
             a.advertised_download_anchors("tpmi_433_21",html)
 
+    def test_head_preflight_never_downloads_GWAS_bytes(self):
+        class FakeResponse:
+            status=200
+            headers={"Content-Length":"7654321"}
+            def __init__(self,u):
+                self.u=u
+            def geturl(self):
+                return self.u
+            def __enter__(self):
+                return self
+            def __exit__(self,*a):
+                return None
+            def read(self,*a):
+                raise AssertionError("HEAD must never request GWAS body")
+        anchors=[{"label":"Summary Statistics",
+                  "url":"https://pheweb.ibms.sinica.edu.tw/download/saige_gwas/433.21"}]
+        r=a.head_only_download_preflight(
+            anchors,opener=lambda req,timeout:FakeResponse(req.full_url))
+        self.assertEqual(r[0]["http_status"],200)
+        self.assertEqual(r[0]["content_length"],7654321)
+        self.assertEqual(r[0]["request_method"],"HEAD_ONLY")
+        self.assertEqual(r[0]["download_body_bytes_read"],0)
+        self.assertFalse(r[0]["source_GWAS_variant_schema_verified"])
+
+    def test_head_preflight_rejects_unapproved_download_host(self):
+        bad=[{"label":"Summary Statistics",
+              "url":"https://example.com/download/saige_gwas/433.21"}]
+        with self.assertRaisesRegex(ValueError,"approved origin"):
+            a.head_only_download_preflight(bad)
+
     def test_live_portal_absent_pgs_not_promoted(self):
         r=a.parse_pgs("pgs_019250",{"status":"HTTP_429","text":None})
         self.assertFalse(r["is_original_GWAS_summary_statistics"])
