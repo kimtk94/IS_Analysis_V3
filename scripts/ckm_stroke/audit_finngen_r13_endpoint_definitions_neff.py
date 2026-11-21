@@ -33,9 +33,11 @@ ENDPOINT_URL="https://www.finngen.fi/sites/default/files/inline-files/FINNGEN_EN
 CONTROL_URL="https://www.finngen.fi/sites/default/files/inline-files/Controls_FINNGEN_ENDPOINTS_DF13_Final_2025-08-14_public.xlsx"
 OFFICIAL_CLINICAL_PAGE="https://www.finngen.fi/en/researchers/clinical-endpoints"
 R13_MANIFEST_SHA="c9caafa9b98ee5ef050a705766bd1c451fc2154fb8e81b069022012a2f75ae20"
+DF13_ENDPOINT_SHA256="0004624f727b96b4a56c6fac75ff182eb8bc3daf78cdf690bdad276b31fca6c7"
+DF13_CONTROL_SHA256="7cbbf9072296e34f6bde44b2958c7520c7caedeade924d941e5bbc4fa89cc29b"
 SOURCE_CODES=("I9_STR_EXH","I9_STR","I9_STR_EMBOLIC",
               "I9_STR_EMBOLIC_WITH_FLIMMER","I9_ICH","I9_SAH")
-INSPECTED_FIELDS=("NAME","DESCRIPTION","PHENOSTRING","HD_ICD_10","COD_ICD_10",
+INSPECTED_FIELDS=("NAME","LONGNAME","DESCRIPTION","PHENOSTRING","HD_ICD_10","COD_ICD_10",
                   "HD_ICD_9","HD_ICD_8","COD_ICD_9","COD_ICD_8",
                   "INCLUDE","CONDITIONS","CONTROL_EXCLUDE","CONTROL_CONDITIONS",
                   "PRE_CONDITIONS","MAINONLY","SEX")
@@ -251,6 +253,33 @@ def review(manifest,definitions,control_definitions,cohort):
     for k in ("I9_STR","I9_STR_EMBOLIC","I9_STR_EMBOLIC_WITH_FLIMMER"):
         if k not in listing["GWAS_manifest_present_endpoints"]:
             raise ValueError("prior R13 GWAS phenotype selection changed: "+k)
+        entry=listing["requested_endpoint_rows"][k]
+        for field in ("num_cases","num_controls"):
+            raw=entry.get(field)
+            if not isinstance(raw,str) or not raw.isdecimal() or int(raw)<=0:
+                raise ValueError("official R13 endpoint-specific case/control count missing: "+k)
+        if int(entry["num_cases"])+int(entry["num_controls"])>500186:
+            raise ValueError("R13 phenotype cohort count exceeds official total participants")
+    if listing["I9_STR_EXH_in_R13_GWAS_manifest"]:
+        raise ValueError("prior no-R13-ischemic-specific source evidence changed; review primary outcome")
+    srcdefs=endpoint["endpoint_definition_rows"]
+    ctrl=controls["endpoint_definition_rows"]
+    if any(len(srcdefs.get(k,[]))!=1 or len(ctrl.get(k,[]))!=1 for k in SOURCE_CODES):
+        raise ValueError("missing unique source-keyed DF13 case/control definition")
+    def code_fields(name):
+        return srcdefs[name][0]["source_fields"]
+    broad=code_fields("I9_STR").get("HD_ICD_10","").split("|")
+    ischemic=code_fields("I9_STR_EXH").get("HD_ICD_10","").split("|")
+    embolic=code_fields("I9_STR_EMBOLIC").get("HD_ICD_10","")
+    af=code_fields("I9_STR_EMBOLIC_WITH_FLIMMER")
+    af_ctrl=ctrl["I9_STR_EMBOLIC_WITH_FLIMMER"][0]["source_fields"]
+    if (not {"I61","I63","I64"}.issubset(set(broad)) or
+        "I61" in ischemic or not {"I63","I64"}.issubset(set(ischemic)) or
+        embolic not in ("I631","I63.1") or
+        af.get("INCLUDE")!="I9_STR_EMBOLIC" or
+        af.get("CONDITIONS")!="I9_AF" or
+        af_ctrl.get("CONTROL_CONDITIONS")!="!I9_AF"):
+        raise ValueError("official DF13 clinical ischemic versus hemorrhagic/embolic definition drift")
     # Clinical endpoint may exist in DF13 case definition file while not
     # being listed among released GWAS; do not infer data availability.
     targets=[]
@@ -270,6 +299,9 @@ def review(manifest,definitions,control_definitions,cohort):
             "case_definition":d[0]["source_fields"] if len(d)==1 else None,
             "control_definition":cd[0]["source_fields"] if len(cd)==1 else None,
             "manifest_public_data_row":mr,
+            "released_R13_GWAS_endpoint_case_count":int(mr["num_cases"]) if mr is not None else None,
+            "released_R13_GWAS_endpoint_control_count":int(mr["num_controls"]) if mr is not None else None,
+            "original_manifest_counts_are_not_variantwise_N_eff":True,
             "case_or_control_count_source_quality":(
                 "MANIFEST_NUMBER_ONLY_IF_EXPLICIT_SOURCE_FIELDS" if mr is not None else
                 "NOT_AVAILABLE_NO_R13_GWAS_MANIFEST_ENTRY"),
@@ -302,6 +334,8 @@ def main():
         df13,dsha=official_bytes(ENDPOINT_URL,CAP_DOC)
         cdf13,csha=official_bytes(CONTROL_URL,CAP_DOC)
         previous=json.loads(a.original_cohort_evidence.read_text("utf-8"))
+        if dsha!=DF13_ENDPOINT_SHA256 or csha!=DF13_CONTROL_SHA256:
+            raise ValueError("original official DF13 clinical definition workbook SHA256 drift")
         result=review(manifest,df13,cdf13,previous)
         result["official_sources"]={"public_GWAS_manifest":FINN_R13_MANIFEST,
            "DF13_endpoint_definitions":ENDPOINT_URL,
@@ -322,8 +356,12 @@ def main():
         "status":result["technical_status"],
         "manifest_endpoints":result.get("manifest",{}).get("official_manifest_entries"),
         "listed_stroke_codes":result.get("manifest",{}).get("GWAS_manifest_present_endpoints"),
-        "DF13_definition_rows":{x["phenocode"]:x["case_definition_rows"] for x in result.get("endpoints",[])},
-        "case_control_sources":{x["phenocode"]:x["case_or_control_count_source_quality"] for x in result.get("endpoints",[])},
+        "DF13_definition_rows":{x["phenocode"]:x["case_definition_rows_found"] for x in result.get("endpoints",[])},
+        "case_control_sources":{x["phenocode"]:{
+           "n_cases":x["released_R13_GWAS_endpoint_case_count"],
+           "n_controls":x["released_R13_GWAS_endpoint_control_count"],
+           "status":x["case_or_control_count_source_quality"]}
+           for x in result.get("endpoints",[])},
         "sensitivity_n_scenarios":len(result.get("GIGASTROKE_meta_N_eff_input_sensitivity",{}).get("scenarios",[])),
         "error":result.get("error_detail"),"science":result["scientific_status"]
     }))
