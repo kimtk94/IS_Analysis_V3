@@ -1,4 +1,4 @@
-name: CKM TPMI GRCh37 EAS LD proxy gate
+name: CKM TPMI GRCh37 EAS LD and lead presence gate
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Run GRCh37 EAS reference LD audit without inventing GIGASTROKE matches
+      - name: Verify GRCh37 variant representation, population AF and EAS LD without proxy claims
         run: |
           python -m py_compile scripts/ckm_stroke/check_tpmi_43321_eas_ld.py
           python -m scripts.ckm_stroke.check_tpmi_43321_eas_ld --out artifacts/tpmi/tpmi_43321_eas_grch37_ld_proxy_evidence_HOLD.json
