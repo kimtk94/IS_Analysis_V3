@@ -1,0 +1,67 @@
+name: CKM stroke alternate GWAS N_eff provenance official audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-stroke-alternative-gwas-neff-source-audit.yml'
+      - 'scripts/ckm_stroke/audit_alternative_stroke_gwas_neff_sources.py'
+      - 'tests/test_ckm_stroke_alternative_gwas_neff_sources.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-stroke-alternative-neff-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  no-network-negative-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile source gate and test missing N, assembly and manifest errors
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_alternative_stroke_gwas_neff_sources.py
+          python -m unittest discover -s tests -p 'test_ckm_stroke_alternative_gwas_neff_sources.py' -v
+
+  actual-official-source-schema:
+    needs: no-network-negative-fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify immutable original GIGASTROKE EUR four-source MD5 evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          run=44860586028
+          sha="7c1ca53a57f3e44b1cdb8e2cf19753b943cf45ba"
+          r=json.loads(subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+          if r.get("conclusion")!="success" or r.get("head_sha")!=sha or r.get("repository",{}).get("full_name")!=repo:
+              raise SystemExit("previous original GIGASTROKE publisher-MD5 evidence invalid")
+          print("ORIGINAL FOUR-STROKE SOURCE COMMIT AND SUCCESS PINNED")
+          PY
+      - name: Verify official MEGASTROKE and FinnGen R13 schemas, attempt public manifest only
+        run: |
+          python -m scripts.ckm_stroke.audit_alternative_stroke_gwas_neff_sources \
+            --out artifacts/ckm_stroke/alternative_stroke_gwas_official_schema_neff_gate_ci.json
+      - name: Upload bounded public metadata and original N_eff scientific HOLD
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-alternative-stroke-gwas-official-neff-hold
+          path: artifacts/ckm_stroke/alternative_stroke_gwas_official_schema_neff_gate_ci.json
+          if-no-files-found: warn
+          retention-days: 30
