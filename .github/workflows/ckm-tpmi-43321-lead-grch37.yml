@@ -1,0 +1,102 @@
+name: CKM TPMI 433.21 pinned significant SNP and Ensembl GRCh37 liftover
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-lead-grch37.yml'
+      - 'scripts/ckm_stroke/identify_tpmi_43321_lead_variant.py'
+      - 'scripts/ckm_stroke/map_tpmi_43321_lead_ensembl.py'
+      - 'tests/test_ckm_tpmi_43321_significant_lead.py'
+      - 'tests/test_ckm_tpmi_43321_lead_liftover.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-tpmi-43321-lead-grch37-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-allele-assembly-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail closed on missing significant SNP, wrong A1, false build map and source N
+        run: |
+          python -m py_compile scripts/ckm_stroke/identify_tpmi_43321_lead_variant.py
+          python -m py_compile scripts/ckm_stroke/map_tpmi_43321_lead_ensembl.py
+          python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_significant_lead.py' -v
+          python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_lead_liftover.py' -v
+
+  extract-pinned-original-lead:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[tpmi-lead-original]')
+    needs: offline-allele-assembly-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin previously verified 1.739M full-original and N discrepancy CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import subprocess,json
+          repo="kimtk94/IS_Analysis_V3"
+          pins={
+            44872892525:"8a52ee0dd780041eb8d95ff2aee5e978fb7eb8bb",
+            44873247155:"07d107367f9a01aa7dca4ee5625c5e421737c871",
+          }
+          for run,sha in pins.items():
+              x=json.loads(subprocess.check_output(["gh","api",f"repos/{repo}/actions/runs/{run}"],text=True))
+              if (x.get("conclusion")!="success" or x.get("head_sha")!=sha
+                  or x.get("repository",{}).get("full_name")!=repo):
+                  raise SystemExit("previous 1.739M original GWAS source evidence has changed")
+          print("PINNED ORIGINAL GWAS AND SOURCE N DENOMINATOR INTEGRITY CHECK PASS")
+          PY
+      - name: Download 58MB once without retry; hash and extract only original P<=5e-8 SNP
+        run: |
+          python -m scripts.ckm_stroke.identify_tpmi_43321_lead_variant \
+            --out artifacts/tpmi/tpmi_43321_GRCh38_single_lead_public_GWAS_QC.json
+      - name: Publish targeted public association only, not full genomewide source
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckm-TPMI43321-pinned-GRCh38-significant-SNP
+          path: artifacts/tpmi/tpmi_43321_GRCh38_single_lead_public_GWAS_QC.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  bidirectional-build-and-allele-map:
+    needs: extract-pinned-original-lead
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-TPMI43321-pinned-GRCh38-significant-SNP
+          path: artifacts/tpmi
+      - name: Query official Ensembl GRCh38/GRCh37 reverse map and both reference alleles
+        run: |
+          python -m scripts.ckm_stroke.map_tpmi_43321_lead_ensembl \
+            --lead artifacts/tpmi/tpmi_43321_GRCh38_single_lead_public_GWAS_QC.json \
+            --out artifacts/tpmi/tpmi_43321_GRCh37_Ensembl_bidirectional_map_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-TPMI43321-lead-Ensembl-GRCh37-provenance-HOLD
+          path: artifacts/tpmi/tpmi_43321_GRCh37_Ensembl_bidirectional_map_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
