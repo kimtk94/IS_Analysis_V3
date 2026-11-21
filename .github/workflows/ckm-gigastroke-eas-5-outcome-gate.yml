@@ -1,0 +1,31 @@
+name: CKM GIGASTROKE EAS five-outcome strict sample gate
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-gigastroke-eas-5-outcome-gate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-eas-ontology-and-sample-sizes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Audit GWAS Catalog v2 ancestry, trait and reported case-control sample
+        run: |
+          python -m py_compile scripts/ckm_stroke/audit_gigastroke_eas_5_outcomes.py
+          python -m scripts.ckm_stroke.audit_gigastroke_eas_5_outcomes \
+            --out artifacts/is/gigastroke_2022_EAS_5_phenotypes_N_sample_gate_HOLD.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-GIGASTROKE-5-EAS-outcome-sample-gate-HOLD
+          path: artifacts/is/gigastroke_2022_EAS_5_phenotypes_N_sample_gate_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
