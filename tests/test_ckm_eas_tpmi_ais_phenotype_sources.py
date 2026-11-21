@@ -58,7 +58,7 @@ class TestEASPhenotypeSource(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"hostname"):
             a.safe_fetch("https://example.com/hack")
     def test_invalid_source_count_fails(self):
-        with self.assertRaisesRegex(ValueError,"maximum"):
+        with self.assertRaisesRegex(ValueError,"source guard"):
             a.parse_gwas_page("tpmi_433_3",cases("Cerebral ischemia",1200001,304660))
     def test_live_portal_absent_pgs_not_promoted(self):
         r=a.parse_pgs("pgs_019250",{"status":"HTTP_429","text":None})
