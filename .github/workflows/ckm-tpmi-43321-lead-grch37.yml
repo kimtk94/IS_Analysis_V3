@@ -193,3 +193,47 @@ jobs:
           path: artifacts/tpmi/tpmi_43321_GIGASTROKE_AIS_single_original_locus_HOLD.json
           if-no-files-found: warn
           retention-days: 30
+
+  report-ci-status:
+    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[tpmi-lead-original]')))
+    needs:
+      - offline-allele-assembly-tests
+      - extract-pinned-original-lead
+      - bidirectional-build-and-allele-map
+      - prepare-gigastroke-grch37-target
+      - source-verified-gigastroke-ais-one-locus
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Record run ID and job conclusions on research PR 284
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_SHA: ${{ github.sha }}
+          OFFLINE: ${{ needs.offline-allele-assembly-tests.result }}
+          EXTRACT: ${{ needs.extract-pinned-original-lead.result }}
+          LIFTOVER: ${{ needs.bidirectional-build-and-allele-map.result }}
+          LOOKUP: ${{ needs.prepare-gigastroke-grch37-target.result }}
+          AIS: ${{ needs.source-verified-gigastroke-ais-one-locus.result }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          repo="kimtk94/IS_Analysis_V3"
+          fields={
+              "offline":os.environ["OFFLINE"],
+              "source_extract":os.environ["EXTRACT"],
+              "liftover":os.environ["LIFTOVER"],
+              "lookup":os.environ["LOOKUP"],
+              "AIS_match":os.environ["AIS"],
+          }
+          url=f"https://github.com/{repo}/actions/runs/{os.environ['RUN_ID']}"
+          status="PASS" if all(value=="success" for value in fields.values() if value!="skipped") and fields["offline"]=="success" else "REVIEW"
+          body=("TPMI 433.21 Actions execution record (CI, not scientific GO)\\n"
+                +f"Run: {url}\\nCommit: `{os.environ['RUN_SHA']}`\\n"
+                +"Jobs: `"+json.dumps(fields,sort_keys=True)+"`\\n"
+                +f"Technical CI summary: {status}. Scientific status: HOLD.")
+          subprocess.run(["gh","api",f"repos/{repo}/issues/284/comments",
+                          "--method","POST","-f",f"body={body}"],check=True)
+          PY
