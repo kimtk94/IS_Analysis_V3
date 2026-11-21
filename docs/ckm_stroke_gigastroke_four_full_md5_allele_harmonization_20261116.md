@@ -207,3 +207,29 @@ Outstanding gates remain the original EBI publicly provided effect scaling / GC 
 **Follow-up workflow**: .github/workflows/ckm-gigastroke-eaf-wald-artifact-review.yml, triggered by changes to its own source/tests or via workflow_dispatch. It verifies that the input source run completed successfully on its exact pinned commit, downloads only its trusted preexisting compact JSON artifact and reruns the independent publisher-MD5/source-ledger reviewer; no extra original GWAS download or SNP-level effect upload. Publishes JSON and Markdown chromosome-level anomaly summaries. Code scripts/ckm_stroke/review_gigastroke_eaf_wald_anomalies.py; tests/test_ckm_stroke_gigastroke_eaf_wald_anomalies.py.
 
 **Scientific restriction**: GIANT HRS is a separate frequency reference, not GIGASTROKE outcome cohort EAF. Frequency differences cannot prove strand errors or ancestry mismatch by themselves. P-Wald differences are not evidence of a GC correction factor. Aggregate source matches are *not* final post-munge LDSC regression SNP counts; outcome per-SNP N_eff remains unknown, and h2, intercept, rg, MR and coloc are NOT RUN. Do not modify original effect sizes/P-values based on this descriptive audit.
+
+
+## 2026-11-21 targeted original source chr11 SNP identity and chr4 P/Wald rounding QC
+
+**Source evidence:** [GitHub Actions #44863365730](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44863365730) SUCCESS, commit [4860eff034949d82802aeeb0e9c32294f03d0669](https://github.com/kimtk94/IS_Analysis_V3/commit/4860eff034949d82802aeeb0e9c32294f03d0669), [artifact #14690824408](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44863365730/artifacts/14690824408). Seven offline tests PASS. All four original GIGASTROKE EUR public gzip files were independently streamed and original publisher full-file MD5, full source SHA256 and previously proven chr4/chr11 EAF/Wald histogram counts reproduced. The output retains only selected source SNP identities and numeric-precision diagnostics, no per-variant beta or SE.
+
+### One shared chr11 SNP, not merely shared chromosome
+
+The sole >=0.20 GIANT HRS-reference frequency departure in all four source outcomes maps to **rs198472**, GRCh37 **chr11:61,527,266**, allele set **A/G**, with the candidate rsID mapped by pinned GIANT Yengo2018 original source. All four represent the same coordinate, rsID and compatible allele set.
+
+| Stroke outcome | GIGASTROKE EUR EAF reoriented to GIANT Tested_Allele | GIANT HRS reference frequency | Absolute difference |
+| --- | ---: | ---: | ---: |
+| AIS | 0.7749 | 0.5341 | 0.2408 |
+| LAA | 0.7534 | 0.5341 | 0.2193 |
+| CE | 0.7575 | 0.5341 | 0.2234 |
+| SVD | 0.7588 | 0.5341 | 0.2247 |
+
+**Interpretation restriction:** the GIANT HRS column is a frequency reference from a different population/cohort, not the GIGASTROKE cohort-specific EAF; therefore a 20pp difference does not alone establish a strand error, sample mix-up or ancestry failure. The locus lies near the chr11q12.2 FADS1/FADS2 LC-PUFA/lipid biology region; the published hg19 interval is approximately chr11:61,540,615–61,664,170 (https://pmc.ncbi.nlm.nih.gov/articles/PMC5874031/). rs198472 is approximately 13kb proximal to this interval, but physical proximity is not proof of a particular causal gene.
+
+### chr4 moderate P-versus-Wald discrepancy
+
+The source EAF/Wald full-scan classified AIS chr4 **9** variants and CE chr4 **14** variants with absolute discrepancy 0.1–1 in -log10(P) between original reported P and two-sided Wald P implied by source BETA/SE. On direct original-source extraction, **all 23** are compatible with rounding intervals of the originally printed BETA/SE/P decimal strings. This does NOT demonstrate that rounding was the actual explanation, and it is NOT a genomic-control correction estimate. No original source effects were modified.
+
+Exactly **three** variants occur in both AIS and CE, matching coordinate + rsID: rs10032150 (chr4:111,646,618); rs17042088 (chr4:111,654,814); rs17042171 (chr4:111,708,287). All lie in the 4q25 region near PITX2, a known atrial-fibrillation and cardioembolic-stroke risk locus (https://www.nature.com/articles/nature06007; https://pmc.ncbi.nlm.nih.gov/articles/PMC5386395/). CE additionally has rs2200733 (chr4:111,710,169), a documented AF risk SNP. AIS affected SNPs were grouped near chr4:111.65–111.72 Mb (5) and chr4:155.44–155.54 Mb (4); the latter lies near the fibrinogen region, with GRCh37 FGB chr4:155,484,132–155,493,959 and FGA chr4:155,504,278–155,511,894 (ClinGen).
+
+**Still HOLD:** exact original GIGASTROKE case/control meta-analysis SNP-specific effective N, sample overlap and final post-munge LDSC regression-weight reference merge are not verified. No h2/intercept/rg/MR/coloc was calculated. This is technical source-QC validation only. Draft PR #284 remains unmerged.
