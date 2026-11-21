@@ -1,0 +1,22 @@
+name: CKM TPMI SAIGE 43321 case control source contract tests
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-saige-source-contract-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-contract-no-download:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/ckm-stroke-staged-actions-20261111
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify fail-closed original SAIGE per-variant N and P/SE quality checks
+        run: |
+          python -m unittest discover -s tests -p 'test_tpmi_saige_casecontrol_source_contract.py' -v
