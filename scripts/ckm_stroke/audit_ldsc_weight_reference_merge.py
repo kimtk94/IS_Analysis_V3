@@ -112,11 +112,23 @@ def archive_reference(opener=urllib.request.urlopen,*,required_meta=True):
                             raise ValueError("invalid positive LDSC M normalizer")
                         counts[kind][ch]=scalar
         while reader.read(1048576):pass
+    diagnosis={
+        "actual_archive_bytes":reader.nbytes,
+        "expected_archive_bytes":SIZE,
+        "publisher_MD5_match":reader.md5.hexdigest()==EXPECTED_MD5,
+        "publisher_SHA256_match":reader.sha256.hexdigest()==EXPECTED_SHA256,
+        "LDscore_chromosomes":sorted(by_chr),
+        "M_chromosomes":sorted(counts["M"]),
+        "M_5_50_chromosomes":sorted(counts["M_5_50"]),
+        "HM3_present":hm3 is not None,
+        "archive_tar_member_count":members,
+    }
     if (reader.nbytes!=SIZE or reader.md5.hexdigest()!=EXPECTED_MD5 or
         reader.sha256.hexdigest()!=EXPECTED_SHA256 or set(by_chr)!=CHROMOSOMES or
         set(counts["M"])!=CHROMOSOMES or set(counts["M_5_50"])!=CHROMOSOMES or
         hm3 is None):
-        raise ValueError("publisher 22-chromosome LD reference checksum/member completeness drift")
+        raise ValueError("publisher 22-chromosome LD reference checksum/member completeness drift: "+
+                         json.dumps(diagnosis,sort_keys=True))
     all_ids=set()
     for ch,ids in by_chr.items():
         if all_ids & ids:
