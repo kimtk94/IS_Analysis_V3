@@ -6,7 +6,10 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 from scripts.ckm_stroke.audit_ldsc_preregression_readiness import (
-    examine_candidate, outcome_gates, EXPECTED_OUTCOMES
+    examine_candidate, outcome_gates, EXPECTED_OUTCOMES,
+    reference_evidence_contract, MRCIEU_HM3_SHA256,
+    ZENODO_EUR_LDSCORE_MD5, ZENODO_EUR_LDSCORE_SHA256,
+    EXPECTED_THREE_WAY_REF_SNPS,
 )
 
 
@@ -129,6 +132,73 @@ class TestLDSCPreregression(unittest.TestCase):
         p["prefixes"][0]["source_per_variant_N_available"]=True
         with self.assertRaisesRegex(ValueError,"source phenotype"):
             outcome_gates(c,p,o)
+
+
+    @staticmethod
+    def pinned_reference_provenance(name):
+        sources={
+            "zenodo_archive_md5":ZENODO_EUR_LDSCORE_MD5,
+            "zenodo_archive_sha256":ZENODO_EUR_LDSCORE_SHA256,
+        }
+        if name=="locke_2015":
+            sources.update({
+                "original_mrcieu_ref_sha256":MRCIEU_HM3_SHA256,
+                "strict_three_reference_rsid_count":EXPECTED_THREE_WAY_REF_SNPS,
+                "direct_unordered_allele_pair_agreement":EXPECTED_THREE_WAY_REF_SNPS,
+                "2018_BMI_candidate_used":False,
+            })
+            return {"reference_sources":sources}
+        sources["mrcieu_sha256"]=MRCIEU_HM3_SHA256
+        return {
+            "sources":sources,
+            "reference_triple_rsids":EXPECTED_THREE_WAY_REF_SNPS,
+            "reference_equal_pair_rsids":EXPECTED_THREE_WAY_REF_SNPS,
+        }
+
+    def test_original_reference_evidence_is_pinned_for_both_exposures(self):
+        for name in ("locke_2015","yengo_2018"):
+            with self.subTest(name=name):
+                r=reference_evidence_contract(name,self.pinned_reference_provenance(name))
+                self.assertEqual(r["reference_triple_direct_agreement_snps"],1172984)
+                self.assertFalse(r["final_LDSC_regression_SNP_count_verified"])
+                self.assertEqual(r["scientific_status"],"HOLD")
+
+    def test_reference_digest_drift_is_rejected(self):
+        for name in ("locke_2015","yengo_2018"):
+            with self.subTest(name=name):
+                p=self.pinned_reference_provenance(name)
+                source=p["reference_sources" if name=="locke_2015" else "sources"]
+                source["zenodo_archive_md5"]="0"*32
+                with self.assertRaisesRegex(ValueError,"checksum mismatch"):
+                    reference_evidence_contract(name,p)
+
+    def test_reference_panel_count_drift_is_rejected(self):
+        for name in ("locke_2015","yengo_2018"):
+            with self.subTest(name=name):
+                p=self.pinned_reference_provenance(name)
+                if name=="locke_2015":
+                    p["reference_sources"]["direct_unordered_allele_pair_agreement"]-=1
+                else:
+                    p["reference_equal_pair_rsids"]-=1
+                with self.assertRaisesRegex(ValueError,"reference SNP agreement"):
+                    reference_evidence_contract(name,p)
+
+    def test_locke_2015_variant_selection_must_not_use_yengo_2018(self):
+        p=self.pinned_reference_provenance("locke_2015")
+        p["reference_sources"]["2018_BMI_candidate_used"]=True
+        with self.assertRaisesRegex(ValueError,"independence invalid"):
+            reference_evidence_contract("locke_2015",p)
+
+    def test_reference_missing_or_wrong_ancestry_source_is_rejected(self):
+        for name in ("locke_2015","yengo_2018"):
+            with self.subTest(name=name):
+                with self.assertRaisesRegex(ValueError,"missing pinned"):
+                    reference_evidence_contract(name,{})
+                p=self.pinned_reference_provenance(name)
+                src=p["reference_sources" if name=="locke_2015" else "sources"]
+                src.pop("zenodo_archive_sha256")
+                with self.assertRaisesRegex(ValueError,"checksum mismatch"):
+                    reference_evidence_contract(name,p)
 
 
 if __name__=="__main__":

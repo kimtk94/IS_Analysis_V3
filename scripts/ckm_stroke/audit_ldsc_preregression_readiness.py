@@ -38,6 +38,50 @@ EXPECTED_OUTCOMES={
  "SVD":("GCST90104543",6811),
 }
 EXPECTED_CONTROLS=1234808
+
+# Both BMI pipelines must trace back to the same pinned, ancestry-matched
+# reference bytes. This does NOT validate the final LDSC regression SNP count.
+MRCIEU_HM3_SHA256 = "4ed5a031f88edff7f94663841160d0fff750c45d4d55a630515b4d6de082c49e"
+ZENODO_EUR_LDSCORE_MD5 = "e2f16343c4cfaa76caa7d0c03d26b489"
+ZENODO_EUR_LDSCORE_SHA256 = "9537f00eb0d163a935aaa2cf04b358b7cf21852279b9c7925802526f6060b069"
+EXPECTED_THREE_WAY_REF_SNPS = 1172984
+
+
+def reference_evidence_contract(name: str, provenance: dict):
+    """Reject missing, swapped or mutated HM3/EUR LD reference provenance."""
+    if name not in EXPECTED:
+        raise ValueError("unknown BMI reference profile")
+    sources = provenance.get("reference_sources" if name == "locke_2015" else "sources")
+    if not isinstance(sources, dict):
+        raise ValueError("missing pinned EUR reference/HM3 provenance")
+    sha_key = "original_mrcieu_ref_sha256" if name == "locke_2015" else "mrcieu_sha256"
+    pins = {
+        sha_key: MRCIEU_HM3_SHA256,
+        "zenodo_archive_md5": ZENODO_EUR_LDSCORE_MD5,
+        "zenodo_archive_sha256": ZENODO_EUR_LDSCORE_SHA256,
+    }
+    if any(sources.get(k) != value for k, value in pins.items()):
+        raise ValueError("pinned EUR reference/HM3 checksum mismatch")
+    if name == "locke_2015":
+        if (sources.get("strict_three_reference_rsid_count") != EXPECTED_THREE_WAY_REF_SNPS
+            or sources.get("direct_unordered_allele_pair_agreement") != EXPECTED_THREE_WAY_REF_SNPS
+            or sources.get("2018_BMI_candidate_used") is not False):
+            raise ValueError("Locke HM3 reference SNP agreement or independence invalid")
+    else:
+        if (provenance.get("reference_triple_rsids") != EXPECTED_THREE_WAY_REF_SNPS
+            or provenance.get("reference_equal_pair_rsids") != EXPECTED_THREE_WAY_REF_SNPS):
+            raise ValueError("Yengo HM3 reference SNP agreement invalid")
+    return {
+        "ancestry": "EUR",
+        "reference_build": "GRCh37",
+        "reference_triple_direct_agreement_snps": EXPECTED_THREE_WAY_REF_SNPS,
+        "M_5_50_source_covered": "22_chr_in_pinned_archive",
+        "reference_sha256_match": True,
+        "final_LDSC_regression_SNP_count_verified": False,
+        "scientific_status": "HOLD",
+    }
+
+
 MAX_LINE=4096
 MAX_BYTES=60000000
 MAX_ROWS=1500000
@@ -57,6 +101,7 @@ def examine_candidate(name:str,candidate:Path,provenance:dict,*,strict=True):
             raise ValueError("candidate provenance invalid for "+name)
         if name=="locke_2015" and provenance.get("2018_exposure_candidates_used") is not False:
             raise ValueError("Locke panel must be independently selected")
+    reference_contract = reference_evidence_contract(name, provenance) if strict else None
     if candidate.stat().st_size>MAX_BYTES:raise ValueError("candidate compressed size exceeded cap")
     seen=set();nvals=[];chisq=[];sha=hashlib.sha256()
     count=0;fractional=0;sumchi=0.0;comp=0.0;large=0
@@ -101,6 +146,7 @@ def examine_candidate(name:str,candidate:Path,provenance:dict,*,strict=True):
     chmedian=median(chisq)
     return {
         "name":name,"SNPs":count,"canonical_plaintext_sha256":digest,
+        "reference_evidence": reference_contract or {"verification":"FIXTURE_ONLY_NOT_SOURCE_VERIFIED"},
         "reported_N":{"min":nvals[0],"p10":quantile(nvals,.1),"median":median(nvals),
                       "p90":quantile(nvals,.9),"max":nvals[-1],
                       "fractional_N_rows":fractional},

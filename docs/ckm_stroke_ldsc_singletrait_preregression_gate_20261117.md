@@ -62,3 +62,12 @@ The actual Linux JSON Artifact was downloaded into the ignored Orca folder `arti
 This completes a **technical pre-regression evidence gate**, not a scientific LDSC h² approval. Evidence status `PASS_INPUT_DESCRIPTIVE_BMI_CHI2_OUTCOME_N_GATE_ONLY`, all four subtype N_eff states HOLD and `ready_for_ldsc=false`. No h², intercept, rg, MR or coloc was computed.
 
 **Completion criteria for this task:** strict original provenance + source χ² descriptive metrics + effect scale + scientific HOLD gate + 15/15 tests + GitHub Linux independent reproduction. **Not completed / not attempted:** per-SNP outcome effective N, cohort participant overlap count, verified final LDSC munging/scaling, single-trait LDSC regression and interpretation, any rg or MR. Draft PR #284 stays unmerged.
+
+
+## 7. Reference evidence contract hardening (2026-11-21)
+
+The preregression gate independently validates the **source-provenance JSON itself**, not only the complete BMI candidate plaintext SHA. For each independently generated 2015/2018 BMI panel it now requires the exact pinned MRCIEU GRCh37 HM3 source SHA256, Zenodo EUR LD score archive MD5/SHA256 and **1,172,984 direct-consistent triple-reference rsIDs**. The 2015 Locke reference evidence must explicitly certify the independent 2015-only selection without use of the 2018 BMI candidate. Mismatched or missing reference evidence is an error and the action cannot produce a technical PASS.
+
+Source archive integrity checks performed by the upstream reference loader cover the **canonical 22 EUR chromosome LD-score files** and all 22 default `.M_5_50` scalars. They do **not** provide the optional `.M` entries. These claims establish technical source input integrity and are **not** a post-munging regression SNP count or a license to execute `ldsc.py --h2`.
+
+Five additional negative/positive test groups check reference SHA/MD5 drift, panel count drift, missing records and accidental 2018 selection in the independent Locke exposure. The existing workflow runs these offline on changed files and performs full original-source reruns only on explicit workflow dispatch or the prior opt-in commit marker. All four GIGASTROKE outcome `N_eff` gates remain `HOLD`; no h²/intercept/rg is executed. GitHub CI status for this amendment must be checked separately; do not reuse the 2026-11-17 run as proof of this new change.
