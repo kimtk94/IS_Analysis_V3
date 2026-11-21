@@ -85,3 +85,17 @@ Original pinned lead extracted from real official TPMI PLINK2 GWAS:
 - Conclusion is limited to **no `r²>=0.80` proxy found by this Ensembl GRCh37 1000G phase-3 EAS reference query**; it does not rule out all proxy choices using alternative reference panels or EAS-specific outcome GWAS and cannot be called successful replication.
 - GIGASTROKE GCST90104540 EUR AIS complete official source scan: no exact `19:15573379` row in two verified executions `44880059442` and `44880521973`. Direct AIS matched effect size absent; proxy evidence absent at cutoff; **scientific replication HOLD**.
 - Next research design decision: seek alternative AIS outcome dataset with lead SNP coverage and ancestry/sample-independence support, or explicitly declare this locus not replicable against current GIGASTROKE AIS release. Do not reduce r² cutoff without pre-specified sensitivity analysis.
+
+## Alternative stroke GWAS candidate access — 2026-11-21
+
+**Scientific motivation:** TPMI `rs187759247` (`GRCh37:19:15573379:T:C`) is not present at the exact coordinate in source-MD5-verified GIGASTROKE EUR AIS `GCST90104540` (two separate Action runs) and no `r²>=0.80` proxy was returned by GRCh37 1000G phase-3 EAS query for CHB/CHS/JPT/CDX/KHV. Direct GIGASTROKE replication is HOLD.
+
+**Candidate BBJ East Asian:** IEU OpenGWAS dataset `bbj-a-129`, ischemic stroke, HG19/GRCh37, 17,671 cases, 192,383 controls, 8,885,705 reported variants; these counts come from the external dataset catalog, not a per-SNP source scan. Public catalog URL: https://gwas.mrcieu.ac.uk/datasets/bbj-a-129/
+
+**Candidate FinnGen:** Release R12 `I9_STR_EXH` (ischaemic stroke excluding haemorrhages); official public download manifest https://storage.googleapis.com/finngen-public-data-r12/summary_stats/finngen_R12_manifest.tsv ; R12 sumstats are GRCh38, necessitating a separately checked GRCh37->GRCh38 mapping and effect-allele harmonization.
+
+**Executed GitHub Actions:**
+- https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44882159836 — SUCCESS; BBJ catalog and FinnGen R12 manifest HTTP 200; BBJ brittle source-text numeric metadata matcher failed, FinnGen first 500k scan didn't find target name; no per-variant outcome effect evaluated.
+- https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44882209478 — SUCCESS; BBJ and entire FinnGen 773,612-byte manifest accessible, but direct page-text identifier matcher was false and the exact string `I9_STR_EXH` was absent from this manifest. BBJ actual result file and exact SNP coverage **NOT_QUERIED**. These are honest metadata/access diagnostics; not a scientific negative replication.
+
+**Next evidence gate:** Verify current BBJ full summary/VCF endpoint is publicly retrievable and has actual GRCh37 rs187759247/19:15573379 effect allele, beta, SE, p-value and source provenance; independently evaluate overlap with TPMI before calling replication. FinnGen release/endpoint path should be reconciled with the public manifest, not constructed from assumptions.
