@@ -78,7 +78,9 @@ def fetch_checked(name:str,output:Path,open_url=urllib.request.urlopen)->dict:
                 sha.update(chunk)
                 f.write(chunk)
     require(n>100000 and md5.hexdigest()==info["md5"],
-            "original UCSC MD5 mismatch/missing file: "+name)
+            "original UCSC MD5 mismatch/missing file: "+name+
+            " bytes="+str(n)+" observed_md5="+md5.hexdigest()+
+            " expected_md5="+info["md5"])
     return {"url":info["url"],"bytes":n,"published_UCSC_MD5":info["md5"],
             "observed_SHA256":sha.hexdigest(),"verified":True}
 
