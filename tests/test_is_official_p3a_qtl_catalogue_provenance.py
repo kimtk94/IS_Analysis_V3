@@ -121,7 +121,8 @@ class QTLSourceTest(unittest.TestCase):
             calls.append(req.full_url)
             return FakeResponse()
         M.probe_head(result,fake_head)
-        self.assertEqual(len(calls),3)
+        self.assertEqual(len(calls),6)
+        self.assertEqual(sum(url.endswith(".tbi") for url in calls),3)
         self.assertFalse(result["any_source_fullcis_associations_downloaded"])
         self.assertEqual(result["coloc_abf_eligible"],0)
         self.assertTrue(all(not row["source_file_variant_rows_verified"] for row
