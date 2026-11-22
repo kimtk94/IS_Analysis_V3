@@ -1,0 +1,95 @@
+name: IS P3A 36 QTL source quantitative residual proxy and N-model science gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-36-qtl-sdy-proxy-n-model.yml'
+      - 'scripts/is/audit_p3a_36_qtl_sdY_proxy_input_gate.py'
+      - 'tests/test_is_p3a_36_qtl_sdY_proxy_input_gate.py'
+      - 'docs/is/IS_P3A_36_QTL_SD_Y_PROXY_N_ABF_MODEL_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-36-qtlsdy-proxy-n-gate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  real-published-original-36-qtlsdy-proxy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Regression fixtures only, never overwrite repo source
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install pinned Tabix reader and full repository smoke test dependencies
+        run: python -m pip install 'pysam==0.24.1' 'pyliftover==0.4.1' 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Reject fabricated sdY N and incorrect source proxy or 36-group sample-N
+        run: |
+          python -m py_compile scripts/is/audit_p3a_36_qtl_sdY_proxy_input_gate.py
+          python -m unittest discover -s tests -p 'test_is_p3a_36_qtl_sdY_proxy_input_gate.py' -v
+      - name: Whole repository unchanged-smoke regression
+        run: bash scripts/codex_smoke_test.sh
+      - name: Read pinned official release 7 original QTL catalogue sources
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45024493082
+          name: is-p3a-36-qtl-official-release7-source-N-build-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/official
+      - name: Read independently verified three complete indexed reference cis QTL sources
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45028882323
+          name: is-p3a-36-full-reference-cis-union-real-source-coloc-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/union
+      - name: Read independent exact AN/2 original 36-group empirical source histograms
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45034385821
+          name: is-p3a-36-primary-GWAS-AIS-publisher-YAML-QTL-AN-sample-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/allele-n
+      - name: Read original signed two ancestry SNP GWAS-QTL 36-group matches
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45032828465
+          name: is-p3a-36-real-QTL-GWAS-2way-SNP-allele-aggregate-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/gwas
+      - name: Read original independently verified full cis tested n_variants count
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45037127536
+          name: is-p3a-36-official-QTL-permuted-nvariants-vs-nominal-cis-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/permuted
+      - name: Stream three complete publisher original indexed regions and calculate per-SNP quantitative residual variance proxy vs prior sample histograms
+        run: |
+          python -m scripts.is.audit_p3a_36_qtl_sdY_proxy_input_gate \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --union inputs/union/IS_P3A_36_official_Ensembl105_cis_union_source_HOLD.json \
+            --allele-n inputs/allele-n/IS_P3A_36_primary_GWAS_metadata_QTL_AN_descriptive_HOLD.json \
+            --original-gwas-match inputs/gwas/P3A_36_real_source_2way_ref_SNP_EAS_EUR_GWAS_HOLD.json \
+            --original-cis-permuted inputs/permuted/IS_P3A_36_actual_source_permuted_cis_tested_nvariants_HOLD.json \
+            --official inputs/official/P3A_36_official_QTL_catalogue_study_source_HOLD.json \
+            --out artifacts/is/IS_P3A_36_original_QTL_SE_MAF_AN_residual_proxy_N_model_HOLD.json
+      - name: Upload only original source hashes, 36 group-level descriptive proxies and science HOLD flags
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-primary-QTL-sdY-residual-proxy-N-GWAS-cc-HOLD
+          path: artifacts/is/IS_P3A_36_original_QTL_SE_MAF_AN_residual_proxy_N_model_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
