@@ -61,6 +61,13 @@ jobs:
           name: is-p3a-36-GIGASTROKE-2022-original-EAS-EUR-AIS-BBJ-cohorts-HOLD
           github-token: ${{ github.token }}
           path: inputs/cohort
+      - name: Load earlier verified complete original Mishra 2022 fullTextXML method excerpt and SHA256 for source HTTP 500 fallback
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45040084191
+          name: is-p3a-36-primary-expression-matrix-and-GWAS-beta-unit-source-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/paper-verified
       - name: Verify Zenodo primary count-matrix inventory, original qtlmap source contract, and original GIGASTROKE methods for 36 actual groups
         run: |
           python -m scripts.is.audit_p3a_36_source_expression_and_gwas_beta_units \
@@ -68,6 +75,7 @@ jobs:
             --original-qtl inputs/qtl/IS_P3A_36_original_QTL_SE_MAF_AN_residual_proxy_N_model_HOLD.json \
             --official inputs/official/P3A_36_official_QTL_catalogue_study_source_HOLD.json \
             --original-cohort inputs/cohort/IS_P3A_36_GIGASTROKE_2022_primary_AIS_cohort_BBJ_HOLD.json \
+            --paper-verified-artifact inputs/paper-verified/IS_P3A_36_public_normalized_expression_model_GWAS_beta_unit_HOLD.json \
             --out artifacts/is/IS_P3A_36_public_normalized_expression_model_GWAS_beta_unit_HOLD.json
       - name: Retain public source metadata, SHA256 and 36 original scientific HOLD decisions
         if: always()
