@@ -87,7 +87,7 @@ def audit(manifest: dict, recovery: dict, original: dict, eas24: dict) -> dict:
     require(coverage.get("sum_tested_fullcis_rows") == 142196
             and coverage.get("sum_BBJ_EAS_nonpal_exact_gene_assay_rows") == 59090
             and coverage.get("sum_nonpal_QTL_EAS_AF_delta_le_0p1_gene_assay_rows") == 31313,
-            "old assay-variant source coverage drift")
+            "old assay-variant source coverage drift: " + repr(coverage))
 
     original_rows = original.get("per_group_status", [])
     require(original.get("schema") == "is-p3a-chr10-original-gwas-combined-36-qtl-groups-v1"
