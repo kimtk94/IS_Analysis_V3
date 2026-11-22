@@ -1,0 +1,75 @@
+name: IS P3A official GRCh38 chr10 QTL 36 assay real indexed source QC
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-official-indexed-qtl-chr10.yml'
+      - 'scripts/is/audit_p3a_indexed_qtl_real_chr10.py'
+      - 'scripts/is/audit_p3a_chr10_ucsc_liftover_fasta.py'
+      - 'tests/test_is_p3a_indexed_qtl_real_chr10.py'
+      - 'docs/is/IS_P3A_OFFICIAL_CHR10_LIFTOVER_FASTA_20261122.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-indexed-qtl-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  scan-3-indexed-official-catalogue-sources-sequentially:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Use immutable October 9 legacy research files for regression
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install tabix HTSlib client and older workbook regression dependency
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq tabix
+          python -m pip install 'openpyxl>=3.1,<4' 'pyliftover==0.4.1'
+      - name: Source ID, allele, variant and duplicate negative tests
+        run: |
+          python -m py_compile scripts/is/audit_p3a_indexed_qtl_real_chr10.py
+          python -m unittest discover -s tests -p 'test_is_p3a_indexed_qtl_real_chr10.py' -v
+      - name: Source-wide code regression
+        run: bash scripts/codex_smoke_test.sh
+      - name: Download exact official 36-QTL study source metadata from validated main CI
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-qtl-official-release7-source-N-build-HOLD
+          run-id: 45024493082
+          github-token: ${{ github.token }}
+          path: inputs/official
+      - name: Download pinned real official six-anchor UCSC liftover and FASTA validation
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-ucsc-liftover-verified-REF-anchors-coloc-HOLD
+          run-id: 45024963210
+          github-token: ${{ github.token }}
+          path: inputs/liftover
+      - name: Read each official eQTL indexed chr10 context ONCE sequentially with no retries
+        run: |
+          python -m scripts.is.audit_p3a_indexed_qtl_real_chr10 \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --official inputs/official/P3A_36_official_QTL_catalogue_study_source_HOLD.json \
+            --liftover inputs/liftover/P3A_36_chr10_UCSC_hg19_hg38_anchor_FASTA_HOLD.json \
+            --out artifacts/is/P3A_36_QTL_official_GRCh38_indexed_2Mb_context_HOLD.json
+      - name: Save source-region hash and 36 group summaries; never upload full SNP rows
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-real-indexed-GRCh38-QTL-summary-coloc-HOLD
+          path: artifacts/is/P3A_36_QTL_official_GRCh38_indexed_2Mb_context_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
