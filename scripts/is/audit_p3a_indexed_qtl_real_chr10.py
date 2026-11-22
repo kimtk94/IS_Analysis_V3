@@ -25,6 +25,9 @@ MAX_BYTES=260_000_000
 COLUMNS=("chromosome","position","ref","alt","variant","gene_id",
          "molecular_trait_id","beta","se","maf","pvalue")
 EXPECTED_N={"QTD000131":387,"QTD000171":205,"QTD000434":560}
+OFFICIAL_COLUMN_ORDER=("variant","r2","pvalue","molecular_trait_object_id",
+    "molecular_trait_id","maf","gene_id","median_tpm","beta","se",
+    "an","ac","ma_samples","chromosome","position","ref","alt","type","rsid")
 
 
 def require(ok,msg):
@@ -190,28 +193,40 @@ def read_rows(lines,seq,genes,expected_region):
             "stream_bytes":nbytes}
 
 
-def stream_tabix(url,region,seq,genes,call=subprocess.Popen):
-    cmd=["tabix","-h",url,
-         f'10:{region["start"]}-{region["end"]}']
-    process=call(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
-                 encoding="utf-8",errors="strict")
-    try:
-        data=read_rows(process.stdout,seq,genes,region)
-        code=process.wait(timeout=320)
-        stderr=process.stderr.read(4500)
-        require(code==0,"remote EBI tabix failed return="+str(code)+
-                " stderr="+stderr[:350])
+def stream_tabix(url,region,seq,genes,open_tabix=None):
+    """Use HTSlib bundled in pysam (network-enabled wheel), one indexed range.
+
+    Ubuntu's apt tabix package may be built without HTTPS libcurl support.
+    Official release-7 Column.md supplies the 19-field order if the tabix
+    index has no commented header; column content and REF/variant are checked.
+    """
+    if open_tabix is None:
+        import pysam
+        open_tabix=pysam.TabixFile
+    with open_tabix(url) as tabix:
+        contigs=set(tabix.contigs)
+        chrom="10" if "10" in contigs else "chr10" if "chr10" in contigs else None
+        require(chrom is not None,"official Tabix index missing chromosome 10")
+        raw_header=[v.decode("utf-8") if isinstance(v,bytes) else str(v)
+                    for v in tabix.header]
+        declared=any(set(COLUMNS).issubset(set(x.lstrip("#").split("\t")))
+                     for x in raw_header)
+        # No extra incomplete remote HTTP range request for header: official
+        # 19 columns documented in the frozen eQTL Catalogue release source.
+        incoming=(raw_header if declared else ["\t".join(OFFICIAL_COLUMN_ORDER)])
+        def rows():
+            for line in incoming:
+                yield line+"\n"
+            for line in tabix.fetch(chrom,region["start"]-1,region["end"]):
+                yield (line.decode("utf-8") if isinstance(line,bytes) else line)+"\n"
+        data=read_rows(rows(),seq,genes,region)
+        require(data["interval_rows"]["region_rows_scanned"]>0,
+                "original indexed eQTL returned no chr10 association rows")
+        data["remote_contig_used"]=chrom
+        data["header_origin"]=("ORIGINAL_TABIX_COMMENTED_HEADER"
+                                if declared else
+                                "PINNED_EQTL_CATALOGUE_COLUMN_DOCUMENTATION")
         return data
-    except (Exception,KeyboardInterrupt) as exc:
-        process.kill()
-        stderr=process.stderr.read(1500) if process.stderr else ""
-        code=process.wait(timeout=15)
-        raise ValueError("remote tabix failure: "+type(exc).__name__+
-                         " "+str(exc)[:130]+" exit="+str(code)+
-                         " stderr="+stderr[:420]) from exc
-    finally:
-        if process.stdout:process.stdout.close()
-        if process.stderr:process.stderr.close()
 
 
 def main():
