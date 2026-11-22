@@ -53,6 +53,9 @@ def get_official_sources(fetch=urllib.request.urlopen)->dict:
 def table(raw:str)->dict:
     rows=list(csv.DictReader(io.StringIO(raw),delimiter="\t"))
     require(rows and all(None not in x for x in rows),"invalid official TSV schema")
+    require(all(x.get("dataset_id") for x in rows) and
+            len({x["dataset_id"] for x in rows})==len(rows),
+            "duplicate or blank official QTL dataset identifier")
     return {x["dataset_id"]:x for x in rows}
 
 
@@ -152,23 +155,26 @@ def validate(manifest:dict,sources:dict)->dict:
 
 
 def probe_head(result:dict,fetch=urllib.request.urlopen)->None:
-    # Three sequential HEAD requests max. Never download the large sumstats files.
+    # Two sequential HEAD requests per dataset: nominal compressed source + tabix
+    # index (6 total). Do not request indexed variant regions in this CI.
     for qtl,row in result["QTL_datasets"].items():
         url=row["source_https_probe"]
-        req=urllib.request.Request(url,method="HEAD",
+        for kind,endpoint in (("source_HEAD_probe",url),
+                              ("tabix_TBI_HEAD_probe",url+".tbi")):
+            req=urllib.request.Request(endpoint,method="HEAD",
                     headers={"User-Agent":"IS-Masters-QTL-Catalogue-ReadOnly/1.0"})
-        try:
-            with fetch(req,timeout=24) as r:
-                status=int(getattr(r,"status",0))
-                length=r.headers.get("Content-Length")
-                row["source_HEAD_probe"]={
-                    "http_status":status,"content_length_header":length,
-                    "status":"REMOTE_FILE_REACHABLE_NOT_DOWNLOADED"
-                              if status==200 else "HOLD_HTTP_STATUS"}
-        except (urllib.error.URLError,TimeoutError,OSError,ValueError) as exc:
-            row["source_HEAD_probe"]={
-                "status":"HOLD_NETWORK_OR_REMOTE_SOURCE",
-                "error_type":type(exc).__name__}
+            try:
+                with fetch(req,timeout=24) as r:
+                    status=int(getattr(r,"status",0))
+                    length=r.headers.get("Content-Length")
+                    row[kind]={
+                        "http_status":status,"content_length_header":length,
+                        "status":"REMOTE_FILE_REACHABLE_NOT_DOWNLOADED"
+                                  if status==200 else "HOLD_HTTP_STATUS"}
+            except (urllib.error.URLError,TimeoutError,OSError,ValueError) as exc:
+                row[kind]={
+                    "status":"HOLD_NETWORK_OR_REMOTE_SOURCE",
+                    "error_type":type(exc).__name__}
         row["source_file_variant_rows_verified"]=False
     result["any_source_fullcis_associations_downloaded"]=False
     result["scientific_status"]="HOLD"
