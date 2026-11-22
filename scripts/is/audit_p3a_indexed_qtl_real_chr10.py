@@ -202,10 +202,13 @@ def stream_tabix(url,region,seq,genes,call=subprocess.Popen):
         require(code==0,"remote EBI tabix failed return="+str(code)+
                 " stderr="+stderr[:350])
         return data
-    except (Exception,KeyboardInterrupt):
+    except (Exception,KeyboardInterrupt) as exc:
         process.kill()
-        process.wait()
-        raise
+        stderr=process.stderr.read(1500) if process.stderr else ""
+        code=process.wait(timeout=15)
+        raise ValueError("remote tabix failure: "+type(exc).__name__+
+                         " "+str(exc)[:130]+" exit="+str(code)+
+                         " stderr="+stderr[:420]) from exc
     finally:
         if process.stdout:process.stdout.close()
         if process.stderr:process.stderr.close()
