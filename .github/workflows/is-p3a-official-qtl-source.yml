@@ -1,0 +1,56 @@
+name: IS P3A official QTL Catalogue source, cohort N and genome build audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-official-qtl-source.yml'
+      - 'scripts/is/audit_official_p3a_qtl_catalogue_provenance.py'
+      - 'tests/test_is_official_p3a_qtl_catalogue_provenance.py'
+      - 'docs/is/IS_P3A_OFFICIAL_QTL_GTEX_ROSMAP_SOURCE_20261122.md'
+      - 'docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-qtl-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  audit-3-official-ge-qtl-datasets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore exact historical research files for complete repo regression suite
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install existing historical workbook-test dependency
+        run: python -m pip install 'openpyxl>=3.1,<4'
+      - name: Check all original 36 group keys, sample N and build mismatch negative tests
+        run: |
+          python -m py_compile scripts/is/audit_official_p3a_qtl_catalogue_provenance.py
+          python -m unittest discover -s tests -p 'test_is_official_p3a_qtl_catalogue_provenance.py' -v
+      - name: Run unchanged repository-wide smoke regression
+        run: bash scripts/codex_smoke_test.sh
+      - name: Fetch immutable official Catalogue release 7 metadata and verify file Git blob digests
+        run: |
+          python -m scripts.is.audit_official_p3a_qtl_catalogue_provenance \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --out artifacts/is/P3A_36_official_QTL_catalogue_study_source_HOLD.json \
+            --probe-head
+      - name: Publish no-variant, no-patient metadata for all 36 real QTL groups
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-qtl-official-release7-source-N-build-HOLD
+          path: artifacts/is/P3A_36_official_QTL_catalogue_study_source_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
