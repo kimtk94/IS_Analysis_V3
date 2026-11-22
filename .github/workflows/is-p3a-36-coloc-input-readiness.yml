@@ -34,7 +34,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: is-p3a-36-actual-recovered-groups-scientific-HOLD
-          run-id: 45019987189
+          run-id: 45021251945
           github-token: ${{ github.token }}
           path: inputs/qtl
       - name: Get independently verified official EUR and EAS chr10 group aggregate
