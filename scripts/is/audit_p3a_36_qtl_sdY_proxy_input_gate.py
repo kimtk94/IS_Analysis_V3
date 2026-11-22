@@ -290,7 +290,9 @@ def evaluate(manifest,union,allele_n,orig_match,orig_cis,official,bydataset,sour
             "36 real gene×tissue assays/20 genes missing")
     num=sum(x["QTL_source_variant_N_and_residual_proxy"]["original_strict_nonpal_SNPs"]
             for x in rows)
-    require(num==148344,"original full nonpal source SNP assay denominator drift")
+    pinned_num=sum(x["original_variant_allele_N_summary"]["count_valid_nonpal_original_QTL"]
+                   for x in allele_n["groups"])
+    require(num==pinned_num,"original full nonpal source SNP assay denominator drift")
     varN=sum(x["QTL_source_variant_N_and_residual_proxy"]["n_distinct_observed_SNP_N"]>1
              for x in rows)
     return {
