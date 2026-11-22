@@ -34,6 +34,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install log-domain Wald QC test dependency
+        run: |
+          python -m pip install --disable-pip-version-check "scipy==1.14.1"
       - name: Compile and test small fixtures
         run: |
           python -m py_compile scripts/ckm_stroke/*.py tests/test_ckm_stroke_*.py
