@@ -1,0 +1,48 @@
+name: IS P3A recover all 36 authentic gene QTL source groups
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-36-actual-group-readback.yml'
+      - 'docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json'
+      - 'scripts/is/audit_recovered_p3a_36_groups.py'
+      - 'tests/test_is_p3a_36_group_recovery.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-recovered-36-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  recover-and-verify-36:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch pinned October 09 research branch source tables (immutable commit)
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail-closed source IDs, case/control and QTL LD claims
+        run: |
+          python -m py_compile scripts/is/audit_recovered_p3a_36_groups.py
+          python -m unittest discover -s tests -p 'test_is_p3a_36_group_recovery.py' -v
+      - name: Cross-check 36 original gene QTL IDs against 393/98/393 old source tables
+        run: |
+          python -m scripts.is.audit_recovered_p3a_36_groups --source-root legacy/docs/data/is --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json --out artifacts/is/p3a_real_36_group_source_readback.json
+      - name: Publish all 36 authentic group source+science blockers (no patient or raw SNP data)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-actual-recovered-groups-scientific-HOLD
+          path: artifacts/is/p3a_real_36_group_source_readback.json
+          if-no-files-found: warn
+          retention-days: 30
