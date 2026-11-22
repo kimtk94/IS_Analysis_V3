@@ -33,7 +33,7 @@ jobs:
           path: legacy
           persist-credentials: false
       - name: Historical regression workbook dependency (not used by source audit)
-        run: python -m pip install 'openpyxl>=3.1,<4'
+        run: python -m pip install 'openpyxl>=3.1,<4' 'PyYAML==6.0.2'
       - name: Unit-test EAS BBJ, CKBB, incident-only exclusion, EUR case/control totals
         run: |
           python -m py_compile scripts/is/audit_p3a_gigastroke_original_supp_cohort_36.py
