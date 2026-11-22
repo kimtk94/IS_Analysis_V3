@@ -27,6 +27,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Checkout immutable October 9 archival source used by repository regression tests
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install workbook fixture test dependency (no server deployment)
+        run: python -m pip install 'openpyxl>=3.1,<4'
       - name: Fail-closed 36-group source and sample-stat tests
         run: |
           python -m py_compile scripts/is/audit_p3a_36_coloc_input_readiness.py
