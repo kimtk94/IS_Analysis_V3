@@ -1,0 +1,45 @@
+name: IS four legacy locus original-input provenance safety gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-four-locus-source-evidence-ci.yml'
+      - 'scripts/is/audit_four_locus_private_inputs.py'
+      - 'tests/test_is_four_locus_private_source_audit.py'
+      - 'docs/is/evidence/IS_FOUR_LOCUS_PRIVATE_INPUT_QC_20261122.json'
+      - 'docs/is/IS_FOUR_LOCUS_EVIDENCE_AUDIT_20261122.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-four-locus-evidence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  frozen-source-evidence-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test source TSV numeric/allele QC and scientific false-PASS guards
+        run: |
+          python -m py_compile scripts/is/audit_four_locus_private_inputs.py
+          python -m unittest discover -s tests -p 'test_is_four_locus_private_source_audit.py' -v
+      - name: Check prior real-source aggregate audit snapshot without pretending a private Drive rerun
+        run: |
+          python -m scripts.is.audit_four_locus_private_inputs \
+            --snapshot docs/is/evidence/IS_FOUR_LOCUS_PRIVATE_INPUT_QC_20261122.json \
+            --out artifacts/is/four_locus_historical_input_contract_ci.json
+      - name: Upload small provenance and HOLD status only; never upload GWAS/QTL source rows
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-four-locus-private-input-frozen-aggregate-HOLD
+          path: artifacts/is/four_locus_historical_input_contract_ci.json
+          if-no-files-found: warn
+          retention-days: 30
