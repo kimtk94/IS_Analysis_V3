@@ -1,0 +1,56 @@
+{
+  "schema": "is-candidate-wide-coloc-baseline-v1",
+  "date": "2026-11-22",
+  "prior_evidence": {
+    "source_repo": "kimtk94/IS_Analysis_V3",
+    "archived_source_audit": "https://github.com/kimtk94/IS_Analysis_V3/issues/193#issuecomment-6247948556",
+    "source_type": "previous read-only scientific aggregate from original archived datasets",
+    "independent_reexecution_in_this_ci": false
+  },
+  "candidate_universe": {
+    "all_positional_gene_ids": 2225,
+    "public_qtl_nominal_available": 149,
+    "regional_pilot_unexecuted": 629,
+    "targeted_slices_no_nominal_rows": 91,
+    "not_in_eas_30_regions": 1356,
+    "all_2225_are_coloc_eligible": false
+  },
+  "assay_group_universe": {
+    "archived_source_gene_dataset_groups": 98,
+    "archived_source_gene_assay_snp_rows": 321538,
+    "readiness_region_gene_tissue_groups": 393,
+    "abf_followup_source_flagged_groups": 36,
+    "abf_followup_groups_with_some_valid_source_stats": 25,
+    "abf_followup_groups_without_valid_source_stats": 11,
+    "qualifying_archived_stat_rows_summed_across_groups": 68612,
+    "source_allele_orientations_independently_approved": false,
+    "full_cis_coverage_verified": false,
+    "gwas_genuine_beta_se_and_case_control_metadata_verified": false,
+    "qtl_individual_sample_n_verified": false,
+    "coloc_abf_eligible_groups": 0,
+    "coloc_abf_executed_new_stage_groups": 0,
+    "qtl_cohort_ancestry_matched_ld_groups": 0,
+    "independent_stroke_replication_groups": 0
+  },
+  "archived_four_locus_panel": {
+    "input_qc_snapshot": "docs/is/evidence/IS_FOUR_LOCUS_PRIVATE_INPUT_QC_20261122.json",
+    "genes": [
+      "FGF5",
+      "ALDH2",
+      "SH3PXD2A",
+      "COL4A2"
+    ],
+    "archived_source_variant_rows": 7969,
+    "current_run_mr_recomputed": 0,
+    "current_run_coloc_recomputed": 0,
+    "historical_coloc_not_equal_to_current_p3a": true
+  },
+  "dataset_roles": {
+    "primary": "BBJ ischemic stroke GWAS",
+    "descriptive_only": "GIGASTROKE EAS discovery (includes BBJ; not independent replication)",
+    "qtl_studies": "QTL cohort-specific gene x tissue datasets; assay groups not independent genes",
+    "gene_count_vs_group_count_different": true
+  },
+  "scientific_status": "HOLD",
+  "do_not_run_unapproved_coloc": true
+}
