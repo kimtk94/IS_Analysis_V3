@@ -90,14 +90,23 @@ def compare_prior_lead(parsed):
     bp=LEGACY_AIS_LEAD["legacy_ALT_beta"]
     agree=(math.isclose(oriented,bp,rel_tol=.015,abs_tol=.00005)
             and p>0 and abs(math.log10(p)-math.log10(p0))<=.05)
+    # The archived G/C lead is strand-palindromic. Even numerically concordant
+    # beta/p cannot independently authenticate the cohort or orientation.
+    strand_ambiguous=frozenset(pair) in (
+        frozenset(("A","T")),frozenset(("C","G")))
     return {
-        "status":"PRIOR_REGIONAL_LEAD_BETA_P_MATCH" if agree
-                 else "PRIOR_REGIONAL_LEAD_NUMERIC_DISCORDANCE",
+        "status":("PALINDROMIC_LEAD_NUMERIC_CONCORDANCE_STRAND_HOLD" if agree
+                   else "PALINDROMIC_LEAD_NUMERIC_DISCORDANCE_STRAND_HOLD")
+            if strand_ambiguous else
+                ("PRIOR_REGIONAL_LEAD_BETA_P_MATCH" if agree
+                 else "PRIOR_REGIONAL_LEAD_NUMERIC_DISCORDANCE"),
         "same_unordered_allele_pair":True,
         "signed_legacy_alt_beta_match":math.isclose(oriented,bp,rel_tol=.015,abs_tol=.00005),
         "p_value_log10_match":p>0 and abs(math.log10(p)-math.log10(p0))<=.05,
         "sign_and_p_concordant":agree,
-        "n_independent_original_variant_matches_for_source_approval":1 if agree else 0,
+        "strand_palindromic_unresolved":strand_ambiguous,
+        "n_independent_original_variant_matches_for_source_approval":
+            0 if strand_ambiguous else (1 if agree else 0),
         "source_identity_approved":False,
         "allele_ref_validated_with_independent_FASTA":False
     }
