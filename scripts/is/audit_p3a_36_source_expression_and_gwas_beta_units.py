@@ -95,7 +95,7 @@ def parse_qtlmap(data):
     text=re.sub(r"[`*]", "", raw)  # keep underscores in count_matrix, sample_meta
     required=(
         ("normalized_phenotype_matrix",
-         r"count_matrix\s*[-:]\s*normalis[ez]ed\s+phenotype\s+matrix"),
+         r"count_matrix\s*[-:]\s*normali[sz]ed\s+phenotype\s+matrix"),
         ("source_sample_metadata",
          r"sample_meta\s*[-:]\s*specifies\s+the\s+location"),
         ("exact_sample_intersection",
