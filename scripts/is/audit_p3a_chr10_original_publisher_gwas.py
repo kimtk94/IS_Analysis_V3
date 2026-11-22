@@ -102,7 +102,7 @@ def compare_prior_lead(parsed):
         "allele_ref_validated_with_independent_FASTA":False
     }
 
-def scan_original(path,ancestry):
+def scan_original(path,ancestry, min_total_rows=1_000_000, min_context_rows=100):
     count=0; valid=0; failed=0; pal=0; significant=0; underflow=0
     in_original=0; minp=None; lead=None; header=None
     positions=set();dupe=0
@@ -129,8 +129,8 @@ def scan_original(path,ancestry):
             if value["pos"]==LEGACY_AIS_LEAD["position"]:
                 require(lead is None,"multiple original variants at lead position (ambiguity)")
                 lead=compare_prior_lead(value)
-    require(count>=1_000_000,"not a complete GWAS variant file")
-    require(valid>=100,"insufficient original GIGASTROKE chr10 context coverage")
+    require(count>=min_total_rows,"not a complete GWAS variant file")
+    require(valid>=min_context_rows,"insufficient original GIGASTROKE chr10 context coverage")
     return {
         "original_GWAS_rows_read":count,
         "original_GWAS_fields_present":list(HEADER),
