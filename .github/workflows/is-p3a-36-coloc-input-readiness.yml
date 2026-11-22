@@ -1,0 +1,83 @@
+name: IS P3A 36 real assay scientific coloc input readiness matrix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-36-coloc-input-readiness.yml'
+      - 'scripts/is/audit_p3a_36_coloc_input_readiness.py'
+      - 'tests/test_is_p3a_36_coloc_input_readiness.py'
+      - 'docs/is/IS_P3A_36_COLOC_READINESS_MATRIX_20261122.md'
+      - 'docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-36-input-readiness-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-36-scientific-source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Checkout immutable October 9 archival source used by repository regression tests
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install workbook fixture test dependency (no server deployment)
+        run: python -m pip install 'openpyxl>=3.1,<4'
+      - name: Fail-closed 36-group source and sample-stat tests
+        run: |
+          python -m py_compile scripts/is/audit_p3a_36_coloc_input_readiness.py
+          python -m unittest discover -s tests -p 'test_is_p3a_36_coloc_input_readiness.py' -v
+      - name: Full repository Python smoke and regression suite
+        run: bash scripts/codex_smoke_test.sh
+      - name: Get pinned 36 real source group audit
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-actual-recovered-groups-scientific-HOLD
+          run-id: 45021251945
+          github-token: ${{ github.token }}
+          path: inputs/qtl
+      - name: Get independently verified official EUR and EAS chr10 group aggregate
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-chr10-EAS-EUR-36-original-source-scientific-HOLD
+          run-id: 45020605713
+          github-token: ${{ github.token }}
+          path: inputs/gwas
+      - name: Get independently reviewed 24 EAS source-matched nonpal lead results
+        uses: actions/download-artifact@v4
+        with:
+          name: is-eas-24-full-original-GWAS-cross-region-signed-readback-coloc-HOLD
+          run-id: 45022609773
+          github-token: ${{ github.token }}
+          path: inputs/24
+      - name: Join exact 36 region x study x gene IDs and emit per-group HOLD reasons
+        run: |
+          python -m scripts.is.audit_p3a_36_coloc_input_readiness \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --recovery inputs/qtl/p3a_real_36_group_source_readback.json \
+            --original inputs/gwas/P3A_36_original_chr10_GWAS_source_HOLD.json \
+            --eas24 inputs/24/EAS_24_nonpal_original_full_source_readback_review.json \
+            --out-dir artifacts/is/p3a_36_coloc_readiness
+      - name: Show summary in workflow run
+        if: success()
+        run: cat artifacts/is/p3a_36_coloc_readiness/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve all 36 statuses and requirements, not raw GWAS or patient rows
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-coloc-input-readiness-HOLD
+          path: artifacts/is/p3a_36_coloc_readiness/
+          if-no-files-found: warn
+          retention-days: 30
