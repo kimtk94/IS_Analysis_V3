@@ -66,4 +66,34 @@ class ProposalEvidence(unittest.TestCase):
   self.assertTrue(self.d["methodology_rules"]["sample_or_specimen_contact_deferred"])
   self.assertIn("검체",self.doc)
 
+
+class ThesisTopicDecision(unittest.TestCase):
+ @classmethod
+ def setUpClass(cls):
+  cls.file=ROOT/"docs/proposals/IS_thesis_topic_selection_decision_20261122.md"
+  cls.text=cls.file.read_text(encoding="utf-8")
+  cls.is_master=(ROOT/"docs/IS_MASTER.md").read_text(encoding="utf-8")
+ def test_compares_two_distinct_study_directions(self):
+  self.assertIn("1순위: BBJ 기반 IS",self.text)
+  self.assertIn("2순위: CKM 구성요소",self.text)
+  self.assertIn("SH3PXD2A",self.text)
+  self.assertIn("COL4A2",self.text)
+ def test_historical_is_master_is_not_current_provenance(self):
+  self.assertIn("updated: 2026-10-05",self.is_master)
+  self.assertIn("2026-10-05",self.text)
+  self.assertIn("재검증",self.text)
+ def test_does_not_promote_unverified_science(self):
+  self.assertIn("scientific 0/7",self.text)
+  self.assertIn("HOLD",self.text)
+  self.assertIn("MR",self.text)
+  self.assertIn("coloc",self.text)
+ def test_uses_real_independent_eas_evidence_not_new_replicated_effects(self):
+  self.assertIn("3,745,225",self.text)
+  self.assertIn("44920288867",self.text)
+  self.assertIn("44924780834",self.text)
+  self.assertIn("기술적",self.text)
+ def test_failed_pipeline_dependency_fix_is_traceable(self):
+  self.assertIn("45007231962",self.text)
+  self.assertIn("391/391",self.text)
+
 if __name__=="__main__":unittest.main()
