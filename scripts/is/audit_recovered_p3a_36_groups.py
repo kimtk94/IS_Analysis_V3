@@ -107,6 +107,10 @@ def validate(manifest, readiness, egene, samesnp):
                         int(r["official_full_cis_tested_n_variants"])
                     and row["fullcis_BBJ_exact_SNPs"]==int(r["NEW_fullcis_BBJ_exact_n"])
                     and row["fullcis_EAS_exact_SNPs"]==int(r["NEW_fullcis_EAS_AIS_exact_n"])
+                    and 0<=int(r["NEW_fullcis_BOTH_nonpal_SNP_n"])<=
+                        int(r["official_full_cis_tested_n_variants"])
+                    and 0<=int(r["NEW_fullcis_BOTH_nonpal_QTL_AIS_AF_delta_le_0p1_n"])<=
+                        int(r["NEW_fullcis_BOTH_nonpal_SNP_n"])
                     and r["any_eGene_to_AIS_coloc_computed"]=="False"
                     and r["source_QTL_genotype_matched_LD_verified"]=="False"
                     and r["BBJ_and_GIGA_independent_stroke_replication"]=="False",
@@ -132,6 +136,10 @@ def validate(manifest, readiness, egene, samesnp):
             "official_BH_q":row["official_QTL_studywide_BH_q"],
             "nonpal_SNP_original_BBJ_EAS_region":row["archived_nonpalindromic_BBJ_EAS_SNP_overlap"],
             "complete_cis_tested_SNP_from_BH05_source":row["official_full_cis_tested_variant_count"],
+            "archived_BH05_BBJ_EAS_exact_nonpal_SNP_gene_assay_rows":
+                int(r["NEW_fullcis_BOTH_nonpal_SNP_n"]) if r else None,
+            "archived_BH05_QTL_EAS_AF_delta_le_0p1_nonpal_gene_assay_rows":
+                int(r["NEW_fullcis_BOTH_nonpal_QTL_AIS_AF_delta_le_0p1_n"]) if r else None,
             "QTL_matched_LD_verified":False,
             "GWAS_effect_SE_casefraction_N_verified":False,
             "new_coloc_executed":False,
@@ -159,6 +167,24 @@ def validate(manifest, readiness, egene, samesnp):
             and sum(x["assay_groups"] for x in gene_summary)==36
             and sum(x["public_BH05_eGene_assays"] for x in gene_summary)==25,
             "gene-summary denominators invalid")
+    coverage={
+        "unit":"QTL_gene_assay_variant_rows_NOT_unique_genomic_variants",
+        "public_studywide_BH05_assay_count":25,
+        "sum_tested_fullcis_rows":sum(
+            x["complete_cis_tested_SNP_from_BH05_source"] or 0 for x in results),
+        "sum_BBJ_EAS_nonpal_exact_gene_assay_rows":sum(
+            x["archived_BH05_BBJ_EAS_exact_nonpal_SNP_gene_assay_rows"] or 0
+            for x in results),
+        "sum_nonpal_QTL_EAS_AF_delta_le_0p1_gene_assay_rows":sum(
+            x["archived_BH05_QTL_EAS_AF_delta_le_0p1_nonpal_gene_assay_rows"] or 0
+            for x in results),
+        "independently_verified_SNP_alleles_or_GWAS_same_source":False,
+        "new_coloc_computed":False
+    }
+    require(coverage["sum_tested_fullcis_rows"]==142196
+            and coverage["sum_BBJ_EAS_nonpal_exact_gene_assay_rows"]==59090
+            and coverage["sum_nonpal_QTL_EAS_AF_delta_le_0p1_gene_assay_rows"]==31313,
+            "pinned 25-group fullcis descriptive coverage drift")
     return {
         "schema":"is-p3a-restored-36-pinned-legacy-source-audit-v1",
         "technical_status":"PASS_36_REAL_GROUP_IDS_CROSSCHECKED_TO_THREE_PINNED_ARCHIVED_TABLES",
@@ -177,7 +203,8 @@ def validate(manifest, readiness, egene, samesnp):
         "row_blocker_count":36,
         "source_provenance_is_not_independent_replication":True,
         "groups":results,
-        "gene_summary":gene_summary
+        "gene_summary":gene_summary,
+        "source_only_25_group_fullcis_coverage":coverage
     }
 
 def main():
