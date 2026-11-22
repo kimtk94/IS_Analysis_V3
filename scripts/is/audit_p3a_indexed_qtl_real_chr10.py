@@ -94,14 +94,23 @@ def new_stats():
             "duplicated_variant_rsid_rows":0,"conflicting_duplicates":0,
             "bad_REF_against_UCSC_GRCh38":0,"invalid_signed_beta_SE_MAF":0,
             "invalid_allele_or_variant_key":0,"non_SNP_or_palindromic":0,
-            "p_zero_underflow":0,"noncandidate_rows":0}
+            "p_zero_underflow":0,"noncandidate_rows":0,
+            "excluded_variant_reason_classes":{
+                "NONCANONICAL_VARIANT_KEY":0,"MULTIBASE_ALLELE_INDEL_OR_COMPLEX":0,
+                "NON_ACGT_ALLELE":0,"SAME_REF_ALT":0},
+            "excluded_variant_source_type_labels":{}}
 
 
 def read_rows(lines,seq,genes,expected_region):
     """All original SNP effect values stay in process memory; emit aggregate QC only."""
     per_gene={g:{"candidate_rows":0,"valid_unique_SNPs":0,
                  "valid_nonpal_SNPs":0,"bad_ref":0,"bad_effect_SE_MAF":0,
-                 "duplicate_rsid_records":0,"conflicting_duplicates":0} for g in genes}
+                 "duplicate_rsid_records":0,"conflicting_duplicates":0,
+                 "observed_GRCh38_min_pos":None,"observed_GRCh38_max_pos":None,
+                 "excluded_variant_reason_classes":{
+                    "NONCANONICAL_VARIANT_KEY":0,
+                    "MULTIBASE_ALLELE_INDEL_OR_COMPLEX":0,
+                    "NON_ACGT_ALLELE":0,"SAME_REF_ALT":0}} for g in genes}
     seen={g:{} for g in genes}
     stats=new_stats()
     total=0
@@ -141,12 +150,30 @@ def read_rows(lines,seq,genes,expected_region):
         stats["candidate_gene_rows_seen"]+=1
         pg=per_gene[gene]
         pg["candidate_rows"]+=1
+        pg["observed_GRCh38_min_pos"]=(pos if pg["observed_GRCh38_min_pos"] is None
+                                        else min(pos,pg["observed_GRCh38_min_pos"]))
+        pg["observed_GRCh38_max_pos"]=(pos if pg["observed_GRCh38_max_pos"] is None
+                                        else max(pos,pg["observed_GRCh38_max_pos"]))
         ref=x["ref"].upper()
         alt=x["alt"].upper()
         key=f"chr10_{pos}_{ref}_{alt}"
-        if (x["variant"]!=key or len(ref)!=1 or len(alt)!=1
-            or ref not in "ACGT" or alt not in "ACGT" or ref==alt):
+        reason=None
+        if x["variant"]!=key:
+            reason="NONCANONICAL_VARIANT_KEY"
+        elif len(ref)!=1 or len(alt)!=1:
+            reason="MULTIBASE_ALLELE_INDEL_OR_COMPLEX"
+        elif ref not in "ACGT" or alt not in "ACGT":
+            reason="NON_ACGT_ALLELE"
+        elif ref==alt:
+            reason="SAME_REF_ALT"
+        if reason is not None:
             stats["invalid_allele_or_variant_key"]+=1
+            stats["excluded_variant_reason_classes"][reason]+=1
+            pg["excluded_variant_reason_classes"][reason]+=1
+            label=x.get("type","MISSING_TYPE")
+            label=label if label in ("SNP","INDEL","OTHER") else "OTHER_OR_MISSING"
+            hist=stats["excluded_variant_source_type_labels"]
+            hist[label]=hist.get(label,0)+1
             continue
         if chr(seq[pos-1])!=ref:
             stats["bad_REF_against_UCSC_GRCh38"]+=1

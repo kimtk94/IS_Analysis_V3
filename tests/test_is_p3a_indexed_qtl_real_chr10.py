@@ -97,5 +97,59 @@ class IndexedQTLTest(unittest.TestCase):
     def test_no_inferring_fullcis_from_one_region(self):
         self.assertFalse(LIFT.REGION["id"] != "IS_XDATA_G0015")
 
+    def test_indel_is_classified_not_mislabelled_bad_SNP(self):
+        rows=self.source()
+        cols=rows[1].strip().split("\t")
+        h=rows[0].strip().split("\t")
+        vals=dict(zip(h,cols))
+        vals.update(ref="AA",alt="A",
+                    variant="chr10_103000000_AA_A",type="INDEL")
+        rows[1]="\t".join(vals[k] for k in h)+"\n"
+        x=M.read_rows(rows,DNA(),{"ENSG00000065613"},REGION)
+        self.assertEqual(x["interval_rows"]["excluded_variant_reason_classes"][
+            "MULTIBASE_ALLELE_INDEL_OR_COMPLEX"],1)
+        self.assertEqual(x["interval_rows"]["excluded_variant_source_type_labels"][
+            "INDEL"],1)
+
+    def test_variant_key_mismatch_has_own_reason(self):
+        rows=self.source()
+        rows[1]=rows[1].replace("chr10_103000000_A_C","chr9_103000000_A_C")
+        x=M.read_rows(rows,DNA(),{"ENSG00000065613"},REGION)
+        self.assertEqual(x["interval_rows"]["excluded_variant_reason_classes"][
+            "NONCANONICAL_VARIANT_KEY"],1)
+        self.assertEqual(x["interval_rows"]["excluded_variant_reason_classes"][
+            "MULTIBASE_ALLELE_INDEL_OR_COMPLEX"],0)
+
+    def test_non_acgt_allele_classification(self):
+        rows=self.source()
+        rows[1]=rows[1].replace("\tA\tC\tchr10_103000000_A_C",
+                                 "\tN\tC\tchr10_103000000_N_C")
+        x=M.read_rows(rows,DNA(),{"ENSG00000065613"},REGION)
+        self.assertEqual(x["interval_rows"]["excluded_variant_reason_classes"][
+            "NON_ACGT_ALLELE"],1)
+
+    def test_equal_reference_and_alternate_classification(self):
+        rows=self.source()
+        rows[1]=rows[1].replace("\tA\tC\tchr10_103000000_A_C",
+                                 "\tA\tA\tchr10_103000000_A_A")
+        x=M.read_rows(rows,DNA(),{"ENSG00000065613"},REGION)
+        self.assertEqual(x["interval_rows"]["excluded_variant_reason_classes"][
+            "SAME_REF_ALT"],1)
+
+    def test_original_excluded_classes_are_mutually_exclusive(self):
+        rows=self.source()
+        rows[1]=rows[1].replace("\tA\tC\tchr10_103000000_A_C",
+                                 "\tAA\tA\tchr10_103000000_AA_A")
+        x=M.read_rows(rows,DNA(),{"ENSG00000065613"},REGION)
+        v=x["interval_rows"]
+        self.assertEqual(sum(v["excluded_variant_reason_classes"].values()),
+                         v["invalid_allele_or_variant_key"])
+
+    def test_bounds_are_observed_not_theoretical_fullcis(self):
+        x=M.read_rows(self.source(),DNA(),{"ENSG00000065613"},REGION)
+        p=x["gene_rows"]["ENSG00000065613"]
+        self.assertEqual(p["observed_GRCh38_min_pos"],103000000)
+        self.assertEqual(p["observed_GRCh38_max_pos"],103000000)
+
 if __name__=="__main__":
     unittest.main()

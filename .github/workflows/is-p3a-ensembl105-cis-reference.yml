@@ -1,0 +1,63 @@
+name: IS P3A official phenotype cis reference coverage of 36 QTL groups
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-ensembl105-cis-reference.yml'
+      - 'scripts/is/audit_p3a_ensembl105_cis_reference.py'
+      - 'tests/test_is_p3a_ensembl105_cis_reference.py'
+      - 'docs/is/IS_P3A_QTL_CIS_WINDOW_AND_VARIANT_CLASS_AUDIT_20261122.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-ensembl105-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  audit-36-gene-phenotype-cis-windows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original historical research fixtures for whole repo test
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Historical workbook regression dependency
+        run: python -m pip install 'openpyxl>=3.1,<4'
+      - name: Test official gene reference, complete 36-key uniqueness and false full-cis approvals
+        run: |
+          python -m py_compile scripts/is/audit_p3a_ensembl105_cis_reference.py
+          python -m unittest discover -s tests -p 'test_is_p3a_ensembl105_cis_reference.py' -v
+      - name: Whole repository smoke regression
+        run: bash scripts/codex_smoke_test.sh
+      - name: Recover immutable main original 36-group QTL source stream QC artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-real-indexed-GRCh38-QTL-summary-coloc-HOLD
+          run-id: 45026236482
+          github-token: ${{ github.token }}
+          path: inputs/qtl-context
+      - name: Download small official Zenodo Ensembl 105 phenotype-position reference, check published MD5, audit 20 and 36
+        run: |
+          python -m scripts.is.audit_p3a_ensembl105_cis_reference \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --qtl-context inputs/qtl-context/P3A_36_QTL_official_GRCh38_indexed_2Mb_context_HOLD.json \
+            --out artifacts/is/P3A_36_Ensembl105_reference_cis_window_evidence_HOLD.json
+      - name: Save source accession and gene reference cis bounds
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-Ensembl105-cis-context-coverage-coloc-HOLD
+          path: artifacts/is/P3A_36_Ensembl105_reference_cis_window_evidence_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
