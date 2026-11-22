@@ -1,0 +1,79 @@
+name: IS P3A 36-assay original QTL-GWAS reciprocal GRCh38 GRCh37 SNP source harmonization
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-36-reciprocal-snp-gwas.yml'
+      - 'scripts/is/audit_p3a_36_real_gwas_qtl_reciprocal_snp.py'
+      - 'tests/test_is_p3a_36_real_gwas_qtl_reciprocal_snp.py'
+      - 'docs/is/IS_P3A_36_RECIPROCAL_SNP_GWAS_SOURCE_EVIDENCE_20261122.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-reciprocal-gwas-snp-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  real-original-source-36-groups:
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Historical research fixture checkout for unchanged repository-wide regression
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install pinned original QTL Tabix and reference chain reader plus historical workbook testing
+        run: python -m pip install 'pysam==0.24.1' 'pyliftover==0.4.1' 'openpyxl>=3.1,<4'
+      - name: Reject fake strand, mismatched REF, invalid SE and false biological approval in 20 tests
+        run: |
+          python -m py_compile scripts/is/audit_p3a_36_real_gwas_qtl_reciprocal_snp.py
+          python -m unittest discover -s tests -p 'test_is_p3a_36_real_gwas_qtl_reciprocal_snp.py' -v
+      - name: Whole-repository test regression against original research fixtures
+        run: bash scripts/codex_smoke_test.sh
+      - name: Read original eQTL Catalogue Release 7 three-source official study and sample identity
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-qtl-official-release7-source-N-build-HOLD
+          run-id: 45024493082
+          github-token: ${{ github.token }}
+          path: inputs/official
+      - name: Read original verified UCSC hg19ToHg38 chain and two chr10 FASTA SHA256
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-ucsc-liftover-verified-REF-anchors-coloc-HOLD
+          run-id: 45024963210
+          github-token: ${{ github.token }}
+          path: inputs/liftover
+      - name: Read last validated 3.52 Mb complete Ensembl105 reference union 36 group data
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-full-reference-cis-union-real-source-coloc-HOLD
+          run-id: 45028882323
+          github-token: ${{ github.token }}
+          path: inputs/union
+      - name: Download pinned official reverse chain, both official FASTA, 3 QTL public regions and 2 publisher GWAS originals; aggregate 36 groups
+        run: |
+          python -m scripts.is.audit_p3a_36_real_gwas_qtl_reciprocal_snp \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --union inputs/union/IS_P3A_36_official_Ensembl105_cis_union_source_HOLD.json \
+            --official inputs/official/P3A_36_official_QTL_catalogue_study_source_HOLD.json \
+            --liftover inputs/liftover/P3A_36_chr10_UCSC_hg19_hg38_anchor_FASTA_HOLD.json \
+            --out artifacts/is/P3A_36_real_source_2way_ref_SNP_EAS_EUR_GWAS_HOLD.json
+      - name: Preserve only audited 36-group SNP counts and source hashes; never raw original per-SNP beta/SE
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-real-QTL-GWAS-2way-SNP-allele-aggregate-HOLD
+          path: artifacts/is/P3A_36_real_source_2way_ref_SNP_EAS_EUR_GWAS_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
