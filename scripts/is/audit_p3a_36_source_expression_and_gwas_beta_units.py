@@ -89,13 +89,25 @@ def parse_zenodo(data):
 
 
 def parse_qtlmap(data):
-    text=data.decode("utf-8-sig")
-    required=("count_matrix - normalised phenotype matrix",
-              "sample_meta - specifies the location of your sample metadata",
-              "qtlmap uses the intersection of samples present in count_matrix and sample_meta")
-    checks={frag:frag in text for frag in required}
+    raw=data.decode("utf-8-sig")
+    # Source Markdown wraps input column names in inline code/backticks.
+    # Normalise only formatting, never waive the three semantic requirements.
+    text=re.sub(r"[`*_]", "", raw)
+    required=(
+        ("normalized_phenotype_matrix",
+         r"count_matrix\s*[-:]\s*normalis[ez]ed\s+phenotype\s+matrix"),
+        ("source_sample_metadata",
+         r"sample_meta\s*[-:]\s*specifies\s+the\s+location"),
+        ("exact_sample_intersection",
+         r"(?:qtlmap\s+uses|uses)\s+the\s+intersection\s+of\s+samples\s+present\s+in\s+count_matrix\s+and\s+sample_meta")
+    )
+    checks={name:bool(re.search(pattern,text,re.I))
+            for name,pattern in required}
     require(all(checks.values()),
-            "current official qtlmap studyFile/sample intersection methods unavailable")
+            "official qtlmap source formatting/semantics drift: "+
+            repr(checks)+"; source snippets="+repr(
+                [x.strip()[:190] for x in raw.splitlines()
+                 if any(term in x for term in ("count_matrix","sample_meta"))][:8]))
     return {
       "source_status":"PASS_OFFICIAL_QTLMAP_NORMALIZED_MATRIX_AND_SAMPLE_INTERSECTION",
       "original_required_fields_verified":{
