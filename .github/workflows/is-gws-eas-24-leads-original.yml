@@ -1,0 +1,63 @@
+name: IS EAS 24 nonpal multi-chrom original GWAS signed source reproduction
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-gws-eas-24-leads-original.yml'
+      - 'scripts/is/audit_gws_eas_24_leads_original.py'
+      - 'tests/test_is_gws_eas_24_original_leads.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-24-original-leads-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-safety-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout immutable Oct 09 old study GWAS original table
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify 24 actual nonpal leads / 4 palindromes / 2 absent and negative effect tests
+        run: |
+          python -m py_compile scripts/is/audit_gws_eas_24_leads_original.py
+          python -m unittest discover -s tests -p 'test_is_gws_eas_24_original_leads.py' -v
+
+  whole-original-eas-24-effect-compare:
+    needs: source-safety-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 27
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout identical original research source commit
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Direct official EAS whole-file SHA/MD5 and 24 independent-position SNP signed comparisons
+        run: |
+          python -m scripts.is.audit_gws_eas_24_leads_original --original-legacy legacy/docs/data/is/IS_30_REGIONS_SIX_OUTCOMES_GWAS_CONTEXT_500KB.tsv --out artifacts/is/gws_eas_24_nonpal_original_lead_reproducibility.json
+      - name: Publish only 24-site comparison diagnostics, NOT GWAS SNP-level source file
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-24-multichrom-nonpal-EAS-original-source-signed-technical-review
+          path: artifacts/is/gws_eas_24_nonpal_original_lead_reproducibility.json
+          if-no-files-found: warn
+          retention-days: 30
