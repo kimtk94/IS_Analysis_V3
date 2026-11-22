@@ -61,6 +61,15 @@ class SourceTests(unittest.TestCase):
         self.assertTrue(m["study_expression_and_sample_intersection_required"])
         self.assertFalse(m["does_not_establish_exact_target_source_expression_sdY"] is False)
 
+    def test_actual_official_qtlmap_markdown_bold_preserves_underscore_identifiers(self):
+        raw=fake_qtlmap().replace(b"count_matrix - normalised",
+                b"_**count_matrix**_ - normalised").replace(
+                b"sample_meta - specifies",
+                b"_**sample_meta**_ - specifies")
+        result=M.parse_qtlmap(raw)
+        self.assertTrue(result["original_required_fields_verified"]["normalized_count_matrix"])
+        self.assertTrue(result["study_expression_and_sample_intersection_required"])
+
     def test_qtlmap_without_sample_intersection_is_not_model_N_evidence(self):
         with self.assertRaises(ValueError):
             M.parse_qtlmap(fake_qtlmap().replace(
