@@ -92,7 +92,8 @@ def parse_qtlmap(data):
     raw=data.decode("utf-8-sig")
     # Source Markdown wraps input column names in inline code/backticks.
     # Normalise only formatting, never waive the three semantic requirements.
-    text=re.sub(r"[`*]", "", raw)  # keep underscores in count_matrix, sample_meta
+    text=re.sub(r"_\\*\\*([A-Za-z_][A-Za-z0-9_]*)\\*\\*_", r"\\1", raw)
+    text=re.sub(r"[`*]", "", text)  # preserve identifiers like count_matrix, sample_meta
     required=(
         ("normalized_phenotype_matrix",
          r"count_matrix\s*[-:]\s*normali[sz]ed\s+phenotype\s+matrix"),
@@ -256,6 +257,7 @@ def main():
     ap=argparse.ArgumentParser()
     for k in ("manifest","original-qtl","official","original-cohort","out"):
         ap.add_argument("--"+k,type=Path,required=True)
+    ap.add_argument("--paper-verified-artifact",type=Path,default=None)
     args=ap.parse_args()
     result={"schema":"is-p3a-36-primary-phenotype-matrix-and-stroke-beta-units-v1",
             "technical_status":"HOLD_OFFICIAL_INPUT_SOURCE",
@@ -279,6 +281,28 @@ def main():
                 methods[key]={"source_status":"HOLD_ORIGINAL_PUBLIC_SOURCE",
                               "requested_url":url,
                               "error_type":type(exc).__name__,"error":str(exc)[:230]}
+        paper=methods["gigastroke_paper"]
+        if (not paper.get("source_status","").startswith("PASS_")
+                and args.paper_verified_artifact is not None
+                and args.paper_verified_artifact.is_file()):
+            archived=json.loads(args.paper_verified_artifact.read_text(encoding="utf8"))
+            original=archived.get("official_public_source_method_evidence",{}).get(
+                "gigastroke_paper",{})
+            archived_meta=original.get("source",{})
+            if (original.get("source_status")==
+                  "PASS_ORIGINAL_MISHRA_2022_PAPER_DOI_AND_METHOD_EXCERPTS"
+                and original.get("verified_publication_DOI")==ORIGINAL_PAPER_DOI
+                and archived_meta.get("requested_url")==PAPER_URL
+                and archived_meta.get("SHA256")==
+                    "7f1105825c4111f73f8b8c36f55897e5c1a19b39b0b240eabc9da3822ac89f79"):
+                methods["gigastroke_paper"]={
+                  **original,
+                  "source_status":"PASS_PREVIOUSLY_VERIFIED_PRIMARY_PAPER_SHA256",
+                  "fallback_original_GitHub_run_id":45040084191,
+                  "fallback_original_unchanged_primary_article_SHA256":archived_meta["SHA256"],
+                  "current_public_source_attempt_status":paper.get("source_status"),
+                  "current_public_source_error_type":paper.get("error_type"),
+                }
         if all(methods[k].get("source_status","").startswith("PASS_") for k in methods):
             result=assemble(manifest,qtl,official,cohort,methods)
         else:
