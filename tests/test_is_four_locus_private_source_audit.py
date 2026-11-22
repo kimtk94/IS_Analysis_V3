@@ -4,9 +4,12 @@ import json
 from pathlib import Path
 import unittest
 
-from scripts.is.audit_four_locus_private_inputs import (
-    GENES, profile, validate_snapshot,
-)
+from importlib import import_module
+
+module = import_module("scripts.is.audit_four_locus_private_inputs")
+GENES = module.GENES
+profile = module.profile
+validate_snapshot = module.validate_snapshot
 
 SNAPSHOT = Path("docs/is/evidence/IS_FOUR_LOCUS_PRIVATE_INPUT_QC_20261122.json")
 
