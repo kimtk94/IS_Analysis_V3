@@ -134,14 +134,19 @@ def cell_count(val):
 
 
 def extract_ancestry(rows,ancestry):
-    start=[i for i,x in rows.items() if x.get("A","").upper()==ancestry]
+    # The publisher workbook later repeats EUR/AFR ancestry labels in
+    # secondary risk/PGS-related sections. Only the *first* block ending at
+    # "Total ALL discovery" represents the primary GWAS discovery cohort.
+    cutoff=[i for i,x in rows.items()
+             if x.get("A","").strip().upper()=="TOTAL ALL DISCOVERY"]
+    require(len(cutoff)==1,"publisher original discovery section boundary ambiguous")
+    boundary=cutoff[0]
+    start=[i for i,x in rows.items()
+           if i<boundary and x.get("A","").upper()==ancestry]
     total=[i for i,x in rows.items()
-           if x.get("A","").upper()==("TOTAL "+ancestry)]
-    if len(start)!=1 or len(total)!=1 or start[0]>=total[0]:
-        sample={i:rows.get(i,{}) for i in (5,10,45,49,50,51,60,64,65,66,75)}
-        akeys=[(i,x.get("A")) for i,x in rows.items() if x.get("A")][:25]
-        raise ValueError("missing "+ancestry+" original source anchors, A-labels="+
-            repr(akeys)+" sample="+repr(sample))
+           if i<boundary and x.get("A","").upper()==("TOTAL "+ancestry)]
+    require(len(start)==1 and len(total)==1 and start[0]<total[0],
+            "discovery-only "+ancestry+" source ancestry/total anchors invalid")
     begin,end=start[0],total[0]
     participants=[]
     for line in range(begin,end):
