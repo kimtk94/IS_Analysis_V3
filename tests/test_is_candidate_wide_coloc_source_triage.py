@@ -111,7 +111,7 @@ class BatchCandidateScreenTests(unittest.TestCase):
     def test_unknown_4_legacy_must_not_join_new_p3a(self):
         b,f=inputs()
         f["scientific_status"]="PASS"
-        with self.assertRaisesRegex(ValueError,"legacy"):
+        with self.assertRaisesRegex(ValueError,"four-locus"):
             m.generate(b,f,None)
 
     def test_no_manually_adopted_gwas_n(self):
