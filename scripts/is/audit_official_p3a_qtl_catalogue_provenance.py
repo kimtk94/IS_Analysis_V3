@@ -75,9 +75,9 @@ def validate(manifest:dict,sources:dict)->dict:
     require(all(x in sources for x in FILES),"official catalogue metadata not loaded")
     columns=sources["columns"]
     for fragment in ("Based on GRCh38 coordinates","GRCh38 reference allele",
-                     "alt - GRCh38 alternative allele (also the effect allele)",
-                     "beta - Regression coefficient", "se - Standard error",
-                     "maf - Minor allele frequency"):
+                     "**alt** - GRCh38 alternative allele (also the effect allele)",
+                     "**beta** - Regression coefficient", "**se** - Standard error",
+                     "**maf** - Minor allele frequency"):
         require(fragment in columns,"official GRCh38 QTL columns schema absent: "+fragment)
     meta=table(sources["meta"])
     paths=table(sources["paths"])
