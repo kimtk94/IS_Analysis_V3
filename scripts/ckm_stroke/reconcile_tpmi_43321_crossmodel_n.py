@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 from pathlib import Path
 
 PLINK_SHA = "ce14daef23f9fadf921030d9ed2429383d927f6da391c620d9abf870045b2e62"
@@ -110,7 +109,7 @@ def validate(plink: dict, saige: dict, methods: dict) -> dict:
     snippets = paper.get("method_evidence", {}).get("SAIGE", {}).get("excerpts", [])
     require(paper.get("status") == "PASS_PRIMARY_XML" and snippets,
             "primary-paper original methods XML unavailable")
-    normalized = re.sub(r"\\s+", " ", " ".join(snippets)).lower().replace("\\u2009", " ")
+    normalized = " ".join(" ".join(snippets).split()).lower().replace(chr(0x2009), " ")
     require(
         "saige" in normalized and "plink2" in normalized
         and "248,754" in normalized and "unrelated subset" in normalized
@@ -185,7 +184,7 @@ def main() -> int:
             "h2_executed": False,
         }
     a.out.parent.mkdir(parents=True, exist_ok=True)
-    a.out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    a.out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + chr(10), encoding="utf-8")
     print(json.dumps({
         "technical_status": result["technical_status"],
         "PLINK2_OBS_CT": result.get("PLINK2", {}).get("source_constant_OBS_CT"),
