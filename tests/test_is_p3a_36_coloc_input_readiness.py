@@ -1,10 +1,12 @@
 """Synthetic negative controls for the 36-assay source-only readiness gate."""
-import copy
 import json
+import importlib
 import unittest
 from pathlib import Path
 
-from scripts.is.audit_p3a_36_coloc_input_readiness import audit, REQUIRED_ABF
+module = importlib.import_module('scripts.is.audit_p3a_36_coloc_input_readiness')
+audit = module.audit
+REQUIRED_ABF = module.REQUIRED_ABF
 
 MANIFEST = Path("docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json")
 
