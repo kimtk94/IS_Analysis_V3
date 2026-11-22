@@ -35,6 +35,11 @@ class Restored36ActualSourceTests(unittest.TestCase):
         self.assertEqual(sum(x["assay_groups"] for x in v["gene_summary"]),36)
         self.assertEqual(sum(x["public_BH05_eGene_assays"] for x in v["gene_summary"]),25)
         self.assertTrue(all(not x["new_coloc_approved"] for x in v["gene_summary"]))
+        coverage=v["source_only_25_group_fullcis_coverage"]
+        self.assertEqual(coverage["sum_tested_fullcis_rows"],142196)
+        self.assertEqual(coverage["sum_BBJ_EAS_nonpal_exact_gene_assay_rows"],59090)
+        self.assertEqual(coverage["sum_nonpal_QTL_EAS_AF_delta_le_0p1_gene_assay_rows"],31313)
+        self.assertFalse(coverage["independently_verified_SNP_alleles_or_GWAS_same_source"])
 
     def test_no_new_coloc_or_aligned_ld_claim(self):
         v=m.validate(*copy.deepcopy(self.data))

@@ -1,0 +1,62 @@
+name: IS P3A old-versus-original chr10 GWAS source signature fast audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-chr10-archive-original-signature.yml'
+      - 'scripts/is/reconcile_p3a_chr10_actual_gwas_to_legacy.py'
+      - 'tests/test_is_p3a_chr10_legacy_original_signature.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-chr10-legacy-source-signature-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  independent-source-archive-signature:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read immutable original 30-region source table
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Negative tests for source signature and C/G palindromic lead
+        run: |
+          python -m py_compile scripts/is/reconcile_p3a_chr10_actual_gwas_to_legacy.py
+          python -m unittest discover -s tests -p 'test_is_p3a_chr10_legacy_original_signature.py' -v
+      - name: Reuse actual whole-original EUR source summary (no 283MB download)
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-chr10-EUR-whole-publisher-aggregate
+          run-id: 45020605713
+          github-token: ${{ github.token }}
+          path: inputs/EUR
+      - name: Reuse actual whole-original EAS source summary (no 261MB download)
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-chr10-EAS-whole-publisher-aggregate
+          run-id: 45020605713
+          github-token: ${{ github.token }}
+          path: inputs/EAS
+      - name: Compare 3913 old G0015 rows, significant SNP count, minimum p and palindromic lead
+        run: |
+          python -m scripts.is.reconcile_p3a_chr10_actual_gwas_to_legacy --eur inputs/EUR/EUR_original_chr10.json --eas inputs/EAS/EAS_original_chr10.json --legacy30 legacy/docs/data/is/IS_30_REGIONS_SIX_OUTCOMES_GWAS_CONTEXT_500KB.tsv --out artifacts/is/chr10_original_vs_old_GWS_EAS_AIS_signature_HOLD.json
+      - name: Publish descriptive consistency only, NEVER accept GWAS cohort N or coloc
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-chr10-old-versus-publisher-descriptive-signature-HOLD
+          path: artifacts/is/chr10_original_vs_old_GWS_EAS_AIS_signature_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30

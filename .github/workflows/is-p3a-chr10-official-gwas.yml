@@ -1,0 +1,83 @@
+name: IS P3A actual chr10 original GWAS source across 36 QTL assays
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-chr10-official-gwas.yml'
+      - 'scripts/is/audit_p3a_chr10_original_publisher_gwas.py'
+      - 'scripts/is/join_p3a_chr10_publisher_source.py'
+      - 'tests/test_is_p3a_chr10_original_gwas.py'
+      - 'docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-official-gwas-chr10-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-negative-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check 36 real QTL keys and scientific false approval traps
+        run: |
+          python -m py_compile scripts/is/audit_p3a_chr10_original_publisher_gwas.py scripts/is/join_p3a_chr10_publisher_source.py
+          python -m unittest discover -s tests -p 'test_is_p3a_chr10_original_gwas.py' -v
+
+  publisher-ancestry-scan:
+    needs: offline-negative-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 27
+    strategy:
+      fail-fast: false
+      matrix:
+        ancestry: [EAS, EUR]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Stream whole official original source and extract chr10/36-QTL-group aggregate QC
+        run: |
+          python -m scripts.is.audit_p3a_chr10_original_publisher_gwas --ancestry ${{ matrix.ancestry }} --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json --out artifacts/chr10/${{ matrix.ancestry }}_original_chr10.json
+      - name: Preserve QTL-group-level statuses only, not SNP-level summary rows
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-chr10-${{ matrix.ancestry }}-whole-publisher-aggregate
+          path: artifacts/chr10/${{ matrix.ancestry }}_original_chr10.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  join-and-science-review:
+    needs: publisher-ancestry-scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: is-p3a-chr10-*-whole-publisher-aggregate
+          path: inputs
+          merge-multiple: true
+      - name: Join EAS and EUR original source QC for 36/36 QTL groups
+        run: |
+          python -m scripts.is.join_p3a_chr10_publisher_source --eur inputs/EUR_original_chr10.json --eas inputs/EAS_original_chr10.json --out artifacts/is/P3A_36_original_chr10_GWAS_source_HOLD.json
+      - name: Upload one combined 20-gene/36-assay scientific gate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-chr10-EAS-EUR-36-original-source-scientific-HOLD
+          path: artifacts/is/P3A_36_original_chr10_GWAS_source_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
