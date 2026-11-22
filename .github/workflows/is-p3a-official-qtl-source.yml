@@ -6,6 +6,7 @@ on:
       - '.github/workflows/is-p3a-official-qtl-source.yml'
       - 'scripts/is/audit_official_p3a_qtl_catalogue_provenance.py'
       - 'tests/test_is_official_p3a_qtl_catalogue_provenance.py'
+      - 'docs/is/IS_P3A_OFFICIAL_QTL_GTEX_ROSMAP_SOURCE_20261122.md'
       - 'docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json'
   workflow_dispatch:
 
