@@ -20,8 +20,10 @@ def source_rows():
     assert sum(x[1] or 0 for x in cohort)==19032
     assert sum(x[2] or 0 for x in cohort)==237242
     d={3:{"A":"EUR"},4:{"B":"EUR_COHORT_A","K":"62000","P":"1200000"},
-       5:{"B":"EUR_COHORT_B","K":"100","P":"34808"},
-       6:{"A":"TOTAL EUR","K":"62100","P":"1234808"},
+       5:{"B":"EUR_COHORT_B","K":"50","P":"10000"},
+       6:{"B":"EUR_COHORT_C","K":"30","P":"10000"},
+       7:{"B":"EUR_COHORT_D","K":"20","P":"14808"},
+       8:{"A":"TOTAL EUR","K":"62100","P":"1234808"},
        50:{"A":"EAS"}}
     # EAS has row 50..64 body: 4 AIS contributor, 10 CKBB, and row60
     rows=[x for x in range(50,65) if x!=60]
