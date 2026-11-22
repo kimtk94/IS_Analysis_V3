@@ -73,6 +73,23 @@ def validate(d):
  check(m.get("INFO_GE_0.8_AND_SAIGE_MAF_GE_0.01",0)<=
        min(m["MATCHED"],m.get("INFO_GE_0.8",0),m.get("SAIGE_MAF_GE_0.01",0)),
        "joint INFO/MAF eligible count exceeds marginals")
+ check("INFO_GE_0.8_MAF_GE_0.01_AF_DELTA_LE_0.05" in m,
+       "second-attempt joint INFO/MAF/AF<=0.05 count missing")
+ check("INFO_GE_0.8_MAF_GE_0.01_AF_DELTA_LE_0.10" in m,
+       "second-attempt joint INFO/MAF/AF<=0.10 count missing")
+ joint05=m["INFO_GE_0.8_MAF_GE_0.01_AF_DELTA_LE_0.05"]
+ joint10=m["INFO_GE_0.8_MAF_GE_0.01_AF_DELTA_LE_0.10"]
+ all05=f.get("DELTA_LE_0.05",0)
+ all10=all05+f.get("DELTA_GT_0.05_LE_0.1",0)
+ base=m["INFO_GE_0.8_AND_SAIGE_MAF_GE_0.01"]
+ check(all(isinstance(x,int) and not isinstance(x,bool) for x in (joint05,joint10)),
+       "joint filters must be integer counts")
+ check(0<joint05<=all05 and joint05<=joint10<=base and joint10<=all10,
+       "joint-filter bounds or nesting invalid")
+ check(base-joint05<=(m["MATCHED"]-all05),
+       "source QC/INFO excluded count exceeds all AF>0.05 variants")
+ check(base-joint10<=(m["MATCHED"]-all10),
+       "source QC/INFO excluded count exceeds all AF>0.10 variants")
  check(d.get("SAIGE_effect_allele")=="Allele2","wrong association allele")
  check(d.get("SAIGE_source_GRCh38_official")=="https://pheweb.ibms.sinica.edu.tw/about",
        "missing official build source")
@@ -90,6 +107,11 @@ def validate(d):
   "INFO_ge_0_8_MAF_ge_0_01":m.get("INFO_GE_0.8_AND_SAIGE_MAF_GE_0.01"),
   "AF_delta_gt_0_05":sum(n for k,n in f.items() if k!="DELTA_LE_0.05"),
   "AF_delta_gt_0_10":m["AF_DELTA_GT_0.1"],
+  "joint_INFO_ge_0_8_MAF_ge_0_01_AF_delta_le_0_05":joint05,
+  "joint_INFO_ge_0_8_MAF_ge_0_01_AF_delta_le_0_10":joint10,
+  "joint_strict_pct_of_allele_matched":round(100*joint05/m["MATCHED"],3),
+  "joint_strict_pct_of_source_QC_PASS":round(
+   100*joint05/(s["all_original_rows"]-s["SOURCE_QC_FAIL"]),3),
   "source_allele_mismatches":m.get("ALLELES_MISMATCH"),
   "allele_matched_pct_of_source_QC_PASS":round(
     100*m["MATCHED"]/(s["all_original_rows"]-s["SOURCE_QC_FAIL"]),3),
