@@ -33,11 +33,9 @@ jobs:
           ref: 0bf646fd6f29322d17da878253f37def24c01c74
           path: legacy
           persist-credentials: false
-      - name: Install tabix HTSlib client and older workbook regression dependency
+      - name: Install HTTPS-enabled PySam bundled HTSlib and historical regression dependencies
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq tabix
-          python -m pip install 'openpyxl>=3.1,<4' 'pyliftover==0.4.1'
+          python -m pip install 'pysam==0.24.1' 'openpyxl>=3.1,<4' 'pyliftover==0.4.1'
       - name: Source ID, allele, variant and duplicate negative tests
         run: |
           python -m py_compile scripts/is/audit_p3a_indexed_qtl_real_chr10.py
