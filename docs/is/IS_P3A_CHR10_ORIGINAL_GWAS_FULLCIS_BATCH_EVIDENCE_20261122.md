@@ -61,3 +61,11 @@
 또한 25개 public QTL BH05 assay의 142,196/59,090/31,313 기록은 **과거 자체 원본 집계**이고, 이번 공식 GWAS 전체 원본에서 25개 assay에 대해 새로 SNP별 조인한 숫자가 아님을 주의한다.
 
 **다음 과학적 작업:** 불변 30-region 원본의 24개 비회문형 `GWS_EAS_AIS` lead 및 (가능하면) 더 많은 사전등록 SNP를 최소 두 개의 유전체 영역에서 공식 EAS publisher 원본에 직접 비교, effect-allele 방향·beta·p값과 관측 SE를 각각 QC. 출처가 통과하더라도 실제 EAS-IS의 정확한 Ncase/Ncontrol/phenotype 정의와 BBJ inclusion, QTL donor N/alleles 및 full cis QTL 통계가 승인을 받을 때까지 Coloc/MR는 HOLD.
+
+## 6. 후속 완료 — 공식 EAS 원본 24개 비회문형 변이 다염색체 재현 PASS
+
+[2026-11-22 직접 실측 run #45022078752](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45022078752) 및 [독립 결과 리뷰 #45022398163](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45022398163) 확인. **GWS_EAS_AIS 30개 원본 후보 영역** 중 source에 남은 비회문형 대표 SNP **24개/16개 염색체** 모두 공식 `GCST90104545` GRCh37 원본 gzip 전체를 다시 읽어 **대립유전자 쌍 24/24, signed ALT β/p/EAF 24/24 재현**; 4개 A/T 또는 C/G palindrome과 2개 lead-not-present는 별도 HOLD/미기록 처리했다. 전체 6,725,216 GWAS record 검토, publisher MD5 및 원본 full SHA-256/bytes 검증. 이는 **단일 GWAS 출처 자료의 reproducibility**이지 BBJ-excluded independent replication은 아니다.
+
+기존 G0015(chr10)의 C/G palindrome은 검증된 24개 비회문형 집합에 없고, 전체 36 QTL gene-group의 allele/N/SE/full-cis 동등성은 여전히 미확립. 따라서 신규 P3A Coloc 0/36, SuSiE 0/36은 유지한다.
+
+자세한 원본 감사 결과: [24개 전체 영역·원본 수치 비교 검증 보고서](IS_EAS_24_NONPAL_LEADS_FULL_ORIGINAL_GWAS_REPRODUCTION_20261122.md).

@@ -1,0 +1,55 @@
+name: IS independently review 24 original EAS lead effects and 36-group HOLD
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-eas-24-lead-independent-readback.yml'
+      - 'scripts/is/review_gws_eas_24_original_leads.py'
+      - 'tests/test_is_24_original_lead_review.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-24-source-independent-review-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  independent-24-source-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pinned genuine Oct 9 source region metadata
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test 24 original source reviewer fail-closed scientific state
+        run: |
+          python -m py_compile scripts/is/review_gws_eas_24_original_leads.py
+          python -m unittest discover -s tests -p 'test_is_24_original_lead_review.py' -v
+      - name: Download actual original EAS full GWAS source-audit results; no new 260MB download
+        uses: actions/download-artifact@v4
+        with:
+          name: is-24-multichrom-nonpal-EAS-original-source-signed-technical-review
+          run-id: 45022078752
+          github-token: ${{ github.token }}
+          path: inputs/original_24
+      - name: Reconcile all 24 per-region results with pinned historical source, print all 24 statuses
+        run: |
+          python -m scripts.is.review_gws_eas_24_original_leads --from-actual-run inputs/original_24/gws_eas_24_nonpal_original_lead_reproducibility.json --legacy legacy/docs/data/is/IS_30_REGIONS_SIX_OUTCOMES_GWAS_CONTEXT_500KB.tsv --out artifacts/is/EAS_24_nonpal_original_full_source_readback_review.json
+      - name: Upload complete per-region acceptance and HOLD audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-eas-24-full-original-GWAS-cross-region-signed-readback-coloc-HOLD
+          path: artifacts/is/EAS_24_nonpal_original_full_source_readback_review.json
+          if-no-files-found: warn
+          retention-days: 30
