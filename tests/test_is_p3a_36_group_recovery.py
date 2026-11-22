@@ -84,7 +84,8 @@ class Restored36ActualSourceTests(unittest.TestCase):
 
     def test_same_snp_source_no_causality(self):
         v=list(copy.deepcopy(self.data))
-        v[3][0]["colocalization_or_causal_gene_proven"]="True"
+        match=next(x for x in v[3] if m.key(x)==m.key(v[0]["groups"][0]))
+        match["colocalization_or_causal_gene_proven"]="True"
         with self.assertRaisesRegex(ValueError,"scientific stop"):
             m.validate(*v)
 
@@ -96,7 +97,8 @@ class Restored36ActualSourceTests(unittest.TestCase):
 
     def test_wrong_three_QTL_distribution_rejected(self):
         v=list(copy.deepcopy(self.data))
-        v[1][0]["QTL_dataset"]="QTD000999"
+        match=next(x for x in v[1] if x["possible_single_signal_ABF_followup"]=="True")
+        match["QTL_dataset"]="QTD000999"
         with self.assertRaisesRegex(ValueError,"distribution"):
             m.validate(*v)
 
