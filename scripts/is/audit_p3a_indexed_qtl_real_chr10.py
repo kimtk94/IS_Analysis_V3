@@ -256,6 +256,12 @@ def main():
                         "technical_status":"HOLD_TABIX_OR_ORIGINAL_DATA",
                         "source_url":url,"error_type":type(exc).__name__,
                         "error":str(exc)[:280],"gene_rows":{}}
+                    for later in list(EXPECTED_N)[i+1:]:
+                        by_dataset[later]={
+                            "technical_status":"HOLD_NOT_QUERIED_AFTER_FIRST_SOURCE_ERROR",
+                            "source_url":source["QTL_datasets"][later]["source_https_probe"],
+                            "gene_rows":{}}
+                    break
         result["QTL_datasets"]=by_dataset
         result["converted_GRCh38_queried_context"]=region
         result["original_full_11GB_source_downloaded"]=False
