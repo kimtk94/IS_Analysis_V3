@@ -17,7 +17,7 @@ from pathlib import Path
 KEYS = ("region_id", "QTL_dataset", "gene_id")
 EXPECTED_QTL = {"QTD000131": 10, "QTD000171": 11, "QTD000434": 15}
 PINNED = {
-    "recover": 45019987189,
+    "recover": 45021251945,
     "gwas": 45020605713,
     "eas24": 45022609773,
 }
@@ -248,7 +248,7 @@ def write_files(result: dict, out_dir: Path) -> None:
         "",
         "## Source evidence",
         "",
-        "- Original 36-group recovery CI: #45019987189",
+        "- Original 36-group recovery CI: #45021251945",
         "- Official EUR/EAS chr10 publisher scan CI: #45020605713",
         "- 24 nonpal EAS original source independent readback CI: #45022609773",
         "",
