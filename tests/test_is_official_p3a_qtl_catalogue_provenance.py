@@ -11,10 +11,10 @@ MANIFEST = Path("docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.js
 COLS = ("# Column names of the nominal eQTL summary statistics files (*.all.tsv.gz)\n"
         "variant - Based on GRCh38 coordinates\n"
         "ref - GRCh38 reference allele\n"
-        "alt - GRCh38 alternative allele (also the effect allele)\n"
-        "beta - Regression coefficient\n"
-        "se - Standard error\n"
-        "maf - Minor allele frequency\n")
+        "**alt** - GRCh38 alternative allele (also the effect allele)\n"
+        "**beta** - Regression coefficient\n"
+        "**se** - Standard error\n"
+        "**maf** - Minor allele frequency\n")
 
 PHEAD = "study_id\tdataset_id\tstudy_label\tsample_group\ttissue_id\t" \
         "tissue_label\tcondition_label\tsample_size\tquant_method\tftp_path\t" \
