@@ -1,0 +1,86 @@
+name: IS P3A original 36 QTL assays Ensembl105 3.52Mb cis reference union
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-36-cis-union-source.yml'
+      - 'scripts/is/audit_p3a_official_cis_union_36.py'
+      - 'tests/test_is_p3a_official_cis_union_36.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-cis-union-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-cis-36-assays:
+    runs-on: ubuntu-latest
+    timeout-minutes: 27
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore historical P3A data fixtures for unchanged full regression
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Pin offline research and source-reader dependencies
+        run: python -m pip install 'pysam==0.24.1' 'pyliftover==0.4.1' 'openpyxl>=3.1,<4'
+      - name: Check 36-group bounds, original source format, false science approvals and superset regression
+        run: |
+          python -m py_compile scripts/is/audit_p3a_official_cis_union_36.py
+          python -m unittest discover -s tests -p 'test_is_p3a_official_cis_union_36.py' -v
+      - name: Run unchanged full-repository smoke test
+        run: bash scripts/codex_smoke_test.sh
+      - name: Rehydrate pinned official 3-source QTL Catalogue provenance (2026-11-22)
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45024493082
+          name: is-p3a-36-qtl-official-release7-source-N-build-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/official
+      - name: Rehydrate real UCSC six anchor reference and FASTA digest
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45024963210
+          name: is-p3a-36-ucsc-liftover-verified-REF-anchors-coloc-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/liftover
+      - name: Read frozen main 2.05Mb 36-group original QTL baseline
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45027864947
+          name: is-p3a-36-real-indexed-GRCh38-QTL-summary-coloc-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/baseline
+      - name: Read original official Ensembl105 20-gene phenotype reference position and cis report
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45027864903
+          name: is-p3a-36-Ensembl105-cis-context-coverage-coloc-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/phenotype
+      - name: Check 20-gene cis union GRCh38 and query each public QTL source once sequentially
+        run: |
+          python -m scripts.is.audit_p3a_official_cis_union_36 \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --baseline inputs/baseline/P3A_36_QTL_official_GRCh38_indexed_2Mb_context_HOLD.json \
+            --cis-reference inputs/phenotype/P3A_36_Ensembl105_reference_cis_window_evidence_HOLD.json \
+            --official inputs/official/P3A_36_official_QTL_catalogue_study_source_HOLD.json \
+            --liftover inputs/liftover/P3A_36_chr10_UCSC_hg19_hg38_anchor_FASTA_HOLD.json \
+            --out artifacts/is/IS_P3A_36_official_Ensembl105_cis_union_source_HOLD.json
+      - name: Save source digest, 36 group counts and source study citation; no raw SNP rows
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-full-reference-cis-union-real-source-coloc-HOLD
+          path: artifacts/is/IS_P3A_36_official_Ensembl105_cis_union_source_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
