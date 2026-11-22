@@ -1,0 +1,55 @@
+name: IS P3A official UCSC chr10 GRCh37 to GRCh38 liftover and FASTA reference gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-ucsc-liftover-fasta.yml'
+      - 'scripts/is/audit_p3a_chr10_ucsc_liftover_fasta.py'
+      - 'tests/test_is_p3a_chr10_ucsc_liftover_fasta.py'
+      - 'docs/is/IS_P3A_OFFICIAL_CHR10_LIFTOVER_FASTA_20261122.md'
+      - 'docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-ucsc-fasta-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  official-liftover-reference-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original archived TSV fixtures for repository regression
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install pinned pure-python coordinate liftover and existing test fixture dependency
+        run: python -m pip install 'pyliftover==0.4.1' 'openpyxl>=3.1,<4'
+      - name: Reject false SNP mapping/reference or inferred Coloc approvals
+        run: |
+          python -m py_compile scripts/is/audit_p3a_chr10_ucsc_liftover_fasta.py
+          python -m unittest discover -s tests -p 'test_is_p3a_chr10_ucsc_liftover_fasta.py' -v
+      - name: Full repository regression with historical research fixtures
+        run: bash scripts/codex_smoke_test.sh
+      - name: Verify UCSC official chain MD5 and both human chr10 FASTA MD5; map six anchored positions
+        run: |
+          python -m scripts.is.audit_p3a_chr10_ucsc_liftover_fasta \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --out artifacts/is/P3A_36_chr10_UCSC_hg19_hg38_anchor_FASTA_HOLD.json
+      - name: Publish only 36 source-group statuses and reference build audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-ucsc-liftover-verified-REF-anchors-coloc-HOLD
+          path: artifacts/is/P3A_36_chr10_UCSC_hg19_hg38_anchor_FASTA_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
