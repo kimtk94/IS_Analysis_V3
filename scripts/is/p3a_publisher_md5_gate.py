@@ -50,7 +50,7 @@ def publisher_metadata(text, spec):
     acc=spec["accession"]
     fields={}
     for key in ("gwas_id","genome_assembly","data_file_name","data_file_md5sum"):
-        match=re.search(r"(?m)^\\s*"+re.escape(key)+r":\\s*['\\\"]?([^'\\\"\\r\\n#]+)", text)
+        match=re.search(r"(?m)^\s*"+re.escape(key)+r":\s*[^a-fA-F0-9_-]*?([^\r\n#]+)", text)
         ensure(match is not None, "publisher YAML missing "+key)
         fields[key]=match.group(1).strip()
     ensure(fields["gwas_id"]==acc and fields["genome_assembly"]=="GRCh37"
