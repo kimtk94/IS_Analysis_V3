@@ -1,0 +1,77 @@
+name: IS TPMI 43321 PLINK2-SAIGE N-model provenance gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ckm-tpmi-43321-crossmodel-n-gate.yml'
+      - 'scripts/ckm_stroke/reconcile_tpmi_43321_crossmodel_n.py'
+      - 'tests/test_ckm_tpmi_43321_crossmodel_n_gate.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-tpmi-crossmodel-n-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reject cross-model N transfers, source drift and invented Neff
+        run: |
+          python -m py_compile scripts/ckm_stroke/reconcile_tpmi_43321_crossmodel_n.py
+          python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_crossmodel_n_gate.py' -v
+
+  reconcile-original-source-aggregates:
+    needs: offline-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Obtain pinned PLINK2 original 1.739M-SNP full source QC aggregate only
+        uses: actions/download-artifact@v4
+        with:
+          name: ckm-TPMI43321-original-full-SNP-aggregate-QC-HOLD
+          run-id: 44872892525
+          github-token: ${{ github.token }}
+          path: inputs/plink2
+      - name: Obtain pinned original SAIGE 15.59M-SNP full case-control aggregate only
+        uses: actions/download-artifact@v4
+        with:
+          name: is-TPMI43321-SAIGE-full-original-casecontrol-QC-HOLD
+          run-id: 44907119885
+          github-token: ${{ github.token }}
+          path: inputs/saige
+      - name: Obtain pinned PheWeb links and primary published methods evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: is-TPMI43321-PLINK2-SAIGE-casecontrol-N-source-HOLD
+          run-id: 44906623458
+          github-token: ${{ github.token }}
+          path: inputs/methods
+      - name: Reconcile two distinct models and keep LDSC scientific HOLD
+        run: |
+          python -m scripts.ckm_stroke.reconcile_tpmi_43321_crossmodel_n \
+            --plink inputs/plink2/tpmi_43321_full_original_all_SNP_QC_HOLD.json \
+            --saige inputs/saige/TPMI43321_SAIGE_full_casecontrol_N_QC_HOLD.json \
+            --methods inputs/methods/TPMI43321_PLINK2_vs_SAIGE_casecontrol_N_evidence_HOLD.json \
+            --out artifacts/is/TPMI43321_crossmodel_N_evidence_scientific_HOLD.json
+      - name: Preserve only aggregate verdict - no genomic row-level data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-tpmi-43321-two-model-original-N-reconciliation-HOLD
+          path: artifacts/is/TPMI43321_crossmodel_N_evidence_scientific_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
