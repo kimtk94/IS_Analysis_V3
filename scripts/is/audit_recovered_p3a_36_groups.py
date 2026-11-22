@@ -138,6 +138,27 @@ def validate(manifest, readiness, egene, samesnp):
             "source_stat_group_membership":"UNVERIFIED_25_OF_36_AGGREGATE_ONLY",
             "science_status":"HOLD_SOURCE_EFFECT_N_AND_MATCHED_LD"
         })
+    by_gene={}
+    for item in results:
+        gid=item["gene_id"]
+        gene=by_gene.setdefault(gid,{
+            "gene_id":gid,"gene_symbol":item["gene_symbol"],
+            "assay_groups":0,"public_BH05_eGene_assays":0,
+            "min_public_QTL_BH_q":None,"QTL_datasets":[],
+            "new_coloc_approved":False
+        })
+        gene["assay_groups"]+=1
+        gene["QTL_datasets"].append(item["QTL_dataset"])
+        if item["source_BH05_eGene_assay"]=="YES":
+            gene["public_BH05_eGene_assays"]+=1
+            q=item["official_BH_q"]
+            gene["min_public_QTL_BH_q"]=min(
+                gene["min_public_QTL_BH_q"] if gene["min_public_QTL_BH_q"] is not None else 1.0,q)
+    gene_summary=sorted(by_gene.values(),key=lambda x:x["gene_id"])
+    require(len(gene_summary)==20
+            and sum(x["assay_groups"] for x in gene_summary)==36
+            and sum(x["public_BH05_eGene_assays"] for x in gene_summary)==25,
+            "gene-summary denominators invalid")
     return {
         "schema":"is-p3a-restored-36-pinned-legacy-source-audit-v1",
         "technical_status":"PASS_36_REAL_GROUP_IDS_CROSSCHECKED_TO_THREE_PINNED_ARCHIVED_TABLES",
@@ -155,7 +176,8 @@ def validate(manifest, readiness, egene, samesnp):
         "new_P3A_coloc_computations":0,
         "row_blocker_count":36,
         "source_provenance_is_not_independent_replication":True,
-        "groups":results
+        "groups":results,
+        "gene_summary":gene_summary
     }
 
 def main():
