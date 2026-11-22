@@ -92,7 +92,9 @@ def parse_qtlmap(data):
     raw=data.decode("utf-8-sig")
     # Source Markdown wraps input column names in inline code/backticks.
     # Normalise only formatting, never waive the three semantic requirements.
-    text=re.sub(r"_\\*\\*([A-Za-z_][A-Za-z0-9_]*)\\*\\*_", r"\\1", raw)
+    text=raw
+    for field in ("count_matrix","sample_meta","pheno_meta","vcf"):
+        text=text.replace("_**"+field+"**_",field)
     text=re.sub(r"[`*]", "", text)  # preserve identifiers like count_matrix, sample_meta
     required=(
         ("normalized_phenotype_matrix",
