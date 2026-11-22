@@ -1,0 +1,65 @@
+name: IS candidate-wide coloc screening and science gate
+
+on:
+  push:
+    paths:
+      - ".github/workflows/is-candidate-wide-coloc-triage.yml"
+      - "scripts/is/candidate_wide_coloc_source_triage.py"
+      - "tests/test_is_candidate_wide_coloc_source_triage.py"
+      - "docs/is/evidence/IS_CANDIDATE_WIDE_COLOC_BASELINE_20261122.json"
+      - "docs/is/evidence/IS_FOUR_LOCUS_PRIVATE_INPUT_QC_20261122.json"
+      - "docs/is/evidence/IS_P3A_ARCHIVED_FULL_GROUP_AUDIT.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-coloc-batch-source-gate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  negative-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check source schema and refuse unauthenticated causal claims
+        run: |
+          python -m py_compile scripts/is/candidate_wide_coloc_source_triage.py
+          python -m unittest discover -s tests -p 'test_is_candidate_wide_coloc_source_triage.py' -v
+
+  real-archived-source-baseline:
+    needs: negative-gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Summarize ALL existing 2225-gene/393-assay/36-P3A real aggregate evidence
+        run: |
+          if [ -f docs/is/evidence/IS_P3A_ARCHIVED_FULL_GROUP_AUDIT.json ]; then
+            python -m scripts.is.candidate_wide_coloc_source_triage \
+              --baseline docs/is/evidence/IS_CANDIDATE_WIDE_COLOC_BASELINE_20261122.json \
+              --four-locus docs/is/evidence/IS_FOUR_LOCUS_PRIVATE_INPUT_QC_20261122.json \
+              --archived-audit docs/is/evidence/IS_P3A_ARCHIVED_FULL_GROUP_AUDIT.json \
+              --out-dir artifacts/is/candidate_wide
+          else
+            python -m scripts.is.candidate_wide_coloc_source_triage \
+              --baseline docs/is/evidence/IS_CANDIDATE_WIDE_COLOC_BASELINE_20261122.json \
+              --four-locus docs/is/evidence/IS_FOUR_LOCUS_PRIVATE_INPUT_QC_20261122.json \
+              --out-dir artifacts/is/candidate_wide
+          fi
+      - name: Upload aggregate screening and explicit scientific HOLD
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-coloc-candidate-wide-source-gate-HOLD
+          path: artifacts/is/candidate_wide
+          if-no-files-found: warn
+          retention-days: 30
