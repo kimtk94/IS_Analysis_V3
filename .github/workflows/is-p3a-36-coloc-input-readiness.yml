@@ -6,6 +6,7 @@ on:
       - '.github/workflows/is-p3a-36-coloc-input-readiness.yml'
       - 'scripts/is/audit_p3a_36_coloc_input_readiness.py'
       - 'tests/test_is_p3a_36_coloc_input_readiness.py'
+      - 'docs/is/IS_P3A_36_COLOC_READINESS_MATRIX_20261122.md'
       - 'docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json'
   workflow_dispatch:
 
@@ -30,6 +31,8 @@ jobs:
         run: |
           python -m py_compile scripts/is/audit_p3a_36_coloc_input_readiness.py
           python -m unittest discover -s tests -p 'test_is_p3a_36_coloc_input_readiness.py' -v
+      - name: Full repository Python smoke and regression suite
+        run: bash scripts/codex_smoke_test.sh
       - name: Get pinned 36 real source group audit
         uses: actions/download-artifact@v4
         with:
