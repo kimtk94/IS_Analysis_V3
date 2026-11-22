@@ -28,6 +28,8 @@ jobs:
       - name: Validate coloc ABF mathematics and scientific HOLD guards
         run: |
           python -m py_compile scripts/is/replay_legacy_15_abf_sufficient.py
+          python -m py_compile scripts/is/replay_legacy_15_abf_from_original_source.py
+          python -m scripts.is.replay_legacy_15_abf_from_original_source --help
           python -m unittest discover -s tests -p 'test_is_legacy_15_abf_sufficient.py' -v
 
   parallel-assay-analysis:
