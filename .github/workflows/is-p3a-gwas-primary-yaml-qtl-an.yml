@@ -1,0 +1,71 @@
+name: IS P3A publisher original AIS YAML and 36-QTL variant AN/2 source study sample gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-gwas-primary-yaml-qtl-an.yml'
+      - 'scripts/is/audit_p3a_primary_gwas_yaml_qtl_an_36.py'
+      - 'tests/test_is_p3a_primary_gwas_yaml_qtl_an_36.py'
+      - 'docs/is/IS_P3A_PRIMARY_GWAS_QTL_VARIANT_AN_AUDIT_20261122.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-gwas-primary-qtl-an-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-primary-publisher-36-assay-sample-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Restore historical research fixtures to keep full regression comparable
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install pinned Tabix source reader and safe publisher YAML parser
+        run: python -m pip install 'pysam==0.24.1' 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Prevent invented sample N, malformed original provenance, and false Coloc approvals
+        run: |
+          python -m py_compile scripts/is/audit_p3a_primary_gwas_yaml_qtl_an_36.py
+          python -m unittest discover -s tests -p 'test_is_p3a_primary_gwas_yaml_qtl_an_36.py' -v
+      - name: Full research repository smoke tests
+        run: bash scripts/codex_smoke_test.sh
+      - name: Retrieve immutable 3-dataset eQTL Catalogue source accession metadata
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-qtl-official-release7-source-N-build-HOLD
+          run-id: 45024493082
+          github-token: ${{ github.token }}
+          path: inputs/official
+      - name: Retrieve validated original 36-assay reference cis union
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-full-reference-cis-union-real-source-coloc-HOLD
+          run-id: 45028882323
+          github-token: ${{ github.token }}
+          path: inputs/union
+      - name: Audit source publisher EAS and EUR GWAS YAML case/control/trait and 36 assays per-SNP QTL allele-N
+        run: |
+          python -m scripts.is.audit_p3a_primary_gwas_yaml_qtl_an_36 \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --union inputs/union/IS_P3A_36_official_Ensembl105_cis_union_source_HOLD.json \
+            --official inputs/official/P3A_36_official_QTL_catalogue_study_source_HOLD.json \
+            --out artifacts/is/IS_P3A_36_primary_GWAS_metadata_QTL_AN_descriptive_HOLD.json
+      - name: Retain public publisher source metadata and sample QC counts only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-primary-GWAS-AIS-publisher-YAML-QTL-AN-sample-HOLD
+          path: artifacts/is/IS_P3A_36_primary_GWAS_metadata_QTL_AN_descriptive_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
