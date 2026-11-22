@@ -52,7 +52,7 @@ def publisher_metadata(text, spec):
     for key in ("gwas_id","genome_assembly","data_file_name","data_file_md5sum"):
         match=re.search(r"(?m)^\s*"+re.escape(key)+r":\s*[^a-fA-F0-9_-]*?([^\r\n#]+)", text)
         ensure(match is not None, "publisher YAML missing "+key)
-        fields[key]=match.group(1).strip()
+        fields[key]=match.group(1).strip().strip(chr(34)+chr(39))
     ensure(fields["gwas_id"]==acc and fields["genome_assembly"]=="GRCh37"
            and fields["data_file_name"]==f"{acc}_buildGRCh37.tsv.gz",
            "publisher YAML accession/assembly/filename mismatch")
