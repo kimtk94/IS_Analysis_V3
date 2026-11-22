@@ -25,9 +25,9 @@ MAX_BYTES=260_000_000
 COLUMNS=("chromosome","position","ref","alt","variant","gene_id",
          "molecular_trait_id","beta","se","maf","pvalue")
 EXPECTED_N={"QTD000131":387,"QTD000171":205,"QTD000434":560}
-OFFICIAL_COLUMN_ORDER=("variant","r2","pvalue","molecular_trait_object_id",
-    "molecular_trait_id","maf","gene_id","median_tpm","beta","se",
-    "an","ac","ma_samples","chromosome","position","ref","alt","type","rsid")
+OFFICIAL_COLUMN_ORDER=("molecular_trait_id","chromosome","position","ref","alt",
+    "variant","ma_samples","maf","pvalue","beta","se","type","ac","an",
+    "r2","molecular_trait_object_id","gene_id","median_tpm","rsid")
 
 
 def require(ok,msg):
@@ -197,7 +197,7 @@ def stream_tabix(url,region,seq,genes,open_tabix=None):
     """Use HTSlib bundled in pysam (network-enabled wheel), one indexed range.
 
     Ubuntu's apt tabix package may be built without HTTPS libcurl support.
-    Official release-7 Column.md supplies the 19-field order if the tabix
+    Pinned original eQTL-Catalogue preprocessing format supplies the 19-field order if the tabix
     index has no commented header; column content and REF/variant are checked.
     """
     if open_tabix is None:
