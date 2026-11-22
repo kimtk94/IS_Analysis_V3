@@ -33,6 +33,9 @@ def source_rows():
     d[50]["A"]="EAS"
     d[60]={"B":"INCIDENT_ONLY_NOT_DISCOVERY","K":"4","P":"102"}
     d[65]={"A":"TOTAL EAS","K":"19032","P":"237242"}
+    d[86]={"A":"Total ALL discovery"}
+    d[87]={"A":"EUR"}  # independent second section; never mix discovery
+    d[95]={"A":"Total EUR"}
     return d
 
 
@@ -99,6 +102,15 @@ class PrimaryCohortTests(unittest.TestCase):
         rows=source_rows();rows[5]["P"]="34800"
         a=M.extract_ancestry(rows,"EUR")
         self.assertFalse(a["source_individual_cohort_rows_reconcile_total"])
+
+    def test_second_EUR_label_after_discovery_is_not_used(self):
+        rows=source_rows()
+        rows[87]["B"]="PGS_VALIDATION_NOT_DISCOVERY"
+        rows[88]={"B":"VALIDATION_EUR","K":"999999","P":"999999"}
+        a=M.extract_ancestry(rows,"EUR")
+        self.assertEqual(a["original_ancestry_header_row"],3)
+        self.assertEqual(a["original_ancestry_total_row"],8)
+        self.assertEqual(a["recomputed_usable_AIS_cases"],62100)
 
     def test_no_EUR_anchor_fail_closed(self):
         rows=source_rows();del rows[3]
