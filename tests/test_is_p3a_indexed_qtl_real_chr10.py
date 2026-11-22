@@ -79,6 +79,21 @@ class IndexedQTLTest(unittest.TestCase):
                                  "\tG\tC\tchr10_103000000_G_C")
         out=M.read_rows(rows,REF(),{"ENSG00000065613"},REGION)
         self.assertEqual(out["gene_rows"]["ENSG00000065613"]["valid_unique_SNPs"],1)
+    def test_actual_documented_column_order_without_commented_header(self):
+        field={
+            "molecular_trait_id":"ENSG00000065613","chromosome":"10",
+            "position":"103000000","ref":"A","alt":"C",
+            "variant":"chr10_103000000_A_C",
+            "ma_samples":"12","maf":"0.23","pvalue":"0.00001",
+            "beta":"0.12","se":"0.03","type":"SNP",
+            "ac":"22","an":"300","r2":"0.99",
+            "molecular_trait_object_id":"ENSG00000065613",
+            "gene_id":"ENSG00000065613","median_tpm":"1.3","rsid":"rs1"}
+        first="\t".join(M.OFFICIAL_COLUMN_ORDER)
+        second="\t".join(field[k] for k in M.OFFICIAL_COLUMN_ORDER)
+        z=M.read_rows([first+"\n",second+"\n"],DNA(),
+                      {"ENSG00000065613"},REGION)
+        self.assertEqual(z["gene_rows"]["ENSG00000065613"]["valid_unique_SNPs"],1)
     def test_no_inferring_fullcis_from_one_region(self):
         self.assertFalse(LIFT.REGION["id"] != "IS_XDATA_G0015")
 
