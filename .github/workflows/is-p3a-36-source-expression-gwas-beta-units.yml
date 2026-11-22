@@ -1,0 +1,79 @@
+name: IS P3A 36 original QTL normalized expression source and GIGASTROKE beta units
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-36-source-expression-gwas-beta-units.yml'
+      - 'scripts/is/audit_p3a_36_source_expression_and_gwas_beta_units.py'
+      - 'tests/test_is_p3a_36_source_expression_and_gwas_beta_units.py'
+      - 'docs/is/IS_P3A_36_EXPRESSION_MATRIX_GWAS_BETA_SOURCE_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-36-expression-beta-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-actual-original-2021-counts-vs-r7-model-and-gwas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Checkout historical test fixture only
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install baseline test dependencies
+        run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Test source DOI, qtlmap sample intersection, no false model-N or log-OR approval
+        run: |
+          python -m py_compile scripts/is/audit_p3a_36_source_expression_and_gwas_beta_units.py
+          python -m unittest discover -s tests -p 'test_is_p3a_36_source_expression_and_gwas_beta_units.py' -v
+      - name: Run full existing research smoke tests unchanged
+        run: bash scripts/codex_smoke_test.sh
+      - name: Load exact previously verified official QTL Catalogue release study identities
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45024493082
+          name: is-p3a-36-qtl-official-release7-source-N-build-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/official
+      - name: Load original all 36 QTL beta SE AN/2 full source diagnostics
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45039159444
+          name: is-p3a-36-primary-QTL-sdY-residual-proxy-N-GWAS-cc-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/qtl
+      - name: Load 2022 original GIGASTROKE AIS cohort and BBJ evidence
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45035814621
+          name: is-p3a-36-GIGASTROKE-2022-original-EAS-EUR-AIS-BBJ-cohorts-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/cohort
+      - name: Verify Zenodo primary count-matrix inventory, original qtlmap source contract, and original GIGASTROKE methods for 36 actual groups
+        run: |
+          python -m scripts.is.audit_p3a_36_source_expression_and_gwas_beta_units \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --original-qtl inputs/qtl/IS_P3A_36_original_QTL_SE_MAF_AN_residual_proxy_N_model_HOLD.json \
+            --official inputs/official/P3A_36_official_QTL_catalogue_study_source_HOLD.json \
+            --original-cohort inputs/cohort/IS_P3A_36_GIGASTROKE_2022_primary_AIS_cohort_BBJ_HOLD.json \
+            --out artifacts/is/IS_P3A_36_public_normalized_expression_model_GWAS_beta_unit_HOLD.json
+      - name: Retain public source metadata, SHA256 and 36 original scientific HOLD decisions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-primary-expression-matrix-and-GWAS-beta-unit-source-HOLD
+          path: artifacts/is/IS_P3A_36_public_normalized_expression_model_GWAS_beta_unit_HOLD.json
+          retention-days: 30
+          if-no-files-found: warn
