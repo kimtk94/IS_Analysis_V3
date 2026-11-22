@@ -114,6 +114,7 @@ def inspect_original_row(row):
     if not (chrom in [str(i) for i in range(1,23)] and pos>0
             and all(math.isfinite(v) for v in (beta,se,p,af))
             and se>0 and 0<=p<=1 and 0<=af<=1
+            and len(ea)==1 and len(oa)==1
             and ea in "ACGT" and oa in "ACGT" and ea!=oa):
         return None
     return {"chrom":chrom,"pos":pos,"beta":beta,"se":se,"p":p,
