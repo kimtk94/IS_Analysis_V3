@@ -227,7 +227,7 @@ def parse_original_gwas_file(path,ancestry,wanted_positions):
     hits={}
     invalid=0
     duplicates=0
-    with gzip.open(path,"rt",encoding="utf8-sig",newline="") as handle:
+    with gzip.open(path,"rt",encoding="utf-8-sig",newline="") as handle:
         reader=csv.DictReader(handle,delimiter="\t")
         original_header=list(reader.fieldnames or [])
         require(set(GWAS.HEADER).issubset(set(original_header)),
@@ -240,9 +240,7 @@ def parse_original_gwas_file(path,ancestry,wanted_positions):
             try:pos=int(row["base_pair_location"])
             except (TypeError,ValueError):continue
             if pos not in wanted_positions:continue
-            parsed=GWAS.inspect_row({**row,"base_pair_location":str(pos)})
-            # GWAS.inspect_row is intentionally restricted to *prior 2.05Mb
-            # bounds*, so parse expanded union original rows independently.
+            # Parse the exact extended union, not the prior 2.05Mb-only original GWAS screen.
             try:
                 ea=row["effect_allele"].upper()
                 oa=row["other_allele"].upper()
@@ -452,7 +450,7 @@ def main():
                 gwas_counts[ancestry]=counts
             result=summarize_groups(manifest,union,per,raw,gwas_maps,gwas_counts,reverse)
     except (OSError,ValueError,KeyError,TypeError,OverflowError,ImportError,
-            UnicodeError,TimeoutError) as exc:
+            UnicodeError,LookupError,TimeoutError) as exc:
         result["technical_status"]="HOLD_SOURCE_OR_ALLELE_LIFTOVER_FAILURE"
         result["error_type"]=type(exc).__name__
         result["error"]=str(exc)[:300]
