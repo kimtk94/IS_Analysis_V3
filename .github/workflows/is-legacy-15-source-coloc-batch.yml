@@ -1,0 +1,79 @@
+name: IS 15 original assay ABF batch replay and scientific review
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-legacy-15-source-coloc-batch.yml'
+      - 'docs/is/evidence/IS_LEGACY_15_GROUP_COLABF_SUFFICIENT_20261122.json'
+      - 'scripts/is/replay_legacy_15_abf_sufficient.py'
+      - 'tests/test_is_legacy_15_abf_sufficient.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-legacy-15-coloc-batch-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate coloc ABF mathematics and scientific HOLD guards
+        run: |
+          python -m py_compile scripts/is/replay_legacy_15_abf_sufficient.py
+          python -m unittest discover -s tests -p 'test_is_legacy_15_abf_sufficient.py' -v
+
+  parallel-assay-analysis:
+    needs: offline-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Recompute one-third of 15 assay posterior sensitivity grids
+        run: |
+          python -m scripts.is.replay_legacy_15_abf_sufficient --source docs/is/evidence/IS_LEGACY_15_GROUP_COLABF_SUFFICIENT_20261122.json --shard ${{ matrix.shard }} --shards 3 --out artifacts/is/shard-${{ matrix.shard }}.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-legacy-15-coloc-shard-${{ matrix.shard }}
+          path: artifacts/is/shard-${{ matrix.shard }}.json
+          if-no-files-found: error
+          retention-days: 30
+
+  aggregate-and-review:
+    needs: parallel-assay-analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: is-legacy-15-coloc-shard-*
+          merge-multiple: true
+          path: inputs/shards
+      - name: Review all 15 assays, detect missing/duplicate panels and preserve HOLD
+        run: |
+          python -m scripts.is.replay_legacy_15_abf_sufficient --merge inputs/shards/shard-0.json inputs/shards/shard-1.json inputs/shards/shard-2.json --out artifacts/is/legacy_15_original_source_sufficient_batch_review.json
+      - name: Upload technical 15/15 & 225 scenario result, no private SNP rows
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-legacy-15-original-source-sufficient-scientific-HOLD
+          path: artifacts/is/legacy_15_original_source_sufficient_batch_review.json
+          if-no-files-found: error
+          retention-days: 30
