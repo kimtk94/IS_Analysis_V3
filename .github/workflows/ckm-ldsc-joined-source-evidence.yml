@@ -1,0 +1,97 @@
+name: IS scientific LDSC evidence-integrity and readiness matrix
+
+on:
+  push:
+    paths:
+      - 'scripts/ckm_stroke/ldsc_original_artifact_readiness.py'
+      - 'tests/test_ckm_stroke_ldsc_original_artifact_readiness.py'
+      - '.github/workflows/ckm-ldsc-joined-source-evidence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ckm-ldsc-joined-readiness-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-negative:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Reject invalid original N, swapped CE/LAA and false LDSC approvals
+        run: |
+          python -m py_compile scripts/ckm_stroke/ldsc_original_artifact_readiness.py
+          python -m unittest discover -s tests -p test_ckm_stroke_ldsc_original_artifact_readiness.py -v
+
+  original-evidence:
+    needs: offline-negative
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify pinned original run SHA, identity and full job conclusion
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          repo = "kimtk94/IS_Analysis_V3"
+          runs = {
+              44866196133: "0690226c742ac01290ef774ba53bfd4a8953672d",
+              44855617332: "b189dd5205ba44970b1c88e56a280e755c9b76f6",
+              45013758427: "c3e4c0f32ceaba52621679efb5a585b61a8a68fa",
+          }
+          for run_id, sha in runs.items():
+              obj = json.loads(subprocess.check_output(
+                  ["gh", "api", f"repos/{repo}/actions/runs/{run_id}"], text=True))
+              if (obj.get("conclusion") != "success" or
+                      obj.get("head_sha") != sha or
+                      obj.get("repository", {}).get("full_name") != repo):
+                  raise SystemExit(f"Invalid pinned Actions source {run_id}")
+              print(f"Verified original run {run_id} and commit {sha}")
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-eur-22chr-weight-reference-and-cohort-neff-hold
+          run-id: 44866196133
+          github-token: ${{ github.token }}
+          path: inputs/reference
+      - uses: actions/download-artifact@v4
+        with:
+          name: ckm-stroke-LDSC-preregression-source-and-HOLD-evidence
+          run-id: 44855617332
+          github-token: ${{ github.token }}
+          path: inputs/preregression
+      - uses: actions/download-artifact@v4
+        with:
+          name: is-tpmi-43321-two-model-original-N-reconciliation-HOLD
+          run-id: 45013758427
+          github-token: ${{ github.token }}
+          path: inputs/tpmi
+      - name: Join verified original aggregate SNP universe and scientific HOLD
+        run: |
+          python -m scripts.ckm_stroke.ldsc_original_artifact_readiness \
+            --reference inputs/reference/eur_weight_ldscore_22chr_and_44cohort_Neff_hold_ci.json \
+            --bmi-provenance inputs/reference/bmi_2018_weight_reference_provenance_ci.json \
+            --preregression inputs/preregression/ldsc_singletrait_input_preflight_ci.json \
+            --tpmi inputs/tpmi/TPMI43321_crossmodel_N_evidence_scientific_HOLD.json \
+            --out artifacts/is/ldsc_source_aggregate_readiness_20261122.json
+      - name: Publish small metadata only; no original GWAS, no estimated N or h2
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-ldsc-source-joined-readiness-scientific-HOLD
+          path: artifacts/is/ldsc_source_aggregate_readiness_20261122.json
+          if-no-files-found: warn
+          retention-days: 30
