@@ -31,6 +31,10 @@ class Restored36ActualSourceTests(unittest.TestCase):
         self.assertEqual(sum(x["source_BH05_eGene_assay"]=="YES" for x in v["groups"]),25)
         self.assertEqual(v["by_QTL_dataset"],{"QTD000131":10,"QTD000171":11,"QTD000434":15})
         self.assertEqual(v["scientific_status"],"HOLD")
+        self.assertEqual(len(v["gene_summary"]),20)
+        self.assertEqual(sum(x["assay_groups"] for x in v["gene_summary"]),36)
+        self.assertEqual(sum(x["public_BH05_eGene_assays"] for x in v["gene_summary"]),25)
+        self.assertTrue(all(not x["new_coloc_approved"] for x in v["gene_summary"]))
 
     def test_no_new_coloc_or_aligned_ld_claim(self):
         v=m.validate(*copy.deepcopy(self.data))
