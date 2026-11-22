@@ -21,7 +21,7 @@ BASE = "https://hgdownload.soe.ucsc.edu/goldenPath"
 FILES = {
     "chain": {
         "url":f"{BASE}/hg19/liftOver/hg19ToHg38.over.chain.gz",
-        "md5":"35887f73de5e2231656504d1f6430900",
+        "md5":"35887f73fe5e2231656504d1f6430900",
         "limit":2_000_000,
     },
     "hg19": {
