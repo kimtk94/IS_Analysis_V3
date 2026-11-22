@@ -50,13 +50,14 @@ class ThirtySixPanelRealPublisherSourceTests(unittest.TestCase):
         self.assertEqual(val["pos"],105596641)
         self.assertEqual(val["effect_allele"],"C")
         self.assertGreater(val["se"],0)
-        self.assertFalse(val["palindrome"])
+        self.assertTrue(val["palindrome"])
 
     def test_same_effect_allele_lead_match_but_source_unapproved(self):
         comp=s.compare_prior_lead(s.inspect_row(row()))
-        self.assertEqual(comp["status"],"PRIOR_REGIONAL_LEAD_BETA_P_MATCH")
+        self.assertEqual(comp["status"],"PALINDROMIC_LEAD_NUMERIC_CONCORDANCE_STRAND_HOLD")
         self.assertFalse(comp["source_identity_approved"])
-        self.assertEqual(comp["n_independent_original_variant_matches_for_source_approval"],1)
+        self.assertEqual(comp["n_independent_original_variant_matches_for_source_approval"],0)
+        self.assertTrue(comp["strand_palindromic_unresolved"])
 
     def test_reversed_effect_allele_sign_is_harmonized_only_as_test(self):
         comp=s.compare_prior_lead(s.inspect_row(row(beta="0.0762",ea="G",oa="C")))
@@ -64,7 +65,7 @@ class ThirtySixPanelRealPublisherSourceTests(unittest.TestCase):
 
     def test_opposite_allele_direction_without_sign_flip_is_detected(self):
         comp=s.compare_prior_lead(s.inspect_row(row(beta="0.0762",ea="C",oa="G")))
-        self.assertEqual(comp["status"],"PRIOR_REGIONAL_LEAD_NUMERIC_DISCORDANCE")
+        self.assertEqual(comp["status"],"PALINDROMIC_LEAD_NUMERIC_DISCORDANCE_STRAND_HOLD")
 
     def test_wrong_alleles_rejected_as_matching_lead(self):
         comp=s.compare_prior_lead(s.inspect_row(row(ea="A",oa="T")))
