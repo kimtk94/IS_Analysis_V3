@@ -135,5 +135,30 @@ class OriginalSourceAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"wrong legacy P3A"):
             j.summarize(*vals)
 
+    def test_real_36_assays_recovered_with_20_unique_gene_ids(self):
+        src=json.loads(Path("docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json").read_text())
+        result=j.summarize(*samples(),restored_keys=src)
+        self.assertEqual(result["per_group_audit_rows"],36)
+        self.assertEqual(result["unresolved_original_group_ID_count"],0)
+        self.assertEqual(result["unique_recovered_gene_ids"],20)
+        self.assertTrue(result["restored_36_real_gene_QTL_keys"])
+        self.assertFalse(result["server_original_positive_stat_group_assignment_verified"])
+        self.assertEqual(result["server_positive_stat_group_membership_unresolved_count"],36)
+        self.assertEqual(result["new_coloc_abf_computations"],0)
+        self.assertTrue(all(not x["eligible"] for x in result["per_group_blockers_if_available"]))
+
+    def test_recovered_manifest_false_gene_is_rejected(self):
+        src=json.loads(Path("docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json").read_text())
+        src["groups"][0]["gene_id"]="ENSG12345678901"
+        src["groups"][1]["gene_id"]="ENSG12345678901"
+        with self.assertRaisesRegex(ValueError,"restored actual"):
+            j.summarize(*samples(),restored_keys=src)
+
+    def test_source_positive_group_assignment_cannot_be_invented(self):
+        src=json.loads(Path("docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json").read_text())
+        src["groups"][0]["original_P3A_source_stat_positive_proven"]=True
+        with self.assertRaisesRegex(ValueError,"restored actual"):
+            j.summarize(*samples(),restored_keys=src)
+
 if __name__=="__main__":
     unittest.main()

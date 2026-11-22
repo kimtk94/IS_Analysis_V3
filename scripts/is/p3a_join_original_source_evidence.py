@@ -51,7 +51,7 @@ def inspect(ancestry, verified, old):
     }
 
 def summarize(baseline, eur_now, eas_now, eur_prior, eas_prior, eqtl, supplement,
-              optional_groups=None):
+              optional_groups=None, restored_keys=None):
     require(baseline.get("schema")=="is-candidate-wide-coloc-baseline-v1"
             and baseline.get("scientific_status")=="HOLD", "bad 2225/393 source baseline")
     g=baseline.get("assay_group_universe",{})
@@ -80,12 +80,48 @@ def summarize(baseline, eur_now, eas_now, eur_prior, eas_prior, eqtl, supplement
             "original BBJ discovery/supplement not proof of independent replication")
 
     group_keys=None
+    if restored_keys is not None:
+        require(restored_keys.get("schema")==
+                "is-p3a-36-real-group-keys-from-legacy-393-v1"
+                and restored_keys.get("scientific_status")=="HOLD"
+                and restored_keys.get("origin",{}).get("commit_sha")==
+                    "0bf646fd6f29322d17da878253f37def24c01c74"
+                and restored_keys.get("denominators",{}).get("unique_gene_ids_in_followup")==20
+                and restored_keys.get("denominators",{}).get(
+                    "per_group_original_server_source_stats_positive_verified")==0,
+                "restored original-group provenance/science invalid")
+        entries=restored_keys.get("groups")
+        require(isinstance(entries,list) and len(entries)==36 and
+                len({(x.get("region_id"),x.get("QTL_dataset"),x.get("gene_id"))
+                     for x in entries})==36 and
+                len({x.get("gene_id") for x in entries})==20 and
+                all(x.get("region_id")=="IS_XDATA_G0015" for x in entries) and
+                sum(x.get("official_studywide_eGene_BH05_assay") is True
+                    for x in entries)==25 and
+                all(x.get("approved_for_new_coloc") is False and
+                    x.get("original_P3A_source_stat_positive_proven") is False and
+                    x.get("archived_GWAS_QTL_coloc_executed") is False for x in entries),
+                "restored actual 36 gene/QTL groups invalid")
+        group_keys=[{
+            "region_id":x["region_id"],"QTL_dataset":x["QTL_dataset"],
+            "gene_id":x["gene_id"],"gene_symbol":x["gene_symbol"],
+            "public_BH05_eGene_assay":x["official_studywide_eGene_BH05_assay"],
+            "source_stat_positive_membership":"NOT_MAPPED_TO_25_ARCHIVED_POSITIVE_GROUPS",
+            "blocked_on":"GWAS_EFFECT_N_CASEFRACTION;QTL_N;MATCHED_LD;SERVER_SOURCE_STATS",
+            "eligible":False} for x in entries]
     if optional_groups is not None:
         module=importlib.import_module("scripts.is.candidate_wide_coloc_source_triage")
         by_group=module.validate_per_group(optional_groups,g)
-        group_keys=[{"region_id":x["region_id"],"QTL_dataset":x["QTL_dataset"],
+        original_keys=[{"region_id":x["region_id"],"QTL_dataset":x["QTL_dataset"],
                      "gene_id":x["gene_id"],"source_stat_screen":x["source_stat_screen"],
                      "blocked_on":x["blockers"],"eligible":False} for x in by_group]
+        if group_keys is not None:
+            keys=lambda entries:{(x["region_id"],x["QTL_dataset"],x["gene_id"])
+                                 for x in entries}
+            require(keys(group_keys)==keys(original_keys),
+                    "restored groups do not match actual server group identity list")
+        else:
+            group_keys=original_keys
         require(len(group_keys)==36,"actual 36 group report not complete")
     return {
         "schema":"is-p3a-all-source-joined-readiness-v1",
@@ -102,6 +138,12 @@ def summarize(baseline, eur_now, eas_now, eur_prior, eas_prior, eqtl, supplement
         "original_source_ABF_groups_no_stats":11,
         "individual_original_group_IDs_loaded":group_keys is not None,
         "per_group_audit_rows":len(group_keys or []),
+        "restored_36_real_gene_QTL_keys":restored_keys is not None,
+        "unique_recovered_gene_ids":20 if restored_keys is not None else None,
+        "server_original_positive_stat_group_assignment_verified":
+            optional_groups is not None,
+        "server_positive_stat_group_membership_unresolved_count":
+            0 if optional_groups is not None else 36,
         "unresolved_original_group_ID_count":0 if group_keys is not None else 36,
         "genuinely_coloc_eligible_groups":0,
         "new_coloc_abf_computations":0,
@@ -111,7 +153,7 @@ def summarize(baseline, eur_now, eas_now, eur_prior, eas_prior, eqtl, supplement
         "publisher_md5_alone_not_sufficient_for_coloc":True,
         "per_group_blockers_if_available":group_keys,
         "required_next_inputs":[
-          "36 ORIGINAL assay group identities from server archived_fasta_abf_audit.json",
+          "Original server source-stat positive/negative membership for each restored group (36 keys already recovered)",
           "Archived EAS5 full cis QTL–GWAS row dataset and original official GWAS effects",
           "Signed harmonized allele+build, exact phenotype case fraction/N, study QTL N and SNP overlap",
           "Predeclared priors plus limited stable coloc and multi-signal SuSiE decisions"
@@ -124,12 +166,14 @@ def main():
                   "eqtl","supplement","out"]:
         p.add_argument("--"+field.replace("_","-"),type=Path,required=True)
     p.add_argument("--original-groups",type=Path)
+    p.add_argument("--restored-keys",type=Path)
     a=p.parse_args()
     try:
         inputs=[parse(getattr(a,k)) for k in
                 ("baseline","eur_now","eas_now","eur_prior","eas_prior","eqtl","supplement")]
         group=parse(a.original_groups) if a.original_groups else None
-        status=summarize(*inputs,optional_groups=group)
+        restored=parse(a.restored_keys) if a.restored_keys else None
+        status=summarize(*inputs,optional_groups=group,restored_keys=restored)
     except (OSError,ValueError,TypeError,KeyError) as e:
         status={
             "schema":"is-p3a-all-source-joined-readiness-v1",

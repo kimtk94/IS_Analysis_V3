@@ -1,0 +1,85 @@
+name: IS P3A 36 authentic assays joined source audit fast
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-36-joined-evidence-fast.yml'
+      - 'scripts/is/p3a_join_original_source_evidence.py'
+      - 'tests/test_is_p3a_source_joined_md5.py'
+      - 'docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-36-joined-evidence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  all-36-joined-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fail-closed legacy 36 study-group source check and join QC
+        run: |
+          python -m py_compile scripts/is/p3a_join_original_source_evidence.py
+          python -m unittest discover -s tests -p 'test_is_p3a_source_joined_md5.py' -v
+      - name: Pinned independently MD5 verified EUR GWAS source
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-source-whole-file-EUR-md5-evidence
+          run-id: 45018300939
+          github-token: ${{ github.token }}
+          path: inputs/EUR_verified
+      - name: Pinned independently MD5 verified EAS GWAS source
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-source-whole-file-EAS-md5-evidence
+          run-id: 45018300939
+          github-token: ${{ github.token }}
+          path: inputs/EAS_verified
+      - name: Original full EUR QC reference
+        uses: actions/download-artifact@v4
+        with:
+          name: is-gwas-full-original-qc-EUR
+          run-id: 43858821798
+          github-token: ${{ github.token }}
+          path: inputs/EUR_prior
+      - name: Original full EAS QC reference
+        uses: actions/download-artifact@v4
+        with:
+          name: is-gwas-full-original-qc-EAS
+          run-id: 43858821798
+          github-token: ${{ github.token }}
+          path: inputs/EAS_prior
+      - name: E-GEAD420 original eQTL donor science gate
+        uses: actions/download-artifact@v4
+        with:
+          name: is-EGEAD420-original-eQTL-coloc-GO-HOLD
+          run-id: 43858822068
+          github-token: ${{ github.token }}
+          path: inputs/QTL_prior
+      - name: Original BBJ-in-GIGASTROKE independence supplement
+        uses: actions/download-artifact@v4
+        with:
+          name: is-ci-public-gwas-provenance
+          run-id: 44900451784
+          github-token: ${{ github.token }}
+          path: inputs/BBJ_prior
+      - name: Review 36 exact group rows and dual-ancestry GWAS source integrity
+        run: |
+          python -m scripts.is.p3a_join_original_source_evidence --baseline docs/is/evidence/IS_CANDIDATE_WIDE_COLOC_BASELINE_20261122.json --eur-now inputs/EUR_verified/publisher_original_integrity.json --eas-now inputs/EAS_verified/publisher_original_integrity.json --eur-prior inputs/EUR_prior/source_full_qc.json --eas-prior inputs/EAS_prior/source_full_qc.json --eqtl inputs/QTL_prior/EGEAD420_reproducible_go_hold.json --supplement inputs/BBJ_prior/ci_public_gwas_evidence.json --restored-keys docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json --out artifacts/is/P3A_36_real_source_joined_scientific_HOLD.json
+      - name: Persist 36-group evidence, no per-SNP source rows
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-restored-real-groups-joined-gwas-qtl-HOLD
+          path: artifacts/is/P3A_36_real_source_joined_scientific_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30

@@ -8,6 +8,7 @@ on:
       - 'scripts/is/p3a_join_original_source_evidence.py'
       - 'tests/test_is_p3a_source_joined_md5.py'
       - 'docs/is/evidence/IS_P3A_ARCHIVED_FULL_GROUP_AUDIT.json'
+      - 'docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json'
   workflow_dispatch:
 
 permissions:
@@ -102,9 +103,9 @@ jobs:
       - name: Join real-source reports with candidate-wide 36-group blocking matrix
         run: |
           if [ -f docs/is/evidence/IS_P3A_ARCHIVED_FULL_GROUP_AUDIT.json ]; then
-            python -m scripts.is.p3a_join_original_source_evidence --baseline docs/is/evidence/IS_CANDIDATE_WIDE_COLOC_BASELINE_20261122.json --eur-now inputs/current/is-p3a-source-whole-file-EUR-md5-evidence/publisher_original_integrity.json --eas-now inputs/current/is-p3a-source-whole-file-EAS-md5-evidence/publisher_original_integrity.json --eur-prior inputs/previous/EUR/source_full_qc.json --eas-prior inputs/previous/EAS/source_full_qc.json --eqtl inputs/previous/EGEAD420/EGEAD420_reproducible_go_hold.json --supplement inputs/previous/BBJ/ci_public_gwas_evidence.json --original-groups docs/is/evidence/IS_P3A_ARCHIVED_FULL_GROUP_AUDIT.json --out artifacts/is/p3a_all_source_scientific_HOLD.json
+            python -m scripts.is.p3a_join_original_source_evidence --baseline docs/is/evidence/IS_CANDIDATE_WIDE_COLOC_BASELINE_20261122.json --eur-now inputs/current/is-p3a-source-whole-file-EUR-md5-evidence/publisher_original_integrity.json --eas-now inputs/current/is-p3a-source-whole-file-EAS-md5-evidence/publisher_original_integrity.json --eur-prior inputs/previous/EUR/source_full_qc.json --eas-prior inputs/previous/EAS/source_full_qc.json --eqtl inputs/previous/EGEAD420/EGEAD420_reproducible_go_hold.json --supplement inputs/previous/BBJ/ci_public_gwas_evidence.json --original-groups docs/is/evidence/IS_P3A_ARCHIVED_FULL_GROUP_AUDIT.json --restored-keys docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json --out artifacts/is/p3a_all_source_scientific_HOLD.json
           else
-            python -m scripts.is.p3a_join_original_source_evidence --baseline docs/is/evidence/IS_CANDIDATE_WIDE_COLOC_BASELINE_20261122.json --eur-now inputs/current/is-p3a-source-whole-file-EUR-md5-evidence/publisher_original_integrity.json --eas-now inputs/current/is-p3a-source-whole-file-EAS-md5-evidence/publisher_original_integrity.json --eur-prior inputs/previous/EUR/source_full_qc.json --eas-prior inputs/previous/EAS/source_full_qc.json --eqtl inputs/previous/EGEAD420/EGEAD420_reproducible_go_hold.json --supplement inputs/previous/BBJ/ci_public_gwas_evidence.json --out artifacts/is/p3a_all_source_scientific_HOLD.json
+            python -m scripts.is.p3a_join_original_source_evidence --baseline docs/is/evidence/IS_CANDIDATE_WIDE_COLOC_BASELINE_20261122.json --eur-now inputs/current/is-p3a-source-whole-file-EUR-md5-evidence/publisher_original_integrity.json --eas-now inputs/current/is-p3a-source-whole-file-EAS-md5-evidence/publisher_original_integrity.json --eur-prior inputs/previous/EUR/source_full_qc.json --eas-prior inputs/previous/EAS/source_full_qc.json --eqtl inputs/previous/EGEAD420/EGEAD420_reproducible_go_hold.json --supplement inputs/previous/BBJ/ci_public_gwas_evidence.json --restored-keys docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json --out artifacts/is/p3a_all_source_scientific_HOLD.json
           fi
       - name: Upload source evidence combined scientific HOLD
         if: always()
