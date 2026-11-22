@@ -1,0 +1,72 @@
+{
+  "schema": "CKM_IS_professor_proposal_gate_v1",
+  "date": "2026-11-22",
+  "proposal_path": "docs/proposals/IS_CKM_STROKE_professor_proposal_20261122.md",
+  "prior_master": "docs/IS_MASTER.md",
+  "replaces_prior_IS_master": false,
+  "proposal_status": "GO_FOR_SUPERVISOR_DISCUSSION_ONLY",
+  "scientific_status": "HOLD",
+  "core_hypothesis": "CKM-component-specific genetic associations differ across LAA, CE and SVD, with covariance-aware formal subtype comparisons",
+  "primary_exposures": [
+    "LDL-C",
+    "SBP"
+  ],
+  "secondary_exposures": [
+    "eGFR",
+    "UACR"
+  ],
+  "exploratory_exposures": [
+    "T2D",
+    "BMI",
+    "HDL-C",
+    "TG"
+  ],
+  "eur_outcomes": {
+    "AIS": "GCST90104540",
+    "LAA": "GCST90104542",
+    "CE": "GCST90104541",
+    "SVD": "GCST90104543"
+  },
+  "eas_context": {
+    "source": "TPMI SAIGE phecode 433.21 versus GIGASTROKE EAS AIS GCST90104545",
+    "phenotype_equivalence_proven": false,
+    "participant_nonoverlap_proven": false,
+    "TPMI_SAIGE_cases": 9249,
+    "TPMI_SAIGE_controls": 304660,
+    "EAS_AIS_discovery_cases": 19032,
+    "EAS_AIS_discovery_controls": 237242,
+    "SAIGE_original_rows": 15588353,
+    "SAIGE_source_QC_PASS": 8042797,
+    "SAIGE_EAS_allele_matched": 5228340,
+    "SAIGE_EAS_strict_joint_INFO_0_8_MAF_0_01_AF_gap_0_05": 3745225,
+    "strict_criterion_is_sensitivity_not_established_final_exclusion": true,
+    "independently_audited": true,
+    "action_source": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44920288867",
+    "action_audit": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44924780834"
+  },
+  "scientific_gates": {
+    "original_eas_source_alignment": "PASS_TECHNICAL_ONLY",
+    "exposure_outcome_Neff_overlap_ld": "HOLD",
+    "EUR_single_trait_LDSC": "NOT_RUN",
+    "subtype_covariance_aware_difference": "NOT_RUN",
+    "instrument_strength_MR": "NOT_RUN",
+    "cis_pQTL_eQTL_coloc": "NOT_RUN",
+    "celltype_functional_mechanism": "NOT_RUN"
+  },
+  "methodology_rules": {
+    "no_unsupported_Neff": true,
+    "no_subtype_effect_difference_from_significance_discordance": true,
+    "no_cross_model_PLINK2_SAIGE_N_transfer": true,
+    "do_not_claim_independent_replication_from_SNP_match": true,
+    "no_unverified_coloc_MR_LDSC_findings": true,
+    "no_unreviewed_rare_variant_or_personlevel_data_commits": true,
+    "sample_or_specimen_contact_deferred": true
+  },
+  "prior_art": [
+    "https://www.nature.com/articles/s41586-022-05165-3",
+    "https://pubmed.ncbi.nlm.nih.gov/40304040/",
+    "https://pubmed.ncbi.nlm.nih.gov/42911303/",
+    "https://doi.org/10.1177/0271678X261462718",
+    "https://pubmed.ncbi.nlm.nih.gov/42399650/"
+  ]
+}
