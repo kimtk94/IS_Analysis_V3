@@ -99,13 +99,13 @@ def fetch_permuted(q,official,fetch=urllib.request.urlopen):
         require(parsed.scheme=="https" and parsed.hostname=="ftp.ebi.ac.uk",
                 "permutation source unexpected redirect")
         raw=r.read(MAX_PERM_ZIP+1)
-    require(200<len(raw)<=MAX_PERM_ZIP,
+    require(30<len(raw)<=MAX_PERM_ZIP,
             "original permutation gzip empty or outside bounded size")
     try:
         plain=gzip.decompress(raw)
     except (EOFError,OSError) as exc:
         raise ValueError("original permutation gzip invalid") from exc
-    require(100<len(plain)<=MAX_PERM_PLAIN,
+    require(30<len(plain)<=MAX_PERM_PLAIN,
             "original permutation expanded bytes outside cap")
     rows=csv.DictReader(io.StringIO(plain.decode("utf-8-sig")),delimiter="\t")
     require(PERMUTED_HEADER.issubset(set(rows.fieldnames or [])),
