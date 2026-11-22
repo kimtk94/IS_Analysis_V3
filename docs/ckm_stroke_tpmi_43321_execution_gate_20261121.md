@@ -383,3 +383,28 @@ Source `QC=FAIL` variants 7,545,556, palindromic candidates 1,146,497, non-biall
 
 - A new [attempt 2 of #44920288867](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44920288867) was launched after [joint filtering code update](https://github.com/kimtk94/IS_Analysis_V3/commit/2bd565a89264779b950a6b2bee7794de2f1989c7) and [sensitivity negative test](https://github.com/kimtk94/IS_Analysis_V3/commit/abb2f1774e3ac7d719574169d57ae7f26caab3d1). **Do not report a joint INFO >=0.8, MAF >=0.01, AF difference <=0.05 SNP count without a terminal run result.**
 - **Scientific status HOLD**: exact clinical Phecode vs broad AIS endpoint harmonization, participant-level independence, suitable East Asian LD reference, model-specific LDSC LDSC-SEG/MAGMA assumptions, and MR/coloc causal constraints. No LD score, MR, or coloc analysis executed.
+
+## Professor proposal feasibility decision — SAIGE x GIGASTROKE independent audit FINAL (2026-11-22)
+
+**Verified source-level technical milestone, not an association or causal finding.**
+
+- [SAIGE/EAS AIS full-source 2nd attempt #44920288867](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44920288867) **SUCCESS**, job `136908095463`, artifact `14716303116`: 12/12 tests PASS; original TPMI SAIGE and GIGASTROKE EAS AIS source hashes and GRCh38-to-GRCh37 chain pinned.
+- [Independent aggregate audit 2nd attempt #44924780834](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/44924780834) **SUCCESS**, job `137143460546`, artifact `14746175647`: checks exact original 15,588,353 SAIGE rows, 8,042,797 source-QC-PASS rows, candidate/liftover partitions, source EAS 6,725,216 rows, chromosome/allele matches, AF conservation and nested joint-filter bounds.
+
+| Criterion | Real SNP count |
+|---|---:|
+| SAIGE original source-QC-PASS | 8,042,797 |
+| SAIGE (GRCh38→GRCh37) and EAS AIS nonpalindromic allele matched | 5,228,340 |
+| Above plus `imputationINFO >=0.8` and `MAF >=0.01` | 5,212,867 |
+| Above plus `abs(aligned effect allele frequency difference) <=0.10` | **4,896,148** |
+| Above plus `abs(aligned effect allele frequency difference) <=0.05` | **3,745,225** |
+
+Stricter joint subset is **71.633% of technically matched** SAIGE/EAS SNPs and **46.566% of original SAIGE QC-PASS SNPs**. The aligned-frequency threshold is a sensitivity choice and must not be misrepresented as definitive population genetics QC. **No instrument-level or causal tests have been performed.**
+
+**Minimal proposal-ready approach:**
+1. **Feasibility GO only:** Two publicly downloadable East Asian ischemic stroke-related GWAS summary datasets can be joined in a correctly aligned allele space. Primary TPMI 433.21 summary source uses **SAIGE (9,249 cases / 304,660 controls)**; independent EAS outcome is GIGASTROKE any ischemic stroke **19,032 cases / 237,242 controls**. These are different clinical phenotype definitions and different association methods, so they should not be pooled.
+2. **Main proposal outcome plan:** GIGASTROKE EAS AIS is broad ischemic stroke, while TPMI Phecode 433.21 is *cerebral artery occlusion with cerebral infarction*. Treat TPMI as **secondary ancestry-matched phenotype sensitivity/triangulation**, not an interchangeable validation cohort or subtype replacement; explicit harmonized clinical case definitions are required.
+3. **Do not oversell:** The older PLINK2 1,507,261 matched-SNP overlap is not the SAIGE result; `PLINK2 OBS_CT=204099` cannot inherit SAIGE case/control. Technical genomic matching does not establish participant-level non-overlap, reproducible effect direction, instrumental variable strength, LDSC h2, MR or colocalization.
+4. **Scientific next gates if the research topic is approved:** phenotype case-definition compatibility; tested independence/overlap caveats from GIGASTROKE EAS source and TPMI; East-Asian appropriate LD reference plus summary-statistics QC; specific pQTL/eQTL instruments and actual effect-size direction and p-value testing. Preserve formal **HOLD** until evidence is sufficient.
+
+**Proposal verdict: GO for preliminary data feasibility / study design; HOLD for biological association validation and LDSC/MR/coloc conclusions.** No more whole-genome SNP-overlap reruns are required for the proposal solely to enlarge or reconfirm the aligned SNP count.
