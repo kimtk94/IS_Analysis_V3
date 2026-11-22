@@ -1,0 +1,87 @@
+name: IS P3A 36 original QTL phenotypes full cis tested n_variants vs permuted source
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-36-primary-permuted-nvariants.yml'
+      - 'scripts/is/audit_p3a_36_primary_permuted_cis_nvariants.py'
+      - 'tests/test_is_p3a_36_primary_permuted_cis_nvariants.py'
+      - 'docs/is/IS_P3A_36_PRIMARY_PERMUTED_CIS_NVARIANT_RECONCILIATION.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-original-permuted-cis-36-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  official-cis-nvariants-all-36-groups:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Checkout archived fixture for regression only
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install pinned remote Tabix and whole-repository smoke test dependencies
+        run: python -m pip install 'pysam==0.24.1' 'pyliftover==0.4.1' 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Negative-test source count mismatch, phenotype ID, malformed gzip, missing full cis, false N
+        run: |
+          python -m py_compile scripts/is/audit_p3a_36_primary_permuted_cis_nvariants.py
+          python -m unittest discover -s tests -p 'test_is_p3a_36_primary_permuted_cis_nvariants.py' -v
+      - name: Unchanged full repository regression
+        run: bash scripts/codex_smoke_test.sh
+      - name: Read immutable official QTL Catalogue release7 source identity
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45024493082
+          name: is-p3a-36-qtl-official-release7-source-N-build-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/official
+      - name: Read original official Ensembl105 20-gene phenotype positions
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45027864903
+          name: is-p3a-36-Ensembl105-cis-context-coverage-coloc-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/reference
+      - name: Read main 36-gene original indexed nominal 3.52Mb region source digest
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45028882323
+          name: is-p3a-36-full-reference-cis-union-real-source-coloc-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/nominal
+      - name: Read previous main independent per-SNP genotyped allele number audit
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45034385821
+          name: is-p3a-36-primary-GWAS-AIS-publisher-YAML-QTL-AN-sample-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/allele-n
+      - name: Query original three publisher permuted files and region-indexed nominal source once each, compare 36 exact n_variants
+        run: |
+          python -m scripts.is.audit_p3a_36_primary_permuted_cis_nvariants \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --union inputs/nominal/IS_P3A_36_official_Ensembl105_cis_union_source_HOLD.json \
+            --reference inputs/reference/P3A_36_Ensembl105_reference_cis_window_evidence_HOLD.json \
+            --official inputs/official/P3A_36_official_QTL_catalogue_study_source_HOLD.json \
+            --allele-n inputs/allele-n/IS_P3A_36_primary_GWAS_metadata_QTL_AN_descriptive_HOLD.json \
+            --out artifacts/is/IS_P3A_36_actual_source_permuted_cis_tested_nvariants_HOLD.json
+      - name: Retain only publisher source hash, group-wise test counts, and explicit science HOLD
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-official-QTL-permuted-nvariants-vs-nominal-cis-HOLD
+          path: artifacts/is/IS_P3A_36_actual_source_permuted_cis_tested_nvariants_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
