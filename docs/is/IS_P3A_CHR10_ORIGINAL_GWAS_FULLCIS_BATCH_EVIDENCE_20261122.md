@@ -35,3 +35,29 @@
 - 원본 molecular-QTL 자료: QTD000131 (GTEx artery aorta, catalogue cohort n387), QTD000171 (GTEx brain cortex, n205), QTD000434 (ROSMAP DLPFC, n560). **Study-level catalog numbers are contextual, not approved per-assay genotype sample Ns**. QTL source ancestry, matched LD, effects/SE full region SNP-by-SNP, BBJ/GIGASTROKE EAS precise cohort overlap, exact GWAS phenotype Ncases/Ncontrols and case fraction remain unresolved.
 
 **중요한 연구 판단:** 36개 후보에서 Coloc을 생물학적 인과 결과로 만들기 전에 실제 원본 위상·대립유전자·표본 수·LD·원본 QTL과 GWAS 연결을 해결해야 한다. 기술적 GWAS region PASS가 발생하더라도 **신규 P3A coloc.abf 0/36, coloc.susie 0/36**은 유지한다. 후보 eGene/QTL 유의성은 허혈성 뇌졸중 인과 표적 입증이 아니다.
+
+## 5. 2026-11-22 실제 Github Actions 수치 및 원본 대조 결과
+
+**전체 원본 스캔 완료:** [Actions #45020605713](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45020605713), 4/4 Job SUCCESS, 17/17 fail-closed synthetic tests PASS. EUR/EAS 각 발행기관 전체 원본의 MD5/SHA-256/bytes 일치 후 파싱. 사전 정해진 동일 `chr10:104163676–106220351` 영역의 **유효** 변이 행:
+
+| GWAS original | chr10 context valid variant rows | Publisher whole-file | Scientific |
+|---|---:|---|---|
+| `GCST90104545` EAS | **3,913** | MD5+SHA256+bytes PASS | HOLD |
+| `GCST90104540` EUR | **4,397** | MD5+SHA256+bytes PASS | HOLD |
+
+모든 36개 실제 QTL 분석 그룹이 한 chr10 locus를 공유하며, 20개 gene ID와 동일한 source context에 연결된다. 이 숫자는 **36개 각각의 전체 cis overlap SNP 수가 아니며**, 실제 SNP effect별 QTL–GWAS source matching을 완료했다는 뜻도 아니다.
+
+**기존 30개 locus 원본 기록과의 재검산:** [Actions #45021159785](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45021159785) **SUCCESS**, 6/6 regression tests PASS. 이 경량 CI는 원본 compressed GWAS를 다시 다운로드하지 않고 2026-11-22 실제 원본 scan의 검증된 artifacts와 불변 old-branch 180행 GWAS context TSV를 결합했다.
+
+| 이전 `GWS_EAS_AIS` chr10 연구 기록 | 이번 동일 EAS 원본 새 검사 | 결론 |
+|---|---|---|
+| Context 유효 행 **3,913** | **3,913** | 기술적 일치 |
+| `p<5e-8` 행 **69** | **69** | 기술적 일치 |
+| 기존 best p `5.584e-11` | log10 오차 ≤0.05 | 기술적 일치 |
+| `10:105596641:G:C` ALT β `−0.0762`, p `6.214e-11` | β·p 숫자 비교 일치 | **C/G palindrome 때문에 strand unresolved** |
+
+**통계적 해석:** 위의 서로 다른 몇 가지 요약 값이 일치하는 것은 아카이브와 발행기관 GWAS 간 **높은 기술적 일관성**의 근거이나, full per-variant source matching의 엄격한 승인 요건인 **2개 이상 영역의 20개 이상 독립된 비회문형 allele-signed variant**를 검증한 결과는 아니다. 해당 lead의 원본 SNP 방향은 FASTA, allele frequency 및 alt orientation 추가 검증 전 **승인 불가**.
+
+또한 25개 public QTL BH05 assay의 142,196/59,090/31,313 기록은 **과거 자체 원본 집계**이고, 이번 공식 GWAS 전체 원본에서 25개 assay에 대해 새로 SNP별 조인한 숫자가 아님을 주의한다.
+
+**다음 과학적 작업:** 불변 30-region 원본의 24개 비회문형 `GWS_EAS_AIS` lead 및 (가능하면) 더 많은 사전등록 SNP를 최소 두 개의 유전체 영역에서 공식 EAS publisher 원본에 직접 비교, effect-allele 방향·beta·p값과 관측 SE를 각각 QC. 출처가 통과하더라도 실제 EAS-IS의 정확한 Ncase/Ncontrol/phenotype 정의와 BBJ inclusion, QTL donor N/alleles 및 full cis QTL 통계가 승인을 받을 때까지 Coloc/MR는 HOLD.
