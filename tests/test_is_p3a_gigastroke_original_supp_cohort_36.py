@@ -28,6 +28,7 @@ def source_rows():
     for line,(name,cases,control) in zip(rows,cohort):
         d[line]={"B":name,"K":str(cases) if cases is not None else "NA",
                  "P":str(control)}
+    d[50]["A"]="EAS"
     d[60]={"B":"INCIDENT_ONLY_NOT_DISCOVERY","K":"4","P":"102"}
     d[65]={"A":"TOTAL EAS","K":"19032","P":"237242"}
     return d
