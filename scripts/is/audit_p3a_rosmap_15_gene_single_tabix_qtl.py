@@ -26,6 +26,7 @@ PRIOR = importlib.import_module(
     "scripts.is.audit_p3a_official_coloc_ana_qtl_source_probe")
 SMALL = importlib.import_module(
     "scripts.is.audit_p3a_36_original_zenodo_metadata_gwas_beta_model")
+RANGE = importlib.import_module("scripts.is.qtl_original_indexed_http_range")
 DATASET = "QTD000434"
 STUDY = "QTS000025"
 Z_FILE = "gene_counts_Ensembl_105_phenotype_metadata.tsv.gz"
@@ -308,14 +309,20 @@ def execute(manifest):
     phenotype=source_gene_metadata(raw,genes)
     require(len(phenotype)==15, "Missing one or more official 2023 Ensembl105 genes")
     region=one_combined_region(phenotype,genes)
-    print("SOURCE_ONE_TABIX_REQUEST_FOR_ALL_15_ROSMAP_GENES_"+region["region"],
-          flush=True)
-    # FTP is the exact protocol in the official eQTL Catalogue tabix example.
-    # Previous HTTPS tabix on GitHub runner immediately failed before any rows.
-    # Attempt FTP once in the next CI; no automatic fallback/retry on publisher.
-    url=("ftp://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/"
+    print("SOURCE_ONE_ORIGINAL_TBI_INDEX_GET_AND_ONE_CONTIGUOUS_BGZF_RANGE_"+
+          region["region"],flush=True)
+    # Original GitHub runner HTSlib opened neither HTTPS nor FTP remote
+    # tabix URLs. An index GET + a single contiguous HTTP Range is used
+    # instead of triggering repeated EBI remote open failures.
+    url=("https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/"
          "QTS000025/QTD000434/QTD000434.all.tsv.gz")
-    stats=run_tabix_single_request(url,region,manifest,phenotype)
+    lines,range_provenance=RANGE.source_indexed_range(url,region)
+    stats=aggregate_tabix_stream(lines,manifest,region,phenotype)
+    require(stats["query_scanned_all_study_QTL_rows_in_union_range"]>0,
+            "Indexed source range contains no original QTL rows")
+    stats["single_TBI_index_and_contiguous_range_only"]=True
+    stats["original_full_source_downloaded"]=False
+    source_prov["original_indexed_range"]=range_provenance
     return {
         "schema":"is-p3a-36-original-ROSMAP-15-gene-single-tabix-regional-QTL-aggregates-v1",
         "technical_status":"PASS_ORIGINAL_SINGLE_REGION_TABIX_15_GENE_AGGREGATE_SOURCE",
