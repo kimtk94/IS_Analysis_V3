@@ -40,6 +40,22 @@ def gw_source(rows=8,beta="0.05",se="0.025",p=None,eaf="0.35",
     return gzip.compress(("\n".join(src)+"\n").encode())
 
 
+def gwas_with_reported_or(rows=100,reported_OR="valid",include_ci=True):
+    original=gzip.decompress(gw_source(rows=rows)).decode("utf-8").splitlines()
+    effect=0.05
+    se=0.025
+    OR=(math.exp(effect) if reported_OR=="valid" else
+        None if reported_OR=="missing" else
+        1.5 if reported_OR=="wrong" else -0.3)
+    source=[original[0]+"\todds_ratio\tci_lower\tci_upper"]
+    for row in original[1:]:
+        value="" if OR is None else str(OR)
+        lo=(str(math.exp(effect-1.96*se)) if include_ci else "")
+        hi=(str(math.exp(effect+1.96*se)) if include_ci else "")
+        source.append(row+"\t"+value+"\t"+lo+"\t"+hi)
+    return gzip.compress(("\n".join(source)+"\n").encode())
+
+
 def original_paper():
     return (b'<article><front><article-meta><article-id pub-id-type="doi">'
             b'10.1038/s41586-022-05165-3</article-id></article-meta></front>'
@@ -71,6 +87,38 @@ class OriginalPublisherGWASEffectScaleTests(unittest.TestCase):
         self.assertEqual(r["z_p_abs_log10_error_gt_1"],0)
         self.assertAlmostEqual(r["z_p_log10_error_median"],0,places=8)
         self.assertFalse(r["source_file_beta_exact_log_OR_scale_verified"])
+
+    def test_original_odds_ratio_populated_validates_lnOR_in_preview(self):
+        qc=M.parse_source_effect_stats(gwas_with_reported_or(rows=100),"EAS")
+        self.assertTrue(qc["source_OR_and_CI_columns_present"])
+        self.assertEqual(qc["source_OR_populated_rows"],100)
+        self.assertEqual(qc["source_OR_95CI_populated_rows"],100)
+        self.assertEqual(qc["source_beta_ln_OR_max_abs_error_le_0_015_rows"],100)
+        self.assertEqual(qc["source_OR_95CI_exp_beta_pm_1_96SE_le_0_04_rows"],100)
+        self.assertEqual(qc["source_direct_ln_OR_vs_beta_preview_status"],
+            "PASS_ORIGINAL_POPULATED_OR_AGREES_WITH_BETA_IN_PREVIEW")
+        self.assertFalse(qc["source_file_beta_exact_log_OR_scale_verified"])
+
+    def test_original_OR_header_but_all_values_missing_keeps_hold(self):
+        qc=M.parse_source_effect_stats(gwas_with_reported_or(
+            rows=100,reported_OR="missing",include_ci=False),"EUR")
+        self.assertEqual(qc["source_OR_populated_rows"],0)
+        self.assertEqual(qc["source_OR_missing_or_unparseable_rows"],100)
+        self.assertEqual(qc["source_direct_ln_OR_vs_beta_preview_status"],
+            "HOLD_OR_SOURCE_NOT_POPULATED_OR_INCONSISTENT")
+
+    def test_original_OR_disagreement_prevents_scale_approval(self):
+        qc=M.parse_source_effect_stats(gwas_with_reported_or(
+            rows=100,reported_OR="wrong"),"EAS")
+        self.assertEqual(qc["source_OR_populated_rows"],100)
+        self.assertEqual(qc["source_beta_ln_OR_max_abs_error_le_0_015_rows"],0)
+        self.assertEqual(qc["source_direct_ln_OR_vs_beta_preview_status"],
+            "HOLD_OR_SOURCE_NOT_POPULATED_OR_INCONSISTENT")
+
+    def test_original_negative_OR_rejected(self):
+        with self.assertRaises(ValueError):
+            M.parse_source_effect_stats(gwas_with_reported_or(
+                rows=100,reported_OR="negative"),"EUR")
 
     def test_same_numeric_p_not_proof_of_effect_size_unit(self):
         r=M.parse_source_effect_stats(gw_source(beta="-0.03",se="0.02"),"EUR")
