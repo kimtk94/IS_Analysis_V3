@@ -1,0 +1,79 @@
+name: IS P3A original GTEx ROSMAP small metadata and exact GWAS beta unit HOLD
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-36-2021-small-metadata-gwas-beta-audit.yml'
+      - 'scripts/is/audit_p3a_36_original_zenodo_metadata_gwas_beta_model.py'
+      - 'tests/test_is_p3a_36_original_zenodo_metadata_gwas_beta_model.py'
+      - 'docs/is/IS_P3A_36_ORIGINAL_PUBLIC_SAMPLE_METADATA_GWAS_EFFECT_UNITS_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-2021-small-public-metadata-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-md5-small-sample-metadata-and-2022-beta-units:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Historical tests fixture only
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install existing repository smoke test dependencies
+        run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Verify original Zenodo official checksum and privacy gates before any fetch
+        run: |
+          python -m py_compile scripts/is/audit_p3a_36_original_zenodo_metadata_gwas_beta_model.py
+          python -m unittest discover -s tests -p 'test_is_p3a_36_original_zenodo_metadata_gwas_beta_model.py' -v
+      - name: Unmodified whole-repository regression tests
+        run: bash scripts/codex_smoke_test.sh
+      - name: Load prior original QTL tissue and sample-study source
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45024493082
+          name: is-p3a-36-qtl-official-release7-source-N-build-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/official
+      - name: Load previous original public counts and paper source audit
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45041059801
+          name: is-p3a-36-primary-expression-matrix-and-GWAS-beta-unit-source-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/previous
+      - name: Load primary published EAS EUR AIS discovery cohort BBJ source
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 45035814621
+          name: is-p3a-36-GIGASTROKE-2022-original-EAS-EUR-AIS-BBJ-cohorts-HOLD
+          github-token: ${{ github.token }}
+          path: inputs/cohort
+      - name: Stream official small GTEx/ROSMAP sample metadata, enforce MD5, aggregate source study groups, audit exact GWAS Catalog beta source
+        run: |
+          python -m scripts.is.audit_p3a_36_original_zenodo_metadata_gwas_beta_model \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --prior inputs/previous/IS_P3A_36_public_normalized_expression_model_GWAS_beta_unit_HOLD.json \
+            --official inputs/official/P3A_36_official_QTL_catalogue_study_source_HOLD.json \
+            --gwas-cohort inputs/cohort/IS_P3A_36_GIGASTROKE_2022_primary_AIS_cohort_BBJ_HOLD.json \
+            --out artifacts/is/IS_P3A_36_Zenodo_small_sample_GTEx_ROSMAP_GIGASTROKE_beta_units_HOLD.json
+      - name: Upload exact source provenance, aggregate non-identifying sample summaries and 36 scientific HOLD decisions only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-official-small-GTEx-ROSMAP-metadata-GWAS-beta-science-HOLD
+          path: artifacts/is/IS_P3A_36_Zenodo_small_sample_GTEx_ROSMAP_GIGASTROKE_beta_units_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
