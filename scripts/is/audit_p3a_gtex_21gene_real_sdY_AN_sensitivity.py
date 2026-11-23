@@ -61,6 +61,8 @@ DATASETS={
     }
   },
 }
+MIN_GENE_VARIANTS=3000
+MIN_FULL_AN_VARIANTS=3000
 MIN_MAF_STRATUM=30
 MAX_SOURCE_REGION_ROWS=500000
 
@@ -163,7 +165,7 @@ def scan_source(lines,dataset,manifest,*,expected_source_counts=True):
     for gid,g in target.items():
         records=bins[gid]
         require(len(records)==d["gene_variant_counts"][gid] and
-                len(records)>=3000,"GTEx gene source SNP count mismatches original baseline")
+                len(records)>=MIN_GENE_VARIANTS,"GTEx gene source SNP count mismatches original baseline")
         sorted_records=sorted(records.items())
         maf_se=[(v[0],v[1]) for _,v in sorted_records]
         N_cat=d["catalogue_n_hypothesis"]
@@ -172,7 +174,7 @@ def scan_source(lines,dataset,manifest,*,expected_source_counts=True):
         require(min(hist)>0 and max(hist)==N_cat and len(hist)>1,
                 "Expected real GTEx SNP genotype N variability absent")
         modal_only=[(v[0],v[1]) for _,v in sorted_records if v[2]==N_cat]
-        require(len(modal_only)>3000,"Too few source SNPs with nominal AN/2")
+        require(len(modal_only)>=MIN_FULL_AN_VARIANTS,"Too few source SNPs with nominal AN/2")
         fullN_only=OLS.estimate_coloc_sdY(modal_only,N_cat)
         small=[v for v in maf_se if v[0]<.1]
         common=[v for v in maf_se if v[0]>=.1]
