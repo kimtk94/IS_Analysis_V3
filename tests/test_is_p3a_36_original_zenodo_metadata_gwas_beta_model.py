@@ -9,13 +9,19 @@ M=importlib.import_module("scripts.is.audit_p3a_36_original_zenodo_metadata_gwas
 
 
 def fake_data():
-    return ("sample_id\tgenotype_id\tqtl_group\tsmtsd\tcohort\n"+
-        "patient_ABC\tgenotype_ABC\tartery_aorta\tArtery - Aorta\tA\n"+
-        "patient_B\tgenotype_B\tartery_aorta\tArtery - Aorta\tA\n"+
-        "patient_C\tgenotype_C\tbrain_cortex\tBrain - Cortex\tA\n"+
-        "patient_D\tgenotype_D\tbrain_cortex\tBrain - Cortex\tA\n"+
-        "patient_E\tgenotype_E\tbrain_naive\tBrain DLPFC\tB\n"+
-        "patient_F\tgenotype_F\tbrain_naive\tBrain DLPFC\tB\n").encode()
+    # Six entirely synthetic pseudonymous samples; IDs must never appear in
+    # public aggregate output. One GTEx aorta sample fails RNA QC and one
+    # cortex sample fails genotype QC.
+    lines=[
+     "pseudo_id\tsample_id\tgenotype_id\tqtl_group\tsmtsd\tcohort\trna_qc_passed\tgenotype_qc_passed",
+     "pseudo_ABC\tpatient_ABC\tgenotype_ABC\tartery_aorta\tArtery - Aorta\tA\tTrue\tTrue",
+     "pseudo_B\tpatient_B\tgenotype_B\tartery_aorta\tArtery - Aorta\tA\tFalse\tTrue",
+     "pseudo_C\tpatient_C\tgenotype_C\tbrain_cortex\tBrain - Cortex\tA\tTrue\tTrue",
+     "pseudo_D\tpatient_D\tgenotype_D\tbrain_cortex\tBrain - Cortex\tA\tTrue\tFalse",
+     "pseudo_E\tpatient_E\tgenotype_E\tbrain_naive\tBrain DLPFC\tB\tTrue\tTrue",
+     "pseudo_F\tpatient_F\tgenotype_F\tbrain_naive\tBrain DLPFC\tB\tTrue\tTrue"
+    ]
+    return ("\n".join(lines)+"\n").encode()
 
 
 def fake_item(name):
@@ -65,6 +71,32 @@ class SourceSafetyTests(unittest.TestCase):
         self.assertEqual(summary["source_original_target_label_row_matches_lower_bound_only"],
                          {"QTD000434":2})
         self.assertFalse(summary["reusable_raw_data_sample_meta_for_release7_approved"])
+
+    def test_actual_original_RNA_and_genotype_QC_intersection_by_group(self):
+        summary=M.safe_count_source_metadata(fake_data(),"GTExV8.tsv")
+        by=summary["public_2021_qtl_group_RNA_and_genotype_QC_flag_aggregates"]
+        self.assertEqual(by["QTD000131"]["2021_metadata_rows_in_tissue"],2)
+        self.assertEqual(by["QTD000131"]["2021_both_rna_genotype_QC_passed_rows"],1)
+        self.assertEqual(by["QTD000171"]["2021_both_rna_genotype_QC_passed_rows"],1)
+        self.assertEqual(by["QTD000131"]["2021_public_RNA_genotype_QC_joint_flags"]
+                         ["RNA_FAIL_GENOTYPE_PASS"],1)
+        self.assertFalse(by["QTD000131"]["2021_both_QC_rows_equal_Release7_declared_N_DESCRIPTIVE"])
+        self.assertTrue(by["QTD000131"]["2021_QC_pass_is_not_release7_qtlmap_sample_intersection_proof"])
+
+    def test_source_unknown_QC_flag_not_counted_as_pass(self):
+        v=fake_data().replace(b"\tFalse\tTrue\n",b"\tUNKNOWN\tTrue\n")
+        summary=M.safe_count_source_metadata(v,"GTExV8.tsv")
+        a=summary["public_2021_qtl_group_RNA_and_genotype_QC_flag_aggregates"]["QTD000131"]
+        self.assertEqual(a["unparsed_source_QC_flags"],1)
+        self.assertEqual(a["2021_both_rna_genotype_QC_passed_rows"],1)
+
+    def test_duplicate_public_pseudo_id_not_double_counted(self):
+        a=fake_data().replace(b"pseudo_B\t",b"pseudo_ABC\t")
+        result=M.safe_count_source_metadata(a,"GTExV8.tsv")
+        self.assertEqual(result["distinct_sample_donor_identifier_count_only"]["pseudo_id"],5)
+        by=result["public_2021_qtl_group_RNA_and_genotype_QC_flag_aggregates"]["QTD000131"]
+        self.assertEqual(by["2021_distinct_pseudo_ids_in_tissue_count_only"],1)
+        self.assertEqual(by["2021_both_QC_passed_distinct_pseudo_ids"],1)
 
     def test_metadata_malformed_physical_row_fails_closed(self):
         with self.assertRaises(ValueError):
