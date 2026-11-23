@@ -45,7 +45,7 @@ SELECTABLE_FIELDS={"sample_id","genotype_id","qtl_group","tissue",
                    "condition","condition_label","subject_id","donor_id",
                    "run_id","study","run","genotype","sample",
                    "rna_seq","file_id","phenotype_id","sex","age","batch"}
-UNIQUE_SAMPLE_HINTS={"sample_id","genotype_id","subject_id","donor_id"}
+UNIQUE_SAMPLE_HINTS={"sample_id","genotype_id","subject_id","donor_id","pseudo_id"}
 GROUP_HINTS={"qtl_group","sample_group","tissue","tissue_label","smtsd","smts",
              "tissue_id"}
 TARGET_GROUPS={
@@ -128,6 +128,14 @@ def norm(s):
     return re.sub(r"[^a-z0-9]+","_",str(s).strip().lower()).strip("_")
 
 
+def source_qc_flag(value):
+    """Classify public metadata QC boolean, not any patient data."""
+    val=norm(value)
+    if val in ("true","t","yes","y","1","pass","passed"):return True
+    if val in ("false","f","no","n","0","fail","failed"):return False
+    return None
+
+
 def safe_count_source_metadata(data,name):
     """Only numerical aggregate counts; never any original sample identifiers."""
     text=data.decode("utf-8-sig")
@@ -147,8 +155,13 @@ def safe_count_source_metadata(data,name):
             "original metadata duplicate normalized column names")
     recognized=[c for c in canonical if c in SELECTABLE_FIELDS]
     locations={c:i for i,c in enumerate(canonical)}
+    require(all(k in locations for k in ("pseudo_id","rna_qc_passed","genotype_qc_passed")),
+            "official source metadata missing pseudo_id or exact RNA/genotype QC status")
     unique_sets={c:set() for c in UNIQUE_SAMPLE_HINTS if c in locations}
     relevant_groups={q:0 for q in FILES[name]["candidate_qtd"]}
+    qc_by_qtl={q:{"rows":0,"unique_ids":set(),"both_pass_ids":set(),
+                  "joint_qc":collections.Counter(),"unparsed_flags":0}
+               for q in relevant_groups}
     categorical=collections.defaultdict(collections.Counter)
     known_groups=[c for c in GROUP_HINTS if c in locations]
     n=0;malformed=0;blanks=0
@@ -174,8 +187,38 @@ def safe_count_source_metadata(data,name):
                 v=norm(row[locations[c]])
                 if any(norm(alias)==v for alias in aliases):
                     relevant_groups[q]+=1
+                    record=qc_by_qtl[q]
+                    record["rows"]+=1
+                    pseudo=row[locations["pseudo_id"]].strip()
+                    require(bool(pseudo),"public original metadata missing pseudonymous sample ID")
+                    record["unique_ids"].add(pseudo)
+                    rna=source_qc_flag(row[locations["rna_qc_passed"]])
+                    geno=source_qc_flag(row[locations["genotype_qc_passed"]])
+                    rlabel="PASS" if rna is True else "FAIL" if rna is False else "UNKNOWN"
+                    glabel="PASS" if geno is True else "FAIL" if geno is False else "UNKNOWN"
+                    record["joint_qc"]["RNA_"+rlabel+"_GENOTYPE_"+glabel]+=1
+                    if rna is None or geno is None:
+                        record["unparsed_flags"]+=1
+                    if rna is True and geno is True:
+                        record["both_pass_ids"].add(pseudo)
                     break
     require(n>5 and malformed==0,"public metadata sample rows not parsed completely")
+    qc_summary={}
+    for q,v in qc_by_qtl.items():
+        both=v["joint_qc"]["RNA_PASS_GENOTYPE_PASS"]
+        expected_n=TARGET_GROUPS[q][1]
+        qc_summary[q]={
+            "2021_metadata_rows_in_tissue":v["rows"],
+            "2021_distinct_pseudo_ids_in_tissue_count_only":len(v["unique_ids"]),
+            "2021_both_rna_genotype_QC_passed_rows":both,
+            "2021_both_QC_passed_distinct_pseudo_ids":len(v["both_pass_ids"]),
+            "2021_public_RNA_genotype_QC_joint_flags":dict(sorted(v["joint_qc"].items())),
+            "unparsed_source_QC_flags":v["unparsed_flags"],
+            "catalogue_release7_declared_tissue_N_reference_only":expected_n,
+            "2021_both_QC_rows_equal_Release7_declared_N_DESCRIPTIVE":
+                both==expected_n,
+            "2021_QC_pass_is_not_release7_qtlmap_sample_intersection_proof":True,
+        }
     return {
         "source_original_file":name,"original_deposit_study":FILES[name]["study"],
         "original_2021_metadata_row_count":n,
@@ -189,6 +232,7 @@ def safe_count_source_metadata(data,name):
             {key:len(value) for key,value in unique_sets.items()},
         "recognized_tissue_or_qtl_group_columns":sorted(known_groups),
         "source_original_target_label_row_matches_lower_bound_only":relevant_groups,
+        "public_2021_qtl_group_RNA_and_genotype_QC_flag_aggregates":qc_summary,
         "n_blank_physical_rows_ignored":blanks,
         "source_column_group_distinct_label_counts_only":
             {k:len(v) for k,v in categorical.items()},
@@ -364,7 +408,8 @@ def main():
             k:{"rows":v.get("original_2021_metadata_row_count"),
                "columns":v.get("original_table_number_columns"),
                "schema":v.get("recognized_source_column_names_no_values"),
-               "target_counts":v.get("source_original_target_label_row_matches_lower_bound_only")}
+               "target_counts":v.get("source_original_target_label_row_matches_lower_bound_only"),
+               "source_QC":v.get("public_2021_qtl_group_RNA_and_genotype_QC_flag_aggregates")}
             for k,v in result.get("public_metadata_aggregate_sources",{}).items()},
          "gwas_metadata":{k:v["status"] for k,v in result.get(
              "official_GWAS_study_source_lookups",{}).items()},
