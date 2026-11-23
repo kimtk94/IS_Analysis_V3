@@ -101,6 +101,21 @@ class SourceSafetyTests(unittest.TestCase):
         self.assertFalse(r["effect_size_beta_exact_original_summary_file_explicit_log_OR_verified"])
         self.assertFalse(r["outcome_case_control_coloc_beta_varbeta_eligibility_approved"])
 
+    def test_GWAS_Catalog_retired_v1_replaced_by_official_2026_v2(self):
+        self.assertEqual(M.REST, "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/")
+
+    def test_original_GWAS_v2_response_can_be_read_without_false_logOR(self):
+        raw=json.dumps({"study_accession":"GCST90104540",
+                        "disease_trait":"ischemic stroke",
+                        "initial_sample_size":"62,100 cases and 1,234,808 controls",
+                        "study_design_comment":"binary phenotype"}).encode()
+        fake=lambda url,hosts,cap:(raw,{"SHA256":hashlib.sha256(raw).hexdigest()})
+        v=M.gwas_record("GCST90104540",fetch=fake)
+        self.assertEqual(v["status"],"PASS_ORIGINAL_GWAS_STUDY_METADATA_V2_NOT_BETA_SCALE")
+        self.assertEqual(v["published_study_descriptor_fields"]["disease_trait"],
+                         "ischemic stroke")
+        self.assertFalse(v["effect_size_beta_exact_original_summary_file_explicit_log_OR_verified"])
+
     def test_tissue_mapping_all_36_source_classes(self):
         self.assertEqual(set(M.TARGET_GROUPS),set(M.PRIOR.EXPECTED_QTLS))
         self.assertEqual(sum(v[4] for v in M.PRIOR.EXPECTED_QTLS.values()),36)
