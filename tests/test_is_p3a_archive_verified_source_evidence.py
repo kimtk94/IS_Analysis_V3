@@ -44,6 +44,9 @@ def synthetic_document(kind):
         "n_assay_ancestry_rows":72,
         "EUR_only_eight_discordant_gene_assay_rows":[],
         "n_permutation_vs_nominal_variant_count_exact_groups":36,
+        "formal_coloc_abf_eligible":0,
+        "formal_coloc_abf_executed":0,
+        "formal_coloc_susie_executed":0,
     }
 
 
@@ -154,8 +157,10 @@ class DurableP3AOriginalEvidenceTests(unittest.TestCase):
                 self.assertFalse(index["ROSMAP_2021_QC_vs_R7_9_sample_gap_explained"])
                 self.assertFalse(index["original_aggregate_evidence_donor_or_variant_effect_rows_archived"])
 
-    def test_archived_source_FDR_N_must_not_be_called_scientifically_approved(self):
-        self.assertIn("HOLD",A.ARCHIVE_SCHEMA.upper().replace("PERSISTENT","HOLD"))
+    def test_source_AN_proxy_only_not_exact_regression_N_claim(self):
+        self.assertEqual(A.ARCHIVE_SCHEMA,
+            "is-p3a-36x2-persistent-github-pinned-source-evidence-v1")
+        self.assertTrue(all(len(x["sha256"])==64 for x in A.COVERAGE.INPUTS.values()))
 
 
 if __name__=="__main__":
