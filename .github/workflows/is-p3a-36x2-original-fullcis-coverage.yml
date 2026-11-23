@@ -1,0 +1,78 @@
+name: IS P3A original 36 QTL x EAS EUR fullcis SNP overlap coverage audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-36x2-original-fullcis-coverage.yml'
+      - 'scripts/is/audit_p3a_36x2_original_fullcis_gwas_coverage.py'
+      - 'tests/test_is_p3a_36x2_original_fullcis_gwas_coverage.py'
+      - 'docs/is/IS_P3A_36x2_ORIGINAL_FULLCIS_GWAS_COVERAGE_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: is-p3a-original-36x2-cis-accounting-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  pinned-source-original-36x2-fullcis-accounting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install full repository regression dependency
+        run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Verify original source code compiles and adversarial 36x2 partitions reject tampering
+        run: |
+          python -m py_compile scripts/is/audit_p3a_36x2_original_fullcis_gwas_coverage.py
+          python -m unittest discover -s tests -p 'test_is_p3a_36x2_original_fullcis_gwas_coverage.py' -v
+      - name: Preserve unrelated research tests — repository regression
+        run: bash scripts/codex_smoke_test.sh
+      - name: Retrieve immutable original 36-assay GWAS QTL reciprocal SNP evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-real-QTL-GWAS-2way-SNP-allele-aggregate-HOLD
+          run-id: 45031834139
+          github-token: ${{ github.token }}
+          path: inputs/reciprocal
+      - name: Retrieve original permutation-tested entire cis variant accounting
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-official-QTL-permuted-nvariants-vs-nominal-cis-HOLD
+          run-id: 45036525615
+          github-token: ${{ github.token }}
+          path: inputs/cis
+      - name: Retrieve original source genotype AN and QTL N-specific evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-primary-QTL-sdY-residual-proxy-N-GWAS-cc-HOLD
+          run-id: 45038801844
+          github-token: ${{ github.token }}
+          path: inputs/qtl_n
+      - name: Pinned original evidence SHA256 plus full 36x2 intersection and source exclusion accounting
+        run: |
+          python -m scripts.is.audit_p3a_36x2_original_fullcis_gwas_coverage \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --reciprocal inputs/reciprocal/P3A_36_real_source_2way_ref_SNP_EAS_EUR_GWAS_HOLD.json \
+            --cis inputs/cis/IS_P3A_36_actual_source_permuted_cis_tested_nvariants_HOLD.json \
+            --qtl-n inputs/qtl_n/IS_P3A_36_original_QTL_SE_MAF_AN_residual_proxy_N_model_HOLD.json \
+            --out artifacts/is/IS_P3A_36x2_original_cis_allele_coverage_HOLD.json
+      - name: Upload ONLY 72 gene-tissue-ancestry coverage counts and original source SHA256
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36x2-original-QTL-GWAS-fullcis-SNP-coverage-HOLD
+          path: artifacts/is/IS_P3A_36x2_original_cis_allele_coverage_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
