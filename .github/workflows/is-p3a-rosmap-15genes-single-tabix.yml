@@ -1,11 +1,13 @@
-name: IS P3A original ROSMAP 15 gene single tabix cis QTL audit
+name: IS P3A ROSMAP 15 gene original TBI index and one BGZF range cis-QTL audit
 
 on:
   push:
     paths:
       - '.github/workflows/is-p3a-rosmap-15genes-single-tabix.yml'
       - 'scripts/is/audit_p3a_rosmap_15_gene_single_tabix_qtl.py'
+      - 'scripts/is/qtl_original_indexed_http_range.py'
       - 'tests/test_is_p3a_rosmap_15_gene_single_tabix_qtl.py'
+      - 'tests/test_is_p3a_original_tabix_indexed_http_range.py'
       - 'docs/is/IS_P3A_ROSMAP_15GENE_SINGLE_TABIX_CIS_QTL_20261123.md'
   workflow_dispatch:
 
@@ -33,18 +35,14 @@ jobs:
           persist-credentials: false
       - name: Install existing smoke suite Python dependencies
         run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
-      - name: Install one remote tabix binary
+      - name: Compile and test 15-gene phenotype and original index-range source integrity
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y tabix
-          tabix --version
-      - name: Compile and test 15-gene source QC and fail-closed source evidence
-        run: |
-          python -m py_compile scripts/is/audit_p3a_rosmap_15_gene_single_tabix_qtl.py
+          python -m py_compile scripts/is/audit_p3a_rosmap_15_gene_single_tabix_qtl.py scripts/is/qtl_original_indexed_http_range.py
           python -m unittest discover -s tests -p 'test_is_p3a_rosmap_15_gene_single_tabix_qtl.py' -v
+          python -m unittest discover -s tests -p 'test_is_p3a_original_tabix_indexed_http_range.py' -v
       - name: Existing whole-repository regression suite
         run: bash scripts/codex_smoke_test.sh
-      - name: Download publisher phenotype metadata and execute ONLY one chr10 tabix query
+      - name: Download publisher phenotype metadata then one TBI index and one contiguous source BGZF HTTP byte range
         run: |
           python -m scripts.is.audit_p3a_rosmap_15_gene_single_tabix_qtl \
             --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
