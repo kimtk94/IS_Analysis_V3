@@ -113,7 +113,7 @@ def parse_runtime_check(lines):
             continue
         label,sep,val=line.partition("=")
         require(sep=="=" and val=="PASS","Original coloc R source test failed")
-        key=label.removeprefix("ORIGINAL_COLOC_TEST_").lower()
+        key=label.removeprefix("ORIGINAL_COLOC_TEST_")
         require(key in EXPECTED_KEYS and key not in results,
                 "Unknown/duplicate original coloc runtime test")
         results[key]=True
