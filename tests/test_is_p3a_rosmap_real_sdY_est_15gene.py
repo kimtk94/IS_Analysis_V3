@@ -183,7 +183,7 @@ class OriginalColocSDY15GeneSourceTests(unittest.TestCase):
         self.assertNotIn("rsTEST",txt)
         self.assertNotIn("chr10_102000100_C_G",txt)
         self.assertNotIn('"beta":',txt)
-        self.assertFalse(data["no_variant_effect_rows_or_sample_IDs_exported"])
+        self.assertTrue(data["no_variant_effect_rows_or_sample_IDs_exported"])
 
     def test_R_estimator_lineage_pinned_original_blob(self):
         self.assertEqual(M.AN_DIV2_PROVISIONAL_N,560)
