@@ -1,0 +1,61 @@
+name: IS P3A original coloc R binary beta SE case-fraction contract
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-coloc-original-cc-beta-no-s.yml'
+      - 'scripts/is/audit_p3a_coloc_original_cc_beta_no_s_gate.py'
+      - 'tests/test_is_p3a_coloc_original_cc_beta_no_s_gate.py'
+      - 'tests/is/test_coloc_cc_beta_no_s_original_source.R'
+      - 'docs/is/IS_P3A_COLOC_CASE_CONTROL_BETA_SE_S_OPTIONAL_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-original-coloc-cc-beta-varbeta-s-contract-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-upstream-coloc-R-source-input-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Historical fixture for existing repository regression tests
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install existing Python regression dependencies
+        run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Original GWAS CC source input contract adversarial Python tests
+        run: |
+          python -m py_compile scripts/is/audit_p3a_coloc_original_cc_beta_no_s_gate.py
+          python -m unittest discover -s tests -p 'test_is_p3a_coloc_original_cc_beta_no_s_gate.py' -v
+      - name: Full repository regression smoke tests
+        run: bash scripts/codex_smoke_test.sh
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: false
+      - name: Validate ACTUAL original pinned coloc R check_dataset and process.dataset
+        run: |
+          Rscript --version
+          python -m scripts.is.audit_p3a_coloc_original_cc_beta_no_s_gate \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --source-dir /tmp/is-p3a-pinned-original-coloc-R \
+            --out artifacts/is/IS_P3A_COLOC_Original_CC_Beta_SE_S_NotRequired_HOLD.json
+      - name: Upload source hash, true R input checks and scientific HOLD ONLY
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-original-coloc-cc-beta-SE-s-optional-source-HOLD
+          path: artifacts/is/IS_P3A_COLOC_Original_CC_Beta_SE_S_NotRequired_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
