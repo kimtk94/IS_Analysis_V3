@@ -33,7 +33,7 @@ FILES={
     "ROSMAP.tsv":{"bytes":53064,"md5":"038f2fc144129d401144f3924109e1df",
                   "study":"ROSMAP","candidate_qtd":["QTD000434"]},
 }
-REST="https://www.ebi.ac.uk/gwas/rest/api/studies/"
+REST="https://www.ebi.ac.uk/gwas/rest/api/v2/studies/"
 GWAS={"EAS":"GCST90104545","EUR":"GCST90104540"}
 MAX_RECORDBYTES=150_000
 MAX_FILEBYTES=2_200_000
@@ -205,12 +205,14 @@ def gwas_record(accession,fetch=get):
     raw,source=fetch(url,ALLOWED_GWAS_HOSTS,MAX_RECORDBYTES)
     j=json.loads(raw.decode("utf-8"))
     require(isinstance(j,dict),"GWAS Catalog original study record not JSON mapping")
-    # API may expose study accession as alternative key or HAL links.
-    got=j.get("accessionId",j.get("accession",j.get("studyAccession")))
+    # Official 2026 GWAS Catalog API v2 uses study_accession; v1 is HTTP 410.
+    got=j.get("study_accession") or j.get("accession_id") or j.get("accessionId")
     require(got==accession,"GWAS Catalog returned incorrect original accession")
     descriptive={}
-    for key in ("studyDesignComment","initialSampleSize","replicationSampleSize",
-                "platform","trait","study","diseaseTrait"):
+    for key in ("study_accession","disease_trait","initial_sample_size",
+                "replication_sample_size","genotyping_technology","cohort",
+                "pubmed_id","first_author","study_design_comment",
+                "studyDesignComment","initialSampleSize","diseaseTrait"):
         v=j.get(key)
         if isinstance(v,(str,int,float,bool)) and v is not None:
             descriptive[key]=str(v)[:220]
@@ -223,7 +225,7 @@ def gwas_record(accession,fetch=get):
         "hazard_ratio_source_contributions_undone_or_harmonized_into_logOR_proven":False,
         "source_publisher_yml_beta_scale_identified":False,
         "outcome_case_control_coloc_beta_varbeta_eligibility_approved":False,
-        "status":"PASS_ORIGINAL_GWAS_STUDY_METADATA_NOT_BETA_SCALE"}
+        "status":"PASS_ORIGINAL_GWAS_STUDY_METADATA_V2_NOT_BETA_SCALE"}
 
 
 def check_source_groups(m,previous,original_official,original_gwas):
