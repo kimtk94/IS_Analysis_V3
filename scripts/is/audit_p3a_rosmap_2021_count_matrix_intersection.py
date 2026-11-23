@@ -156,19 +156,25 @@ def assemble(manifest, meta, count, r7, hashes):
 
 
 def run_original_sources(manifest):
+    print('SOURCE_STAGE_1_FETCH_ZENODO_RECORD', flush=True)
     record_raw, _ = P.get(P.RECORD, P.ALLOWED_RECORD_HOSTS, P.MAX_RECORDBYTES)
+    print('SOURCE_STAGE_2_VALIDATE_ZENODO_RECORD', flush=True)
     entries, provenance = P.require_original_record(record_raw)
     obj = entries.get(COUNT_NAME)
     require(obj is not None and obj.get("size") == COUNT_BYTES and
             obj.get("checksum") == "md5:" + COUNT_MD5,
             "Original Zenodo record counts MD5 or size changed")
+    print('SOURCE_STAGE_3_FETCH_ROSMAP_METADATA', flush=True)
     meta, _ = P.get_official_file("ROSMAP.tsv", entries["ROSMAP.tsv"])
+    print('SOURCE_STAGE_4_FETCH_COUNTS_25MB', flush=True)
     count_url = P.official_file_url(obj, COUNT_NAME)
     count, cm = P.get(count_url, P.ALLOWED_RECORD_HOSTS, 27000000)
     require(len(count) == COUNT_BYTES and
             hashlib.md5(count, usedforsecurity=False).hexdigest() == COUNT_MD5,
             "Downloaded original count matrix publisher MD5 mismatch")
+    print('SOURCE_STAGE_5_FETCH_RELEASE7_DATASET_REFERENCE', flush=True)
     r7, r7meta = P.get(R7_URL, {"raw.githubusercontent.com"}, 500000)
+    print('SOURCE_STAGE_6_RECONCILE_ORIGINAL_MATRIX_SAMPLE_COUNTS', flush=True)
     return assemble(manifest, meta, count, r7, {
         "2021_Zenodo_record_SHA256": provenance["official_record_original_SHA256"],
         "2021_ROSMAP_metadata_MD5": P.FILES["ROSMAP.tsv"]["md5"],
