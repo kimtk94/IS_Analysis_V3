@@ -1,0 +1,1144 @@
+{
+  "schema": "is-p3a-36-original-eQTL-permuted-n_variants-nominal-completeness-v1",
+  "technical_status": "PASS_3_ORIGINAL_PERMUTATION_AND_NOMINAL_REGION_SOURCES_READ",
+  "scientific_status": "HOLD",
+  "n_original_gene_tissue_groups": 36,
+  "n_unique_genes": 20,
+  "n_stroke_loci": 1,
+  "n_gene_tissue_groups_matching_full_cis_tested_variant_COUNT": 36,
+  "n_groups_without_matching_source_n_variants": 0,
+  "all_gene_tissue_model_effective_N_approved": false,
+  "n_formal_coloc_abf_eligible": 0,
+  "n_formal_coloc_abf_executed": 0,
+  "n_formal_coloc_susie_eligible": 0,
+  "n_formal_coloc_susie_executed": 0,
+  "source_provenance": {
+    "QTD000131": {
+      "permuted": {
+        "source_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000131/QTD000131.permuted.tsv.gz",
+        "gzip_bytes": 785582,
+        "gzip_SHA256": "6366a7272124f512bb3a5e6ca5a55f62329492ecd9b5c5921755d9a93e061d10",
+        "number_original_permutation_rows": 21888,
+        "original_columns": [
+          "molecular_trait_object_id",
+          "molecular_trait_id",
+          "n_traits",
+          "n_variants",
+          "variant",
+          "chromosome",
+          "position",
+          "pvalue",
+          "beta",
+          "p_perm",
+          "p_beta"
+        ],
+        "original_phenotypes_with_permutations": 21888
+      },
+      "nominal": {
+        "query_source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000131/QTD000131.all.tsv.gz",
+        "indexed_region_rows": 241786,
+        "tabix_region_source_stream_SHA256": "451ba8ba15493986f431b1751aff9ea512ab3dbc04ef41e38f95217d49cf3f53"
+      }
+    },
+    "QTD000171": {
+      "permuted": {
+        "source_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000171/QTD000171.permuted.tsv.gz",
+        "gzip_bytes": 882596,
+        "gzip_SHA256": "fc76a8b0b3de5156767bf6871ddff2b3f3af7f382c31135d415a48ca13e7a735",
+        "number_original_permutation_rows": 24675,
+        "original_columns": [
+          "molecular_trait_object_id",
+          "molecular_trait_id",
+          "n_traits",
+          "n_variants",
+          "variant",
+          "chromosome",
+          "position",
+          "pvalue",
+          "beta",
+          "p_perm",
+          "p_beta"
+        ],
+        "original_phenotypes_with_permutations": 24675
+      },
+      "nominal": {
+        "query_source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000171/QTD000171.all.tsv.gz",
+        "indexed_region_rows": 264947,
+        "tabix_region_source_stream_SHA256": "5964ba14a274f59247eebf88602da21706fdaea6c6e5df57990a3157f7854953"
+      }
+    },
+    "QTD000434": {
+      "permuted": {
+        "source_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000025/QTD000434/QTD000434.permuted.tsv.gz",
+        "gzip_bytes": 841205,
+        "gzip_SHA256": "adf13cbe9f784cd56a832700b710ffd6abe76a962a38918667a1d80c51413091",
+        "number_original_permutation_rows": 23076,
+        "original_columns": [
+          "molecular_trait_object_id",
+          "molecular_trait_id",
+          "n_traits",
+          "n_variants",
+          "variant",
+          "chromosome",
+          "position",
+          "pvalue",
+          "beta",
+          "p_perm",
+          "p_beta"
+        ],
+        "original_phenotypes_with_permutations": 23076
+      },
+      "nominal": {
+        "query_source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000025/QTD000434/QTD000434.all.tsv.gz",
+        "indexed_region_rows": 366252,
+        "tabix_region_source_stream_SHA256": "89e6950472b8563442747eafc63fdbe5e75aa27fb28e3f0fec6ede5fc114ffa2"
+      }
+    }
+  },
+  "groups": [
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000065613",
+      "gene_symbol": "SLK",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103967140,
+      "nominal_gene_rows_physical": 5861,
+      "nominal_distinct_all_variant_records": 5667,
+      "nominal_strict_nonpal_SNP_source_records": 4537,
+      "original_variant_class_counts": {
+        "SNP": 5267,
+        "INDEL": 400
+      },
+      "original_duplicate_rsid_rows": 194,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000065613"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5667,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000065621",
+      "gene_symbol": "GSTO2",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104268873,
+      "nominal_gene_rows_physical": 6253,
+      "nominal_distinct_all_variant_records": 6052,
+      "nominal_strict_nonpal_SNP_source_records": 4851,
+      "original_variant_class_counts": {
+        "SNP": 5652,
+        "INDEL": 400
+      },
+      "original_duplicate_rsid_rows": 201,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000065621"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6052,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000076685",
+      "gene_symbol": "NT5C2",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103277605,
+      "nominal_gene_rows_physical": 5572,
+      "nominal_distinct_all_variant_records": 5368,
+      "nominal_strict_nonpal_SNP_source_records": 4287,
+      "original_variant_class_counts": {
+        "SNP": 4963,
+        "INDEL": 405
+      },
+      "original_duplicate_rsid_rows": 204,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000076685"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5368,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000107954",
+      "gene_symbol": "NEURL",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103493705,
+      "nominal_gene_rows_physical": 5658,
+      "nominal_distinct_all_variant_records": 5460,
+      "nominal_strict_nonpal_SNP_source_records": 4383,
+      "original_variant_class_counts": {
+        "SNP": 5064,
+        "INDEL": 396
+      },
+      "original_duplicate_rsid_rows": 198,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000107954"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5460,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000138172",
+      "gene_symbol": "CALHM2",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103452402,
+      "nominal_gene_rows_physical": 5713,
+      "nominal_distinct_all_variant_records": 5511,
+      "nominal_strict_nonpal_SNP_source_records": 4419,
+      "original_variant_class_counts": {
+        "SNP": 5109,
+        "INDEL": 402
+      },
+      "original_duplicate_rsid_rows": 202,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000138172"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5511,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000148834",
+      "gene_symbol": "GSTO1",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104235356,
+      "nominal_gene_rows_physical": 6275,
+      "nominal_distinct_all_variant_records": 6075,
+      "nominal_strict_nonpal_SNP_source_records": 4872,
+      "original_variant_class_counts": {
+        "SNP": 5674,
+        "INDEL": 401
+      },
+      "original_duplicate_rsid_rows": 200,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000148834"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6075,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000148843",
+      "gene_symbol": "PDCD11",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103396626,
+      "nominal_gene_rows_physical": 5683,
+      "nominal_distinct_all_variant_records": 5478,
+      "nominal_strict_nonpal_SNP_source_records": 4386,
+      "original_variant_class_counts": {
+        "INDEL": 406,
+        "SNP": 5072
+      },
+      "original_duplicate_rsid_rows": 205,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000148843"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5478,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000156384",
+      "gene_symbol": "SFR1",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104122058,
+      "nominal_gene_rows_physical": 6131,
+      "nominal_distinct_all_variant_records": 5937,
+      "nominal_strict_nonpal_SNP_source_records": 4755,
+      "original_variant_class_counts": {
+        "SNP": 5538,
+        "INDEL": 399
+      },
+      "original_duplicate_rsid_rows": 194,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000156384"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5937,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000166275",
+      "gene_symbol": "C10orf32",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 102854259,
+      "nominal_gene_rows_physical": 4862,
+      "nominal_distinct_all_variant_records": 4688,
+      "nominal_strict_nonpal_SNP_source_records": 3748,
+      "original_variant_class_counts": {
+        "SNP": 4355,
+        "INDEL": 333
+      },
+      "original_duplicate_rsid_rows": 174,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000166275"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 4688,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000273108",
+      "gene_symbol": "RP11-416N2.4",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103608619,
+      "nominal_gene_rows_physical": 5772,
+      "nominal_distinct_all_variant_records": 5572,
+      "nominal_strict_nonpal_SNP_source_records": 4455,
+      "original_variant_class_counts": {
+        "SNP": 5170,
+        "INDEL": 402
+      },
+      "original_duplicate_rsid_rows": 200,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000273108"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5572,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000065621",
+      "gene_symbol": "GSTO2",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104268873,
+      "nominal_gene_rows_physical": 5745,
+      "nominal_distinct_all_variant_records": 5555,
+      "nominal_strict_nonpal_SNP_source_records": 4477,
+      "original_variant_class_counts": {
+        "SNP": 5191,
+        "INDEL": 364
+      },
+      "original_duplicate_rsid_rows": 190,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000065621"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5555,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000076685",
+      "gene_symbol": "NT5C2",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103277605,
+      "nominal_gene_rows_physical": 5260,
+      "nominal_distinct_all_variant_records": 5058,
+      "nominal_strict_nonpal_SNP_source_records": 4045,
+      "original_variant_class_counts": {
+        "SNP": 4677,
+        "INDEL": 381
+      },
+      "original_duplicate_rsid_rows": 202,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000076685"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5058,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000138172",
+      "gene_symbol": "CALHM2",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103452402,
+      "nominal_gene_rows_physical": 5320,
+      "nominal_distinct_all_variant_records": 5124,
+      "nominal_strict_nonpal_SNP_source_records": 4115,
+      "original_variant_class_counts": {
+        "SNP": 4748,
+        "INDEL": 376
+      },
+      "original_duplicate_rsid_rows": 196,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000138172"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5124,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000148795",
+      "gene_symbol": "CYP17A1",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 102837472,
+      "nominal_gene_rows_physical": 4578,
+      "nominal_distinct_all_variant_records": 4409,
+      "nominal_strict_nonpal_SNP_source_records": 3527,
+      "original_variant_class_counts": {
+        "SNP": 4103,
+        "INDEL": 306
+      },
+      "original_duplicate_rsid_rows": 169,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000148795"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 4409,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000148834",
+      "gene_symbol": "GSTO1",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104235356,
+      "nominal_gene_rows_physical": 5770,
+      "nominal_distinct_all_variant_records": 5581,
+      "nominal_strict_nonpal_SNP_source_records": 4501,
+      "original_variant_class_counts": {
+        "SNP": 5216,
+        "INDEL": 365
+      },
+      "original_duplicate_rsid_rows": 189,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000148834"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5581,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000148841",
+      "gene_symbol": "ITPRIP",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104338465,
+      "nominal_gene_rows_physical": 5848,
+      "nominal_distinct_all_variant_records": 5648,
+      "nominal_strict_nonpal_SNP_source_records": 4546,
+      "original_variant_class_counts": {
+        "SNP": 5277,
+        "INDEL": 371
+      },
+      "original_duplicate_rsid_rows": 200,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000148841"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5648,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000166275",
+      "gene_symbol": "C10orf32",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 102854259,
+      "nominal_gene_rows_physical": 4632,
+      "nominal_distinct_all_variant_records": 4459,
+      "nominal_strict_nonpal_SNP_source_records": 3565,
+      "original_variant_class_counts": {
+        "SNP": 4145,
+        "INDEL": 314
+      },
+      "original_duplicate_rsid_rows": 173,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000166275"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 4459,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000197748",
+      "gene_symbol": "WDR96",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104232364,
+      "nominal_gene_rows_physical": 5769,
+      "nominal_distinct_all_variant_records": 5580,
+      "nominal_strict_nonpal_SNP_source_records": 4501,
+      "original_variant_class_counts": {
+        "SNP": 5215,
+        "INDEL": 365
+      },
+      "original_duplicate_rsid_rows": 189,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000197748"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5580,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000228261",
+      "gene_symbol": "RP11-127L20.3",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104323369,
+      "nominal_gene_rows_physical": 5824,
+      "nominal_distinct_all_variant_records": 5623,
+      "nominal_strict_nonpal_SNP_source_records": 4521,
+      "original_variant_class_counts": {
+        "INDEL": 372,
+        "SNP": 5251
+      },
+      "original_duplicate_rsid_rows": 201,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000228261"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5623,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000272912",
+      "gene_symbol": "RP11-724N1.1",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 102914585,
+      "nominal_gene_rows_physical": 4730,
+      "nominal_distinct_all_variant_records": 4555,
+      "nominal_strict_nonpal_SNP_source_records": 3637,
+      "original_variant_class_counts": {
+        "SNP": 4231,
+        "INDEL": 324
+      },
+      "original_duplicate_rsid_rows": 175,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000272912"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 4555,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000273108",
+      "gene_symbol": "RP11-416N2.4",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103608619,
+      "nominal_gene_rows_physical": 5347,
+      "nominal_distinct_all_variant_records": 5156,
+      "nominal_strict_nonpal_SNP_source_records": 4135,
+      "original_variant_class_counts": {
+        "SNP": 4784,
+        "INDEL": 372
+      },
+      "original_duplicate_rsid_rows": 191,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000273108"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5156,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000065613",
+      "gene_symbol": "SLK",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103967140,
+      "nominal_gene_rows_physical": 6529,
+      "nominal_distinct_all_variant_records": 5854,
+      "nominal_strict_nonpal_SNP_source_records": 3850,
+      "original_variant_class_counts": {
+        "SNP": 4514,
+        "INDEL": 1340
+      },
+      "original_duplicate_rsid_rows": 675,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000065613"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5854,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000065621",
+      "gene_symbol": "GSTO2",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104268873,
+      "nominal_gene_rows_physical": 6743,
+      "nominal_distinct_all_variant_records": 6093,
+      "nominal_strict_nonpal_SNP_source_records": 4130,
+      "original_variant_class_counts": {
+        "INDEL": 1249,
+        "SNP": 4844
+      },
+      "original_duplicate_rsid_rows": 650,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000065621"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6093,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000107954",
+      "gene_symbol": "NEURL",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103493705,
+      "nominal_gene_rows_physical": 6726,
+      "nominal_distinct_all_variant_records": 5961,
+      "nominal_strict_nonpal_SNP_source_records": 3775,
+      "original_variant_class_counts": {
+        "SNP": 4428,
+        "INDEL": 1533
+      },
+      "original_duplicate_rsid_rows": 765,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000107954"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5961,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000120051",
+      "gene_symbol": "CCDC147",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104353833,
+      "nominal_gene_rows_physical": 6863,
+      "nominal_distinct_all_variant_records": 6213,
+      "nominal_strict_nonpal_SNP_source_records": 4248,
+      "original_variant_class_counts": {
+        "SNP": 4982,
+        "INDEL": 1231
+      },
+      "original_duplicate_rsid_rows": 650,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000120051"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6213,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000138172",
+      "gene_symbol": "CALHM2",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103452402,
+      "nominal_gene_rows_physical": 6790,
+      "nominal_distinct_all_variant_records": 6018,
+      "nominal_strict_nonpal_SNP_source_records": 3805,
+      "original_variant_class_counts": {
+        "INDEL": 1549,
+        "SNP": 4469
+      },
+      "original_duplicate_rsid_rows": 772,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000138172"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6018,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000148798",
+      "gene_symbol": "INA",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103277138,
+      "nominal_gene_rows_physical": 6844,
+      "nominal_distinct_all_variant_records": 6031,
+      "nominal_strict_nonpal_SNP_source_records": 3759,
+      "original_variant_class_counts": {
+        "INDEL": 1605,
+        "SNP": 4426
+      },
+      "original_duplicate_rsid_rows": 813,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000148798"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6031,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000148834",
+      "gene_symbol": "GSTO1",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104235356,
+      "nominal_gene_rows_physical": 6757,
+      "nominal_distinct_all_variant_records": 6103,
+      "nominal_strict_nonpal_SNP_source_records": 4125,
+      "original_variant_class_counts": {
+        "SNP": 4838,
+        "INDEL": 1265
+      },
+      "original_duplicate_rsid_rows": 654,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000148834"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6103,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000148841",
+      "gene_symbol": "ITPRIP",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104338465,
+      "nominal_gene_rows_physical": 6854,
+      "nominal_distinct_all_variant_records": 6202,
+      "nominal_strict_nonpal_SNP_source_records": 4226,
+      "original_variant_class_counts": {
+        "INDEL": 1243,
+        "SNP": 4959
+      },
+      "original_duplicate_rsid_rows": 652,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000148841"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6202,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000148842",
+      "gene_symbol": "CNNM2",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 102918294,
+      "nominal_gene_rows_physical": 6627,
+      "nominal_distinct_all_variant_records": 5809,
+      "nominal_strict_nonpal_SNP_source_records": 3542,
+      "original_variant_class_counts": {
+        "SNP": 4184,
+        "INDEL": 1625
+      },
+      "original_duplicate_rsid_rows": 818,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000148842"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5809,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000166275",
+      "gene_symbol": "C10orf32",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 102854259,
+      "nominal_gene_rows_physical": 6541,
+      "nominal_distinct_all_variant_records": 5728,
+      "nominal_strict_nonpal_SNP_source_records": 3480,
+      "original_variant_class_counts": {
+        "SNP": 4107,
+        "INDEL": 1621
+      },
+      "original_duplicate_rsid_rows": 813,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000166275"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5728,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000173915",
+      "gene_symbol": "USMG5",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 103396492,
+      "nominal_gene_rows_physical": 6824,
+      "nominal_distinct_all_variant_records": 6041,
+      "nominal_strict_nonpal_SNP_source_records": 3803,
+      "original_variant_class_counts": {
+        "INDEL": 1575,
+        "SNP": 4466
+      },
+      "original_duplicate_rsid_rows": 783,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000173915"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6041,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000197748",
+      "gene_symbol": "WDR96",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104232364,
+      "nominal_gene_rows_physical": 6752,
+      "nominal_distinct_all_variant_records": 6099,
+      "nominal_strict_nonpal_SNP_source_records": 4124,
+      "original_variant_class_counts": {
+        "SNP": 4836,
+        "INDEL": 1263
+      },
+      "original_duplicate_rsid_rows": 653,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000197748"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6099,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000214435",
+      "gene_symbol": "AS3MT",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 102869470,
+      "nominal_gene_rows_physical": 6530,
+      "nominal_distinct_all_variant_records": 5723,
+      "nominal_strict_nonpal_SNP_source_records": 3484,
+      "original_variant_class_counts": {
+        "SNP": 4112,
+        "INDEL": 1611
+      },
+      "original_duplicate_rsid_rows": 807,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000214435"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5723,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000228261",
+      "gene_symbol": "RP11-127L20.3",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 104323369,
+      "nominal_gene_rows_physical": 6820,
+      "nominal_distinct_all_variant_records": 6163,
+      "nominal_strict_nonpal_SNP_source_records": 4192,
+      "original_variant_class_counts": {
+        "INDEL": 1240,
+        "SNP": 4923
+      },
+      "original_duplicate_rsid_rows": 657,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000228261"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 6163,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000272912",
+      "gene_symbol": "RP11-724N1.1",
+      "reference_gene_Ensembl105_GRCh38_phenotype_pos": 102914585,
+      "nominal_gene_rows_physical": 6622,
+      "nominal_distinct_all_variant_records": 5806,
+      "nominal_strict_nonpal_SNP_source_records": 3538,
+      "original_variant_class_counts": {
+        "SNP": 4181,
+        "INDEL": 1625
+      },
+      "original_duplicate_rsid_rows": 816,
+      "nominal_molecular_trait_ids": [
+        "ENSG00000272912"
+      ],
+      "molecular_trait_id_matches_Ensembl_gene_id": true,
+      "original_permutation_rows_for_trait": 1,
+      "source_original_cis_n_variants_from_permutation": 5806,
+      "published_permutation_vs_recovered_nominal_unique_agree": true,
+      "full_tested_cis_variant_COUNT_independently_reconciled": true,
+      "original_per_phenotype_tested_variant_membership_independently_verified": false,
+      "original_dataset_specific_effective_regression_N_approved": false,
+      "primary_GWAS_per_SNP_effective_N_approved": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "status": "PASS_SOURCE_CIS_TESTED_NVAR_COUNT_STILL_MODEL_N_HOLD"
+    }
+  ]
+}

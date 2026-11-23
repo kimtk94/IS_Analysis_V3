@@ -1,0 +1,116 @@
+name: IS P3A durable public source evidence archive and weekly integrity
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-durable-source-archive.yml'
+      - 'scripts/is/archive_p3a_verified_source_evidence.py'
+      - 'tests/test_is_p3a_archive_verified_source_evidence.py'
+      - 'docs/is/IS_P3A_PERSISTENT_ORIGINAL_SOURCE_EVIDENCE_20261124.md'
+      - 'docs/is/evidence/verified_p3a_20261124/**'
+  workflow_dispatch:
+  schedule:
+    - cron: '17 1 * * 1'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: is-p3a-durable-original-evidence-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  persist-only-to-p3a-research-branch:
+    if: github.event_name != 'schedule' && github.ref == 'refs/heads/research/is-p3a-persist-original-source-evidence-20261124'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Negative integrity and privacy tests plus full research repository regression
+        run: |
+          python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+          python -m unittest discover -s tests -p 'test_is_p3a_archive_verified_source_evidence.py' -v
+          bash scripts/codex_smoke_test.sh
+      - name: Retrieve original reciprocal GWAS QTL allele source
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-real-QTL-GWAS-2way-SNP-allele-aggregate-HOLD
+          run-id: 45031834139
+          github-token: ${{ github.token }}
+          path: inputs/reciprocal
+      - name: Retrieve original permutation-tested full cis variant source
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-official-QTL-permuted-nvariants-vs-nominal-cis-HOLD
+          run-id: 45036525615
+          github-token: ${{ github.token }}
+          path: inputs/cis
+      - name: Retrieve original SNP AN and QTL N source
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36-primary-QTL-sdY-residual-proxy-N-GWAS-cc-HOLD
+          run-id: 45038801844
+          github-token: ${{ github.token }}
+          path: inputs/qtl_n
+      - name: Retrieve verified main 72-cell original coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: is-p3a-36x2-original-QTL-GWAS-fullcis-SNP-coverage-HOLD
+          run-id: 45189787019
+          github-token: ${{ github.token }}
+          path: inputs/coverage
+      - name: Check original four SHA256 sources and 72-cell recomputation; write only aggregates
+        run: |
+          python -m scripts.is.archive_p3a_verified_source_evidence \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --reciprocal inputs/reciprocal/P3A_36_real_source_2way_ref_SNP_EAS_EUR_GWAS_HOLD.json \
+            --cis inputs/cis/IS_P3A_36_actual_source_permuted_cis_tested_nvariants_HOLD.json \
+            --qtl-n inputs/qtl_n/IS_P3A_36_original_QTL_SE_MAF_AN_residual_proxy_N_model_HOLD.json \
+            --coverage inputs/coverage/IS_P3A_36x2_original_cis_allele_coverage_HOLD.json \
+            --output-dir docs/is/evidence/verified_p3a_20261124
+      - name: Commit only verified aggregate files to research branch, never main
+        run: |
+          test "${GITHUB_REF}" = "refs/heads/research/is-p3a-persist-original-source-evidence-20261124"
+          test "${GITHUB_REPOSITORY}" = "kimtk94/IS_Analysis_V3"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/is/evidence/verified_p3a_20261124/
+          if git diff --cached --quiet; then
+            echo "Source archive already identical"
+          else
+            git commit -m "is: permanently pin verified aggregate-only P3A 36x2 source evidence"
+            git push origin HEAD:research/is-p3a-persist-original-source-evidence-20261124
+          fi
+
+  weekly-verify-main-without-expiring-actions-artifacts:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Recheck immutable four SHA256 files and 72-cell source accounting weekly
+        run: |
+          python -m scripts.is.archive_p3a_verified_source_evidence \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --reciprocal docs/is/evidence/verified_p3a_20261124/P3A_36_real_source_2way_ref_SNP_EAS_EUR_GWAS_HOLD.json \
+            --cis docs/is/evidence/verified_p3a_20261124/IS_P3A_36_actual_source_permuted_cis_tested_nvariants_HOLD.json \
+            --qtl-n docs/is/evidence/verified_p3a_20261124/IS_P3A_36_original_QTL_SE_MAF_AN_residual_proxy_N_model_HOLD.json \
+            --coverage docs/is/evidence/verified_p3a_20261124/IS_P3A_36x2_original_cis_allele_coverage_HOLD.json \
+            --output-dir docs/is/evidence/verified_p3a_20261124
+          git diff --exit-code -- docs/is/evidence/verified_p3a_20261124/
+          python -m unittest discover -s tests -p 'test_is_p3a_archive_verified_source_evidence.py' -v

@@ -1,0 +1,1802 @@
+{
+  "schema": "is-p3a-36-real-source-reciprocal-SNP-GWAS-harmonization-v1",
+  "technical_status": "PASS_QTL_GWAS_SOURCE_SNP_HARMONIZATION_AGGREGATES_ONLY",
+  "scientific_status": "HOLD",
+  "n_real_assay_groups": 36,
+  "n_unique_genes": 20,
+  "n_independent_stroke_loci": 1,
+  "two_way_chain": {
+    "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz",
+    "official_publisher_md5": "ff3031d93792f4cbb86af44055efd903",
+    "observed_md5": "ff3031d93792f4cbb86af44055efd903",
+    "observed_sha256": "14a712e8e147d9fc8e9d87d51977b46f6f8ddb93efbe5d0843d86b6205f587b1",
+    "compressed_bytes": 1246411,
+    "verified": true
+  },
+  "original_20_gene_reference_union_GRCh38": {
+    "chrom": "10",
+    "start": 101837472,
+    "end": 105353833
+  },
+  "QTL_datasets": {
+    "QTD000131": {
+      "source_id": "QTD000131",
+      "source_study_n_NOT_gene_effective_N": 387,
+      "source_stats": {
+        "candidate_SNP_rows_visited": 44693,
+        "candidate_unique_nonpal_SNP_rows": 44693,
+        "unique_liftover_QTL_variants": 7312,
+        "duplicate_original_rsid_records": 0,
+        "QTL_reference_liftover_reasons": {},
+        "QTL_source_sha256_stream": "4941430a7b5d630e388201e14c28d02df6b34181ce4c44a90c09b0d2d4b28884"
+      },
+      "gene_n": 10
+    },
+    "QTD000171": {
+      "source_id": "QTD000171",
+      "source_study_n_NOT_gene_effective_N": 205,
+      "source_stats": {
+        "candidate_SNP_rows_visited": 45570,
+        "candidate_unique_nonpal_SNP_rows": 45570,
+        "unique_liftover_QTL_variants": 7044,
+        "duplicate_original_rsid_records": 0,
+        "QTL_reference_liftover_reasons": {},
+        "QTL_source_sha256_stream": "09c3ce43be2145391586161e50736350ecb5ca3fb71689fa32e6f80326a6330c"
+      },
+      "gene_n": 11
+    },
+    "QTD000434": {
+      "source_id": "QTD000434",
+      "source_study_n_NOT_gene_effective_N": 560,
+      "source_stats": {
+        "candidate_SNP_rows_visited": 58081,
+        "candidate_unique_nonpal_SNP_rows": 58081,
+        "unique_liftover_QTL_variants": 6736,
+        "duplicate_original_rsid_records": 0,
+        "QTL_reference_liftover_reasons": {},
+        "QTL_source_sha256_stream": "02eb78fec04abb812c41de68f80ed6366ee771d41975e3e8dd8a997b006b6a6a"
+      },
+      "gene_n": 15
+    }
+  },
+  "GWAS_ancestries": {
+    "EAS": {
+      "GWAS_whole_original_row_count": 6725216,
+      "GWAS_original_target_unique_position_count": 4359,
+      "GWAS_target_invalid_numeric_or_allele_rows": 0,
+      "GWAS_target_duplicate_locus_rows": 0,
+      "original_publisher_accession": "GCST90104545",
+      "original_GWAS_build": "GRCh37",
+      "original_GWAS_effect_allele_role": "SOURCE_DEFINED_EFFECT_NOT_ALT",
+      "GWAS_N_cases_controls_approved": false,
+      "original_publisher_full_file_MD5_SHA256_bytes_pass": true
+    },
+    "EUR": {
+      "GWAS_whole_original_row_count": 7482032,
+      "GWAS_original_target_unique_position_count": 6444,
+      "GWAS_target_invalid_numeric_or_allele_rows": 0,
+      "GWAS_target_duplicate_locus_rows": 0,
+      "original_publisher_accession": "GCST90104540",
+      "original_GWAS_build": "GRCh37",
+      "original_GWAS_effect_allele_role": "SOURCE_DEFINED_EFFECT_NOT_ALT",
+      "GWAS_N_cases_controls_approved": false,
+      "original_publisher_full_file_MD5_SHA256_bytes_pass": true
+    }
+  },
+  "matched_nonpal_summary": {
+    "EAS_match": 89597,
+    "EAS_no_GWAS_pos": 58747,
+    "EUR_match": 128282,
+    "EUR_no_GWAS_pos": 20054
+  },
+  "n_formal_coloc_abf_eligible": 0,
+  "n_formal_coloc_abf_executed": 0,
+  "n_formal_coloc_susie_eligible": 0,
+  "n_formal_coloc_susie_executed": 0,
+  "original_study_QTL_cis_variant_set_approved": false,
+  "original_GWAS_phenotype_N_case_control_approved": false,
+  "BBJ_independent_replication_proven": false,
+  "full_variant_indel_palindromic_harmonization_proven": false,
+  "rows": [
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000065613",
+      "gene_symbol": "SLK",
+      "QTL_source_indexed_nonpal_valid": 4537,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4537,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1232,
+            "MATCH_ALT_EFFECT": 1420,
+            "NO_GWAS_POSITION": 1885,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 206
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2652,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2652,
+          "mean_absolute_frequency_difference_descriptive": 0.103098,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1581,
+            "MATCH_ALT_EFFECT": 2001,
+            "NO_GWAS_POSITION": 955
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3582,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3582,
+          "mean_absolute_frequency_difference_descriptive": 0.017687,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000065621",
+      "gene_symbol": "GSTO2",
+      "QTL_source_indexed_nonpal_valid": 4851,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4851,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 2202,
+            "MATCH_ALT_EFFECT": 1420,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1229,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 246
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2649,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2649,
+          "mean_absolute_frequency_difference_descriptive": 0.104274,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1007,
+            "MATCH_ALT_EFFECT": 2150,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1694
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3844,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3844,
+          "mean_absolute_frequency_difference_descriptive": 0.017391,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000076685",
+      "gene_symbol": "NT5C2",
+      "QTL_source_indexed_nonpal_valid": 4287,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4287,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1757,
+            "MATCH_ALT_EFFECT": 1399,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1131,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 393
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2530,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2530,
+          "mean_absolute_frequency_difference_descriptive": 0.11702,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 2011,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1498,
+            "NO_GWAS_POSITION": 778
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3509,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3509,
+          "mean_absolute_frequency_difference_descriptive": 0.018598,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000107954",
+      "gene_symbol": "NEURL",
+      "QTL_source_indexed_nonpal_valid": 4383,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4383,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1154,
+            "NO_GWAS_POSITION": 1807,
+            "MATCH_ALT_EFFECT": 1422,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 388
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2576,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2576,
+          "mean_absolute_frequency_difference_descriptive": 0.116727,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1514,
+            "MATCH_ALT_EFFECT": 2004,
+            "NO_GWAS_POSITION": 865
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3518,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3518,
+          "mean_absolute_frequency_difference_descriptive": 0.01828,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000138172",
+      "gene_symbol": "CALHM2",
+      "QTL_source_indexed_nonpal_valid": 4419,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4419,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1811,
+            "MATCH_ALT_EFFECT": 1437,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 421,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1171
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2608,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2608,
+          "mean_absolute_frequency_difference_descriptive": 0.118682,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 2023,
+            "NO_GWAS_POSITION": 866,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1530
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3553,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3553,
+          "mean_absolute_frequency_difference_descriptive": 0.018475,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000148834",
+      "gene_symbol": "GSTO1",
+      "QTL_source_indexed_nonpal_valid": 4872,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4872,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 2216,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1238,
+            "MATCH_ALT_EFFECT": 1418,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 245
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2656,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2656,
+          "mean_absolute_frequency_difference_descriptive": 0.104233,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1034,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1694,
+            "MATCH_ALT_EFFECT": 2144
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3838,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3838,
+          "mean_absolute_frequency_difference_descriptive": 0.017528,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000148843",
+      "gene_symbol": "PDCD11",
+      "QTL_source_indexed_nonpal_valid": 4386,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4386,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1162,
+            "NO_GWAS_POSITION": 1794,
+            "MATCH_ALT_EFFECT": 1430,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 422
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2592,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2592,
+          "mean_absolute_frequency_difference_descriptive": 0.118714,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1521,
+            "MATCH_ALT_EFFECT": 2037,
+            "NO_GWAS_POSITION": 828
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3558,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3558,
+          "mean_absolute_frequency_difference_descriptive": 0.018568,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000156384",
+      "gene_symbol": "SFR1",
+      "QTL_source_indexed_nonpal_valid": 4755,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4755,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1403,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1213,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 208,
+            "NO_GWAS_POSITION": 2139
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2616,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2616,
+          "mean_absolute_frequency_difference_descriptive": 0.101662,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 2081,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1655,
+            "NO_GWAS_POSITION": 1019
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3736,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3736,
+          "mean_absolute_frequency_difference_descriptive": 0.017328,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000166275",
+      "gene_symbol": "C10orf32",
+      "QTL_source_indexed_nonpal_valid": 3748,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3748,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1620,
+            "MATCH_ALT_EFFECT": 1196,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 432,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 932
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2128,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2128,
+          "mean_absolute_frequency_difference_descriptive": 0.129956,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1893,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1328,
+            "NO_GWAS_POSITION": 527
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3221,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3221,
+          "mean_absolute_frequency_difference_descriptive": 0.018349,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000131",
+      "gene_id": "ENSG00000273108",
+      "gene_symbol": "RP11-416N2.4",
+      "QTL_source_indexed_nonpal_valid": 4455,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4455,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1185,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 319,
+            "MATCH_ALT_EFFECT": 1401,
+            "NO_GWAS_POSITION": 1869
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2586,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2586,
+          "mean_absolute_frequency_difference_descriptive": 0.110694,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1541,
+            "MATCH_ALT_EFFECT": 1995,
+            "NO_GWAS_POSITION": 919
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3536,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3536,
+          "mean_absolute_frequency_difference_descriptive": 0.017747,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000065621",
+      "gene_symbol": "GSTO2",
+      "QTL_source_indexed_nonpal_valid": 4477,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4477,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1864,
+            "MATCH_ALT_EFFECT": 1396,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1217,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 373
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2613,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2613,
+          "mean_absolute_frequency_difference_descriptive": 0.108765,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 746,
+            "MATCH_ALT_EFFECT": 2081,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1650
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3731,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3731,
+          "mean_absolute_frequency_difference_descriptive": 0.021396,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000076685",
+      "gene_symbol": "NT5C2",
+      "QTL_source_indexed_nonpal_valid": 4045,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4045,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1547,
+            "MATCH_ALT_EFFECT": 1383,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1115,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 473
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2498,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2498,
+          "mean_absolute_frequency_difference_descriptive": 0.116173,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1953,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1459,
+            "NO_GWAS_POSITION": 633
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3412,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3412,
+          "mean_absolute_frequency_difference_descriptive": 0.022513,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000138172",
+      "gene_symbol": "CALHM2",
+      "QTL_source_indexed_nonpal_valid": 4115,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4115,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1546,
+            "MATCH_ALT_EFFECT": 1415,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 502,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1154
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2569,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2569,
+          "mean_absolute_frequency_difference_descriptive": 0.118053,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1961,
+            "NO_GWAS_POSITION": 667,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1487
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3448,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3448,
+          "mean_absolute_frequency_difference_descriptive": 0.022578,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000148795",
+      "gene_symbol": "CYP17A1",
+      "QTL_source_indexed_nonpal_valid": 3527,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3527,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1184,
+            "NO_GWAS_POSITION": 1424,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 919,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 506
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2103,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2103,
+          "mean_absolute_frequency_difference_descriptive": 0.129338,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1821,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1285,
+            "NO_GWAS_POSITION": 421
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3106,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3106,
+          "mean_absolute_frequency_difference_descriptive": 0.021645,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000148834",
+      "gene_symbol": "GSTO1",
+      "QTL_source_indexed_nonpal_valid": 4501,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4501,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1881,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1226,
+            "MATCH_ALT_EFFECT": 1394,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 372
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2620,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2620,
+          "mean_absolute_frequency_difference_descriptive": 0.108568,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 775,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1651,
+            "MATCH_ALT_EFFECT": 2075
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3726,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3726,
+          "mean_absolute_frequency_difference_descriptive": 0.021417,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000148841",
+      "gene_symbol": "ITPRIP",
+      "QTL_source_indexed_nonpal_valid": 4546,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4546,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1432,
+            "NO_GWAS_POSITION": 1869,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1245,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 380
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2677,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2677,
+          "mean_absolute_frequency_difference_descriptive": 0.108865,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 2127,
+            "NO_GWAS_POSITION": 726,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1693
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3820,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3820,
+          "mean_absolute_frequency_difference_descriptive": 0.021396,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000166275",
+      "gene_symbol": "C10orf32",
+      "QTL_source_indexed_nonpal_valid": 3565,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3565,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1458,
+            "MATCH_ALT_EFFECT": 1186,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 507,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 921
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2107,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2107,
+          "mean_absolute_frequency_difference_descriptive": 0.129375,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1843,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1298,
+            "NO_GWAS_POSITION": 424
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3141,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3141,
+          "mean_absolute_frequency_difference_descriptive": 0.021848,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000197748",
+      "gene_symbol": "WDR96",
+      "QTL_source_indexed_nonpal_valid": 4501,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4501,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1882,
+            "MATCH_ALT_EFFECT": 1394,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1225,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 371
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2619,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2619,
+          "mean_absolute_frequency_difference_descriptive": 0.10852,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 2074,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1652,
+            "NO_GWAS_POSITION": 775
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3726,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3726,
+          "mean_absolute_frequency_difference_descriptive": 0.021396,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000228261",
+      "gene_symbol": "RP11-127L20.3",
+      "QTL_source_indexed_nonpal_valid": 4521,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4521,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1866,
+            "MATCH_ALT_EFFECT": 1417,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1238,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 377
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2655,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2655,
+          "mean_absolute_frequency_difference_descriptive": 0.108948,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 732,
+            "MATCH_ALT_EFFECT": 2109,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1680
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3789,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3789,
+          "mean_absolute_frequency_difference_descriptive": 0.021413,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000272912",
+      "gene_symbol": "RP11-724N1.1",
+      "QTL_source_indexed_nonpal_valid": 3637,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3637,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1486,
+            "MATCH_ALT_EFFECT": 1210,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 941,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 516
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2151,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2151,
+          "mean_absolute_frequency_difference_descriptive": 0.12918,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1876,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1316,
+            "NO_GWAS_POSITION": 445
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3192,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3192,
+          "mean_absolute_frequency_difference_descriptive": 0.022302,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000171",
+      "gene_id": "ENSG00000273108",
+      "gene_symbol": "RP11-416N2.4",
+      "QTL_source_indexed_nonpal_valid": 4135,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4135,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1168,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 404,
+            "MATCH_ALT_EFFECT": 1378,
+            "NO_GWAS_POSITION": 1589
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2546,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2546,
+          "mean_absolute_frequency_difference_descriptive": 0.111338,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1497,
+            "MATCH_ALT_EFFECT": 1933,
+            "NO_GWAS_POSITION": 705
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3430,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3430,
+          "mean_absolute_frequency_difference_descriptive": 0.022122,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000065613",
+      "gene_symbol": "SLK",
+      "QTL_source_indexed_nonpal_valid": 3850,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3850,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1208,
+            "MATCH_ALT_EFFECT": 1368,
+            "NO_GWAS_POSITION": 1274,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 311
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2576,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2576,
+          "mean_absolute_frequency_difference_descriptive": 0.100329,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1588,
+            "MATCH_ALT_EFFECT": 1981,
+            "NO_GWAS_POSITION": 281
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3569,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3569,
+          "mean_absolute_frequency_difference_descriptive": 0.013016,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000065621",
+      "gene_symbol": "GSTO2",
+      "QTL_source_indexed_nonpal_valid": 4130,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4130,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1561,
+            "MATCH_ALT_EFFECT": 1368,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1201,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 279
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2569,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2569,
+          "mean_absolute_frequency_difference_descriptive": 0.098464,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 2127,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1696,
+            "NO_GWAS_POSITION": 307
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3823,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3823,
+          "mean_absolute_frequency_difference_descriptive": 0.012534,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000107954",
+      "gene_symbol": "NEURL",
+      "QTL_source_indexed_nonpal_valid": 3775,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3775,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1136,
+            "NO_GWAS_POSITION": 1263,
+            "MATCH_ALT_EFFECT": 1376,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 465
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2512,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2512,
+          "mean_absolute_frequency_difference_descriptive": 0.117286,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1523,
+            "MATCH_ALT_EFFECT": 1986,
+            "NO_GWAS_POSITION": 265,
+            "HOLD_ALLELE_PAIR_MISMATCH": 1
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3509,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3509,
+          "mean_absolute_frequency_difference_descriptive": 0.014812,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000120051",
+      "gene_symbol": "CCDC147",
+      "QTL_source_indexed_nonpal_valid": 4248,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4248,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1407,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1237,
+            "NO_GWAS_POSITION": 1604,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 284
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2644,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2644,
+          "mean_absolute_frequency_difference_descriptive": 0.098887,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 2183,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1753,
+            "NO_GWAS_POSITION": 312
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3936,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3936,
+          "mean_absolute_frequency_difference_descriptive": 0.012346,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000138172",
+      "gene_symbol": "CALHM2",
+      "QTL_source_indexed_nonpal_valid": 3805,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3805,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1392,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 500,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1157,
+            "NO_GWAS_POSITION": 1256
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2549,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2549,
+          "mean_absolute_frequency_difference_descriptive": 0.119439,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 2003,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1539,
+            "NO_GWAS_POSITION": 262,
+            "HOLD_ALLELE_PAIR_MISMATCH": 1
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3542,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3542,
+          "mean_absolute_frequency_difference_descriptive": 0.015383,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000148798",
+      "gene_symbol": "INA",
+      "QTL_source_indexed_nonpal_valid": 3759,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3759,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1275,
+            "MATCH_ALT_EFFECT": 1363,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1121,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 477
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2484,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2484,
+          "mean_absolute_frequency_difference_descriptive": 0.118776,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 254,
+            "MATCH_ALT_EFFECT": 1992,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1512,
+            "HOLD_ALLELE_PAIR_MISMATCH": 1
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3504,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3504,
+          "mean_absolute_frequency_difference_descriptive": 0.015734,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000148834",
+      "gene_symbol": "GSTO1",
+      "QTL_source_indexed_nonpal_valid": 4125,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4125,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1208,
+            "NO_GWAS_POSITION": 1553,
+            "MATCH_ALT_EFFECT": 1364,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 278
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2572,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2572,
+          "mean_absolute_frequency_difference_descriptive": 0.09842,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1696,
+            "NO_GWAS_POSITION": 307,
+            "MATCH_ALT_EFFECT": 2122
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3818,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3818,
+          "mean_absolute_frequency_difference_descriptive": 0.012559,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000148841",
+      "gene_symbol": "ITPRIP",
+      "QTL_source_indexed_nonpal_valid": 4226,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4226,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1595,
+            "MATCH_ALT_EFFECT": 1406,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1225,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 280
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2631,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2631,
+          "mean_absolute_frequency_difference_descriptive": 0.098477,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 312,
+            "MATCH_ALT_EFFECT": 2176,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1738
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3914,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3914,
+          "mean_absolute_frequency_difference_descriptive": 0.012306,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000148842",
+      "gene_symbol": "CNNM2",
+      "QTL_source_indexed_nonpal_valid": 3542,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3542,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 961,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 519,
+            "MATCH_ALT_EFFECT": 1208,
+            "NO_GWAS_POSITION": 1373
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2169,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2169,
+          "mean_absolute_frequency_difference_descriptive": 0.134404,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1373,
+            "MATCH_ALT_EFFECT": 1907,
+            "NO_GWAS_POSITION": 261,
+            "HOLD_ALLELE_PAIR_MISMATCH": 1
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3280,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3280,
+          "mean_absolute_frequency_difference_descriptive": 0.01512,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000166275",
+      "gene_symbol": "C10orf32",
+      "QTL_source_indexed_nonpal_valid": 3480,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3480,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1183,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 510,
+            "NO_GWAS_POSITION": 1357,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 940
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2123,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2123,
+          "mean_absolute_frequency_difference_descriptive": 0.134019,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1868,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1352,
+            "NO_GWAS_POSITION": 259,
+            "HOLD_ALLELE_PAIR_MISMATCH": 1
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3220,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3220,
+          "mean_absolute_frequency_difference_descriptive": 0.015064,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000173915",
+      "gene_symbol": "USMG5",
+      "QTL_source_indexed_nonpal_valid": 3803,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3803,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1151,
+            "NO_GWAS_POSITION": 1263,
+            "MATCH_ALT_EFFECT": 1389,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 500
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2540,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2540,
+          "mean_absolute_frequency_difference_descriptive": 0.119531,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1533,
+            "MATCH_ALT_EFFECT": 2016,
+            "NO_GWAS_POSITION": 253,
+            "HOLD_ALLELE_PAIR_MISMATCH": 1
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3549,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3549,
+          "mean_absolute_frequency_difference_descriptive": 0.015466,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000197748",
+      "gene_symbol": "WDR96",
+      "QTL_source_indexed_nonpal_valid": 4124,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4124,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1554,
+            "MATCH_ALT_EFFECT": 1363,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1207,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 278
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2570,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2570,
+          "mean_absolute_frequency_difference_descriptive": 0.09842,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 2120,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1697,
+            "NO_GWAS_POSITION": 307
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3817,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3817,
+          "mean_absolute_frequency_difference_descriptive": 0.012558,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000214435",
+      "gene_symbol": "AS3MT",
+      "QTL_source_indexed_nonpal_valid": 3484,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3484,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1351,
+            "MATCH_ALT_EFFECT": 1191,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 513,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 942
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2133,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2133,
+          "mean_absolute_frequency_difference_descriptive": 0.134028,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1879,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1348,
+            "NO_GWAS_POSITION": 256,
+            "HOLD_ALLELE_PAIR_MISMATCH": 1
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3227,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3227,
+          "mean_absolute_frequency_difference_descriptive": 0.015096,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000228261",
+      "gene_symbol": "RP11-127L20.3",
+      "QTL_source_indexed_nonpal_valid": 4192,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 4192,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1584,
+            "MATCH_ALT_EFFECT": 1391,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1217,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 280
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2608,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2608,
+          "mean_absolute_frequency_difference_descriptive": 0.098651,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 2157,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1726,
+            "NO_GWAS_POSITION": 309
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3883,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3883,
+          "mean_absolute_frequency_difference_descriptive": 0.012362,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    },
+    {
+      "region_id": "IS_XDATA_G0015",
+      "QTL_dataset": "QTD000434",
+      "gene_id": "ENSG00000272912",
+      "gene_symbol": "RP11-724N1.1",
+      "QTL_source_indexed_nonpal_valid": 3538,
+      "QTL_uniquely_reciprocally_lifted_REF_valid": 3538,
+      "QTL_liftover_blockers": {},
+      "per_ancestry": {
+        "EAS": {
+          "dataset": "GCST90104545",
+          "counts_by_signed_GWAS_allele_match": {
+            "NO_GWAS_POSITION": 1372,
+            "MATCH_ALT_EFFECT": 1207,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 959,
+            "AF_ABS_DELTA_GT_0_2_DESCRIPTIVE": 519
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 2166,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 2166,
+          "mean_absolute_frequency_difference_descriptive": 0.134468,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        },
+        "EUR": {
+          "dataset": "GCST90104540",
+          "counts_by_signed_GWAS_allele_match": {
+            "MATCH_ALT_EFFECT": 1906,
+            "NO_GWAS_POSITION": 262,
+            "MATCH_REF_EFFECT_SIGN_FLIPPED": 1369,
+            "HOLD_ALLELE_PAIR_MISMATCH": 1
+          },
+          "n_nonpal_QTL_GWAS_recipient_allele_matches": 3275,
+          "n_valid_QTL_ALT_AF_vs_GWAS_ALT_EAF_pairs": 3275,
+          "mean_absolute_frequency_difference_descriptive": 0.015137,
+          "cannot_use_as_independent_replication": true,
+          "sample_N_and_case_fraction_approved": false,
+          "formal_coloc_eligible": false
+        }
+      },
+      "exact_original_study_tested_QTL_cis_approved": false,
+      "original_gene_specific_effective_N_approved": false,
+      "GIGASTROKE_exact_trait_cases_controls_approved": false,
+      "palindromic_and_indels_aligned": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "science_status": "HOLD_N_AND_FULL_CIS_AND_STRAND_INDELS"
+    }
+  ]
+}
