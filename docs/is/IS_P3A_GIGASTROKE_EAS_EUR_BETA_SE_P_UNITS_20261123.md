@@ -34,3 +34,18 @@ Scientific status remains HOLD until the precise original GCST90104545 / GCST901
 - Output: artifacts/is/IS_P3A_36_GIGASTROKE_original_beta_scale_QC_HOLD.json
 
 **CI technical success does not equal scientific Coloc eligibility.**
+
+## 2026-11-23 new direct original-file OR-scale source result
+
+The original uploaded EAS GCST90104545 and EUR GCST90104540 GRCh37 compressed files both contain **populated** original odds_ratio, ci_lower and ci_upper columns **in addition** to beta, standard_error and p_value. The source audit of 750 real original SNPs **per ancestry** found:
+
+| Original source | Real rows beta, SE, p | Original OR populated | exp(beta) = original OR | 95% CI = exp(beta ± 1.96 SE) | Maximum absolute |ln(OR)-beta| |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| EAS AIS GCST90104545 | 750 | 750 | 750/750 | 750/750 | 4.9730e-15 |
+| EUR AIS GCST90104540 | 750 | 750 | 750/750 | 750/750 | 4.9730e-15 |
+
+No OR/CI source rows were missing in the 1,500 checked rows; p-values also agree with z=beta/SE to median absolute delta log10(p) 0.00090 EAS and 0.00124 EUR. This is **direct source evidence that the uploaded column beta is the logarithm of the uploaded odds_ratio in these tested rows**, not merely a statistical assumption. The updated source runner requires the exact source OR/CI agreement and rejects a drift in original data.
+
+**Scientific boundary:** This 750-row per-ancestry prefix is **not** the full chr10 candidate region, the complete files, or a proof of original per-variant sample N. Original YAML remains missing case_control N; EAS discovery BBJ overlap remains present. The next approval step must audit all candidate chr10 original source rows or prove that the original file's OR column is globally generated from beta under the exact file format; then justify case fraction and quantitative QTL model inputs. Formal coloc remains 0/36 HOLD.
+
+Evidence: original branch CI #45161635002, artifact is-p3a-gigastroke-EAS-EUR-beta-SE-P-original-source-HOLD. Original paper XML context from prior verified CI SHA256 is labeled as previously verified, not reread live in this audit.

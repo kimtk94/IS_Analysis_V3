@@ -326,6 +326,13 @@ def audit(manifest):
         print("SOURCE_ORIGINAL_"+ancestry+"_BOUND_256K_GZIP",flush=True)
         raw,provenance=source_small_gwas_prefix(ancestry)
         qc=parse_source_effect_stats(raw,ancestry)
+        require(qc["source_OR_populated_rows"]==qc["original_source_preview_rows"]
+                and qc["source_direct_ln_OR_vs_beta_preview_status"]==
+                    "PASS_ORIGINAL_POPULATED_OR_AGREES_WITH_BETA_IN_PREVIEW"
+                and qc["source_OR_95CI_populated_rows"]==qc["original_source_preview_rows"]
+                and qc["source_OR_95CI_exp_beta_pm_1_96SE_le_0_04_rows"]==
+                    qc["original_source_preview_rows"],
+                "Source EAS/EUR OR=exp(beta) or CI=exp(beta+-1.96SE) preview failed")
         desc=PRIMARY_CASES[ancestry]
         total=desc["cases"]+desc["controls"]
         details[ancestry]={
@@ -349,6 +356,12 @@ def audit(manifest):
         "scientific_status":"HOLD_ORIGINAL_BINARY_GWAS_LOG_OR_AND_CASE_FRACTION_LINKAGE",
         "original_GIGASTROKE_paper_original_methods":method,
         "source_EAS_EUR":details,
+        "n_original_GWAS_ancestries_with_OR_exp_beta_preview_verified":2,
+        "n_real_original_GWAS_SNP_preview_OR_and_CI_consistent":sum(
+            x["actual_original_GWAS_source_prefix_QC"]["source_OR_populated_rows"]
+            for x in details.values()),
+        "original_GWAS_beta_is_log_OR_directly_verified_in_first_750_per_ancestry":True,
+        "original_GWAS_beta_log_OR_full_chr10_region_source_verified":False,
         "original_QTL_gene_tissue_assays":36,
         "original_ROSMAP_gene_assays_with_prior_fullcis_real_QTL":15,
         "source_ancestry_discovery_independence_assumed":False,
