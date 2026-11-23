@@ -1,0 +1,54 @@
+name: IS P3A original GIGASTROKE EAS EUR beta SE P source-unit audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-gigastroke-beta-se-p-scale.yml'
+      - 'scripts/is/audit_p3a_gigastroke_original_beta_se_p_scale.py'
+      - 'tests/test_is_p3a_gigastroke_original_beta_se_p_scale.py'
+      - 'docs/is/IS_P3A_GIGASTROKE_EAS_EUR_BETA_SE_P_UNITS_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-gigastroke-beta-se-scale-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  exact-EAS-EUR-original-gwas-beta-se-p-and-paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Historical fixture for repository smoke tests
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install exact YAML and existing regression test dependencies
+        run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Original GWAS source, effect model and safety negative tests
+        run: |
+          python -m py_compile scripts/is/audit_p3a_gigastroke_original_beta_se_p_scale.py
+          python -m unittest discover -s tests -p 'test_is_p3a_gigastroke_original_beta_se_p_scale.py' -v
+      - name: Whole research repository regression tests
+        run: bash scripts/codex_smoke_test.sh
+      - name: Exact publisher original EAS and EUR YAML, bounded gzip effects and Mishra original methods
+        run: |
+          python -m scripts.is.audit_p3a_gigastroke_original_beta_se_p_scale \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --out artifacts/is/IS_P3A_36_GIGASTROKE_original_beta_scale_QC_HOLD.json
+      - name: Preserve only aggregated original source diagnostics and 36 scientific HOLD decisions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-gigastroke-EAS-EUR-beta-SE-P-original-source-HOLD
+          path: artifacts/is/IS_P3A_36_GIGASTROKE_original_beta_scale_QC_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
