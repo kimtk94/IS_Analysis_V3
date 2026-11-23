@@ -287,6 +287,7 @@ def main():
     except (OSError,ValueError,TypeError,KeyError,UnicodeError,TimeoutError,
             OverflowError,ArithmeticError) as exc:
         result["error_class_only"]=type(exc).__name__
+        result["validation_error_reason"]=str(exc)[:220]  # static guarded QC exception, no SNP effect row
     args.out.parent.mkdir(parents=True,exist_ok=True)
     args.out.write_text(json.dumps(result,indent=2,ensure_ascii=False)+"\n",
                         encoding="utf-8")
@@ -298,7 +299,8 @@ def main():
             "original_source_source_record_AUDIT",{}).get("source_gene_assay_nonpal_SNP_total"),
         "hypothetical_coloc_sdY_estimator_N_approved":False,
         "n_formal_coloc":0,
-        "error_class_only":result.get("error_class_only")
+        "error_class_only":result.get("error_class_only"),
+        "validation_error_reason":result.get("validation_error_reason")
     }),flush=True)
     return 0 if result["technical_status"].startswith("PASS_") else 1
 
