@@ -22,6 +22,12 @@ import zlib
 QTL_PATH=("/pub/databases/spot/eQTL/sumstats/"
           "QTS000025/QTD000434/QTD000434.all.tsv.gz")
 HOST="ftp.ebi.ac.uk"
+# Whitelist ONLY previously authenticated eQTL Catalogue QTD studies.
+ALLOWED_ORIGINAL_QTL_PATHS=frozenset((
+    QTL_PATH,
+    "/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000131/QTD000131.all.tsv.gz",
+    "/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000171/QTD000171.all.tsv.gz",
+))
 MAX_TBI_COMPRESSED=8_000_000
 MAX_BGZF_COMPRESSED_SPAN=125_000_000
 MAX_BGZF_UNCOMPRESSED=500_000_000
@@ -233,8 +239,8 @@ def parse_bgzf_range(compressed,first_block_inner_offset,required_last_block_rel
 
 def fetch_original_index(url, opener=urllib.request.urlopen):
     p=urllib.parse.urlsplit(url)
-    require(p.scheme=="https" and p.hostname==HOST and p.path==QTL_PATH,
-            "Not original publisher source")
+    require(p.scheme=="https" and p.hostname==HOST and p.path in ALLOWED_ORIGINAL_QTL_PATHS,
+            "Not original publisher QTD000131 QTD000171 or QTD000434" )
     req=urllib.request.Request(url+".tbi",headers={
         "Accept-Encoding":"identity",
         "User-Agent":"Ischemic-Stroke-ROSMAP-15-gene-original-tabix-index/1.0",
@@ -252,8 +258,8 @@ def fetch_original_index(url, opener=urllib.request.urlopen):
 
 def fetch_contiguous_range(url,limit,opener=urllib.request.urlopen):
     p=urllib.parse.urlsplit(url)
-    require(p.scheme=="https" and p.hostname==HOST and p.path==QTL_PATH,
-            "Not exact original eQTL Catalogue QTD000434")
+    require(p.scheme=="https" and p.hostname==HOST and p.path in ALLOWED_ORIGINAL_QTL_PATHS,
+            "Not exact original allowed eQTL Catalogue QTL dataset")
     start,end=limit["compressed_range_start"],limit["compressed_range_end"]
     require(0<=start<=end and end-start+1<=MAX_BGZF_COMPRESSED_SPAN,
             "Publisher source compressed range exceeds request budget")
