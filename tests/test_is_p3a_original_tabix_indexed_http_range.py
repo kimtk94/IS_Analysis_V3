@@ -165,6 +165,7 @@ class OriginalTabixIndexAndBGZFRangeTests(unittest.TestCase):
              patch.object(M,"merged_one_range_from_index",return_value={
                  "compressed_range_start":100,
                  "compressed_range_end":100+len(blob)-1,
+                 "compressed_range_bytes":len(blob),
                  "first_virtual_offset_within_bgzf_block":0
              }) as indexed, \
              patch.object(M,"fetch_contiguous_range",return_value=(
