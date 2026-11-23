@@ -1,0 +1,54 @@
+name: IS P3A ROSMAP R6 R7 R8 original sample N and input manifest
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-rosmap-r6-r8-input-inventory.yml'
+      - 'scripts/is/audit_p3a_rosmap_release_input_inventory.py'
+      - 'tests/test_is_p3a_rosmap_release_input_inventory.py'
+      - 'docs/is/IS_P3A_ROSMAP_R6_R8_INPUT_PUBLIC_INVENTORY_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-rosmap-r6-r8-source-inventory-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-r6-r7-r8-and-qtlmap-public-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Existing repository historical smoke test fixture
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install existing smoke dependencies
+        run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Compile and fail-closed synthetic source-science tests
+        run: |
+          python -m py_compile scripts/is/audit_p3a_rosmap_release_input_inventory.py
+          python -m unittest discover -s tests -p 'test_is_p3a_rosmap_release_input_inventory.py' -v
+      - name: Whole repository regression tests
+        run: bash scripts/codex_smoke_test.sh
+      - name: Read primary R6 R7 R8, FTP output manifest and qtlmap required input schema
+        run: |
+          python -m scripts.is.audit_p3a_rosmap_release_input_inventory \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --out artifacts/is/IS_P3A_36_ROSMAP_R6_R8_input_public_inventory_HOLD.json
+      - name: Upload only original source SHA256, aggregate sample counts and 36 HOLD decisions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-rosmap-r6-r8-input-inventory-HOLD
+          path: artifacts/is/IS_P3A_36_ROSMAP_R6_R8_input_public_inventory_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
