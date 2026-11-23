@@ -25,7 +25,9 @@ def manifest():
 
 def gw_source(rows=8,beta="0.05",se="0.025",p=None,eaf="0.35",
               ea="A",other="G",duplicates=False):
-    if p is None:p=math.erfc(abs(float(beta)/float(se))/math.sqrt(2))
+    if p is None:
+        try:p=math.erfc(abs(float(beta)/float(se))/math.sqrt(2))
+        except (ValueError, ZeroDivisionError, OverflowError):p=0.5
     header="\t".join(COLS)
     src=[header]
     for i in range(rows):
