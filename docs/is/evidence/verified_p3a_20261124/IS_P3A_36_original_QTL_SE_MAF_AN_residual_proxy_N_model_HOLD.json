@@ -1,0 +1,3078 @@
+{
+  "schema": "is-p3a-36-primary-qtlsdY-proxy-GWAS-case-control-effect-size-path-v1",
+  "technical_status": "PASS_3_REAL_ORIGINAL_QTL_SD_Y_PROXY_INPUT_DIAGNOSTICS",
+  "scientific_status": "HOLD",
+  "n_real_gene_tissue_assays": 36,
+  "n_unique_genes": 20,
+  "n_independent_stroke_GWAS_loci": 1,
+  "n_strict_nonpal_source_gene_assay_SNP_records": 148344,
+  "n_groups_with_variant_N_heterogeneity": 21,
+  "n_groups_with_all_source_SNP_N_constant": 15,
+  "source_original_QTL_pub_QTL_phenotype_inverse_normal_process_reference": "https://www.ebi.ac.uk/eqtl/Methods/",
+  "coloc_case_control_beta_varbeta_documentation": "https://chr1swallace.github.io/coloc/articles/a02_data.html",
+  "proxy_not_direct_sdY_and_not_approved_input": true,
+  "QTL_source_direct_phenotype_sdY_approved": false,
+  "GWAS_original_per_SNP_N_eff_fabricated": false,
+  "n_formal_coloc_abf_eligible": 0,
+  "n_formal_coloc_abf_executed": 0,
+  "n_formal_coloc_susie_eligible": 0,
+  "n_formal_coloc_susie_executed": 0,
+  "source_provenance": {
+    "QTD000131": {
+      "original_indexed_source_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000131/QTD000131.all.tsv.gz",
+      "original_full_region_rows_read": 241786,
+      "original_complete_region_stream_SHA256": "451ba8ba15493986f431b1751aff9ea512ab3dbc04ef41e38f95217d49cf3f53",
+      "source_cohort_study_n_not_regression_N": 387
+    },
+    "QTD000171": {
+      "original_indexed_source_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000171/QTD000171.all.tsv.gz",
+      "original_full_region_rows_read": 264947,
+      "original_complete_region_stream_SHA256": "5964ba14a274f59247eebf88602da21706fdaea6c6e5df57990a3157f7854953",
+      "source_cohort_study_n_not_regression_N": 205
+    },
+    "QTD000434": {
+      "original_indexed_source_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000025/QTD000434/QTD000434.all.tsv.gz",
+      "original_full_region_rows_read": 366252,
+      "original_complete_region_stream_SHA256": "89e6950472b8563442747eafc63fdbe5e75aa27fb28e3f0fec6ede5fc114ffa2",
+      "source_cohort_study_n_not_regression_N": 560
+    }
+  },
+  "groups": [
+    {
+      "QTL_dataset": "QTD000131",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000065613",
+      "gene_symbol": "SLK",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4537,
+        "positive_even_genotyped_AN_count": 4537,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 370,
+        "max_observed_SNP_N": 387,
+        "n_distinct_observed_SNP_N": 15,
+        "n_records_at_dataset_nominal_N": 4482,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9878775,
+        "most_common_N_observed": [
+          {
+            "variant_n": 387,
+            "records": 4482
+          },
+          {
+            "variant_n": 386,
+            "records": 20
+          },
+          {
+            "variant_n": 385,
+            "records": 11
+          },
+          {
+            "variant_n": 384,
+            "records": 8
+          },
+          {
+            "variant_n": 379,
+            "records": 2
+          },
+          {
+            "variant_n": 374,
+            "records": 2
+          },
+          {
+            "variant_n": 370,
+            "records": 2
+          },
+          {
+            "variant_n": 380,
+            "records": 2
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4537,
+          "median": 0.8242859,
+          "p10": 0.79392615,
+          "p90": 0.8770686
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2685,
+          "median": 0.82288395,
+          "p10": 0.79300701,
+          "p90": 0.85452642
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 1,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2652,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3582,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000131",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000065621",
+      "gene_symbol": "GSTO2",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4851,
+        "positive_even_genotyped_AN_count": 4851,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 366,
+        "max_observed_SNP_N": 387,
+        "n_distinct_observed_SNP_N": 15,
+        "n_records_at_dataset_nominal_N": 4798,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9890744,
+        "most_common_N_observed": [
+          {
+            "variant_n": 387,
+            "records": 4798
+          },
+          {
+            "variant_n": 386,
+            "records": 21
+          },
+          {
+            "variant_n": 385,
+            "records": 10
+          },
+          {
+            "variant_n": 384,
+            "records": 8
+          },
+          {
+            "variant_n": 380,
+            "records": 2
+          },
+          {
+            "variant_n": 383,
+            "records": 2
+          },
+          {
+            "variant_n": 372,
+            "records": 2
+          },
+          {
+            "variant_n": 381,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4851,
+          "median": 0.80400171,
+          "p10": 0.7748193,
+          "p90": 0.85702832
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2857,
+          "median": 0.80004409,
+          "p10": 0.77282514,
+          "p90": 0.82993564
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 6,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2649,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3844,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000131",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000076685",
+      "gene_symbol": "NT5C2",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4287,
+        "positive_even_genotyped_AN_count": 4287,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 367,
+        "max_observed_SNP_N": 387,
+        "n_distinct_observed_SNP_N": 15,
+        "n_records_at_dataset_nominal_N": 4239,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9888034,
+        "most_common_N_observed": [
+          {
+            "variant_n": 387,
+            "records": 4239
+          },
+          {
+            "variant_n": 386,
+            "records": 21
+          },
+          {
+            "variant_n": 385,
+            "records": 8
+          },
+          {
+            "variant_n": 384,
+            "records": 4
+          },
+          {
+            "variant_n": 382,
+            "records": 2
+          },
+          {
+            "variant_n": 381,
+            "records": 2
+          },
+          {
+            "variant_n": 379,
+            "records": 2
+          },
+          {
+            "variant_n": 370,
+            "records": 2
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4287,
+          "median": 0.74668178,
+          "p10": 0.72231703,
+          "p90": 0.7864022
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2567,
+          "median": 0.74512902,
+          "p10": 0.72269535,
+          "p90": 0.77076797
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2530,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3509,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000131",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000107954",
+      "gene_symbol": "NEURL",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4383,
+        "positive_even_genotyped_AN_count": 4383,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 367,
+        "max_observed_SNP_N": 387,
+        "n_distinct_observed_SNP_N": 16,
+        "n_records_at_dataset_nominal_N": 4332,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9883641,
+        "most_common_N_observed": [
+          {
+            "variant_n": 387,
+            "records": 4332
+          },
+          {
+            "variant_n": 386,
+            "records": 22
+          },
+          {
+            "variant_n": 385,
+            "records": 7
+          },
+          {
+            "variant_n": 384,
+            "records": 6
+          },
+          {
+            "variant_n": 382,
+            "records": 2
+          },
+          {
+            "variant_n": 381,
+            "records": 2
+          },
+          {
+            "variant_n": 379,
+            "records": 2
+          },
+          {
+            "variant_n": 370,
+            "records": 2
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4383,
+          "median": 0.8909395,
+          "p10": 0.85843579,
+          "p90": 0.94475685
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2567,
+          "median": 0.89052637,
+          "p10": 0.85840582,
+          "p90": 0.92164273
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 8,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2576,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3518,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000131",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000138172",
+      "gene_symbol": "CALHM2",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4419,
+        "positive_even_genotyped_AN_count": 4419,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 367,
+        "max_observed_SNP_N": 387,
+        "n_distinct_observed_SNP_N": 15,
+        "n_records_at_dataset_nominal_N": 4370,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9889115,
+        "most_common_N_observed": [
+          {
+            "variant_n": 387,
+            "records": 4370
+          },
+          {
+            "variant_n": 386,
+            "records": 21
+          },
+          {
+            "variant_n": 385,
+            "records": 7
+          },
+          {
+            "variant_n": 384,
+            "records": 6
+          },
+          {
+            "variant_n": 382,
+            "records": 2
+          },
+          {
+            "variant_n": 381,
+            "records": 2
+          },
+          {
+            "variant_n": 379,
+            "records": 2
+          },
+          {
+            "variant_n": 370,
+            "records": 2
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4419,
+          "median": 0.76699715,
+          "p10": 0.74013541,
+          "p90": 0.8144479
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2585,
+          "median": 0.76611014,
+          "p10": 0.74016633,
+          "p90": 0.7935943
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2608,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3553,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000131",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000148834",
+      "gene_symbol": "GSTO1",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4872,
+        "positive_even_genotyped_AN_count": 4872,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 366,
+        "max_observed_SNP_N": 387,
+        "n_distinct_observed_SNP_N": 15,
+        "n_records_at_dataset_nominal_N": 4817,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.988711,
+        "most_common_N_observed": [
+          {
+            "variant_n": 387,
+            "records": 4817
+          },
+          {
+            "variant_n": 386,
+            "records": 21
+          },
+          {
+            "variant_n": 385,
+            "records": 11
+          },
+          {
+            "variant_n": 384,
+            "records": 8
+          },
+          {
+            "variant_n": 370,
+            "records": 2
+          },
+          {
+            "variant_n": 380,
+            "records": 2
+          },
+          {
+            "variant_n": 383,
+            "records": 2
+          },
+          {
+            "variant_n": 372,
+            "records": 2
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4872,
+          "median": 0.7279789,
+          "p10": 0.70137599,
+          "p90": 0.7783464
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2858,
+          "median": 0.7255906,
+          "p10": 0.69948825,
+          "p90": 0.75089305
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2656,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3838,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000131",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000148843",
+      "gene_symbol": "PDCD11",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4386,
+        "positive_even_genotyped_AN_count": 4386,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 367,
+        "max_observed_SNP_N": 387,
+        "n_distinct_observed_SNP_N": 15,
+        "n_records_at_dataset_nominal_N": 4334,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9881441,
+        "most_common_N_observed": [
+          {
+            "variant_n": 387,
+            "records": 4334
+          },
+          {
+            "variant_n": 386,
+            "records": 23
+          },
+          {
+            "variant_n": 385,
+            "records": 8
+          },
+          {
+            "variant_n": 384,
+            "records": 6
+          },
+          {
+            "variant_n": 382,
+            "records": 2
+          },
+          {
+            "variant_n": 381,
+            "records": 2
+          },
+          {
+            "variant_n": 379,
+            "records": 2
+          },
+          {
+            "variant_n": 370,
+            "records": 2
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4386,
+          "median": 0.7311527,
+          "p10": 0.70549781,
+          "p90": 0.77433772
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2595,
+          "median": 0.73142572,
+          "p10": 0.70673879,
+          "p90": 0.75557114
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2592,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3558,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000131",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000156384",
+      "gene_symbol": "SFR1",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4755,
+        "positive_even_genotyped_AN_count": 4755,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 366,
+        "max_observed_SNP_N": 387,
+        "n_distinct_observed_SNP_N": 15,
+        "n_records_at_dataset_nominal_N": 4701,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9886435,
+        "most_common_N_observed": [
+          {
+            "variant_n": 387,
+            "records": 4701
+          },
+          {
+            "variant_n": 386,
+            "records": 19
+          },
+          {
+            "variant_n": 385,
+            "records": 12
+          },
+          {
+            "variant_n": 384,
+            "records": 9
+          },
+          {
+            "variant_n": 370,
+            "records": 2
+          },
+          {
+            "variant_n": 380,
+            "records": 2
+          },
+          {
+            "variant_n": 383,
+            "records": 2
+          },
+          {
+            "variant_n": 375,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4755,
+          "median": 0.72508393,
+          "p10": 0.69809127,
+          "p90": 0.77320282
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2813,
+          "median": 0.72336276,
+          "p10": 0.69656065,
+          "p90": 0.75111449
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2616,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3736,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000131",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000166275",
+      "gene_symbol": "C10orf32",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3748,
+        "positive_even_genotyped_AN_count": 3748,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 367,
+        "max_observed_SNP_N": 387,
+        "n_distinct_observed_SNP_N": 15,
+        "n_records_at_dataset_nominal_N": 3705,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9885272,
+        "most_common_N_observed": [
+          {
+            "variant_n": 387,
+            "records": 3705
+          },
+          {
+            "variant_n": 386,
+            "records": 21
+          },
+          {
+            "variant_n": 385,
+            "records": 9
+          },
+          {
+            "variant_n": 384,
+            "records": 2
+          },
+          {
+            "variant_n": 367,
+            "records": 1
+          },
+          {
+            "variant_n": 382,
+            "records": 1
+          },
+          {
+            "variant_n": 381,
+            "records": 1
+          },
+          {
+            "variant_n": 373,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3748,
+          "median": 0.96247939,
+          "p10": 0.92370659,
+          "p90": 0.99272949
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2345,
+          "median": 0.95724683,
+          "p10": 0.9223747,
+          "p90": 0.98674598
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 292,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2128,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3221,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000131",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000273108",
+      "gene_symbol": "RP11-416N2.4",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4455,
+        "positive_even_genotyped_AN_count": 4455,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 370,
+        "max_observed_SNP_N": 387,
+        "n_distinct_observed_SNP_N": 15,
+        "n_records_at_dataset_nominal_N": 4407,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9892256,
+        "most_common_N_observed": [
+          {
+            "variant_n": 387,
+            "records": 4407
+          },
+          {
+            "variant_n": 386,
+            "records": 20
+          },
+          {
+            "variant_n": 385,
+            "records": 7
+          },
+          {
+            "variant_n": 384,
+            "records": 6
+          },
+          {
+            "variant_n": 381,
+            "records": 2
+          },
+          {
+            "variant_n": 379,
+            "records": 2
+          },
+          {
+            "variant_n": 370,
+            "records": 2
+          },
+          {
+            "variant_n": 383,
+            "records": 2
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4455,
+          "median": 0.75561315,
+          "p10": 0.72897292,
+          "p90": 0.80204067
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2584,
+          "median": 0.7550066,
+          "p10": 0.72899185,
+          "p90": 0.78079848
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2586,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3536,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000065621",
+      "gene_symbol": "GSTO2",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4477,
+        "positive_even_genotyped_AN_count": 4477,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 195,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 11,
+        "n_records_at_dataset_nominal_N": 4436,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9908421,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 4436
+          },
+          {
+            "variant_n": 204,
+            "records": 18
+          },
+          {
+            "variant_n": 203,
+            "records": 9
+          },
+          {
+            "variant_n": 202,
+            "records": 5
+          },
+          {
+            "variant_n": 201,
+            "records": 2
+          },
+          {
+            "variant_n": 200,
+            "records": 2
+          },
+          {
+            "variant_n": 195,
+            "records": 1
+          },
+          {
+            "variant_n": 196,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4477,
+          "median": 0.92109997,
+          "p10": 0.8677243,
+          "p90": 0.98654586
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2870,
+          "median": 0.91536279,
+          "p10": 0.86272353,
+          "p90": 0.97233813
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 81,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2613,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3731,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000076685",
+      "gene_symbol": "NT5C2",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4045,
+        "positive_even_genotyped_AN_count": 4045,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 186,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 12,
+        "n_records_at_dataset_nominal_N": 4003,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9896168,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 4003
+          },
+          {
+            "variant_n": 204,
+            "records": 19
+          },
+          {
+            "variant_n": 203,
+            "records": 8
+          },
+          {
+            "variant_n": 202,
+            "records": 5
+          },
+          {
+            "variant_n": 198,
+            "records": 2
+          },
+          {
+            "variant_n": 197,
+            "records": 2
+          },
+          {
+            "variant_n": 199,
+            "records": 1
+          },
+          {
+            "variant_n": 201,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4045,
+          "median": 0.87196964,
+          "p10": 0.82697646,
+          "p90": 0.93999995
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2482,
+          "median": 0.86620065,
+          "p10": 0.82122257,
+          "p90": 0.91621658
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2498,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3412,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000138172",
+      "gene_symbol": "CALHM2",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4115,
+        "positive_even_genotyped_AN_count": 4115,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 186,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 12,
+        "n_records_at_dataset_nominal_N": 4073,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9897934,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 4073
+          },
+          {
+            "variant_n": 204,
+            "records": 19
+          },
+          {
+            "variant_n": 203,
+            "records": 8
+          },
+          {
+            "variant_n": 202,
+            "records": 5
+          },
+          {
+            "variant_n": 198,
+            "records": 2
+          },
+          {
+            "variant_n": 197,
+            "records": 2
+          },
+          {
+            "variant_n": 199,
+            "records": 1
+          },
+          {
+            "variant_n": 201,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4115,
+          "median": 0.91215951,
+          "p10": 0.86514163,
+          "p90": 0.98644837
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2493,
+          "median": 0.90535705,
+          "p10": 0.85921433,
+          "p90": 0.95837195
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2569,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3448,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000148795",
+      "gene_symbol": "CYP17A1",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3527,
+        "positive_even_genotyped_AN_count": 3527,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 186,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 11,
+        "n_records_at_dataset_nominal_N": 3492,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9900766,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 3492
+          },
+          {
+            "variant_n": 204,
+            "records": 18
+          },
+          {
+            "variant_n": 203,
+            "records": 5
+          },
+          {
+            "variant_n": 202,
+            "records": 4
+          },
+          {
+            "variant_n": 198,
+            "records": 2
+          },
+          {
+            "variant_n": 199,
+            "records": 1
+          },
+          {
+            "variant_n": 201,
+            "records": 1
+          },
+          {
+            "variant_n": 186,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3527,
+          "median": 1.00721025,
+          "p10": 0.95974646,
+          "p90": 1.062061
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2250,
+          "median": 1.00153017,
+          "p10": 0.95374318,
+          "p90": 1.05369061
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2103,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3106,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000148834",
+      "gene_symbol": "GSTO1",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4501,
+        "positive_even_genotyped_AN_count": 4501,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 195,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 11,
+        "n_records_at_dataset_nominal_N": 4459,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9906687,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 4459
+          },
+          {
+            "variant_n": 204,
+            "records": 18
+          },
+          {
+            "variant_n": 203,
+            "records": 9
+          },
+          {
+            "variant_n": 202,
+            "records": 5
+          },
+          {
+            "variant_n": 197,
+            "records": 2
+          },
+          {
+            "variant_n": 201,
+            "records": 2
+          },
+          {
+            "variant_n": 200,
+            "records": 2
+          },
+          {
+            "variant_n": 195,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4501,
+          "median": 0.78203301,
+          "p10": 0.7408338,
+          "p90": 0.83546067
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2865,
+          "median": 0.77796205,
+          "p10": 0.73684761,
+          "p90": 0.82413155
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2620,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3726,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000148841",
+      "gene_symbol": "ITPRIP",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4546,
+        "positive_even_genotyped_AN_count": 4546,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 195,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 11,
+        "n_records_at_dataset_nominal_N": 4505,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9909811,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 4505
+          },
+          {
+            "variant_n": 204,
+            "records": 18
+          },
+          {
+            "variant_n": 203,
+            "records": 8
+          },
+          {
+            "variant_n": 202,
+            "records": 5
+          },
+          {
+            "variant_n": 201,
+            "records": 2
+          },
+          {
+            "variant_n": 199,
+            "records": 2
+          },
+          {
+            "variant_n": 200,
+            "records": 2
+          },
+          {
+            "variant_n": 195,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4546,
+          "median": 0.56895268,
+          "p10": 0.53860349,
+          "p90": 0.61095688
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 3007,
+          "median": 0.56766325,
+          "p10": 0.53680097,
+          "p90": 0.59952573
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2677,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3820,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000166275",
+      "gene_symbol": "C10orf32",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3565,
+        "positive_even_genotyped_AN_count": 3565,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 186,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 11,
+        "n_records_at_dataset_nominal_N": 3530,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9901823,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 3530
+          },
+          {
+            "variant_n": 204,
+            "records": 18
+          },
+          {
+            "variant_n": 203,
+            "records": 5
+          },
+          {
+            "variant_n": 202,
+            "records": 4
+          },
+          {
+            "variant_n": 198,
+            "records": 2
+          },
+          {
+            "variant_n": 199,
+            "records": 1
+          },
+          {
+            "variant_n": 201,
+            "records": 1
+          },
+          {
+            "variant_n": 186,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3565,
+          "median": 0.89727194,
+          "p10": 0.82436805,
+          "p90": 0.94753821
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2282,
+          "median": 0.89085124,
+          "p10": 0.81818135,
+          "p90": 0.94264177
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 54,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2107,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3141,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000197748",
+      "gene_symbol": "WDR96",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4501,
+        "positive_even_genotyped_AN_count": 4501,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 195,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 11,
+        "n_records_at_dataset_nominal_N": 4458,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9904466,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 4458
+          },
+          {
+            "variant_n": 204,
+            "records": 19
+          },
+          {
+            "variant_n": 203,
+            "records": 9
+          },
+          {
+            "variant_n": 202,
+            "records": 5
+          },
+          {
+            "variant_n": 197,
+            "records": 2
+          },
+          {
+            "variant_n": 201,
+            "records": 2
+          },
+          {
+            "variant_n": 200,
+            "records": 2
+          },
+          {
+            "variant_n": 195,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4501,
+          "median": 0.80947657,
+          "p10": 0.76663436,
+          "p90": 0.86512836
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2862,
+          "median": 0.80687542,
+          "p10": 0.76311023,
+          "p90": 0.85468046
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2619,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3726,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000228261",
+      "gene_symbol": "RP11-127L20.3",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4521,
+        "positive_even_genotyped_AN_count": 4521,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 195,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 11,
+        "n_records_at_dataset_nominal_N": 4480,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9909312,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 4480
+          },
+          {
+            "variant_n": 204,
+            "records": 18
+          },
+          {
+            "variant_n": 203,
+            "records": 8
+          },
+          {
+            "variant_n": 202,
+            "records": 5
+          },
+          {
+            "variant_n": 201,
+            "records": 2
+          },
+          {
+            "variant_n": 199,
+            "records": 2
+          },
+          {
+            "variant_n": 200,
+            "records": 2
+          },
+          {
+            "variant_n": 195,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4521,
+          "median": 0.96875764,
+          "p10": 0.9129989,
+          "p90": 1.0424063
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2972,
+          "median": 0.96440898,
+          "p10": 0.90834032,
+          "p90": 1.02299228
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 68,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2655,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3789,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000272912",
+      "gene_symbol": "RP11-724N1.1",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3637,
+        "positive_even_genotyped_AN_count": 3637,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 186,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 11,
+        "n_records_at_dataset_nominal_N": 3602,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9903767,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 3602
+          },
+          {
+            "variant_n": 204,
+            "records": 17
+          },
+          {
+            "variant_n": 202,
+            "records": 5
+          },
+          {
+            "variant_n": 203,
+            "records": 5
+          },
+          {
+            "variant_n": 198,
+            "records": 2
+          },
+          {
+            "variant_n": 199,
+            "records": 1
+          },
+          {
+            "variant_n": 201,
+            "records": 1
+          },
+          {
+            "variant_n": 186,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3637,
+          "median": 0.98692734,
+          "p10": 0.93113512,
+          "p90": 1.04459369
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2311,
+          "median": 0.97815387,
+          "p10": 0.9290757,
+          "p90": 1.03698421
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2151,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3192,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000171",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000273108",
+      "gene_symbol": "RP11-416N2.4",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4135,
+        "positive_even_genotyped_AN_count": 4135,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 186,
+        "max_observed_SNP_N": 205,
+        "n_distinct_observed_SNP_N": 11,
+        "n_records_at_dataset_nominal_N": 4094,
+        "fraction_SNP_records_at_dataset_nominal_N": 0.9900846,
+        "most_common_N_observed": [
+          {
+            "variant_n": 205,
+            "records": 4094
+          },
+          {
+            "variant_n": 204,
+            "records": 18
+          },
+          {
+            "variant_n": 203,
+            "records": 8
+          },
+          {
+            "variant_n": 202,
+            "records": 5
+          },
+          {
+            "variant_n": 198,
+            "records": 3
+          },
+          {
+            "variant_n": 197,
+            "records": 2
+          },
+          {
+            "variant_n": 201,
+            "records": 1
+          },
+          {
+            "variant_n": 186,
+            "records": 1
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 0,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4135,
+          "median": 0.84488506,
+          "p10": 0.79744232,
+          "p90": 0.90648515
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2499,
+          "median": 0.83913304,
+          "p10": 0.79407692,
+          "p90": 0.88736364
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 1,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2546,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3430,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000065613",
+      "gene_symbol": "SLK",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3850,
+        "positive_even_genotyped_AN_count": 3850,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 3850,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 3850
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3850,
+          "median": 0.56169919,
+          "p10": 0.54136757,
+          "p90": 0.6040292
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2610,
+          "median": 0.55921557,
+          "p10": 0.54031065,
+          "p90": 0.58724213
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 25,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2576,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3569,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000065621",
+      "gene_symbol": "GSTO2",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4130,
+        "positive_even_genotyped_AN_count": 4130,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 4130,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 4130
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4130,
+          "median": 0.78753681,
+          "p10": 0.75734369,
+          "p90": 0.84380501
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2816,
+          "median": 0.78588826,
+          "p10": 0.75352647,
+          "p90": 0.82319891
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 199,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2569,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3823,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000107954",
+      "gene_symbol": "NEURL",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3775,
+        "positive_even_genotyped_AN_count": 3775,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 3775,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 3775
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3775,
+          "median": 0.54685483,
+          "p10": 0.52651495,
+          "p90": 0.58753906
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2551,
+          "median": 0.54462085,
+          "p10": 0.52490521,
+          "p90": 0.57166854
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2512,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3509,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000120051",
+      "gene_symbol": "CCDC147",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4248,
+        "positive_even_genotyped_AN_count": 4248,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 4248,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 4248
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4248,
+          "median": 0.87480909,
+          "p10": 0.84921458,
+          "p90": 0.93539759
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2981,
+          "median": 0.8734385,
+          "p10": 0.84986711,
+          "p90": 0.91149207
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2644,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3936,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000138172",
+      "gene_symbol": "CALHM2",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3805,
+        "positive_even_genotyped_AN_count": 3805,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 3805,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 3805
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3805,
+          "median": 0.87882129,
+          "p10": 0.84517162,
+          "p90": 0.94341655
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2614,
+          "median": 0.87400935,
+          "p10": 0.84236251,
+          "p90": 0.91856759
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2549,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3542,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000148798",
+      "gene_symbol": "INA",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3759,
+        "positive_even_genotyped_AN_count": 3759,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 3759,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 3759
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3759,
+          "median": 0.38836714,
+          "p10": 0.37293705,
+          "p90": 0.41697155
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2629,
+          "median": 0.38594307,
+          "p10": 0.37250868,
+          "p90": 0.40621957
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2484,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3504,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000148834",
+      "gene_symbol": "GSTO1",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4125,
+        "positive_even_genotyped_AN_count": 4125,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 4125,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 4125
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4125,
+          "median": 0.72383297,
+          "p10": 0.70151026,
+          "p90": 0.77533775
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2804,
+          "median": 0.72214988,
+          "p10": 0.70053183,
+          "p90": 0.75680333
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 3,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2572,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3818,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000148841",
+      "gene_symbol": "ITPRIP",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4226,
+        "positive_even_genotyped_AN_count": 4226,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 4226,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 4226
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4226,
+          "median": 0.61005917,
+          "p10": 0.59190078,
+          "p90": 0.6519491
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2955,
+          "median": 0.60913309,
+          "p10": 0.59224333,
+          "p90": 0.63546203
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2631,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3914,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000148842",
+      "gene_symbol": "CNNM2",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3542,
+        "positive_even_genotyped_AN_count": 3542,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 3542,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 3542
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3542,
+          "median": 0.5437358,
+          "p10": 0.5251599,
+          "p90": 0.58861516
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2480,
+          "median": 0.53871539,
+          "p10": 0.52251919,
+          "p90": 0.5715897
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 138,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2169,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3280,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000166275",
+      "gene_symbol": "C10orf32",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3480,
+        "positive_even_genotyped_AN_count": 3480,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 3480,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 3480
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3480,
+          "median": 0.7259414,
+          "p10": 0.65865254,
+          "p90": 0.79123359
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2449,
+          "median": 0.71720766,
+          "p10": 0.64749906,
+          "p90": 0.76665404
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 928,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2123,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3220,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000173915",
+      "gene_symbol": "USMG5",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3803,
+        "positive_even_genotyped_AN_count": 3803,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 3803,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 3803
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3803,
+          "median": 0.70437319,
+          "p10": 0.67758394,
+          "p90": 0.75677294
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2635,
+          "median": 0.70197814,
+          "p10": 0.67562661,
+          "p90": 0.73748431
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 0,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2540,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3549,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000197748",
+      "gene_symbol": "WDR96",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4124,
+        "positive_even_genotyped_AN_count": 4124,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 4124,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 4124
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4124,
+          "median": 0.90667822,
+          "p10": 0.87824902,
+          "p90": 0.97300638
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2798,
+          "median": 0.90551879,
+          "p10": 0.87725246,
+          "p90": 0.95008728
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 70,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2570,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3817,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000214435",
+      "gene_symbol": "AS3MT",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3484,
+        "positive_even_genotyped_AN_count": 3484,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 3484,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 3484
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3484,
+          "median": 0.81065102,
+          "p10": 0.77592081,
+          "p90": 0.88623288
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2454,
+          "median": 0.80456289,
+          "p10": 0.77137853,
+          "p90": 0.85808468
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 500,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2133,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3227,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000228261",
+      "gene_symbol": "RP11-127L20.3",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 4192,
+        "positive_even_genotyped_AN_count": 4192,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 4192,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 4192
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 4192,
+          "median": 0.75620595,
+          "p10": 0.73332282,
+          "p90": 0.80937227
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2918,
+          "median": 0.75468734,
+          "p10": 0.73201512,
+          "p90": 0.78877292
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 128,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2608,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3883,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    },
+    {
+      "QTL_dataset": "QTD000434",
+      "region_id": "IS_XDATA_G0015",
+      "gene_id": "ENSG00000272912",
+      "gene_symbol": "RP11-724N1.1",
+      "QTL_source_variant_N_and_residual_proxy": {
+        "original_strict_nonpal_SNPs": 3538,
+        "positive_even_genotyped_AN_count": 3538,
+        "invalid_AN_AC_count": 0,
+        "AN_over_2_higher_than_catalogue_study_N": 0,
+        "min_observed_SNP_N": 560,
+        "max_observed_SNP_N": 560,
+        "n_distinct_observed_SNP_N": 1,
+        "n_records_at_dataset_nominal_N": 3538,
+        "fraction_SNP_records_at_dataset_nominal_N": 1.0,
+        "most_common_N_observed": [
+          {
+            "variant_n": 560,
+            "records": 3538
+          }
+        ],
+        "maf_vs_source_ac_an_delta_gt_0p01": 3,
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_all": {
+          "n": 3538,
+          "median": 0.77381165,
+          "p10": 0.73920653,
+          "p90": 0.84146464
+        },
+        "per_SNP_regression_SE_MAF_AN_residual_proxy_common_MAF": {
+          "n": 2478,
+          "median": 0.76691462,
+          "p10": 0.73386784,
+          "p90": 0.81627419
+        },
+        "p_lt_5e_minus_8_gene_assay_records": 385,
+        "p_equal_zero_gene_assay_records": 0,
+        "quantitative_source_phenotype_sdY_independently_observed": false,
+        "source_study_per_phenotype_model_regression_N_approved": false
+      },
+      "GWAS_ancestry_effect_size_route": {
+        "EAS": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 2166,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        },
+        "EUR": {
+          "original_signed_GWAS_QTL_nonpal_overlap_assay_rows": 3275,
+          "signed_beta_original_SE_field_technically_available": true,
+          "coloc_case_control_beta_varbeta_route_does_not_require_invented_N_eff": true,
+          "case_control_log_odds_effect_units_verified_per_meta_analysis": false,
+          "allele_freq_ancestry_and_full_cis_overlap_preapproved": false,
+          "scientific_GWAS_abf_component_approved": false
+        }
+      },
+      "QTL_inverse_normal_transformation_pipeline_documented": true,
+      "this_exact_gene_QTL_source_sdY_measured": false,
+      "may_set_sdY_equal_1_without_per_gene_verification": false,
+      "QTL_exact_phenotype_regression_effective_N_source_verified": false,
+      "QTL_quantitative_ABF_input_sdY_approved": false,
+      "GWAS_original_AIS_N_eff_automatically_assigned": false,
+      "case_fraction_used_in_effect_size_cc_route": false,
+      "formal_coloc_abf_eligible": false,
+      "formal_coloc_susie_eligible": false,
+      "scientific_status": "HOLD_QTL_SD_Y_OR_N_MODEL_AND_GWAS_EFFECT_UNITS"
+    }
+  ]
+}

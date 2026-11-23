@@ -1,0 +1,65 @@
+{
+  "schema": "is-p3a-36x2-persistent-github-pinned-source-evidence-v1",
+  "source_audit_asof": "2026-11-23",
+  "original_genuine_gene_tissue_assays": 36,
+  "original_assay_x_ancestry_aggregate_rows": 72,
+  "original_distinct_genes": 20,
+  "original_independent_GWAS_loci": 1,
+  "original_all_permutation_tested_cis_gene_assay_variants": 202400,
+  "original_strict_nonpal_QTL_GWAS_candidate_gene_assay_SNPs": 148344,
+  "original_signed_match_gene_assay_records": {
+    "EAS": 89597,
+    "EUR": 128282
+  },
+  "original_unresolved_allele_discordant_assay_records": {
+    "EAS": 0,
+    "EUR": 8
+  },
+  "public_aggregate_evidence_permanently_in_git": true,
+  "source_evidence_file_sha256_and_GitHub_run": {
+    "reciprocal": {
+      "filename": "P3A_36_real_source_2way_ref_SNP_EAS_EUR_GWAS_HOLD.json",
+      "sha256": "53b6d71229ed98ab79f404194fa80e94e95bd838fa119ba2961ef234f1308ba8",
+      "original_source_CI_run_id": 45031834139,
+      "verified_source_GitHub_Actions_URL": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45031834139",
+      "original_artifact_group_level_only": true,
+      "original_archive_file_bytes": 74608
+    },
+    "cis": {
+      "filename": "IS_P3A_36_actual_source_permuted_cis_tested_nvariants_HOLD.json",
+      "sha256": "4a65a2e4ae9f260c9c154cb8f7a47af96ca95c1492185cd0a9739dbd178f7481",
+      "original_source_CI_run_id": 45036525615,
+      "verified_source_GitHub_Actions_URL": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45036525615",
+      "original_artifact_group_level_only": true,
+      "original_archive_file_bytes": 49230
+    },
+    "qtl_n": {
+      "filename": "IS_P3A_36_original_QTL_SE_MAF_AN_residual_proxy_N_model_HOLD.json",
+      "sha256": "023750fde4a2a57c1604793dfa2b78ba65a29dbe06ff849e17382a559906eb2a",
+      "original_source_CI_run_id": 45038801844,
+      "verified_source_GitHub_Actions_URL": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45038801844",
+      "original_artifact_group_level_only": true,
+      "original_archive_file_bytes": 122146
+    },
+    "coverage": {
+      "filename": "IS_P3A_36x2_original_cis_allele_coverage_HOLD.json",
+      "sha256": "6fc64e2068b44e45a1bf16e1162e20062e4913cca9fc1d3b2e9b702cd118e344",
+      "original_source_CI_run_id": 45189787019,
+      "verified_source_GitHub_Actions_URL": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45189787019",
+      "original_artifact_group_level_only": true,
+      "original_archive_file_bytes": 144290
+    }
+  },
+  "source_inputs_are_not_original_per_variant_effect_data": true,
+  "QTL_AN_over_2_is_not_independently_confirmed_exact_gene_regression_N": true,
+  "ROSMAP_2021_QC_pass_samples": 569,
+  "ROSMAP_R7_published_nominal_N": 560,
+  "ROSMAP_2021_QC_vs_R7_9_sample_gap_explained": false,
+  "official_source_QTL_normalized_phenotype_sdY_directly_measured": false,
+  "GWAS_cc_beta_SE_path_requires_case_fraction_s": false,
+  "scientific_status": "HOLD_QTL_MODEL_N_ORIGINAL_SD_Y_AND_FULLCIS_PRIOR_SENSITIVITY",
+  "formal_coloc_abf_eligible": 0,
+  "formal_coloc_abf_executed": 0,
+  "formal_coloc_susie_executed": 0,
+  "original_aggregate_evidence_donor_or_variant_effect_rows_archived": false
+}
