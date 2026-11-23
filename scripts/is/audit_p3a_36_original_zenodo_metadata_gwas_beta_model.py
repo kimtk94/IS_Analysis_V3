@@ -180,6 +180,7 @@ def safe_count_source_metadata(data,name):
         "source_original_file":name,"original_deposit_study":FILES[name]["study"],
         "original_2021_metadata_row_count":n,
         "original_table_number_columns":len(canonical),
+        "original_source_schema_header_names_only_no_sample_values":canonical,
         "recognized_source_column_names_no_values":recognized,
         "n_recognized_schema_columns":len(recognized),
         "recognized_sample_or_donor_identifier_columns":
