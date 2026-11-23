@@ -104,10 +104,16 @@ class OriginalQTL15GeneOneRegionalTabixTests(unittest.TestCase):
             M.one_combined_region(m,set(metadata()))
 
     def test_historical_phenotype_pos_not_within_gene_span_rejected(self):
-        raw=metadata_file().replace(b"\n",b"\r\n")
+        raw_text=gzip.decompress(metadata_file()).decode("utf-8")
+        lines=raw_text.splitlines()
+        fields=lines[1].split("\t")
+        fields[2]="99999999"
+        lines[1]="\t".join(fields)
+        raw=gzip.compress(("\n".join(lines)+"\n").encode())
         with patch.object(M,"Z_MD5",
                           hashlib.md5(raw,usedforsecurity=False).hexdigest()):
-            self.assertEqual(len(M.source_gene_metadata(raw,set(metadata()))),15)
+            with self.assertRaises(ValueError):
+                M.source_gene_metadata(raw,set(metadata()))
 
     def test_one_batch_recovers_all_15_with_expected_an(self):
         x=M.aggregate_tabix_stream(synthetic_rows(),manifest(),region(),metadata())
