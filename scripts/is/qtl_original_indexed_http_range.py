@@ -56,9 +56,15 @@ class CheckedReader:
 def decode_original_tbi(raw):
     require(raw.startswith(b"\x1f\x8b"),"Original publisher .tbi is not gzip")
     payload=gzip.decompress(raw)
+    print("TBI_DECODE_STAGE_1_UNCOMPRESSED_BYTES="+str(len(payload))+
+          " MAGIC_HEX="+payload[:4].hex(),flush=True)
     rd=CheckedReader(payload)
     require(rd.take(4).tobytes()==b"TBI\x01","Original index is not TBI v1")
     n_ref,fmt,col_seq,col_beg,col_end,meta,skip,l_nm=rd.unpack("<8i")
+    print("TBI_DECODE_STAGE_2_REFCOUNT="+str(n_ref)+
+          " FORMAT="+str(fmt)+" SEQ_COL="+str(col_seq)+
+          " BEGIN_COL="+str(col_beg)+" END_COL="+str(col_end)+
+          " NAME_BYTES="+str(l_nm),flush=True)
     require(1<=n_ref<=MAX_TBI_REFS and 0<l_nm<10000 and
             1<=col_seq<=30 and 1<=col_beg<=30 and 1<=col_end<=30,
             "Original TBI header count/column information invalid")
@@ -67,6 +73,8 @@ def decode_original_tbi(raw):
     names=[x.decode("ascii") for x in names[:-1].split(b"\x00")]
     require(len(names)==n_ref and len(set(names))==len(names),
             "TBI chromosome name count or identity invalid")
+    print("TBI_DECODE_STAGE_3_REFS_PARSED_COUNT="+str(len(names))+
+          " HAS_10="+str("10" in names),flush=True)
     refs={}
     for name in names:
         (n_bin,)=rd.unpack("<i")
@@ -88,6 +96,8 @@ def decode_original_tbi(raw):
                 "Implausible original TBI linear index length")
         linear=[rd.unpack("<Q")[0] for _ in range(n_intv)]
         refs[name]={"bins":bins,"linear_index":linear}
+    print("TBI_DECODE_STAGE_4_FINAL_TRAILING_BYTES="+str(len(payload)-rd.offset),
+          flush=True)
     require(len(payload)-rd.offset in {0,8},
             "Unexpected trailing original TBI data")
     if len(payload)-rd.offset==8:
