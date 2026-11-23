@@ -55,7 +55,8 @@ def empty_counts():
     })
 
 
-def audit_all_chr10_rows(path, ancestry, min_chr10=1000, expected_total=True):
+def audit_all_chr10_rows(path, ancestry, min_chr10=1000, expected_total=True,
+                         min_total_rows=1_000_000):
     """Streaming full gzip; fail-scientifically on bad OR/CI, not fake observed N."""
     require(ancestry in PINS.SOURCES, "Unknown exact source ancestry")
     counts=empty_counts()
@@ -147,7 +148,7 @@ def audit_all_chr10_rows(path, ancestry, min_chr10=1000, expected_total=True):
                     max_p_error=max(max_p_error,err)
                     counts["chr10_rows_z_p_comparable"]+=1
                     if err>0.1:counts["chr10_rows_z_p_discrepant_log10_gt_0_1"]+=1
-    require(total>=1_000_000 and counts["entire_chr10_rows"]>=min_chr10,
+    require(total>=min_total_rows and counts["entire_chr10_rows"]>=min_chr10,
             "Original source file or chr10 incomplete")
     require(not expected_total or total==FULL_SOURCE_ROWS[ancestry],
             "Original file variant count different from verified published source")
