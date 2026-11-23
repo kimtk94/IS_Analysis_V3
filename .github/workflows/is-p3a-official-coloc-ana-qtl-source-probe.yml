@@ -1,0 +1,54 @@
+name: IS P3A original Catalogue coloc AN MAF and ROSMAP real QTL preview
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-official-coloc-ana-qtl-source-probe.yml'
+      - 'scripts/is/audit_p3a_official_coloc_ana_qtl_source_probe.py'
+      - 'tests/test_is_p3a_official_coloc_ana_qtl_source_probe.py'
+      - 'docs/is/IS_P3A_OFFICIAL_COLOC_AN_MAF_ROSMAP_SOURCE_PROBE_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-catalogue-coloc-an-source-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-catalogue-AN-MAF-and-QTD000434:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Historical fixture for existing repository regression suite
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Existing regression suite dependencies
+        run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Synthetic original method, HTTP range, QTL schema, AN and privacy tests
+        run: |
+          python -m py_compile scripts/is/audit_p3a_official_coloc_ana_qtl_source_probe.py
+          python -m unittest discover -s tests -p 'test_is_p3a_official_coloc_ana_qtl_source_probe.py' -v
+      - name: Whole repository regression tests
+        run: bash scripts/codex_smoke_test.sh
+      - name: Download official original Coloc source texts and bounded real QTD000434 gzip header
+        run: |
+          python -m scripts.is.audit_p3a_official_coloc_ana_qtl_source_probe \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --out artifacts/is/IS_P3A_QTD000434_official_AN_MAF_source_probe_HOLD.json
+      - name: Upload aggregate-only source and scientific HOLD evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-official-coloc-AN-QTL-real-source-header-HOLD
+          path: artifacts/is/IS_P3A_QTD000434_official_AN_MAF_source_probe_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
