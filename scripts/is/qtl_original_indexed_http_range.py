@@ -252,15 +252,26 @@ def fetch_contiguous_range(url,limit,opener=urllib.request.urlopen):
 
 
 def source_indexed_range(url,region,interval_seconds=MIN_RETRY_INTERVAL_SECONDS):
+    # Deterministic stage-only diagnostics: never print original SNP lines.
+    print("TBI_STAGE_1_START_ORIGINAL_INDEX_HTTP",flush=True)
     raw_index=fetch_original_index(url)
+    print("TBI_STAGE_2_INDEX_BYTES="+str(len(raw_index))+
+          " MAGIC_HEX="+raw_index[:4].hex(),flush=True)
     tbi=decode_original_tbi(raw_index)
+    print("TBI_STAGE_3_INDEX_DECODE_CHRCOUNT="+str(len(tbi["chromosomes"]))+
+          " HAS_10="+str("10" in tbi["chromosomes"]),flush=True)
     limit=merged_one_range_from_index(tbi,region)
+    print("TBI_STAGE_4_CONTIGUOUS_BGZF_RANGE_BYTES="+
+          str(limit["compressed_range_bytes"]),flush=True)
     # EBI officially warns excessive partial requests can trigger DoS blocks.
     # Do not send more than the original index GET and one source byte-range GET.
     if interval_seconds>0:
         time.sleep(interval_seconds)
+    print("TBI_STAGE_5_START_ONLY_QTL_RANGE_HTTP",flush=True)
     body,source=fetch_contiguous_range(url,limit)
+    print("TBI_STAGE_6_QTL_RANGE_COMPRESSED_BYTES="+str(len(body)),flush=True)
     stream=parse_bgzf_range(body,limit["first_virtual_offset_within_bgzf_block"])
+    print("TBI_STAGE_7_BGZF_PARSE_BLOCKS="+str(stream["source_BGZF_blocks_decompressed"]),flush=True)
     return stream["data_lines"],{
         "method":"ONE_TBI_GET_PLUS_ONE_CONTIGUOUS_HTTPS_RANGE",
         "tabix_index_SHA256":tbi["source_tbi_compressed_SHA256"],
