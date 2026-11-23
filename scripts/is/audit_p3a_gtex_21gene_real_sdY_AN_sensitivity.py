@@ -154,6 +154,11 @@ def scan_source(lines,dataset,manifest,*,expected_source_counts=True):
             continue
         bins[gid][key]=datum
         common_counts[gid]+=1
+    # Only safe whole-stream aggregate diagnostics, not SNP IDs or values.
+    print("ORIGINAL_GTEX_"+dataset+"_REGION_AGGREGATE_ROWS="+str(scanned)+
+          " BASELINE_ROWS="+str(d["region_source_rows"])+
+          " STREAM_SHA256="+digest.hexdigest()+
+          " BASELINE_SHA256="+d["region_stream_SHA256"],flush=True)
     if expected_source_counts:
         require(scanned==d["region_source_rows"] and
                 digest.hexdigest()==d["region_stream_SHA256"],
