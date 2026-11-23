@@ -77,7 +77,9 @@ def get(url,hosts,maxlen,open_url=urllib.request.urlopen):
 
 def require_original_record(data):
     sha=hashlib.sha256(data).hexdigest()
-    require(sha==RECORD_SHA256,"official 2021 Zenodo API original source SHA256 changed")
+    # Zenodo API JSON response may change as metadata/counters change.
+    # Keep previous whole-record hash as provenance, not a file-integrity gate.
+    # The *deposited source files* are protected by pinned MD5 and byte counts.
     original=PRIOR.parse_zenodo(data)
     require(original["source_status"]=="PASS_PUBLIC_ZENODO_RECORD_FILE_INVENTORY"
             and original["n_public_files"]==32,"Zenodo original published inventory changed")
@@ -85,6 +87,8 @@ def require_original_record(data):
     listing=j.get("files",[])
     require(isinstance(listing,list),"original Zenodo files not an array")
     byname={x.get("key"):x for x in listing if isinstance(x,dict)}
+    require(len(byname)==len(listing)==32,
+            "Zenodo original 32-file listing has duplicate or invalid file records")
     for name,expected in FILES.items():
         item=byname.get(name)
         require(item is not None,"original source file not in publisher Zenodo: "+name)
@@ -93,6 +97,9 @@ def require_original_record(data):
                 "published source metadata checksum or length drift: "+name)
     return byname,{"official_record_url":RECORD,
                    "official_record_original_SHA256":sha,
+                   "historical_record_SHA256_reference_not_pinned":RECORD_SHA256,
+                   "API_JSON_SHA256_changed_from_historical_reference":sha!=RECORD_SHA256,
+                   "publisher_MD5_and_byte_lengths_remain_strictly_pinned":True,
                    "official_record_n_public_files":original["n_public_files"]}
 
 
