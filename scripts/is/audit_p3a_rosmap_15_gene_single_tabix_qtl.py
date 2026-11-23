@@ -238,10 +238,10 @@ def aggregate_tabix_stream(lines, manifest, region, meta):
 
 def run_tabix_single_request(url, region, manifest, meta):
     parsed=urllib.parse.urlsplit(url)
-    require(parsed.scheme=="https" and parsed.hostname=="ftp.ebi.ac.uk" and
+    require(parsed.scheme=="ftp" and parsed.hostname=="ftp.ebi.ac.uk" and
             parsed.path==("/pub/databases/spot/eQTL/sumstats/"
                           "QTS000025/QTD000434/QTD000434.all.tsv.gz"),
-            "Original QTD000434 publisher URL changed")
+            "Original QTD000434 publisher FTP URL changed")
     cmd=["tabix",url,region["region"]]
     # Explicit one query, no retries. Use bounded wall clock in CI timeout.
     # If server refuses, preserve HOLD; do not hammer EBI endpoints.
@@ -310,7 +310,10 @@ def execute(manifest):
     region=one_combined_region(phenotype,genes)
     print("SOURCE_ONE_TABIX_REQUEST_FOR_ALL_15_ROSMAP_GENES_"+region["region"],
           flush=True)
-    url=("https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/"
+    # FTP is the exact protocol in the official eQTL Catalogue tabix example.
+    # Previous HTTPS tabix on GitHub runner immediately failed before any rows.
+    # Attempt FTP once in the next CI; no automatic fallback/retry on publisher.
+    url=("ftp://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/"
          "QTS000025/QTD000434/QTD000434.all.tsv.gz")
     stats=run_tabix_single_request(url,region,manifest,phenotype)
     return {
