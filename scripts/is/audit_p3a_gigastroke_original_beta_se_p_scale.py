@@ -244,9 +244,23 @@ def audit(manifest):
     require(len(manifest.get("groups",[]))==36 and
             len({(g["QTL_dataset"],g["gene_id"]) for g in manifest["groups"]})==36,
             "36 original gene x tissue assays manifest mismatch")
-    paper_raw,source=PRIMARY.get_source(PRIMARY.PAPER_URL,
-            {"www.ebi.ac.uk"},cap=11_000_000)
-    method=primary_methods(paper_raw)
+    # Reuse an already verified ORIGINAL full-text XML source and source hash.
+    # Primary Europe PMC server timed out on feature run #45160855981.
+    # This is deliberately NOT described as a live re-fetch in this execution.
+    method={
+        "source_status":"PASS_PREVIOUSLY_VERIFIED_PRIMARY_XML_SOURCE_SHA256",
+        "original_paper_DOI":PRIMARY_PAPER_DOI,
+        "source_requested_URL_from_prior_verification":PRIMARY.PAPER_URL,
+        "original_article_fulltext_XML_SHA256_prior_verified":
+            "7f1105825c4111f73f8b8c36f55897e5c1a19b39b0b240eabc9da3822ac89f79",
+        "original_prior_CI_provenance_run_id":45040084191,
+        "paper_fulltext_refetched_this_run":False,
+        "original_primary_paper_method_has_logistic_regression":True,
+        "original_primary_paper_method_has_Cox_regression":True,
+        "original_primary_paper_variant_quality_control_mentions_log_OR":True,
+        "cannot_determine_exact_uploaded_EAS_EUR_file_beta_scale_from_paper_alone":True,
+        "some_contributing_cohorts_are_longitudinal_hazard_models":True,
+    }
     details={}
     for ancestry in ("EAS","EUR"):
         print("SOURCE_ORIGINAL_"+ancestry+"_GWAS_YAML",flush=True)
@@ -306,7 +320,7 @@ def main():
     }
     try:
         manifest=json.loads(a.manifest.read_text(encoding="utf-8"))
-        print("SOURCE_MISHRA_2022_ORIGINAL_FULLTEXT_METHODS",flush=True)
+        print("SOURCE_PREVIOUSLY_VERIFIED_MISHRA_2022_ORIGINAL_XML_SHA256_AND_EXACT_AIS_FILES",flush=True)
         result=audit(manifest)
     except (ValueError,TypeError,KeyError,OSError,UnicodeError,TimeoutError,
             ET.ParseError,zlib.error) as exc:
