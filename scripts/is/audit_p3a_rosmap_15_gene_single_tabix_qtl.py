@@ -245,18 +245,36 @@ def run_tabix_single_request(url, region, manifest, meta):
     cmd=["tabix",url,region["region"]]
     # Explicit one query, no retries. Use bounded wall clock in CI timeout.
     # If server refuses, preserve HOLD; do not hammer EBI endpoints.
+    print("TABIX_STAGE_COMMAND_START_ONE_REQUEST",flush=True)
     with subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
                           text=True,encoding="utf-8",errors="strict",
                           bufsize=65536) as proc:
         try:
             output=aggregate_tabix_stream(proc.stdout,manifest,region,meta)
+        except ValueError:
+            print("TABIX_STAGE_STREAM_AGGREGATE_SCHEMA_OR_QC_ERROR",flush=True)
+            proc.kill()
+            proc.wait(timeout=15)
+            raise
         except Exception:
+            print("TABIX_STAGE_STREAM_SYSTEM_EXCEPTION",flush=True)
             proc.kill()
             proc.wait(timeout=15)
             raise
         status=proc.wait(timeout=60)
         stderr=proc.stderr.read(16384)
-        require(status==0, "Original EBI tabix subprocess unavailable/invalid index")
+        if status!=0:
+            lower=stderr.lower()
+            flags={
+                "missing_index":("index" in lower and ("fail" in lower or "not found" in lower)),
+                "http_transport":("http" in lower or "curl" in lower or "remote" in lower),
+                "file_open":("open" in lower or "failed" in lower),
+                "tabix_no_results":output["query_scanned_all_study_QTL_rows_in_union_range"]==0,
+            }
+            print("TABIX_STAGE_NONZERO_EXIT_CLASSIFICATION="+json.dumps(
+                {"nonzero_exit":True,"flags":flags},sort_keys=True),flush=True)
+            raise ValueError("Original EBI tabix failed: diagnostic classification in CI log")
+        print("TABIX_STAGE_SUCCESSFUL_EXIT_CODE_0",flush=True)
         require(bool(output["query_scanned_all_study_QTL_rows_in_union_range"]),
                 "No original EBI tabix rows in union interval")
     output["tabix_result_returncode"]=status
