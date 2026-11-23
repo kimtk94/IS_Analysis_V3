@@ -159,7 +159,23 @@ def run_original_sources(manifest):
     print('SOURCE_STAGE_1_FETCH_ZENODO_RECORD', flush=True)
     record_raw, _ = P.get(P.RECORD, P.ALLOWED_RECORD_HOSTS, P.MAX_RECORDBYTES)
     print('SOURCE_STAGE_2_VALIDATE_ZENODO_RECORD', flush=True)
-    entries, provenance = P.require_original_record(record_raw)
+    # Whole Zenodo API JSON may change while deposited file bytes stay identical.
+    # Pin original *file* MD5/byte lengths and record identity, not mutable API JSON SHA.
+    summary = P.PRIOR.parse_zenodo(record_raw)
+    require(summary["original_record_id"] == 4678936 and
+            summary["n_public_files"] == 32, "Zenodo original repository identity or inventory drift")
+    document = json.loads(record_raw.decode("utf-8"))
+    items = document.get("files", [])
+    require(isinstance(items, list) and len(items) == 32,
+            "Original Zenodo source file listing structure drift")
+    entries = {i.get("key"): i for i in items if isinstance(i, dict)}
+    require(len(entries) == 32, "Duplicate/unnamed source records in original Zenodo listing")
+    metadata_record = entries.get("ROSMAP.tsv")
+    require(metadata_record is not None and
+            metadata_record.get("size") == P.FILES["ROSMAP.tsv"]["bytes"] and
+            metadata_record.get("checksum") == "md5:" + P.FILES["ROSMAP.tsv"]["md5"],
+            "Original ROSMAP metadata publisher file MD5 or length drift")
+    provenance = {"original_record_original_SHA256": hashlib.sha256(record_raw).hexdigest()}
     obj = entries.get(COUNT_NAME)
     require(obj is not None and obj.get("size") == COUNT_BYTES and
             obj.get("checksum") == "md5:" + COUNT_MD5,
@@ -176,7 +192,7 @@ def run_original_sources(manifest):
     r7, r7meta = P.get(R7_URL, {"raw.githubusercontent.com"}, 500000)
     print('SOURCE_STAGE_6_RECONCILE_ORIGINAL_MATRIX_SAMPLE_COUNTS', flush=True)
     return assemble(manifest, meta, count, r7, {
-        "2021_Zenodo_record_SHA256": provenance["official_record_original_SHA256"],
+        "2021_Zenodo_record_SHA256": provenance["original_record_original_SHA256"],
         "2021_ROSMAP_metadata_MD5": P.FILES["ROSMAP.tsv"]["md5"],
         "2021_ROSMAP_count_matrix_MD5": COUNT_MD5,
         "2021_ROSMAP_count_matrix_compressed_bytes": COUNT_BYTES,
