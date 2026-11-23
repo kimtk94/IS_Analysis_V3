@@ -1,0 +1,59 @@
+name: IS P3A GIGASTROKE original entire chr10 EAS EUR lnOR and CI
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-gigastroke-entire-chr10-logOR.yml'
+      - 'scripts/is/audit_p3a_gigastroke_entire_chr10_logOR_scale.py'
+      - 'tests/test_is_p3a_gigastroke_entire_chr10_logOR_scale.py'
+      - 'docs/is/IS_P3A_GIGASTROKE_ORIGINAL_ENTIRE_CHR10_LOGOR_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-entire-gwas-chr10-lnOR-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-publisher-entire-chr10-logOR:
+    strategy:
+      fail-fast: false
+      matrix:
+        ancestry: [EAS, EUR]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Historical regression fixture for full original repo smoke suite
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install existing smoke test dependencies
+        run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Compile and fail-closed synthetic beta OR CI full source checks
+        run: |
+          python -m py_compile scripts/is/audit_p3a_gigastroke_entire_chr10_logOR_scale.py
+          python -m unittest discover -s tests -p 'test_is_p3a_gigastroke_entire_chr10_logOR_scale.py' -v
+      - name: Full research repository regression suite
+        run: bash scripts/codex_smoke_test.sh
+      - name: Verify publisher whole original GWAS compressed MD5 SHA256 and every chr10 OR beta CI
+        run: |
+          python -m scripts.is.audit_p3a_gigastroke_entire_chr10_logOR_scale \
+            --ancestry ${{ matrix.ancestry }} \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --out artifacts/is/IS_P3A_original_GIGASTROKE_entire_chr10_${{ matrix.ancestry }}_logOR_HOLD.json
+      - name: Preserve original publisher source hashes plus aggregate chr10 QC only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-entire-chr10-${{ matrix.ancestry }}-original-logOR-HOLD
+          path: artifacts/is/IS_P3A_original_GIGASTROKE_entire_chr10_${{ matrix.ancestry }}_logOR_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
