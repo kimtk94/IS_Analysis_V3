@@ -1,0 +1,54 @@
+name: IS P3A ROSMAP original 2021 matrix QC intersection (scientific HOLD)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-rosmap-2021-count-matrix-intersection.yml'
+      - 'scripts/is/audit_p3a_rosmap_2021_count_matrix_intersection.py'
+      - 'tests/test_is_p3a_rosmap_2021_count_matrix_intersection.py'
+      - 'docs/is/IS_P3A_ROSMAP_2021_MATRIX_QC_INTERSECTION_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-rosmap-original-matrix-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-public-matrix-QC-intersection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Historical test fixture for existing repository smoke suite only
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install existing smoke suite dependencies
+        run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Compile and run synthetic privacy and scientific HOLD regression tests
+        run: |
+          python -m py_compile scripts/is/audit_p3a_rosmap_2021_count_matrix_intersection.py
+          python -m unittest discover -s tests -p 'test_is_p3a_rosmap_2021_count_matrix_intersection.py' -v
+      - name: Existing whole repository smoke tests
+        run: bash scripts/codex_smoke_test.sh
+      - name: Download and MD5 check original publisher ROSMAP 2021 counts and QC metadata and verify Release7 source N
+        run: |
+          python -m scripts.is.audit_p3a_rosmap_2021_count_matrix_intersection \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --out artifacts/is/IS_P3A_36_ROSMAP_2021_count_matrix_QC_aggregate_science_HOLD.json
+      - name: Upload aggregate counts only (no original donor IDs or expression)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-36-rosmap-2021-count-matrix-intersection-HOLD
+          path: artifacts/is/IS_P3A_36_ROSMAP_2021_count_matrix_QC_aggregate_science_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30

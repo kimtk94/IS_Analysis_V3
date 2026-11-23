@@ -200,5 +200,48 @@ class SourceSafetyTests(unittest.TestCase):
                          "818a5ebd7f448dd685f3f23d90d42f719a520a8fc27db233cb624bee21619682")
 
 
+
+
+class ZenodoMutableApiRecordTests(unittest.TestCase):
+    """Mutable API JSON cannot bypass the original file MD5/size gates."""
+
+    @staticmethod
+    def example_record(views=1):
+        files=[
+            {"key":name,"size":spec["bytes"],
+             "checksum":"md5:"+spec["md5"],
+             "links":{"self":"https://zenodo.org/api/records/4678936/files/"+name+"/content"}}
+            for name,spec in M.FILES.items()
+        ]
+        files.extend({"key":f"other_{i}.tsv","size":1,
+                      "checksum":"md5:"+"0"*32} for i in range(30))
+        return {"id":4678936,"doi":"10.5281/zenodo.4678936",
+                "files":files,"stats":{"views":views}}
+
+    def test_source_file_hashes_stay_pinned_across_mutable_record_metadata(self):
+        first=json.dumps(self.example_record(1),sort_keys=True).encode()
+        second=json.dumps(self.example_record(2),sort_keys=True).encode()
+        self.assertNotEqual(hashlib.sha256(first).hexdigest(),
+                            hashlib.sha256(second).hexdigest())
+        a,meta1=M.require_original_record(first)
+        b,meta2=M.require_original_record(second)
+        self.assertEqual(set(a),set(b))
+        self.assertTrue(meta1["publisher_MD5_and_byte_lengths_remain_strictly_pinned"])
+        self.assertTrue(meta2["publisher_MD5_and_byte_lengths_remain_strictly_pinned"])
+        self.assertNotEqual(meta1["official_record_original_SHA256"],
+                            meta2["official_record_original_SHA256"])
+
+    def test_mutated_deposited_file_md5_always_fails(self):
+        record=self.example_record()
+        record["files"][0]["checksum"]="md5:"+"f"*32
+        with self.assertRaises(ValueError):
+            M.require_original_record(json.dumps(record).encode())
+
+    def test_wrong_deposited_file_length_always_fails(self):
+        record=self.example_record()
+        record["files"][1]["size"]+=1
+        with self.assertRaises(ValueError):
+            M.require_original_record(json.dumps(record).encode())
+
 if __name__=="__main__":
     unittest.main()
