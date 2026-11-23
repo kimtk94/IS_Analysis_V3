@@ -105,6 +105,12 @@ def parse_source_effect_stats(raw,ancestry):
     sign=collections.Counter()
     effect_reversed=0
     p_zero=0
+    or_rows=0
+    or_log_beta_error=[]
+    ci_rows=0
+    ci_exp_se_error=[]
+    or_positive=0
+    or_missing=0
     for row in rows:
         try:
             chrom=row["chromosome"].replace("chr","")
@@ -134,6 +140,24 @@ def parse_source_effect_stats(raw,ancestry):
             deviations.append(abs(math.log10(derived_p)-math.log10(pv)))
         if math.isfinite(z) and math.isfinite(eaf):
             quantiles.append(abs(z))
+        # The actual source also lists odds_ratio/ci_lower/ci_upper.
+        # A populated odds_ratio can certify a beta-scale relation in real rows,
+        # whereas a header alone or beta-vs-p coherence cannot.
+        or_value=optional_positive_float(row.get("odds_ratio"))
+        lower=optional_positive_float(row.get("ci_lower"))
+        upper=optional_positive_float(row.get("ci_upper"))
+        if or_value is not None:
+            or_rows+=1
+            or_log_beta_error.append(abs(math.log(or_value)-effect))
+            if or_value>1:or_positive+=1
+        else:
+            or_missing+=1
+        if lower is not None and upper is not None:
+            require(lower<upper, "Original odds ratio CI lower>=upper")
+            ci_rows+=1
+            ci_exp_se_error.append(max(
+                abs(math.log(lower)-(effect-1.96*se)),
+                abs(math.log(upper)-(effect+1.96*se))))
     require(len(rows)>0 and (len(deviations)>2 or p_zero>0),
             "No verifiable original GWAS effect/SE/p evidence")
     return {
@@ -150,11 +174,45 @@ def parse_source_effect_stats(raw,ancestry):
         "z_p_abs_log10_error_le_0_1":sum(d<=0.1 for d in deviations),
         "z_p_abs_log10_error_gt_1":sum(d>1 for d in deviations),
         "absolute_z_max_first_rows":max(quantiles) if quantiles else None,
+        "source_OR_and_CI_columns_present":
+            all(x in fields for x in ("odds_ratio","ci_lower","ci_upper")),
+        "source_OR_populated_rows":or_rows,
+        "source_OR_missing_or_unparseable_rows":or_missing,
+        "source_OR_gt_one_rows":or_positive,
+        "source_beta_ln_OR_log_scale_median_abs_error":
+            quantile(or_log_beta_error,0.5),
+        "source_beta_ln_OR_log_scale_max_abs_error":
+            max(or_log_beta_error) if or_rows else None,
+        "source_beta_ln_OR_max_abs_error_le_0_015_rows":
+            sum(x<=0.015 for x in or_log_beta_error),
+        "source_OR_95CI_populated_rows":ci_rows,
+        "source_OR_95CI_exp_beta_pm_1_96SE_p95_log_abs_error":
+            quantile(ci_exp_se_error,0.95),
+        "source_OR_95CI_exp_beta_pm_1_96SE_le_0_04_rows":
+            sum(x<=0.04 for x in ci_exp_se_error),
+        "source_direct_ln_OR_vs_beta_preview_status":(
+            "PASS_ORIGINAL_POPULATED_OR_AGREES_WITH_BETA_IN_PREVIEW"
+            if or_rows>=50 and all(x<=0.015 for x in or_log_beta_error)
+            else "HOLD_OR_SOURCE_NOT_POPULATED_OR_INCONSISTENT"),
         "raw_effect_or_variant_rows_emitted":False,
         "source_file_beta_numeric_consistency_is_not_log_OR_unit_proof":True,
         "source_file_beta_exact_log_OR_scale_verified":False,
         "GWAS_per_SNP_effective_sample_N_recovered":False,
     }
+
+
+def optional_positive_float(value):
+    """Return absent when publisher's original optional OR/CI field is blank."""
+    if value is None or str(value).strip().lower() in {
+        "", ".", "na", "n/a", "null", "nan", "none", "nr"}:
+        return None
+    try:
+        converted=float(value)
+    except (ValueError,TypeError) as exc:
+        raise ValueError("Original publisher OR/CI optional field nonnumeric") from exc
+    require(math.isfinite(converted) and converted>0,
+            "Original publisher OR/CI field invalid nonpositive")
+    return converted
 
 
 def next_rows(reader,n):
