@@ -80,7 +80,7 @@ jobs:
             --output-dir docs/is/evidence/verified_p3a_20261124
       - name: Commit only verified aggregate files to research branch, never main
         run: |
-          test "BASH_${{ github.ref }}" = "refs/heads/research/is-p3a-persist-original-source-evidence-20261124"
+          test "${GITHUB_REF}" = "refs/heads/research/is-p3a-persist-original-source-evidence-20261124"
           test "${GITHUB_REPOSITORY}" = "kimtk94/IS_Analysis_V3"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
