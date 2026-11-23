@@ -12,6 +12,8 @@ from __future__ import annotations
 import gzip
 import hashlib
 import io
+import os
+from pathlib import Path
 import re
 import struct
 import time
@@ -265,6 +267,11 @@ def source_indexed_range(url,region,interval_seconds=MIN_RETRY_INTERVAL_SECONDS)
     # Deterministic stage-only diagnostics: never print original SNP lines.
     print("TBI_STAGE_1_START_ORIGINAL_INDEX_HTTP",flush=True)
     raw_index=fetch_original_index(url)
+    if os.environ.get("IS_P3A_WRITE_PUBLIC_INDEX_DEBUG") == "1":
+        public_index_path=Path("artifacts/is/QTD000434.published_public.tbi")
+        public_index_path.parent.mkdir(parents=True,exist_ok=True)
+        public_index_path.write_bytes(raw_index)
+        print("TBI_STAGE_ORIGINAL_PUBLIC_INDEX_SAVED_FOR_OFFLINE_PARSER_AUDIT",flush=True)
     print("TBI_STAGE_2_INDEX_BYTES="+str(len(raw_index))+
           " MAGIC_HEX="+raw_index[:4].hex(),flush=True)
     tbi=decode_original_tbi(raw_index)
