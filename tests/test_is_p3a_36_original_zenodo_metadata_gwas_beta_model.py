@@ -152,6 +152,48 @@ class SourceSafetyTests(unittest.TestCase):
         self.assertEqual(set(M.TARGET_GROUPS),set(M.PRIOR.EXPECTED_QTLS))
         self.assertEqual(sum(v[4] for v in M.PRIOR.EXPECTED_QTLS.values()),36)
 
+    def test_36_group_2021_QC_matched_GTEx_21_ROSMAP_15_scientific_HOLD(self):
+        from pathlib import Path
+        m=json.loads(Path("docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json").read_text())
+        groups=m["groups"]
+        original={
+            "schema":"is-p3a-36-primary-phenotype-matrix-and-stroke-beta-units-v1",
+            "technical_status":"PASS_36_GROUP_SOURCE_METHOD_AND_PUBLIC_MATRIX_INVENTORY",
+            "n_real_gene_tissue_assays":36,
+            "n_groups_with_direct_source_expression_sdY_approved":0,
+            "n_groups_with_original_GWAS_beta_units_approved":0,
+            "groups":[{"gene_id":x["gene_id"],"QTL_dataset":x["QTL_dataset"]}
+                      for x in groups]}
+        off={"technical_status":"PASS_3_SOURCE_IDENTITIES_IN_IMMUTABLE_CATALOGUE",
+             "QTL_datasets":{q:{"study_id":v[0],"study_label":v[1],
+                  "sample_group":v[2],"nominal_catalogue_sample_size":v[3]}
+                    for q,v in M.PRIOR.EXPECTED_QTLS.items()}}
+        cohort={"schema":"is-p3a-primary-2022-gigastroke-AIS-supplement-BBJ-cohort-36-v1",
+                "technical_status":"PASS_ORIGINAL_AIS_SUPPLEMENT_BOTH_ANCESTRY_TOTALS_AND_BBJ",
+                "scientific_status":"HOLD"}
+        files={"GTExV8.tsv":M.safe_count_source_metadata(fake_data(),"GTExV8.tsv"),
+               "ROSMAP.tsv":M.safe_count_source_metadata(fake_data(),"ROSMAP.tsv")}
+        for q in ("QTD000131","QTD000171"):
+            sample=M.TARGET_GROUPS[q][1]
+            qc=files["GTExV8.tsv"][
+                "public_2021_qtl_group_RNA_and_genotype_QC_flag_aggregates"][q]
+            qc["2021_both_rna_genotype_QC_passed_rows"]=sample
+            qc["2021_metadata_rows_in_tissue"]=sample
+            qc["2021_distinct_pseudo_ids_in_tissue_count_only"]=sample
+        qc=files["ROSMAP.tsv"]["public_2021_qtl_group_RNA_and_genotype_QC_flag_aggregates"]["QTD000434"]
+        qc["2021_both_rna_genotype_QC_passed_rows"]=569
+        qc["2021_metadata_rows_in_tissue"]=581
+        qc["2021_distinct_pseudo_ids_in_tissue_count_only"]=581
+        gwas={a:{"status":"PASS_ORIGINAL_GWAS_STUDY_METADATA_V2_NOT_BETA_SCALE"}
+              for a in M.GWAS}
+        result=M.evaluate(m,original,off,cohort,files,gwas,{})
+        self.assertEqual(result["n_gene_tissue_assays_2021_dual_QC_count_equal_release7_dataset_N_DESCRIPTIVE"],21)
+        self.assertEqual(result["n_gene_tissue_assays_2021_dual_QC_count_differs_release7_dataset_N"],15)
+        self.assertEqual({x["source_2021_pass_QC_minus_Release7_N"]
+            for x in result["groups"] if x["QTL_dataset"]=="QTD000434"},{9})
+        self.assertTrue(all(not x["can_calculate_formal_coloc_abf"] for x in result["groups"]))
+        self.assertEqual(result["direct_Release7_phenotype_sdY_approved"],0)
+
     def test_2021_published_count_is_not_release7_sdY(self):
         self.assertNotEqual("metadata", "source phenotype sdY")
         self.assertEqual(M.RECORD_SHA256,
