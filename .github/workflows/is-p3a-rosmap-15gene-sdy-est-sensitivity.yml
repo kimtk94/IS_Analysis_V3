@@ -1,0 +1,54 @@
+name: IS P3A ROSMAP original 15 gene quantitative coloc sdY estimator sensitivity
+
+on:
+  push:
+    paths:
+      - '.github/workflows/is-p3a-rosmap-15gene-sdy-est-sensitivity.yml'
+      - 'scripts/is/audit_p3a_rosmap_real_sdY_est_15gene.py'
+      - 'tests/test_is_p3a_rosmap_real_sdY_est_15gene.py'
+      - 'docs/is/IS_P3A_ROSMAP_15GENE_REAL_SDY_EST_SENSITIVITY_20261123.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: is-p3a-rosmap-real-15-gene-sdY-est-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-ROSMAP-15-gene-coloc-sdy-est:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Historical fixture for existing research repository smoke checks
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Install existing regression suite dependencies
+        run: python -m pip install 'PyYAML==6.0.2' 'openpyxl>=3.1,<4'
+      - name: Compile and test coloc zero-intercept OLS, original N and no false approval
+        run: |
+          python -m py_compile scripts/is/audit_p3a_rosmap_real_sdY_est_15gene.py
+          python -m unittest discover -s tests -p 'test_is_p3a_rosmap_real_sdY_est_15gene.py' -v
+      - name: Whole repository regression checks
+        run: bash scripts/codex_smoke_test.sh
+      - name: Read only public phenotype MD5 plus one original TBI and one QTL source BGZF range
+        run: |
+          python -m scripts.is.audit_p3a_rosmap_real_sdY_est_15gene \
+            --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
+            --out artifacts/is/IS_P3A_ROSMAP_15gene_real_source_sdY_est_N560_HOLD.json
+      - name: Upload only aggregate per-gene estimates and source hashes; never SNP effects
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-p3a-rosmap-15gene-real-sdy-est-N560-HOLD
+          path: artifacts/is/IS_P3A_ROSMAP_15gene_real_source_sdY_est_N560_HOLD.json
+          if-no-files-found: warn
+          retention-days: 30
