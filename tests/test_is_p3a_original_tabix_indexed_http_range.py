@@ -37,7 +37,10 @@ def make_tbi(region=None,wrong_header=False,col_seq=2):
     last=(1_000_020<<16)|20
     body=b"BAD!" if wrong_header else b"TBI\x01"
     body+=struct.pack("<8i",1,0,col_seq,3,3,ord("#"),1,len(name))+name
-    body+=struct.pack("<i",1)
+    body+=struct.pack("<i",2)
+    # The official ROSMAP index contains bin 37450: it is a pseudo-bin
+    # with metadata pair values where y<x; NEVER treat as virtual chunks.
+    body+=struct.pack("<IiQQQQ",37450,2,0,1000,14_000_000,0)
     body+=struct.pack("<IiQQ",selected_bin,1,first,last)
     n_intv=7000
     body+=struct.pack("<i",n_intv)
@@ -65,6 +68,27 @@ class OriginalTabixIndexAndBGZFRangeTests(unittest.TestCase):
         self.assertIn("10",i["chromosomes"])
         self.assertEqual(i["col_seq"],2)
         self.assertEqual(i["col_beg"],3)
+
+    def test_real_tabix_pseudo_bin_is_metadata_not_virtual_offset(self):
+        i=M.decode_original_tbi(make_tbi())
+        self.assertNotIn(37450,i["chromosomes"]["10"]["bins"])
+        self.assertIn(4681+((101_854_259-1)>>14),
+                      i["chromosomes"]["10"]["bins"])
+
+    def test_partial_unneeded_trailing_bgzf_block_is_not_fatal(self):
+        a=make_bgzf(b"gene_id\tan\nENSG00000148842\t1120\n")
+        b=make_bgzf(b"irrelevant\tdata\n")
+        partial=a+b[:-6]
+        decoded=M.parse_bgzf_range(
+            partial,0,required_last_block_relative_byte_offset=0)
+        self.assertEqual(decoded["source_BGZF_blocks_decompressed"],1)
+
+    def test_partial_last_required_bgzf_block_fails_closed(self):
+        a=make_bgzf(b"gene_id\tan\nENSG00000148842\t1120\n")
+        b=make_bgzf(b"irrelevant\tdata\n")
+        with self.assertRaises(ValueError):
+            M.parse_bgzf_range(a+b[:-6],0,
+                required_last_block_relative_byte_offset=len(a))
 
     def test_corrupted_index_fails_closed(self):
         with self.assertRaises(ValueError):

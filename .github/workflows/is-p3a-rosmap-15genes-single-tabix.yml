@@ -43,19 +43,15 @@ jobs:
       - name: Existing whole-repository regression suite
         run: bash scripts/codex_smoke_test.sh
       - name: Download publisher phenotype metadata then one TBI index and one contiguous source BGZF HTTP byte range
-        env:
-          IS_P3A_WRITE_PUBLIC_INDEX_DEBUG: "1"
         run: |
           python -m scripts.is.audit_p3a_rosmap_15_gene_single_tabix_qtl \
             --manifest docs/is/evidence/IS_P3A_RESTORED_REAL_36_ASSAY_KEYS_20261122.json \
             --out artifacts/is/IS_P3A_36_ROSMAP_15gene_single_tabix_original_QTL_HOLD.json
-      - name: Temporary offline debugging artifact, original publisher PUBLIC TBI index only (no SNP rows)
+      - name: Preserve only source hashes and aggregates, never SNP effects or sample IDs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: is-p3a-rosmap-15genes-original-single-tabix-HOLD
-          path: |
-            artifacts/is/IS_P3A_36_ROSMAP_15gene_single_tabix_original_QTL_HOLD.json
-            artifacts/is/QTD000434.published_public.tbi
+          path: artifacts/is/IS_P3A_36_ROSMAP_15gene_single_tabix_original_QTL_HOLD.json
           if-no-files-found: warn
           retention-days: 30

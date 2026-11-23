@@ -12,8 +12,6 @@ from __future__ import annotations
 import gzip
 import hashlib
 import io
-import os
-from pathlib import Path
 import re
 import struct
 import time
@@ -88,11 +86,18 @@ def decode_original_tbi(raw):
             require(b not in bins and 0<=n_chunk<=1_000_000,
                     "Duplicated TBI bin or implausible original chunk count")
             arr=[]
-            for _ in range(n_chunk):
-                x,y=rd.unpack("<QQ")
-                require(y>=x,"Tabix chunk ends before it starts")
-                arr.append((x,y))
-            bins[b]=arr
+            if b == 37450:
+                # HTSlib tabix pseudo-bin contains reference metadata totals;
+                # these are NOT virtual file offsets and may have y < x.
+                require(n_chunk == 2, "Unexpected original TBI pseudo-bin schema")
+                for _ in range(n_chunk):
+                    rd.unpack("<QQ")
+            else:
+                for _ in range(n_chunk):
+                    x,y=rd.unpack("<QQ")
+                    require(y>=x,"Tabix chunk ends before it starts")
+                    arr.append((x,y))
+                bins[b]=arr
         (n_intv,)=rd.unpack("<i")
         require(0<=n_intv<=MAX_TBI_OFFSETS_PER_REF,
                 "Implausible original TBI linear index length")
@@ -151,17 +156,19 @@ def merged_one_range_from_index(tbi,region):
         "compressed_range_end":end_byte,
         "compressed_range_bytes":size,
         "first_virtual_offset_within_bgzf_block":first_virtual & 0xffff,
+        "required_last_block_relative_byte_offset":(last_virtual>>16)-start_byte,
         "one_contiguous_range_spans_all_candidate_tabix_chunks":True,
     }
 
 
-def parse_bgzf_range(compressed,first_block_inner_offset):
+def parse_bgzf_range(compressed,first_block_inner_offset,required_last_block_relative_byte_offset=None):
     # BGZF gzip blocks have a BC extra subfield encoding compressed block size-1.
     require(compressed[:2]==b"\x1f\x8b","Source compressed interval not BGZF gzip")
     p=0
     chunks=[]
     raw_size=0
     n_blocks=0
+    last_block_start=-1
     while p+18<=len(compressed):
         require(compressed[p:p+3]==b"\x1f\x8b\x08" and
                 compressed[p+3]&4, "BGZF source has wrong gzip FEXTRA header")
@@ -184,8 +191,15 @@ def parse_bgzf_range(compressed,first_block_inner_offset):
         require(bsize is not None,"BGZF compressed block missing BC")
         length=bsize+1
         require(20<=length<=65536,"BGZF declared block size out of range")
-        require(p+length<=len(compressed),
-                "Original BGZF compressed byte range ended inside last block")
+        if p+length>len(compressed):
+            require(
+                n_blocks > 0 and
+                required_last_block_relative_byte_offset is not None and
+                last_block_start >= required_last_block_relative_byte_offset,
+                "Original indexed BGZF required block is truncated")
+            # A partial *additional* BGZF block can follow the required
+            # final index chunk because one HTTP range is conservatively padded.
+            break
         block=zlib.decompress(compressed[p:p+length],wbits=31)
         require(len(block)<=65536,"BGZF decompressed block oversized")
         if n_blocks==0:
@@ -196,8 +210,12 @@ def parse_bgzf_range(compressed,first_block_inner_offset):
         raw_size+=len(block)
         require(raw_size<=MAX_BGZF_UNCOMPRESSED,
                 "Original indexed source decompressed output exceeds budget")
+        last_block_start=p
         p+=length
         n_blocks+=1
+    if required_last_block_relative_byte_offset is not None:
+        require(last_block_start >= required_last_block_relative_byte_offset,
+                "Missing last required original BGZF chunk block")
     # Trailing extra bytes from conservative range extension may end mid-BGZF;
     # allow only short partial BGZF after ≥1 complete block, and do not parse it.
     require(n_blocks>=1, "No complete BGZF blocks from original publisher")
@@ -267,11 +285,6 @@ def source_indexed_range(url,region,interval_seconds=MIN_RETRY_INTERVAL_SECONDS)
     # Deterministic stage-only diagnostics: never print original SNP lines.
     print("TBI_STAGE_1_START_ORIGINAL_INDEX_HTTP",flush=True)
     raw_index=fetch_original_index(url)
-    if os.environ.get("IS_P3A_WRITE_PUBLIC_INDEX_DEBUG") == "1":
-        public_index_path=Path("artifacts/is/QTD000434.published_public.tbi")
-        public_index_path.parent.mkdir(parents=True,exist_ok=True)
-        public_index_path.write_bytes(raw_index)
-        print("TBI_STAGE_ORIGINAL_PUBLIC_INDEX_SAVED_FOR_OFFLINE_PARSER_AUDIT",flush=True)
     print("TBI_STAGE_2_INDEX_BYTES="+str(len(raw_index))+
           " MAGIC_HEX="+raw_index[:4].hex(),flush=True)
     tbi=decode_original_tbi(raw_index)
@@ -287,7 +300,9 @@ def source_indexed_range(url,region,interval_seconds=MIN_RETRY_INTERVAL_SECONDS)
     print("TBI_STAGE_5_START_ONLY_QTL_RANGE_HTTP",flush=True)
     body,source=fetch_contiguous_range(url,limit)
     print("TBI_STAGE_6_QTL_RANGE_COMPRESSED_BYTES="+str(len(body)),flush=True)
-    stream=parse_bgzf_range(body,limit["first_virtual_offset_within_bgzf_block"])
+    stream=parse_bgzf_range(body,limit["first_virtual_offset_within_bgzf_block"],
+                            required_last_block_relative_byte_offset=limit.get(
+                                "required_last_block_relative_byte_offset"))
     print("TBI_STAGE_7_BGZF_PARSE_BLOCKS="+str(stream["source_BGZF_blocks_decompressed"]),flush=True)
     return stream["data_lines"],{
         "method":"ONE_TBI_GET_PLUS_ONE_CONTIGUOUS_HTTPS_RANGE",

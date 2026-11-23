@@ -30,3 +30,7 @@ The previous original [QTD000434 200-row preview](https://github.com/kimtk94/IS_
 ## Next step
 
 If actual 15-gene source variant data are present, test per-gene AN stability and original-stat completeness against the observed archive, and separately validate GIGASTROKE AIS GWAS effect allele, case fractions, SE, study overlap and log(OR) units. Only then may formal coloc be conditionally eligible. The official publisher method permits a quantitative N/MAF-based *estimated sdY* route but does not eliminate uncertainty in its original regression N.
+
+## Original TBI source transport implementation note (2026-11-23)
+
+The initial direct remote HTSlib tabix HTTPS/FTP invocation failed to open the remote publisher source on GitHub-hosted runners. The validated alternative downloads **only the publisher 2.14 MB public Tabix TBI index** and **one contiguous HTTP 206 BGZF byte range**, computed offline from the index (chr10 101854259-105353833; 8,434,192 compressed bytes). Original TBI v1 has 22 contigs and a special pseudo-bin **37450**, which records metadata rather than ordinary virtual offsets. It must be excluded from BGZF chunk lists. The temporary index debug artifact used to diagnose this is removed from the final automated artifact; only aggregate per-gene scientific QC is retained.
