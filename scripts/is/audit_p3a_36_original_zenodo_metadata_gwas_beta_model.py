@@ -320,14 +320,30 @@ def evaluate(m,prev,official,cohort,files_by_study,gwas,provenance):
         q=g["QTL_dataset"];gene=g["gene_id"]
         name="ROSMAP.tsv" if q=="QTD000434" else "GTExV8.tsv"
         source=files_by_study[name]
+        qc=source["public_2021_qtl_group_RNA_and_genotype_QC_flag_aggregates"][q]
+        catalogue_N=official["QTL_datasets"][q]["nominal_catalogue_sample_size"]
+        require(qc["catalogue_release7_declared_tissue_N_reference_only"]==catalogue_N
+                and qc["2021_metadata_rows_in_tissue"]>=
+                      qc["2021_both_rna_genotype_QC_passed_rows"]
+                and qc["unparsed_source_QC_flags"]==0
+                and qc["2021_distinct_pseudo_ids_in_tissue_count_only"]==
+                    qc["2021_metadata_rows_in_tissue"],
+                "2021 RNA-genotype QC sample source duplicates, unexpected flag or N drift")
         out.append({
           "region_id":g["region_id"],"QTL_dataset":q,
           "gene_id":gene,"gene_symbol":g["gene_symbol"],
           "source_2021_aggregated_metadata_file":name,
           "source_2021_original_metadata_rows_total":source["original_2021_metadata_row_count"],
           "source_original_source_tabular_schema_verified":True,
-          "source_original_qtl_reference_Release7_nominal_N":
-              official["QTL_datasets"][q]["nominal_catalogue_sample_size"],
+          "source_2021_unique_pseudonymous_sample_count":
+              qc["2021_distinct_pseudo_ids_in_tissue_count_only"],
+          "source_2021_RNA_and_genotype_QC_passed_sample_count":
+              qc["2021_both_rna_genotype_QC_passed_rows"],
+          "source_original_qtl_reference_Release7_nominal_N":catalogue_N,
+          "source_2021_QC_count_matches_Release7_nominal_study_N_DESCRIPTIVE":
+              qc["2021_both_rna_genotype_QC_passed_rows"]==catalogue_N,
+          "source_2021_pass_QC_minus_Release7_N":
+              qc["2021_both_rna_genotype_QC_passed_rows"]-catalogue_N,
           "source_2021_sample_group_matches_2026_Release7_qtlmap_verified":False,
           "source_exact_release7_expression_sample_meta_linked":False,
           "quantitative_original_expression_sdY_directly_observed":False,
@@ -338,6 +354,9 @@ def evaluate(m,prev,official,cohort,files_by_study,gwas,provenance):
         })
     require(len(out)==36 and len({x["gene_id"] for x in out})==20,
             "36 source groups missing after actual small file audit")
+    matched=sum(x["source_2021_QC_count_matches_Release7_nominal_study_N_DESCRIPTIVE"]
+                for x in out)
+    require(matched in range(37),"source QC model count not bounded")
     return {
       "schema":"is-p3a-36-official-2021-GTEx-ROSMAP-small-sample-metadata-and-2022-gwas-beta-source-v1",
       "technical_status":"PASS_OFFICIAL_SMALL_GTEx_ROSMAP_PUBLIC_SAMPLE_METADATA_ORIGINAL_MD5",
@@ -345,6 +364,9 @@ def evaluate(m,prev,official,cohort,files_by_study,gwas,provenance):
       "n_actual_gene_tissue_groups":36,"n_actual_unique_genes":20,
       "n_stroke_loci":1,
       "n_original_official_small_metadata_sources_read_and_MD5_checked":2,
+      "n_gene_tissue_assays_2021_dual_QC_count_equal_release7_dataset_N_DESCRIPTIVE":matched,
+      "n_gene_tissue_assays_2021_dual_QC_count_differs_release7_dataset_N":36-matched,
+      "this_does_NOT_validate_per_gene_regression_N":True,
       "official_Zenodo_publisher_source_provenance":provenance,
       "public_metadata_aggregate_sources":files_by_study,
       "official_GWAS_study_source_lookups":gwas,
@@ -404,6 +426,7 @@ def main():
     print(json.dumps({
          "technical_status":result["technical_status"],
          "n_real_groups":result.get("n_actual_gene_tissue_groups"),
+         "n_QC_matched_groups":result.get("n_gene_tissue_assays_2021_dual_QC_count_equal_release7_dataset_N_DESCRIPTIVE"),
          "source_metadata":{
             k:{"rows":v.get("original_2021_metadata_row_count"),
                "columns":v.get("original_table_number_columns"),
