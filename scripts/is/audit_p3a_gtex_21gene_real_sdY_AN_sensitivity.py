@@ -102,7 +102,10 @@ def scan_source(lines,dataset,manifest,*,expected_source_counts=True):
     region=original_region()
     bins={g:{} for g in target}
     scanned=0
-    digest=hashlib.sha256()
+    # The ORIGINAL 2026-11-22 source digest protocol includes the 19-column
+    # physical header BEFORE tabix source rows (even though tabix excludes it).
+    # Match the prior independently verified stream hash byte-for-byte.
+    digest=hashlib.sha256(("\t".join(QTL.OFFICIAL_COLUMN_ORDER)+"\n").encode("utf-8"))
     common_counts=collections.Counter()
     filtered_candidate_rows=0
     source_an_missing=0

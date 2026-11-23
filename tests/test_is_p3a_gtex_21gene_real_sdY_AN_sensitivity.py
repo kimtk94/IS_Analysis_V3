@@ -58,7 +58,7 @@ def mocked_scan(dataset,lines):
     local[dataset]["expected_nonpal_source_assay_records"]=sum(counts.values())
     local[dataset]["region_source_rows"]=len(lines)
     local[dataset]["region_stream_SHA256"]=hashlib.sha256(
-        "".join(lines).encode()).hexdigest()
+        ("\t".join(C)+"\n"+"".join(lines)).encode()).hexdigest()
     with patch.object(M,"DATASETS",local), \
          patch.object(M,"MIN_GENE_VARIANTS",3), \
          patch.object(M,"MIN_FULL_AN_VARIANTS",2), \
