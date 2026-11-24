@@ -1,0 +1,50 @@
+name: HCC Stage52 Official Public RNA Data Route Source Evidence
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/hcc/audit_stage52_public_routes.py"
+      - "tests/test_hcc_stage52_public_routes.py"
+      - ".github/workflows/hcc-stage52-public-routes.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  provenance-and-guardrails:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Static source provenance and unauthorized identity-join rejection tests
+        run: python -m unittest discover -s tests -p "test_hcc_stage52_public_routes.py" -v
+
+  source-route-audit:
+    strategy:
+      fail-fast: false
+      matrix:
+        site: ["hccdb25", "node"]
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Read public JavaScript route strings, not API or patient data
+        run: |
+          python scripts/hcc/audit_stage52_public_routes.py \
+            --site "${{ matrix.site }}" \
+            --out "results/hcc/stage52/${{ matrix.site }}_public_source.json" \
+            --review-out "results/hcc/stage52/${{ matrix.site }}_review.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-stage52-${{ matrix.site }}-public-route-evidence
+          path: results/hcc/stage52/*.json
+          retention-days: 30
+          if-no-files-found: warn
