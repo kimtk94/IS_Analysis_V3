@@ -1,0 +1,35 @@
+name: CKD Korean eGFR original source validation
+on:
+  push:
+    branches: [research/ckd-korean-validation-20261124]
+    paths: ['scripts/ckd_korean_egfr_full.py','.github/workflows/ckd-korean-egfr-full.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  full-egfr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/ckd_korean_validation.py selftest
+      - name: Retrieve frozen discovery archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 2000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14922713044/zip" -o "$RUNNER_TEMP/egfr.zip"
+      - name: Download publisher metadata and full original Korean eGFR summary file
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 5000000 "https://zenodo.org/api/records/16976585" -o "$RUNNER_TEMP/zenodo.json"
+          curl -fLsS --connect-timeout 20 --max-time 300 --max-filesize 740000000 "https://zenodo.org/api/records/16976585/files/GWAS_summary_statistics.txt.gz/content" -o "$RUNNER_TEMP/koges.gz"
+      - run: python3 scripts/ckd_korean_egfr_full.py --root "$RUNNER_TEMP" --out outputs/koges_egfr.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: koges-2026-egfr-seven-variant-full-validation
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
