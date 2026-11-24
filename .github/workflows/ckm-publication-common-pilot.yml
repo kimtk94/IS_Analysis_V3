@@ -1,0 +1,67 @@
+name: CKM publication common instrument pilot
+on:
+  pull_request:
+    paths:
+      - 'scripts/publication_common_instrument_pilot.py'
+      - 'tests/test_publication_common_instrument_pilot.py'
+      - '.github/workflows/ckm-publication-common-pilot.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ckm-publication-pilot-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /docs/data/is/IS_30_REGIONS_SIX_OUTCOMES_GWAS_CONTEXT_500KB.tsv
+            /docs/data/is/IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv
+            /docs/data/is/IS_EAS5_98_BH05_FDR_EGENE_FULLCIS_GWAS_ALLELE_READINESS.tsv
+            /docs/data/is/IS_EAS5_SAME_SNP_ASSOCIATION_GENE_TISSUE_QC.tsv
+      - run: python3 tests/test_publication_common_instrument_pilot.py
+      - run: python3 -m pip install -r requirements.txt openpyxl
+      - run: bash scripts/codex_smoke_test.sh
+  ldl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_publication_common_instrument_pilot.py
+      - run: python3 scripts/publication_common_instrument_pilot.py ldl --out outputs/ldl.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-ldl-common-autosome-pilot
+          path: outputs/ldl.json
+          retention-days: 90
+          if-no-files-found: warn
+  sbp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m pip install openpyxl==3.1.5
+      - run: python3 scripts/publication_common_instrument_pilot.py sbp --out outputs/sbp.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ckm-public-sbp-sentinel-workbook
+          path: outputs/sbp.json
+          retention-days: 90
+          if-no-files-found: warn
