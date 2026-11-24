@@ -1,0 +1,45 @@
+name: HCC Stage49 NODE Public JS Metadata Route Census
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/hcc/audit_stage49_node_js_routes.py'
+      - 'tests/test_hcc_stage49_node_js_routes.py'
+      - '.github/workflows/hcc-stage49-node-js-routes.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-guardrails:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate bounded HTTP, untrusted domains, and no biological claim
+        run: python -m unittest discover -s tests -p 'test_hcc_stage49_node_js_routes.py' -v
+  live-public-route-census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inspect bounded official NODE public frontend files
+        run: |
+          python scripts/hcc/audit_stage49_node_js_routes.py \
+            --out results/hcc/stage49/node_public_js_route_census.json \
+            --review-out results/hcc/stage49/node_public_route_postflight.json
+      - name: Upload source aggregate evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage49-node-route-aggregates
+          path: results/hcc/stage49/*.json
+          retention-days: 30
+          if-no-files-found: warn
