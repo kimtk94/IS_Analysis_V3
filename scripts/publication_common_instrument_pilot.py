@@ -17,6 +17,7 @@ import re
 import statistics
 import subprocess
 import tempfile
+import urllib.request
 from pathlib import Path
 
 LDL_URL="https://csg.sph.umich.edu/abecasis/public/lipids2013/jointGwasMc_LDL.txt.gz"
@@ -31,7 +32,7 @@ DNA=set("ACGT")
 COMPLEMENT=dict(zip("ACGT","TGCA"))
 FAMILY=6
 MIN_N=10
-FIELDS=("SNP_hg19","rsid","A1","A2","Beta","SE","N","P-value","Freq.A1.1000G.EUR")
+FIELDS=("SNP_hg19","rsid","A1","A2","beta","se","N","P-value","Freq.A1.1000G.EUR")
 
 def digest(path, algorithm):
     h=hashlib.new(algorithm)
@@ -70,7 +71,7 @@ def load_ldl(path):
                 ea,oa=r["A1"].upper(),r["A2"].upper()
                 if ea not in DNA or oa not in DNA or ea==oa:raise ValueError("non_snv")
                 if {ea,oa} in ({"A","T"},{"C","G"}):raise ValueError("palindrome")
-                b,se,p,af,N=map(float,[r["Beta"],r["SE"],r["P-value"],r["Freq.A1.1000G.EUR"],r["N"]])
+                b,se,p,af,N=map(float,[r["beta"],r["se"],r["P-value"],r["Freq.A1.1000G.EUR"],r["N"]])
                 if not all(math.isfinite(x) for x in (b,se,p,af,N)) or se<=0 or not 0<=p<=1 or N<50000 or not .01<=af<=.99:
                     raise ValueError("numeric_frequency_or_N")
                 z=b/se
@@ -107,6 +108,67 @@ def load_ldl(path):
                   "selected_before_coordinate_uniqueness":len(selected),"selected":len(panel),
                   "excluded_rows":dict(invalid),"header":header,
                   "selection":"One strongest reported P per autosome after exposure-only filters; ties by decreasing F then position/rsID. No outcome-dependent replacements. Exclude A/T, C/G and extended MHC. P=0 allowed only if |z|>=37; treated as underflow, not exact zero. No within-chromosome pair retained."}
+
+def load_sbp(path):
+    """Select only published primary SBP sentinel associations from ST3."""
+    from openpyxl import load_workbook
+    wb=load_workbook(path,read_only=True,data_only=True)
+    ws=wb["ST3"]
+    rows=ws.iter_rows(values_only=True)
+    title=next(rows)[0]
+    if "Known sentinel SNPs" not in title:raise ValueError("Unexpected ST3 title")
+    next(rows)
+    h=next(rows)
+    required=("rsID","CHR","POS","Trait","Effect allele","Other Allele","EAF","Effect","SE","P-value","Neff")
+    if not set(required)<=set(h):raise ValueError("Unexpected ST3 header")
+    ix={k:h.index(k) for k in required}
+    pool=collections.defaultdict(list)
+    n=0
+    invalid=collections.Counter()
+    for a in rows:
+        if not a or not a[0]:continue
+        n+=1
+        if a[ix["Trait"]]!="SBP":continue
+        try:
+            chrom,pos=int(a[ix["CHR"]]),int(a[ix["POS"]])
+            rsid=str(a[ix["rsID"]])
+            ea,oa=str(a[ix["Effect allele"]]).upper(),str(a[ix["Other Allele"]]).upper()
+            b,se,p,af,N=(float(a[ix[k]]) for k in ("Effect","SE","P-value","EAF","Neff"))
+            if not 1<=chrom<=22 or pos<1 or (chrom==6 and 25000000<=pos<=34000000):
+                raise ValueError("chrom_pos")
+            if not re.fullmatch(r"rs\d+",rsid) or ea not in DNA or oa not in DNA or ea==oa or {ea,oa} in ({"A","T"},{"C","G"}):
+                raise ValueError("variant_identity")
+            if not all(math.isfinite(x) for x in (b,se,p,af,N)) or se<=0 or not 0<=p<5e-8 or (b/se)**2<29.7168 or N<50000 or not .01<=af<=.99:
+                raise ValueError("numeric")
+            if p==0 and abs(b/se)<37:raise ValueError("zero_p")
+            pool[chrom].append({"chrom":chrom,"pos":pos,"rsid":rsid,"ea":ea,"oa":oa,
+                 "bx":b,"sx":se,"p":p,"f":(b/se)**2,"source_Neff":N,"source_eaf":af})
+        except (ValueError,TypeError,OverflowError):
+            invalid["excluded_primary_sbp"]+=1
+    wb.close()
+    panel=[min(a,key=lambda r:(r["p"],-r["f"],r["pos"],r["rsid"])) for _,a in sorted(pool.items())]
+    if len({r["rsid"] for r in panel})!=len(panel) or len(panel)<MIN_N:
+        raise ValueError("Insufficient unique SBP source panel")
+    # Independent rsID mapping against the GRCh37 assembly, not assumed
+    # merely because the exposure table has a column named POS.
+    url="https://grch37.rest.ensembl.org/variation/homo_sapiens"
+    req=urllib.request.Request(url,data=json.dumps({"ids":[r["rsid"] for r in panel]}).encode(),
+         headers={"Content-Type":"application/json","Accept":"application/json","User-Agent":"publication-pilot/1.0"})
+    with urllib.request.urlopen(req,timeout=35) as response:
+        raw=response.read(10*1024*1024)
+    ref=json.loads(raw)
+    verified=[]
+    for r in panel:
+        mappings=ref.get(r["rsid"],{}).get("mappings",[])
+        hits=[m for m in mappings if m.get("assembly_name")=="GRCh37" and
+              str(m.get("seq_region_name"))==str(r["chrom"]) and
+              m.get("start")==r["pos"] and m.get("end")==r["pos"] and
+              set(str(m.get("allele_string","")).upper().split("/"))=={r["ea"],r["oa"]}]
+        if len(hits)==1:verified.append(r)
+    if len(verified)<MIN_N:raise ValueError("Fewer than ten independent GRCh37 rsID/allele confirmations")
+    return verified,{"sheet":"ST3","source_rows":n,"eligible_primary_sbp_rows":sum(map(len,pool.values())),
+              "selected_before_grch37_check":len(panel),"selected":len(verified),"reference_sha256":hashlib.sha256(raw).hexdigest(),
+              "reference_url":url,"excluded":dict(invalid),"selection":"One strongest primary SBP sentinel per autosome; no outcome-based replacement. Exact rsID, chromosome, GRCh37 position and allele pair confirmed by Ensembl; no inference from PRS weights."}
 
 def orientation(ea,oa,a,b):
     if a not in DNA or b not in DNA or a==b or {ea,oa} in ({"A","T"},{"C","G"}):return None
@@ -156,16 +218,19 @@ def match_outcome(path,panel,expected_rows):
                  "coordinate_multiple":sum(v>1 for v in seen.values()),"excluded_target_rows":dict(excluded),
                  "header":header}
 
-def read_outcome(name,panel,work):
+def read_outcome(name,panels,work):
     acc,md5,size,n=OUTCOMES[name]
     fn=acc+"_buildGRCh37.tsv.gz"
     p=work/fn
     source=download(BASE+acc+"/"+fn,p,size+1,240)
     if source["bytes"]!=size or source["md5"]!=md5:
         raise ValueError(name+" original published MD5/size mismatch")
-    hits,meta=match_outcome(p,panel,n)
+    hits={}
+    meta={}
+    for exposure,panel in panels.items():
+        hits[exposure],meta[exposure]=match_outcome(p,panel,n)
     p.unlink()
-    return name,hits,{"accession":acc,"source":source,**meta}
+    return name,hits,{"accession":acc,"source":source,"matched_by_exposure":meta}
 
 def fit(x,y,se):
     if len(x)!=len(y) or len(y)!=len(se) or len(x)<2 or any(s<=0 for s in se):
@@ -238,7 +303,7 @@ def write_json(path,obj):
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("operation",choices=["ldl","sbp"])
+    ap.add_argument("operation",choices=["ldl","sbp","both"])
     ap.add_argument("--out",type=Path,required=True)
     args=ap.parse_args()
     with tempfile.TemporaryDirectory() as d:
@@ -246,19 +311,36 @@ def main():
         if args.operation=="sbp":
             inspect_sbp(args.out,work)
             return
-        result={"status":"HOLD_LDL_SOURCE"}
-        try:
-            p=work/"ldl.gz"
-            result["exposure_source"]=download(LDL_URL,p,200*1024*1024,150)
-            panel,meta=load_ldl(p)
-            result["exposure_selection"]=meta
-            result["panel"]=panel
+        result={"status":"HOLD_EXPOSURE_SOURCE","exposures":{}}
+        panels={}
+        for name in (("LDL-C","SBP") if args.operation=="both" else ("LDL-C",)):
+            info={}
+            result["exposures"][name]=info
+            try:
+                if name=="LDL-C":
+                    p=work/"ldl.gz"
+                    info["source"]=download(LDL_URL,p,200*1024*1024,150)
+                    if info["source"]["sha256"]!="ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce":
+                        raise ValueError("Original LDL source hash changed")
+                    panel,meta=load_ldl(p)
+                else:
+                    p=work/"keaton.xlsx"
+                    info["source"]=download(SBP_URL,p,100*1024*1024,120)
+                    if info["source"]["sha256"]!="a21b3841e549e02f7321b500fabfc632537219795c455cab77fc1d032010ad18":
+                        raise ValueError("Published SBP workbook hash changed")
+                    panel,meta=load_sbp(p)
+                info.update({"selection":meta,"panel":panel})
+                panels[name]=panel
+                p.unlink()
+            except (ValueError,OSError,subprocess.CalledProcessError,KeyError,StopIteration) as e:
+                info["error"]=type(e).__name__+": "+str(e)[:180]
+        write_json(args.out,result)
+        if panels:
             result["status"]="HOLD_OUTCOME_SOURCE"
-            p.unlink()
             effects={}
             result["outcomes"]={}
             with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
-                futures={pool.submit(read_outcome,k,panel,work):k for k in OUTCOMES}
+                futures={pool.submit(read_outcome,k,panels,work):k for k in OUTCOMES}
                 for future in concurrent.futures.as_completed(futures):
                     k=futures[future]
                     try:
@@ -266,14 +348,17 @@ def main():
                         effects[k]=hits
                         result["outcomes"][k]=qc
                     except (ValueError,OSError,subprocess.CalledProcessError) as e:
-                        result["outcomes"][k]={"error":type(e).__name__+": "+str(e)[:150]}
-                    # Persist source-specific progress even if another download times out.
+                        result["outcomes"][k]={"error":type(e).__name__+": "+str(e)[:180]}
                     write_json(args.out,result)
             if set(effects)==set(OUTCOMES):
-                result["matched_effects"]=effects
-                result.update(analyze(panel,effects))
-        except (ValueError,OSError,subprocess.CalledProcessError) as e:
-            result["error"]=type(e).__name__+": "+str(e)[:180]
+                result["status"]="PUBLIC_SPARSE_PILOT_COMPLETE"
+                result["analyses"]={}
+                for name,panel in panels.items():
+                    matched={k:effects[k][name] for k in OUTCOMES}
+                    info=analyze(panel,matched)
+                    info["matched_effects"]=matched
+                    info["interpretation"]=info.get("interpretation","").replace("Three SBP contrasts untested. Exploratory alternative historical exposure; not original GLGC 2021/Evangelou replication.","Six-comparison family includes both exposures even if one could not be executed. Exploratory alternate sources, not GLGC 2021/Evangelou replication.")
+                    result["analyses"][name]=info
         write_json(args.out,result)
 
 if __name__=="__main__":
