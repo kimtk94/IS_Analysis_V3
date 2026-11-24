@@ -103,7 +103,23 @@ def main():
             ids=[x[0].split(".")[0] for x in features]
             require(len(set(ids))==len(ids),"Duplicate stable gene IDs")
             subset=records[pool,arm]
-            mode,index=barcode_index([x[0] for x in bcs],[x[1] for x in subset])
+            def shape(v):
+                v=re.sub(r"[ACGTacgt]{12,}","<DNA>",v)
+                # Retain only formatting classes if a literal barcode lacks a standard DNA token.
+                return v if "<DNA>" in v and len(v)<100 else "<other-format>"
+            def core(v):
+                a=re.findall(r"(?<![ACGTacgt])[ACGTacgt]{16}(?![ACGTacgt])",v)
+                return a[0].upper() if len(a)==1 else None
+            src=[x[0] for x in bcs];sel=[x[1] for x in subset]
+            sc=[core(x) for x in src];mc=[core(x) for x in sel]
+            sc_set=set(sc)
+            print("BARCODE_FORMAT_AGGREGATE",json.dumps({"pool":pool,"arm":arm,
+                "matrix_patterns":dict(collections.Counter(shape(v) for v in src).most_common(5)),
+                "metadata_patterns":dict(collections.Counter(shape(v) for v in sel).most_common(5)),
+                "matrix_n":len(src),"metadata_n":len(sel),"matrix_unique_core":len(set(sc)),
+                "metadata_unique_core":len(set(mc)),"unparsed_matrix":sc.count(None),"unparsed_metadata":mc.count(None),
+                "metadata_core_in_matrix":sum(v is not None and v in sc_set for v in mc)}),flush=True)
+            mode,index=barcode_index(src,sel)
             feature_hash=hashlib.sha256(("\n".join(ids)+"\n").encode()).hexdigest()
             return {"status":"EXACT_METADATA_BARCODE_FEATURE_ALIGNMENT","pool":pool,"arm":arm,"gsm":spec["gsm"],
                     "source_library_donors":len(spec["donors"]),"explicit_source_exclusions":spec["excluded"],
