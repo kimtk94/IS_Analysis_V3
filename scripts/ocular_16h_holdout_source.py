@@ -25,7 +25,14 @@ def main():
             r=csv.DictReader(f,delimiter="\t")
             require(set(FIELDS)<=set(r.fieldnames or []),"ENA exact field schema")
             rows=sorted(r,key=lambda x:x["run_accession"])
-        require(len(rows)==12 and len({x["run_accession"] for x in rows})==12 and len({x["experiment_accession"] for x in rows})==12,"Expected twelve distinct study runs/experiments")
+        require(0<len(rows)<=48 and len({x["run_accession"] for x in rows})==len(rows),"Unexpected run inventory")
+        out["source_inventory"]={"rows":len(rows),"distinct_runs":len({x["run_accession"] for x in rows}),
+          "distinct_experiments":len({x["experiment_accession"] for x in rows}),
+          "distinct_samples":len({x["sample_accession"] for x in rows}),
+          "run_counts_per_experiment":dict(collections.Counter(collections.Counter(x["experiment_accession"] for x in rows).values())),
+          "run_counts_per_sample":dict(collections.Counter(collections.Counter(x["sample_accession"] for x in rows).values())),
+          "study_accession_counts":dict(collections.Counter(x["study_accession"] for x in rows))}
+        require(out["ena"]["sha256"]=="112024a55313751d1cf25b971eec093db87439b7057c9fda34798491e611f166","Source metadata bytes changed; review before use")
         require(all(x["study_accession"]==PROJECT for x in rows),"Unexpected study accession")
         ids={x["secondary_study_accession"] for x in rows}
         require(len(ids)==1 and re.fullmatch(r"SRP\d+",next(iter(ids))),"Secondary study ID")
@@ -50,7 +57,7 @@ def main():
                 if not m:bad+=1;continue
                 arm="DEX" if m.group(2).upper()=="DEX" else "VEH"
                 groups[m.group(1).rstrip(" _-").casefold()].append(arm)
-            candidate[field]={"unresolved_rows":bad,"candidate_pair_count":sum(sorted(v)==["DEX","VEH"] for v in groups.values()),"groups":len(groups)}
+            candidate[field]={"unresolved_rows":bad,"candidate_pair_count":sum(sorted(v)==["DEX","VEH"] for v in groups.values()),"groups":len(groups),"groups_with_both_arms":sum(set(v)=={"DEX","VEH"} for v in groups.values()),"arm_multiplicity_counts":dict(collections.Counter(str(tuple(sorted(collections.Counter(v).items()))) for v in groups.values()))}
         out["pairing_candidates_not_yet_verified"]=candidate
         bundle=a.root/"counts.zip"
         try:
@@ -69,7 +76,7 @@ def main():
                 with z.open(one("GeneCountMatrix.tsv")) as f:
                     header=f.readline().decode("utf-8").rstrip("\r\n").split("\t")
                 require(header[0]=="GeneID" and len(header[1:])==len(set(header[1:])) and set(header[1:])=={x["SRR_accession"] for x in rr},"Count-metadata column mismatch")
-                out["count_release"]={"counted_runs":len(rr),"expected_runs":len(rows),"qc_counts":dict(collections.Counter(x["QC_summary"] for x in rr)),"missing_run_count":12-len(rr)}
+                out["count_release"]={"counted_runs":len(rr),"expected_runs":len(rows),"qc_counts":dict(collections.Counter(x["QC_summary"] for x in rr)),"missing_run_count":len(rows)-len(rr)}
                 out["status"]="16H_PUBLIC_SOURCE_QUALIFIED_PENDING_EXACT_PAIR_REVIEW"
         except (OSError,ValueError,KeyError,zipfile.BadZipFile,UnicodeError) as e:
             out["count_release"]={"status":"HOLD","reason":str(e)[:240]}
