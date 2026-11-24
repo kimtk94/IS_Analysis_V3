@@ -1,0 +1,50 @@
+name: IS EUR-only range replay and frozen EAS contrast
+on:
+  push:
+    branches: [research/is-cross-ancestry-effect-20261124]
+    paths: ['scripts/is/download_eur_public_ranges.py','.github/workflows/is-eur-only-replay.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  eur-and-compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m scripts.is.publication_cross_ancestry_contrast selftest
+      - name: Retrieve exact successful EAS extract (not full GWAS)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 100000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14925147354/zip" -o "$RUNNER_TEMP/eas.zip"
+          echo "f6237bf2aea4834202b129eb6ac289ece54b0f718ac9d0161690bc026660731b  $RUNNER_TEMP/eas.zip" | sha256sum -c -
+          mkdir -p inputs
+          unzip -p "$RUNNER_TEMP/eas.zip" EAS.json > inputs/EAS.json
+      - name: Retrieve EUR with bounded exact HTTP ranges and publisher checksum
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 120000 "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104540/GCST90104540_buildGRCh37.tsv.gz-meta.yaml" -o "$RUNNER_TEMP/source.yaml"
+          python scripts/is/download_eur_public_ranges.py --output "$RUNNER_TEMP/source.gz"
+      - run: python -m scripts.is.publication_cross_ancestry_contrast extract --ancestry EUR --root "$RUNNER_TEMP" --legacy legacy/docs/data/is/IS_30_REGIONS_SIX_OUTCOMES_GWAS_CONTEXT_500KB.tsv --out inputs/EUR.json
+      - run: python -m scripts.is.publication_cross_ancestry_contrast combine --root inputs --out outputs/contrast.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-fixed-24-eur-replay-contrasts
+          path: |
+            inputs/EUR.json
+            outputs/contrast.json
+          if-no-files-found: error
+          retention-days: 90
