@@ -50,14 +50,16 @@ def sample_records(path):
         donors-=excluded
         stem="pool_"+("dex" if arm=="dex" else "")+pool
         files={}
-        for url in r["!Sample_supplementary_file"]:
+        supplement=[v for k,vs in r.items() if re.fullmatch(r"!Sample_supplementary_file(?:_\d+)?",k) for v in vs]
+        print("GEO supplemental basenames",gsm,[urllib.parse.urlsplit(v).path.rsplit("/",1)[-1] for v in supplement],flush=True)
+        for url in supplement:
             url=url.replace("ftp://","https://",1)
             name=urllib.parse.urlsplit(url).path.rsplit("/",1)[-1]
             for kind,suffix in (("barcodes","barcodes.tsv.gz"),("features","features.tsv.gz"),("matrix","matrix.mtx.gz")):
                 if name==gsm+"_"+stem+"_"+suffix:
                     require(kind not in files,"Repeated original supplemental path")
                     files[kind]=url
-        require(set(files)=={"barcodes","features","matrix"},"Original supplementary file schema")
+        require(set(files)=={"barcodes","features","matrix"},"Original supplementary file schema "+gsm+" matched "+str(sorted(files)))
         duration_text=" ".join(r["!Sample_treatment_protocol"]+r["!Sample_growth_protocol"]+r["!Sample_characteristics_ch1"])
         durations=sorted(set(re.findall(r"\b(?:48\s*(?:hrs?|hours?)|3\s*days?)\b",duration_text,re.I)))
         out[pool,arm]={"gsm":gsm,"library":norm("HTMC_pool-"+("dex" if arm=="dex" else "")+pool+"_GRCh38"),
