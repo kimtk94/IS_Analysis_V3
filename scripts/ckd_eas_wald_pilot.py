@@ -36,9 +36,9 @@ def wald(bx,sx,by,sy):
     b=by/bx
     se=math.sqrt((sy/bx)**2+(by*sx/bx**2)**2)
     p=math.erfc(abs(b)/se/math.sqrt(2))
-    return dict(beta=b,se_delta_independence=se,ci95=[b-1.959964*se,b+1.959964*se],p=p,
-                p_first_order=math.erfc(abs(by/sy)/math.sqrt(2)),
-                se_worst_covariance=abs(sy/bx)+abs(by*sx/bx**2))
+    return dict(mr_beta=b,mr_se_delta_independence=se,mr_ci95=[b-1.959964*se,b+1.959964*se],mr_p=p,
+                mr_p_first_order=math.erfc(abs(by/sy)/math.sqrt(2)),
+                mr_se_worst_covariance=abs(sy/bx)+abs(by*sx/bx**2))
 
 def load_panel(path):
     if digest(path)!=PIN:
@@ -159,7 +159,10 @@ def scan(path,rows):
             by,sy,p=map(float,(q["Effect"],q["StdErr"],q["P"]))
             if not all(math.isfinite(x) for x in (by,sy,p)) or sy<=0 or not 0<=p<=1:
                 raise ValueError("Invalid outcome")
-            r.update(wald(float(r["beta"]),float(r["se"]),sign*by,sy))
+            result = wald(float(r["beta"]),float(r["se"]),sign*by,sy)
+            if set(result) & set(r):
+                raise ValueError("Derived field collision with source evidence")
+            r.update(result)
         except (ValueError,OverflowError):
             r["status"]="HOLD_OUTCOME_NUMERIC"
             continue
@@ -168,7 +171,7 @@ def scan(path,rows):
         family=9 if r["platform"]=="Olink" else 5
         r.update(status="EXPLORATORY_WALD",rsid=q["SNP"],outcome_beta_aligned=sign*by,
                  outcome_se=sy,outcome_source_p=p,bonferroni_family=family,
-                 bonferroni_p=min(1,r["p"]*family))
+                 bonferroni_p=min(1,r["mr_p"]*family))
     return total,malformed,h,rows
 
 def selftest():
@@ -177,15 +180,16 @@ def selftest():
     assert orient("A","T","A","T") is None
     assert orient("A","G","T","C") is None
     x=wald(0.5,0.02,-0.1,0.01)
-    assert abs(x["beta"]+0.2)<1e-12
-    assert x["se_delta_independence"]>0.02
+    assert abs(x["mr_beta"]+0.2)<1e-12
+    assert x["mr_se_delta_independence"]>0.02
     class Fake:
         def __init__(self,p): self.p=p
         def convert_coordinate(self,c,p): return [(c,p+self.p,"+",10)]
     r=lift([dict(sentinel="chr1:10:G:A",effect_allele="A",other_allele="G")],Fake(10),Fake(-10))
     assert r[0]["pos37"]==20
     assert r[0]["status"]=="MAPPED"
-    print("Eight synthetic contract assertions passed.")
+    assert not ({"beta", "se", "source_p"} & set(x))
+    print("Nine synthetic contract assertions passed (including source field protection).")
 
 def main():
     p=argparse.ArgumentParser()
