@@ -1,0 +1,33 @@
+{
+  "description": "Synthetic aggregate evidence only; no study participants or results.",
+  "baseline": {
+    "mr": {"p": 0.001, "fdr_bh": 0.01},
+    "coloc": {"PP.H4": 0.95},
+    "ancestry": {"replication_tier": "A"},
+    "localization": {"localization_evidence_class": "TISSUE_CELL"},
+    "individual": {"status": "ok", "p": 0.03}
+  },
+  "cases": [
+    {"name": "supported_without_optional_susie", "expected_tier": "Tier 1", "expected_scores": {"mr": 2, "susie": 0, "individual": 2}},
+    {"name": "nominal_mr_missing_fdr", "overrides": {"mr": [{"p": 0.001}]}, "expected_tier": "Exploratory", "expected_scores": {"mr": 1}},
+    {"name": "nominal_mr_fails_fdr", "overrides": {"mr": [{"p": 0.001, "fdr_bh": 0.2}]}, "expected_tier": "Exploratory", "expected_scores": {"mr": 1}},
+    {"name": "fdr_boundary_not_significant", "overrides": {"mr": [{"p": 0.001, "fdr_bh": 0.05}]}, "expected_tier": "Exploratory"},
+    {"name": "negative_fdr_invalid", "overrides": {"mr": [{"p": 0.001, "fdr_bh": -0.1}]}, "expected_tier": "Exploratory"},
+    {"name": "nan_fdr_invalid", "overrides": {"mr": [{"p": 0.001, "fdr_bh": "NaN"}]}, "expected_tier": "Exploratory"},
+    {"name": "nonsignificant_clinical", "overrides": {"individual": [{"status": "ok", "p": 0.5}]}, "expected_tier": "Tier 2", "expected_scores": {"individual": 0}},
+    {"name": "missing_clinical_p", "overrides": {"individual": [{"status": "ok"}]}, "expected_tier": "Tier 2", "expected_scores": {"individual": 0}},
+    {"name": "clinical_boundary_not_significant", "overrides": {"individual": [{"status": "ok", "p": 0.05}]}, "expected_tier": "Tier 2"},
+    {"name": "negative_clinical_p_invalid", "overrides": {"individual": [{"status": "ok", "p": -0.1}]}, "expected_tier": "Tier 2"},
+    {"name": "failed_clinical_model", "overrides": {"individual": [{"status": "failed", "p": 0.001}]}, "expected_tier": "Tier 2"},
+    {"name": "producer_nonconvergence", "overrides": {"susie": [{"max_PP.H4": 0.99, "comparison_status": "SuSiE_nonconverged_or_failed"}]}, "expected_tier": "Tier 3", "expected_conflict": "SUSIE_UNRESOLVED", "expected_scores": {"susie": 0}},
+    {"name": "producer_unresolved", "overrides": {"susie": [{"max_PP.H4": 0.99, "comparison_status": "unresolved"}]}, "expected_tier": "Tier 3", "expected_conflict": "SUSIE_UNRESOLVED"},
+    {"name": "uppercase_nonconvergence", "overrides": {"susie": [{"max_PP.H4": 0.99, "comparison_status": "SUSIE_NONCONVERGED_OR_FAILED"}]}, "expected_tier": "Tier 3", "expected_conflict": "SUSIE_UNRESOLVED"},
+    {"name": "supplied_hold", "overrides": {"susie": [{"max_PP.H4": 0.99, "status": "HOLD"}]}, "expected_tier": "Tier 3", "expected_conflict": "SUSIE_UNRESOLVED"},
+    {"name": "producer_failure_table", "overrides": {"susie": [{"max_PP.H4": 0.99, "pqtl_status": "failed_or_nonconverged", "outcome_status": "converged"}]}, "expected_tier": "Tier 3", "expected_conflict": "SUSIE_UNRESOLVED"},
+    {"name": "supplied_missing_h4", "overrides": {"susie": [{"comparison_status": "unresolved"}]}, "expected_tier": "Tier 3", "expected_conflict": "SUSIE_UNRESOLVED"},
+    {"name": "abf_not_confirmed", "overrides": {"susie": [{"max_PP.H4": 0.1, "comparison_status": "ABF_not_confirmed_by_SuSiE"}]}, "expected_tier": "Tier 3", "expected_conflict": "SUSIE_NOT_CONFIRMED"},
+    {"name": "resolved_susie_support", "overrides": {"susie": [{"max_PP.H4": 0.95, "comparison_status": "ABF_and_SuSiE_shared_signal"}]}, "expected_tier": "Tier 1", "expected_scores": {"susie": 2}},
+    {"name": "numeric_susie_without_status", "overrides": {"susie": [{"max_PP.H4": 0.95}]}, "expected_tier": "Tier 1"},
+    {"name": "good_susie_row_cannot_hide_unresolved_row", "overrides": {"susie": [{"max_PP.H4": 0.95, "comparison_status": "ABF_and_SuSiE_shared_signal"}, {"comparison_status": "unresolved"}]}, "expected_tier": "Tier 3", "expected_conflict": "SUSIE_UNRESOLVED"}
+  ]
+}

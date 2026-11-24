@@ -60,9 +60,20 @@ Risk-factor panel:
 SBP, DBP, LDL-C, BMI, T2D, atrial fibrillation and smoking.
 
 ## Evidence tier
-- Tier 1: MR + strong coloc + replication + orthogonal biological/clinical evidence.
-- Tier 2: MR + coloc with partial replication or biological support.
-- Tier 3: MR signal without sufficient locus-level or replication support.
+- Tier 1: BH-FDR-significant MR + strong coloc + replication + orthogonal biological evidence + successful, nominally significant individual-level validation.
+- Tier 2: BH-FDR-significant MR + coloc with partial replication or biological support.
+- Tier 3: BH-FDR-significant MR without sufficient locus-level or replication support, or with a blocking conflict.
+- Exploratory: nominal-only MR, missing/invalid MR FDR, or insufficient MR evidence.
+
+The MR producer `run_master_mr.py` writes `fdr_bh`; the integration gate requires
+`0 <= fdr_bh < 0.05` for core MR evidence. Nominal `p < 0.05` alone contributes
+only an exploratory score. A supplied SuSiE result that failed, did not converge,
+remains unresolved, has no valid H4, or explicitly does not confirm the ABF signal
+blocks Tier 1/2. Absence of a SuSiE result does not introduce a new universal
+requirement for that analysis. Individual validation contributes only when
+`status=ok` and `0 <= p < 0.05`; model completion with a nonsignificant or missing
+p-value does not validate a candidate for Tier 1. These tiers summarize the
+supplied evidence and do not replace source-provenance or scientific HOLD review.
 
 ## Figure contract
 1. Study design

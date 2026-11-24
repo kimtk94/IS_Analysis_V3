@@ -25,6 +25,10 @@ def fnum(x):
     except Exception:return None
     return v if math.isfinite(v) else None
 
+def probability(x):
+    value=fnum(x)
+    return value if value is not None and 0<=value<=1 else None
+
 def first(r,names):
     for n in names:
         if n in r and str(r[n]).strip()!="":return r[n]
@@ -35,8 +39,12 @@ def truth(x):
 
 def stage_signal(stage,r):
     if stage=="mr":
-        p=fnum(first(r,["p","wald_p","anchor_wald_p","ivw_p"]))
-        return (2 if p is not None and p<0.05 else 0, "")
+        # run_master_mr.py emits BH-adjusted p-values in fdr_bh. Nominal
+        # significance alone is exploratory and cannot satisfy the core gate.
+        q=probability(r.get("fdr_bh"))
+        p=probability(first(r,["p","wald_p","anchor_wald_p","ivw_p"]))
+        return (2 if q is not None and q<0.05 else
+                1 if p is not None and p<0.05 else 0, "")
     if stage=="robustness":
         qp=fnum(r.get("cochran_q_p")); ep=fnum(r.get("egger_intercept_p"))
         score=1 if (qp is None or qp>=0.05) and (ep is None or ep>=0.05) else 0
@@ -45,9 +53,13 @@ def stage_signal(stage,r):
         h4=fnum(first(r,["PP.H4","max_PP.H4"]))
         return (2 if h4 is not None and h4>=0.8 else 0, "")
     if stage=="susie":
-        h4=fnum(first(r,["max_PP.H4","PP.H4"]))
-        status=str(r.get("comparison_status",""))
-        if "nonconverged" in status:return (0,"SUSIE_UNRESOLVED")
+        h4=probability(first(r,["max_PP.H4","PP.H4"]))
+        status=" ".join(str(r.get(k,"")) for k in
+                        ["comparison_status","status","pqtl_status","outcome_status"]).lower().replace("-","_").replace(" ","_")
+        if h4 is None or any(s in status for s in
+                ["nonconverg","non_converg","not_converg","failed","unresolved","hold","review"]):
+            return (0,"SUSIE_UNRESOLVED")
+        if "not_confirmed" in status:return (0,"SUSIE_NOT_CONFIRMED")
         return (2 if h4 is not None and h4>=0.8 else 0, "")
     if stage=="ancestry":
         t=str(r.get("replication_tier",""))
@@ -65,8 +77,8 @@ def stage_signal(stage,r):
         n=sum(1 for x in [r] if truth(x.get("mechanism_support")))
         return (1 if n else 0, "")
     if stage=="individual":
-        p=fnum(r.get("p"));status=str(r.get("status",""))
-        return (2 if status=="ok" and p is not None and p<0.05 else 1 if status=="ok" else 0, "")
+        p=probability(r.get("p"));status=str(r.get("status",""))
+        return (2 if status=="ok" and p is not None and p<0.05 else 0, "")
     if stage=="localization":
         c=str(r.get("localization_evidence_class",""))
         return (2 if c=="TISSUE_CELL_SPATIAL" else 1 if c not in {"","NO_LOCALIZATION"} else 0, "")
@@ -116,9 +128,10 @@ def main():
         replication=max(stage_scores.get("ancestry",0),stage_scores.get("platform",0))
         biological=max(stage_scores.get("transcriptomics",0),stage_scores.get("localization",0))
         clinical=stage_scores.get("individual",0)
-        hard_conflict=any(x in conflicts for x in ["ANCESTRY_DIRECTION","PLATFORM_DIRECTION","TRANSCRIPT_CONFLICT"])
+        hard_conflict=any(x in conflicts for x in ["ANCESTRY_DIRECTION","PLATFORM_DIRECTION","TRANSCRIPT_CONFLICT",
+                                                  "SUSIE_UNRESOLVED","SUSIE_NOT_CONFIRMED"])
 
-        if core and replication>=1 and biological>=1 and clinical>=1 and not hard_conflict:
+        if core and replication>=1 and biological>=1 and clinical>=2 and not hard_conflict:
             tier="Tier 1"
         elif core and (replication>=1 or biological>=1) and not hard_conflict:
             tier="Tier 2"
