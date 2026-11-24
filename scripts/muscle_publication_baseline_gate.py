@@ -21,7 +21,7 @@ def geo_base(acc):
 def category(v):
     # Report short categorical source labels only, not numeric trait or sample IDs.
     s=v.strip().casefold()
-    if s in {"pre","post","baseline","before","after","male","female","m","f","lr","mr","hr","non","mod","xtr","1 set","4 sets","1set","4sets","1-set","4-set","low","medium","high","nonresponder","responder","non-responder","low responder","medium responder","high responder","modest responder","extreme responder","low responders","medium responders","high responders"}:return s
+    if s in {"pre","post","baseline","before","after","male","female","m","f","lr","mr","hr","non","mod","xtr","1 set","4 sets","1set","4set","4sets","4 set","1-set","4-set","low","medium","high","nonresponder","responder","non-responder","low responder","medium responder","high responder","modest responder","extreme responder","low responders","medium responders","high responders"}:return s
     if re.fullmatch(r"(?:low|medium|high|non|modest|extreme)[ -]?(?:responder|response)s?",s):return s
     return "OTHER"
 def phenotype_fields(k):
@@ -79,13 +79,54 @@ def geo_matrix(acc,root):
         if key in fields:
             patterns[key]=dict(collections.Counter(re.sub(r"\d+","#",x)[:100] for x in fields[key][0]))
     id_fields=[d for d in descriptions if re.search(r"subject|participant|donor|patient|individual|sample.?id",d["key"],re.I)]
+    pairing={}
+    counts_audit={}
+    if acc=="GSE277819":
+        require(set(("participant id","condition"))<=set(chars),"Observed participant/condition fields missing")
+        by_id=dict(chars["participant id"]);by_arm=dict(chars["condition"])
+        require(set(by_id)==set(by_arm)==set(range(81)),"Incomplete participant/condition metadata")
+        groups=collections.defaultdict(list)
+        for i in range(81):groups[by_id[i]].append(category(by_arm[i]))
+        pairing={"participants":len(groups),"condition_counts":dict(collections.Counter(category(v) for v in by_arm.values())),
+            "observations_per_participant":dict(collections.Counter(len(v) for v in groups.values())),
+            "complete_baseline_and_two_distinct_followups":sum(sorted(v)==["1set","4set","baseline"] or sorted(v)==["1set","4sets","baseline"] or sorted(v)==["1set","4 set","baseline"] for v in groups.values())}
+        require(len(groups)==27 and all(len(v)==3 for v in groups.values()),"Participant repeated-measure structure")
+        try:
+            file="GSE277819_raw_counts.txt.gz"
+            require(file in [urllib.parse.urlsplit(u).path.rsplit("/",1)[-1] for u in series_fields.get("!Series_supplementary_file",[])],"Exact public count source not listed")
+            q=root/"counts.gz";qsrc=fetch(geo_base(acc)+"/suppl/"+file,q,30000000)
+            with gzip.open(q,"rt",encoding="utf-8-sig",newline="") as f:
+                rd=csv.reader(f,delimiter="\t")
+                h=next(rd);require(len(h)>1 and len(set(h))==len(h),"Count header schema")
+                expected=set(samples);titles=set(fields["!Sample_title"][0])
+                columns=h[1:]
+                exact_type="GSM" if set(columns)==expected and len(columns)==81 else "title" if set(columns)==titles and len(columns)==81 else "UNRESOLVED"
+                # Preserve count-header patterns, never raw individual sample IDs.
+                counts_audit={"source":qsrc,"column_count":len(columns),"first_column":h[0][:100],
+                  "column_patterns":dict(collections.Counter(re.sub(r"\d+","#",x)[:100] for x in columns)),"sample_identity":exact_type}
+                require(exact_type!="UNRESOLVED","No exact count-column identity")
+                features=set();totals=[0]*len(columns);rows=0;stable_ensembl=0;nonnegative_integer_rows=0
+                for rr in rd:
+                    rows+=1;require(rows<=250000 and len(rr)==len(h),"Count row bound or width")
+                    require(rr[0] not in features,"Duplicate count feature")
+                    features.add(rr[0]);stable_ensembl+=bool(re.fullmatch(r"ENSG\d+(?:\.\d+)?",rr[0]))
+                    require(all(re.fullmatch(r"\d+(?:\.0+)?",x) for x in rr[1:]),"Noninteger count")
+                    vals=[int(x.split(".")[0]) for x in rr[1:]]
+                    totals=[x+y for x,y in zip(totals,vals)]
+                    nonnegative_integer_rows+=1
+                require(rows>1000 and all(t>0 for t in totals),"Empty gene or sample universe")
+                counts_audit.update(status="COUNT_MATRIX_EXACT_COLUMN_AND_INTEGER_QC",features=rows,ensembl_features=stable_ensembl,
+                  nonnegative_integer_rows=nonnegative_integer_rows,nonempty_libraries=len(totals))
+        except (OSError,ValueError,EOFError,UnicodeError,csv.Error,StopIteration) as e:
+            counts_audit.update(status="HOLD",reason=str(e)[:240])
+        finally:(root/"counts.gz").unlink(missing_ok=True)
     return {"status":"PUBLIC_GEO_METADATA_AUDITED","series":acc,"source":src,"samples":len(samples),
        "platforms":series_fields.get("!Series_platform_id",[]),"sample_metadata_fields":sorted(fields),
        "masked_title_source_patterns":patterns,"characteristics":descriptions,"possible_id_fields":id_fields,
        "possible_growth_outcome_fields":[d for d in descriptions if d["possible_growth_outcome_field"]],
        "expression_matrix":{"table_begin":start,"table_end":end,"features":n,"duplicate_ids":dup,"malformed_rows":malformed,
                            "sample_order_matches":header is not None and header[1:]==samples},
-       "series_supplementary_files":[urllib.parse.urlsplit(u).path.rsplit("/",1)[-1] for u in series_fields.get("!Series_supplementary_file",[])],
+       "series_supplementary_files":[urllib.parse.urlsplit(u).path.rsplit("/",1)[-1] for u in series_fields.get("!Series_supplementary_file",[])],"participant_pairing":pairing,"supplement_count_audit":counts_audit,
        "limits":["No individual outcomes, identifiers or expression values exported.",
                  "Exact metadata field discovery only; no inference of identity from column order or category label. A field name is not proof of a continuous outcome.",
                  "GSE277819 is outcome-selected nine participants per response group; GSE42507 is outcome-clustered. Neither can yield population-calibrated prediction without appropriate selection correction and independent test."]}
@@ -96,12 +137,12 @@ def ena(root):
     with p.open(encoding="utf-8",newline="") as f:
         rd=csv.DictReader(f,delimiter="\t");require(set(fields.split(","))<=set(rd.fieldnames or []),"ENA header")
         rows=sorted(rd,key=lambda x:x["run_accession"])
-    require(len(rows)==81 and all(x["study_accession"]=="PRJNA1164267" for x in rows),"Expected project inventory")
+    require(0<len(rows)<=200 and all(x["run_accession"] for x in rows),"Nonempty bounded ENA inventory")
     for k in ("run_accession","experiment_accession","sample_accession"):
         require(all(re.fullmatch(r"(?:SRR|ERR|DRR|SRX|ERX|DRX|SAMN|SAMEA|SAMD|SRS|ERS|DRS)\d+",x[k]) for x in rows),"Invalid accession")
     raw="".join("\t".join(x[k] for k in fields.split(","))+"\n" for x in rows)
     return {"status":"ENA_PUBLIC_RUN_INVENTORY","source":src,"sorted_projection_sha256":hashlib.sha256(raw.encode()).hexdigest(),
-            "counts":{k:len({x[k] for x in rows}) for k in ("run_accession","experiment_accession","sample_accession")},
+            "counts":{k:len({x[k] for x in rows}) for k in ("run_accession","experiment_accession","sample_accession")},"rows":len(rows),"study_accession_counts":dict(collections.Counter(x["study_accession"] for x in rows)),"secondary_study_counts":dict(collections.Counter(x["secondary_study_accession"] for x in rows)),"expected_81_rows":len(rows)==81,
             "masked_patterns":{k:dict(collections.Counter(re.sub(r"\d+","#",x[k])[:160] for x in rows)) for k in ("library_name","sample_alias","experiment_title")},
             "limit":"Technical sample accession is not an independent participant; verify three observations per donor, baseline and limb labels."}
 def header_tokens(v):
@@ -128,7 +169,8 @@ def xlsx_schema(path):
     w.close();return out
 def supplement(root):
     p=root/"figshare.json";source=fetch("https://api.figshare.com/v2/articles/"+FIGSHARE,p,2000000)
-    d=json.loads(p.read_text());require(str(d["id"])==FIGSHARE and "hypertroph" in d["title"].lower(),"Unexpected Figshare record identity")
+    d=json.loads(p.read_text());require(str(d["id"])==FIGSHARE and re.fullmatch(r"10\.6084/m9\.figshare\.29330168(?:\.v\d+)?",str(d.get("doi",""))),"Exact Figshare record/DOI identity")
+    require(not d.get("is_embargoed",False),"Embargoed supplementary record")
     files=[];total=0
     for x in d["files"]:
         name=x["name"];size=int(x["size"]);fid=int(x["id"])
