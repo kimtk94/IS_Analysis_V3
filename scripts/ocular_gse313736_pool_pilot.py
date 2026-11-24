@@ -21,7 +21,7 @@ def rows(path):
     with gzip.open(path,"rt",encoding="utf-8-sig",newline="") as f:
         return list(csv.reader(f,delimiter="\t"))
 def pool_library(arm,pool,gsm):
-    return {norm("pool-"+("dex" if arm=="dex" else "")+pool),norm(gsm)}
+    return {norm("HTMC_pool-"+("dex" if arm=="dex" else "")+pool+"_GRCh38")}
 def barcode_index(source,selected):
     # Exact barcode, or one explicit reversible Cell Ranger -1 suffix convention.
     require(len(source)==len(set(source)),"Duplicate matrix barcodes")

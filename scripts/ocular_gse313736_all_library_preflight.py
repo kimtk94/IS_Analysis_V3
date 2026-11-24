@@ -60,7 +60,7 @@ def sample_records(path):
         require(set(files)=={"barcodes","features","matrix"},"Original supplementary file schema")
         duration_text=" ".join(r["!Sample_treatment_protocol"]+r["!Sample_growth_protocol"]+r["!Sample_characteristics_ch1"])
         durations=sorted(set(re.findall(r"\b(?:48\s*(?:hrs?|hours?)|3\s*days?)\b",duration_text,re.I)))
-        out[pool,arm]={"gsm":gsm,"library":norm("pool-"+("dex" if arm=="dex" else "")+pool),
+        out[pool,arm]={"gsm":gsm,"library":norm("HTMC_pool-"+("dex" if arm=="dex" else "")+pool+"_GRCh38"),
                        "donors":donors,"excluded":len(excluded),"files":files,"reported_duration_mentions":durations}
     require(len(out)==18,"Duplicate pool-arm records")
     return out
