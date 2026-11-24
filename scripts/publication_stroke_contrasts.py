@@ -98,11 +98,19 @@ def main():
         wb=load_workbook(io.BytesIO(data),read_only=True,data_only=True)
         mr_pattern=re.compile(r"\b(?:LDL(?:[-_ ]?C|[-_ ]?cholesterol)?|SBP|systolic(?: blood pressure)?)\b",re.I)
         gene_pattern=re.compile(r"\b(?:FGF5|CALHM2|ALDH2|NEURL1|INA|C4orf22)\b",re.I)
-        tables={"mr":sheet_extract(wb,"Suppl.Table24",mr_pattern,12),
-                "twas":sheet_extract(wb,"Suppl.Table27",gene_pattern,8)}
+        sheetnames=list(wb.sheetnames)
+        print("PUBLISHER_SHEET_NAMES",json.dumps(sheetnames),flush=True)
+        def choose_tables(n):
+            pattern=re.compile(r"^(?:suppl(?:ementary)?[\s._-]*)?table[\s._-]*"+str(n)+r"(?:[\s._-]*[a-z])?$",re.I)
+            return [s for s in sheetnames if pattern.fullmatch(s.strip())]
+        tables={}
+        for role,n,pattern,h in (("mr",24,mr_pattern,12),("twas",27,gene_pattern,8)):
+            for i,name in enumerate(choose_tables(n)):
+                tables[role+"_"+str(i+1)]=sheet_extract(wb,name,pattern,h)
         wb.close()
-        obj={"status":"PUBLISHER_TABLE_ROWS_READ","source":SOURCE_URL,
-             "source_sha256":SOURCE_SHA256,"source_size":SOURCE_SIZE,**tables}
+        obj={"status":"PUBLISHER_TABLE_ROWS_READ" if tables else "HOLD_NUMBERED_SHEET_NOT_FOUND",
+             "source":SOURCE_URL,"source_sha256":SOURCE_SHA256,"source_size":SOURCE_SIZE,
+             "sheetnames":sheetnames,**tables}
         # Read exact published cells, not a guessed coefficient schema. A subsequent
         # direct contrast requires validated exposure unit, beta, SE, ancestry and method.
         (args.out/"gigastroke_published_extract.json").write_text(json.dumps(obj,indent=2)+"\n")
