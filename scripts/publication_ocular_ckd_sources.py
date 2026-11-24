@@ -42,7 +42,8 @@ def read_table(path, begin, end):
         for line in f:
             if line.strip().lower() == begin:
                 break
-            lines.append(line)
+            if begin.startswith("!series"):
+                lines.append(line)
         else:
             raise ValueError("Missing table start")
         body = []
@@ -167,42 +168,84 @@ def norm(x):
 def ckd(root):
     from openpyxl import load_workbook
     path = root / "ckb.xlsx"
+    pinned = "c6a6f4cfa58a2ee886a86482d7e08913c5c2aed4e42c3aa07f17c625d4fd6764"
+    if digest(path) != pinned:
+        raise ValueError("Supplementary Data 4 hash differs from first retrieval")
     w = load_workbook(path, read_only=True, data_only=True)
     genes = set(GENES)
-    inventory = []
-    recognized = 0
-    # Require an explicit gene-symbol field. No substring matching; do not infer unreported candidates.
-    gene_names = {"gene", "genesymbol", "hgncsymbol", "hgnc", "genename", "proteinencodinggene", "targetgene"}
-    for s in w.worksheets:
-        headers = []
-        chosen = None
-        counts = collections.Counter()
-        rowcount = 0
-        preview = []
-        for i, row in enumerate(s.iter_rows(values_only=True), 1):
-            if i <= 12:
-                nonempty = [str(x)[:100] for x in row if x is not None]
-                preview.append(nonempty[:30])
-            if chosen is None and i <= 20:
-                ix = [j for j, value in enumerate(row) if norm(value) in gene_names]
-                if len(ix) == 1:
-                    chosen = ix[0]
-                    headers = [str(x or "")[:160] for x in row]
+    matches = []
+    mapping_status = "NOT_AVAILABLE"
+    candidate_soma = collections.defaultdict(set)
+    map_path = root / "mapping.xlsx"
+    mapping = []
+    if map_path.exists():
+        m = load_workbook(map_path, read_only=True, data_only=True)
+        for sh in m.worksheets:
+            rows = sh.iter_rows(values_only=True)
+            for i, row in enumerate(rows, 1):
+                if i > 15:
+                    break
+                hdr = [norm(v) for v in row]
+                o = [j for j, v in enumerate(hdr) if v in {"olinkid", "olink", "olinkproteinid"}]
+                a = [j for j, v in enumerate(hdr) if v in {"somascanid", "somascan", "somamerid", "seqid"}]
+                if len(o) != 1 or len(a) != 1:
+                    if i == 1:
+                        mapping.append({"sheet": sh.title, "first_row_header": [str(v or "")[:100] for v in row]})
                     continue
-            if chosen is not None:
-                rowcount += 1
-                value = str(row[chosen] or "").strip().upper()
-                if value in genes:
-                    counts[value] += 1
-        if chosen is not None:
-            recognized += 1
-        inventory.append({"sheet": s.title, "header_recognized": chosen is not None,
-                          "header": headers, "first_rows": preview if chosen is None else [],
-                          "rows_scanned_after_header": rowcount, "exact_candidate_row_counts": dict(counts)})
+                for r in rows:
+                    olink, soma = str(r[o[0]] or "").strip().upper(), str(r[a[0]] or "").strip()
+                    if olink in genes and re.fullmatch(r"seq\.\d+\.\d+", soma):
+                        candidate_soma[soma].add(olink)
+                mapping_status = "PUBLISHED_REAGENT_PAIR_ROWS"
+                mapping.append({"sheet": sh.title, "header": [str(v or "")[:100] for v in row]})
+                break
+        m.close()
+    inventory = []
+    required = {"sentinel_variant", "CHR", "POS", "effect_allele", "non_effect_allele",
+                "effect_allele_frequency", "INFO", "BETA", "SE", "P", "cis_trans"}
+    for name, assay in (("Olink", "olink_id"), ("SomaScan", "somascan_id")):
+        rows = w[name].iter_rows(values_only=True)
+        h = [str(v) for v in next(rows)]
+        if not required.union({assay}) <= set(h) or len(set(h)) != len(h):
+            raise ValueError("Unexpected pinned source header")
+        counts = collections.Counter()
+        n = 0
+        for row in rows:
+            n += 1
+            r = dict(zip(h, row))
+            label = str(r[assay] or "").strip()
+            candidate = {label.upper()} if name == "Olink" and label.upper() in genes else candidate_soma.get(label, set()) if name == "SomaScan" else set()
+            if len(candidate) != 1:
+                continue
+            gene = next(iter(candidate))
+            typ = str(r["cis_trans"]).lower().strip()
+            counts[gene + ":" + typ] += 1
+            if typ != "cis":
+                continue
+            try:
+                b, se, eaf, info, p = (float(r[k]) for k in ("BETA","SE","effect_allele_frequency","INFO","P"))
+                chrom, pos = int(r["CHR"]), int(r["POS"])
+                ea, oa = str(r["effect_allele"]).upper(), str(r["non_effect_allele"]).upper()
+                match = re.fullmatch(r"chr(\d+):(\d+):([ACGT]+):([ACGT]+)", str(r["sentinel_variant"]))
+                valid = (match is not None and int(match[1]) == chrom and int(match[2]) == pos and
+                         {match[3], match[4]} == {ea, oa} and ea != oa and 1 <= chrom <= 22 and
+                         all(math.isfinite(v) for v in (b,se,eaf,info,p)) and se > 0 and 0 < eaf < 1 and 0.3 < info <= 1 and 0 <= p < 5e-8)
+                f = (b / se) ** 2 if valid else None
+            except (TypeError, ValueError, OverflowError):
+                valid, f = False, None
+            matches.append({"candidate_label": gene, "platform": name, "assay_id": label,
+                "sentinel": str(r["sentinel_variant"]), "effect_allele": str(r["effect_allele"]),
+                "other_allele": str(r["non_effect_allele"]), "beta": r["BETA"], "se": r["SE"], "eaf": r["effect_allele_frequency"],
+                "source_p": r["P"], "info": r["INFO"], "basic_numeric_allele_qc": valid,
+                "F": f, "F_ge_10": bool(f is not None and f >= 10)})
+        inventory.append({"sheet": name, "rows_scanned": n, "candidate_cis_trans_counts": dict(counts)})
     w.close()
-    return {"status": "SOURCE_TABLE_REVIEW_REQUIRED", "source": "10.1038/s41467-025-56935-2 Supplementary Data 4",
-            "sha256": digest(path), "candidate_genes": list(GENES), "recognized_sheets": recognized,
-            "sheets": inventory, "limitation": "Gene-row presence is not validated cis instrument, platform equivalence or MR."}
+    return {"status": "CIS_SENTINEL_CANDIDATE_SCREEN_NOT_MR", "source": "10.1038/s41467-025-56935-2 Supplementary Data 4",
+            "sha256": digest(path), "source_build": "GRCh38 per paper Methods", "candidate_genes": list(GENES),
+            "reagent_mapping_status": mapping_status, "mapping_sha256": digest(map_path) if map_path.exists() else None,
+            "mapping_header_inventory": mapping, "soma_reagent_pairs": {k: sorted(v) for k,v in candidate_soma.items()},
+            "sheets": inventory, "cis_sentinels": matches,
+            "limitation": "Exact Olink assay labels and published pair rows, not independently verified UniProt identity, LD, outcome alignment, comparable scales, or MR."}
 
 
 def recovery(root):
@@ -228,6 +271,7 @@ def recovery(root):
     missing = []
     complete = 0
     source_bytes = 0
+    incomplete = []
     for a in design.values():
         if all(r["run_accession"] in available for r in a.values()):
             complete += 1
@@ -237,17 +281,23 @@ def recovery(root):
                                      available[run]["SRP_accession"] != "SRP319815"):
                 raise ValueError("DEE2 project or experiment mismatch")
             x = entries[run]
-            files = x["fastq_ftp"].split(";")
-            md5 = x["fastq_md5"].split(";")
-            sizes = list(map(int, x["fastq_bytes"].split(";")))
-            if not len(files) == len(md5) == len(sizes) == 2 or not all(re.fullmatch("[a-fA-F0-9]{32}", m) for m in md5) or not all(n > 0 for n in sizes):
-                raise ValueError("Incomplete paired-end source manifest")
-            source_bytes += sum(sizes)
+            files = [v for v in x["fastq_ftp"].split(";") if v]
+            md5 = [v for v in x["fastq_md5"].split(";") if v]
+            size_fields = [v for v in x["fastq_bytes"].split(";") if v]
+            sizes = [int(v) for v in size_fields if v.isdecimal()]
+            manifest_ok = (len(files) == len(md5) == len(sizes) == len(size_fields) == 2 and
+                           all(re.fullmatch("[a-fA-F0-9]{32}", m) for m in md5) and all(n > 0 for n in sizes))
+            entry = {"run": run, "arm": arm, "source_group": record["experiment_title"],
+                     "library_layout": x.get("library_layout"), "declared_file_count": len(files),
+                     "declared_bytes": sizes, "declared_md5": md5, "paired_manifest_ok": manifest_ok}
+            if manifest_ok:
+                source_bytes += sum(sizes)
+            else:
+                incomplete.append(entry)
             if run not in available:
-                missing.append({"run": run, "arm": arm, "source_group": record["experiment_title"],
-                                "paired_fastq_bytes": sizes, "declared_md5": md5})
+                missing.append(entry)
     return {"status": "HOLD_RAW_REQUANTIFICATION", "source_runs": len(all_runs), "complete_dee2_pairs": complete,
-            "missing_runs": missing, "all_raw_fastq_bytes": source_bytes,
+            "missing_runs": missing, "valid_paired_manifest_bytes_only": source_bytes, "invalid_or_nonpaired_manifest_runs": incomplete,
             "fastq_manifest_sha256": digest(root / "fastq.tsv"),
             "limitation": "Declared MD5 is not verification of FASTQ bytes. Requantify all 16 with one reference and pipeline."}
 
