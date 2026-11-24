@@ -1,0 +1,54 @@
+name: HCC Stage51 HCCDB25 RNA Triplet Identity and Source Checks
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/hcc/audit_stage51_hccdb25_rna_triplet.py"
+      - "tests/test_hcc_stage51_hccdb25_rna_triplet.py"
+      - ".github/workflows/hcc-stage51-hccdb25-rna-triplet.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  offline-triplet-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test real HCCDB25 source schema on synthetic samples only
+        run: python -m unittest discover -s tests -p "test_hcc_stage51_hccdb25_rna_triplet.py" -v
+      - name: Record current original RNA source gate
+        run: |
+          python scripts/hcc/audit_stage51_hccdb25_rna_triplet.py \
+            --out results/hcc/stage51/rna_source_handoff_status.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage51-local-rna-triplet-gate
+          path: results/hcc/stage51/rna_source_handoff_status.json
+          retention-days: 30
+
+  pinned-public-research-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check immutable public analysis script references to the HCCDB25 triplet
+        run: |
+          python scripts/hcc/audit_stage51_hccdb25_rna_triplet.py \
+            --reference-only \
+            --out results/hcc/stage51/pinned_research_script_triplet_reference.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-stage51-public-code-file-reference
+          path: results/hcc/stage51/pinned_research_script_triplet_reference.json
+          retention-days: 30
+          if-no-files-found: warn
