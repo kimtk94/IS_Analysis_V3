@@ -23,6 +23,19 @@ class PilotTest(unittest.TestCase):
         self.assertEqual(r["common"],10)
         self.assertEqual(r["family_n"],6)
         self.assertAlmostEqual(r["paired_contrasts"][0]["beta"],-1)
+    def test_build_mapping_consistent_and_not_outcome_selected(self):
+        panel=[{"rsid":"rs"+str(i),"chrom":i+1,"pos":100+i,"ea":"A","oa":"C"} for i in range(12)]
+        def source(build,offset):
+            return {r["rsid"]:{"mappings":[{"assembly_name":build,"seq_region_name":str(r["chrom"]),"start":r["pos"]+offset,"end":r["pos"]+offset,"allele_string":"A/C"}]} for r in panel}
+        refs={"GRCh37":source("GRCh37",20),"GRCh38":source("GRCh38",0)}
+        mapped,diag=m.map_sbp_panel(panel,refs)
+        self.assertEqual(diag["source_build"],"GRCh38")
+        self.assertEqual(len(mapped),12)
+        self.assertEqual(mapped[0]["pos"],120)
+        refs["GRCh37"]["rs0"]["mappings"][0].update(start=100,end=100)
+        # Now the first source position is identical in both builds, not conflicting.
+        mapped,diag=m.map_sbp_panel(panel,refs)
+        self.assertEqual(diag["source_build"],"GRCh38")
     def test_missing_common(self):
         self.assertEqual(m.analyze([],{"LAA":{},"CE":{},"SVD":{}})["status"],"HOLD_TOO_FEW_COMMON_SNP")
 

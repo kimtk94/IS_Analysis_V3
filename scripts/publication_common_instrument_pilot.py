@@ -40,8 +40,8 @@ def digest(path, algorithm):
         for block in iter(lambda:f.read(1024*1024),b""):h.update(block)
     return h.hexdigest()
 
-def download(url,path,limit,timeout):
-    subprocess.run(["curl","--fail","--location","--silent","--show-error","--connect-timeout","25","--max-time",str(timeout),"--max-filesize",str(limit),"-o",str(path),url],check=True)
+def download(url,path,limit,timeout,retry=0):
+    subprocess.run(["curl","--retry",str(retry),"--retry-delay","1","--retry-max-time","300","--fail","--location","--silent","--show-error","--connect-timeout","25","--max-time",str(timeout),"--max-filesize",str(limit),"-o",str(path),url],check=True)
     size=path.stat().st_size
     if not 0<size<=limit:raise ValueError("Invalid transfer size")
     return {"bytes":size,"sha256":digest(path,"sha256"),"md5":digest(path,"md5"),"url":url}
@@ -149,26 +149,61 @@ def load_sbp(path):
     panel=[min(a,key=lambda r:(r["p"],-r["f"],r["pos"],r["rsid"])) for _,a in sorted(pool.items())]
     if len({r["rsid"] for r in panel})!=len(panel) or len(panel)<MIN_N:
         raise ValueError("Insufficient unique SBP source panel")
-    # Independent rsID mapping against the GRCh37 assembly, not assumed
-    # merely because the exposure table has a column named POS.
-    url="https://grch37.rest.ensembl.org/variation/homo_sapiens"
-    req=urllib.request.Request(url,data=json.dumps({"ids":[r["rsid"] for r in panel]}).encode(),
-         headers={"Content-Type":"application/json","Accept":"application/json","User-Agent":"publication-pilot/1.0"})
-    with urllib.request.urlopen(req,timeout=35) as response:
-        raw=response.read(10*1024*1024)
-    ref=json.loads(raw)
-    verified=[]
-    for r in panel:
-        mappings=ref.get(r["rsid"],{}).get("mappings",[])
-        hits=[m for m in mappings if m.get("assembly_name")=="GRCh37" and
-              str(m.get("seq_region_name"))==str(r["chrom"]) and
-              m.get("start")==r["pos"] and m.get("end")==r["pos"] and
-              set(str(m.get("allele_string","")).upper().split("/"))=={r["ea"],r["oa"]}]
-        if len(hits)==1:verified.append(r)
-    if len(verified)<MIN_N:raise ValueError("Fewer than ten independent GRCh37 rsID/allele confirmations")
-    return verified,{"sheet":"ST3","source_rows":n,"eligible_primary_sbp_rows":sum(map(len,pool.values())),
-              "selected_before_grch37_check":len(panel),"selected":len(verified),"reference_sha256":hashlib.sha256(raw).hexdigest(),
-              "reference_url":url,"excluded":dict(invalid),"selection":"One strongest primary SBP sentinel per autosome; no outcome-based replacement. Exact rsID, chromosome, GRCh37 position and allele pair confirmed by Ensembl; no inference from PRS weights."}
+    meta={"sheet":"ST3","source_rows":n,"eligible_primary_sbp_rows":sum(map(len,pool.values())),
+          "selected_before_grch37_check":len(panel),"excluded":dict(invalid),
+          "selection":"One strongest primary SBP sentinel per autosome; no outcome-based replacement. Require a single consistent observed source assembly and a unique GRCh37 rsID/allele mapping. No inference from PRS weights.",
+          "original_selected_panel":panel}
+    refs={}
+    meta["reference_sources"]={}
+    for assembly,host in (("GRCh37","https://grch37.rest.ensembl.org"),("GRCh38","https://rest.ensembl.org")):
+        url=host+"/variation/homo_sapiens"
+        try:
+            req=urllib.request.Request(url,data=json.dumps({"ids":[r["rsid"] for r in panel]}).encode(),
+                 headers={"Content-Type":"application/json","Accept":"application/json","User-Agent":"publication-pilot/1.0"})
+            with urllib.request.urlopen(req,timeout=35) as response:
+                raw=response.read(10*1024*1024)
+            refs[assembly]=json.loads(raw)
+            meta["reference_sources"][assembly]={"url":url,"sha256":hashlib.sha256(raw).hexdigest(),"returned_ids":len(refs[assembly])}
+        except (OSError,ValueError) as e:
+            meta["reference_sources"][assembly]={"url":url,"error":type(e).__name__+": "+str(e)[:120]}
+    if set(refs)!={"GRCh37","GRCh38"}:
+        return [],{**meta,"selected":0,"status":"HOLD_REFERENCE_SOURCE"}
+    verified,details=map_sbp_panel(panel,refs)
+    return verified,{**meta,**details}
+
+def map_sbp_panel(panel,refs):
+    maps={}
+    for build in ("GRCh37","GRCh38"):
+        maps[build]={}
+        for r in panel:
+            hits=[]
+            for m in refs[build].get(r["rsid"],{}).get("mappings",[]):
+                allele=str(m.get("allele_string","")).upper().split("/")
+                if m.get("assembly_name")!=build or str(m.get("seq_region_name"))!=str(r["chrom"]) or m.get("start")!=m.get("end") or len(allele)!=2:
+                    continue
+                if orientation(r["ea"],r["oa"],*allele) is None:
+                    continue
+                hits.append(int(m["start"]))
+            if len(hits)==1:maps[build][r["rsid"]]=hits[0]
+    matches={build:{r["rsid"] for r in panel if maps[build].get(r["rsid"])==r["pos"]}
+             for build in maps}
+    only37=matches["GRCh37"]-matches["GRCh38"]
+    only38=matches["GRCh38"]-matches["GRCh37"]
+    build="GRCh37" if only37 and not only38 else "GRCh38" if only38 and not only37 else None
+    diagnostics={"source_coordinate_match_counts":{k:len(v) for k,v in matches.items()},
+                 "unique_allele_mapping_counts":{k:len(v) for k,v in maps.items()},
+                 "source_build_only37":len(only37),"source_build_only38":len(only38),
+                 "source_build":build,
+                 "mapping_rows":[{"rsid":r["rsid"],"source_pos":r["pos"],
+                     "GRCh37":maps["GRCh37"].get(r["rsid"]),"GRCh38":maps["GRCh38"].get(r["rsid"])}
+                     for r in panel]}
+    if build is None or len(matches[build])<max(MIN_N,math.ceil(.8*len(panel))):
+        return [],{**diagnostics,"selected":0,"status":"HOLD_UNRESOLVED_SOURCE_BUILD"}
+    verified=[{**r,"source_pos":r["pos"],"source_build":build,"pos":maps["GRCh37"][r["rsid"]]}
+              for r in panel if r["rsid"] in matches[build] and r["rsid"] in maps["GRCh37"]]
+    if len(verified)<MIN_N:
+        return [],{**diagnostics,"selected":len(verified),"status":"HOLD_TOO_FEW_GRCH37_MAPS"}
+    return verified,{**diagnostics,"selected":len(verified),"status":"SOURCE_BUILD_AND_GRCH37_MAPS_VERIFIED"}
 
 def orientation(ea,oa,a,b):
     if a not in DNA or b not in DNA or a==b or {ea,oa} in ({"A","T"},{"C","G"}):return None
@@ -222,7 +257,7 @@ def read_outcome(name,panels,work):
     acc,md5,size,n=OUTCOMES[name]
     fn=acc+"_buildGRCh37.tsv.gz"
     p=work/fn
-    source=download(BASE+acc+"/"+fn,p,size+1,240)
+    source=download(BASE+acc+"/"+fn,p,size+1,240,retry=1)
     if source["bytes"]!=size or source["md5"]!=md5:
         raise ValueError(name+" original published MD5/size mismatch")
     hits={}
@@ -330,7 +365,8 @@ def main():
                         raise ValueError("Published SBP workbook hash changed")
                     panel,meta=load_sbp(p)
                 info.update({"selection":meta,"panel":panel})
-                panels[name]=panel
+                if panel:panels[name]=panel
+                else:info["error"]="Exposure selection or coordinate reference unresolved"
                 p.unlink()
             except (ValueError,OSError,subprocess.CalledProcessError,KeyError,StopIteration) as e:
                 info["error"]=type(e).__name__+": "+str(e)[:180]
@@ -346,12 +382,13 @@ def main():
                     try:
                         _,hits,qc=future.result()
                         effects[k]=hits
+                        result["matched_effects_by_outcome"]=effects
                         result["outcomes"][k]=qc
                     except (ValueError,OSError,subprocess.CalledProcessError) as e:
                         result["outcomes"][k]={"error":type(e).__name__+": "+str(e)[:180]}
                     write_json(args.out,result)
             if set(effects)==set(OUTCOMES):
-                result["status"]="PUBLIC_SPARSE_PILOT_COMPLETE"
+                result["status"]="PUBLIC_SPARSE_PILOT_RESULTS_AVAILABLE"
                 result["analyses"]={}
                 for name,panel in panels.items():
                     matched={k:effects[k][name] for k in OUTCOMES}
@@ -359,6 +396,8 @@ def main():
                     info["matched_effects"]=matched
                     info["interpretation"]=info.get("interpretation","").replace("Three SBP contrasts untested. Exploratory alternative historical exposure; not original GLGC 2021/Evangelou replication.","Six-comparison family includes both exposures even if one could not be executed. Exploratory alternate sources, not GLGC 2021/Evangelou replication.")
                     result["analyses"][name]=info
+                if len(result["analyses"])!=2 or any(x["status"]!="SPARSE_COMMON_AUTOSOME_PILOT" for x in result["analyses"].values()):
+                    result["status"]="PARTIAL_PUBLIC_SPARSE_PILOT"
         write_json(args.out,result)
 
 if __name__=="__main__":
