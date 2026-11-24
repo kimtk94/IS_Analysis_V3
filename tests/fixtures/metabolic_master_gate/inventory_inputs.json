@@ -1,0 +1,18 @@
+{
+  "description": "Synthetic file-presence inputs only; no study results.",
+  "required_paths": [
+    "results/metabolic_resilience/stage2_gwas/final_shortlist/STAGE2_FINAL_SCREENING_SHORTLIST.tsv",
+    "results/metabolic_resilience/stage3_full_pgwas/audit/STAGE3C0R_LD_MAPPING_SUMMARY.json",
+    "results/metabolic_resilience/stage3_full_pgwas/audit/STAGE3C1_LD_CLUMP_SUMMARY.json",
+    "results/metabolic_resilience/stage3_full_pgwas/audit/STAGE3C2_INSTRUMENT_FREEZE.json",
+    "results/metabolic_resilience/stage3_confirmatory_mr/STAGE3D3_MR_RESULTS.tsv",
+    "results/metabolic_resilience/stage3_confirmatory_mr/STAGE3D6_MULTIPLE_TESTING_AND_OVERLAP.json",
+    "results/metabolic_resilience/stage3_coloc/STAGE3E3_COLOC_SUMMARY.tsv",
+    "results/metabolic_resilience/stage3_coloc/STAGE3E4_MULTISIGNAL_DECISION.json",
+    "results/metabolic_resilience/stage3_variant_artifact/STAGE3F0_VARIANT_ARTIFACT_SUMMARY.json"
+  ],
+  "json_input": "{\"status\": \"PASS\", \"synthetic\": true}\n",
+  "hold_json": "{\"status\": \"HOLD\", \"reason\": \"synthetic unresolved source\"}\n",
+  "tsv_input": "gene_symbol\tstatus\nSYNTHETIC\tREVIEW\n",
+  "invalid_input": "not valid JSON or a scientific result table\n"
+}

@@ -33,4 +33,12 @@
 - [ ] Environment snapshot
 - [ ] Result SHA256
 - [ ] Drive↔Git drift PASS
-- [ ] MASTER_ANALYSIS_GATE PASS_CORE_READY
+- [ ] MASTER_ANALYSIS_GATE core file inventory complete
+- [ ] Required output schemas, scientific results, and internal REVIEW/HOLD decisions independently reviewed and resolved
+
+`91_master_analysis_gate.py --root <analysis-root>` inventories nonempty regular
+files only. Missing core files yield `HOLD_CORE_INCOMPLETE`; a complete inventory
+yields `FILES_PRESENT_NOT_SCIENTIFICALLY_VALIDATED`. Both retain
+`scientific_status: HOLD` and exit code 2. The command does not certify scientific
+readiness, even when all nine required files are present. It does not parse or
+resolve internal scientific decisions; those require the review above.
