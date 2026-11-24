@@ -1,0 +1,70 @@
+name: Muscle frozen acute signature portability
+on:
+  push:
+    branches: [research/muscle-fixed-acute-signature-20261125]
+    paths: ['scripts/muscle_motrpac_signature.R','scripts/muscle_fixed_signature_validation.py','.github/workflows/muscle-fixed-signature.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.5.2'
+      - name: Retrieve exact published aggregate R objects
+        run: |
+          set -eu
+          base="https://raw.githubusercontent.com/MoTrPAC/MotrpacHumanPreSuspensionAnalysis/70461ea4a55716bb00f8467860521e8a8f94b9f9/data"
+          curl -fLsS --connect-timeout 15 --max-time 120 --max-filesize 24000000 "$base/MUSCLE_TRNSCRPT_DA.rda" -o "$RUNNER_TEMP/MUSCLE_TRNSCRPT_DA.rda"
+          curl -fLsS --connect-timeout 15 --max-time 120 --max-filesize 21000000 "$base/HUMAN_FEATURE_TO_GENE.rda" -o "$RUNNER_TEMP/HUMAN_FEATURE_TO_GENE.rda"
+          python3 - <<'PY'
+          import os,hashlib,pathlib
+          pins={"MUSCLE_TRNSCRPT_DA.rda":(22711273,"0a4168c61102863487a4c4ecb95ec66bc250329e"),"HUMAN_FEATURE_TO_GENE.rda":(20001757,"db4dd772a08ed10b1063201179386a2c113ecb55")}
+          for f,(size,sha) in pins.items():
+              p=pathlib.Path(os.environ["RUNNER_TEMP"])/f
+              b=p.read_bytes()
+              assert len(b)==size and hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()==sha,f
+              print(f,size,hashlib.sha256(b).hexdigest(),flush=True)
+          PY
+      - run: Rscript scripts/muscle_motrpac_signature.R "$RUNNER_TEMP" outputs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: muscle-frozen-motrpac-panel
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
+  validate:
+    needs: freeze
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [baseline, chronic]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --only-binary=:all: numpy==2.2.6 scipy==1.15.3
+      - uses: actions/download-artifact@v4
+        with:
+          name: muscle-frozen-motrpac-panel
+          path: frozen
+      - run: python scripts/muscle_fixed_signature_validation.py selftest
+      - run: python scripts/muscle_fixed_signature_validation.py ${{ matrix.mode }} --root "$RUNNER_TEMP/input" --panel frozen/panel.tsv --out outputs/result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: muscle-fixed-signature-${{ matrix.mode }}
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
