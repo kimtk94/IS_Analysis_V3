@@ -1,0 +1,96 @@
+name: Publication follow-up - gene evidence and public sources
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/publication_sprint_followup.py'
+      - 'tests/test_publication_sprint_followup.py'
+      - '.github/workflows/publication-followup.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m py_compile scripts/publication_sprint_followup.py
+      - run: python3 tests/test_publication_sprint_followup.py
+
+  ocular:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 0d39a9b41aa500d39327fdd8709f9ccb179f8502
+          path: ocular_source
+          persist-credentials: false
+          sparse-checkout: scripts/ocular
+      - run: python3 -m pip install openpyxl==3.1.5
+      - name: Compare the fixed public gene-level results and exploratory pathways
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          curl --fail --silent --show-error --location --max-time 90 --max-filesize 4000000 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/kimtk94/IS_Analysis_V3/actions/artifacts/12995175346/zip" \
+            -o "$RUNNER_TEMP/p5d.zip"
+          python3 scripts/publication_sprint_followup.py ocular --pool-zip "$RUNNER_TEMP/p5d.zip" --ocular-source ocular_source --out outputs/ocular/summary.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-gene-evidence-and-pathways
+          path: outputs/ocular/
+          if-no-files-found: warn
+          retention-days: 90
+
+  skin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        accession: [GCST90094903, GCST90094904]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read the exact provider file and verify MD5; scan summary statistics
+        env:
+          ACCESSION: ${{ matrix.accession }}
+        run: python3 scripts/publication_sprint_followup.py skin --accession "$ACCESSION" --out outputs/skin.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: skin-source-scan-${{ matrix.accession }}
+          path: outputs/skin.json
+          if-no-files-found: warn
+          retention-days: 90
+
+  oral:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/publication_sprint_followup.py oral --out outputs/oral.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: oral-official-cell-label-cross-tab
+          path: outputs/oral.json
+          if-no-files-found: warn
+          retention-days: 90
