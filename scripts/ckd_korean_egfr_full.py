@@ -37,7 +37,10 @@ def run(root,out):
     matches=collections.defaultdict(list)
     n=bad=0
     with gzip.open(path,"rt",encoding="utf8") as f:
-        h=f.readline().strip().split()
+        h=f.readline().rstrip("\r\n").split("\t")
+        if len(h)!=10 or h[0]!="":
+            raise ValueError("Unexpected indexed TSV header "+repr(h))
+        h[0]="source_row_index"
         ix={"chr":getcol(h,"chrom"),"pos":getcol(h,"poshg19"),"id":getcol(h,"id"),
             "ea":getcol(h,"effectallele"),"oa":getcol(h,"otherallele"),
             "eaf":getcol(h,"effectallelefreq"),"beta":getcol(h,"obeta"),
@@ -46,11 +49,13 @@ def run(root,out):
         for line in f:
             if not line.strip():continue
             n+=1
-            fields=line.split()
+            fields=line.rstrip("\r\n").split("\t")
             if len(fields)!=len(h):
                 bad+=1
                 continue
             try:
+                if int(fields[0])!=n-1:
+                    raise ValueError("Unexpected source row index")
                 coord=(int(fields[ix["chr"]].removeprefix("chr")),int(fields[ix["pos"]]))
             except ValueError:
                 bad+=1
@@ -60,7 +65,7 @@ def run(root,out):
                 q={k:fields[j] for k,j in ix.items()}
                 if q["id"].split("_")[0]==rs:
                     matches[rs].append(q)
-    if n<1000000 or bad:
+    if n!=27384340 or bad:
         raise ValueError("Unexpected full-file rows or schema: "+repr((n,bad,h)))
     result=[]
     for rs,rr in panel.items():
