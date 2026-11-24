@@ -26,7 +26,8 @@ jobs:
       - name: Download fixed EAS discovery artifact
         env:
           GH_TOKEN: ${{ github.token }}
-        run: curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 2000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14922713044/zip" -o "$RUNNER_TEMP/egfr.zip"
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 2000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14922713044/zip" -o "$RUNNER_TEMP/egfr.zip"
       - name: Download original public CKDGen file
         run: curl -fLsS --connect-timeout 20 --max-time 360 --max-filesize 1200000000 "${{ matrix.url }}" -o "$RUNNER_TEMP/outcome.gz"
       - run: python3 scripts/ckd_filtration_tissue.py ${{ matrix.trait }} --root "$RUNNER_TEMP" --out outputs/renal.json
