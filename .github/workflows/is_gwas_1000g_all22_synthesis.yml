@@ -1,0 +1,44 @@
+name: IS EUR EAS all22 GWAS LD source QC reconciliation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/aggregate_gwas_1000g_all22.py'
+      - 'tests/is/test_aggregate_gwas_1000g_all22.py'
+      - '.github/workflows/is_gwas_1000g_all22_synthesis.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  reconcile-two-ancestry-source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate all 22 chromosomes and source falsification contracts
+        run: python3 -m unittest discover -s tests/is -p 'test_aggregate_gwas_1000g_all22.py' -v
+      - name: Fetch exact real EUR and EAS source artifacts only
+        uses: actions/download-artifact@v4
+        with:
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          run-id: 43031787049
+          pattern: is-GWAS-1000G-all22-*
+          merge-multiple: false
+          path: all22_source
+      - name: Reconcile original-source MD5 and technical coverage in both populations
+        run: python3 scripts/is/aggregate_gwas_1000g_all22.py --source all22_source --out-dir artifacts/is_gwas_ld_all22_synthesis
+      - name: Export source technical QC only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-GWAS-1000G-all22-EUR-EAS-synthesis
+          path: artifacts/is_gwas_ld_all22_synthesis/
+          retention-days: 60
+          if-no-files-found: warn

@@ -1,0 +1,35 @@
+name: IS human stroke alternatives to ROSMAP audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_stroke_versus_rosmap_sources.py'
+      - 'tests/is/test_stroke_versus_rosmap_sources.py'
+      - 'docs/research/is_stroke_specific_rosmap_alternatives_2026-11-11.md'
+      - '.github/workflows/is_stroke_alternatives_audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  stroke-alternative-source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test GEO parsing and genotype inference guardrails
+        run: python3 -m unittest discover -s tests/is -p 'test_stroke_versus_rosmap_sources.py' -v
+      - name: Audit human stroke GEO source metadata only
+        run: python3 scripts/is/audit_stroke_versus_rosmap_sources.py --out-dir artifacts/is_stroke_alternatives
+      - name: Preserve GEO source evidence without raw counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-human-stroke-versus-rosmap-sources
+          path: artifacts/is_stroke_alternatives/
+          retention-days: 30
+          if-no-files-found: warn

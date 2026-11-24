@@ -1,0 +1,36 @@
+name: IS official GRCh37 GRCh38 bidirectional chain publisher MD5 QC
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_UCSC_GRCh37_GRCh38_chain.py'
+      - 'tests/is/test_UCSC_GRCh37_GRCh38_chain.py'
+      - '.github/workflows/is_UCSC_37_38_chain_qc.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  ucsc-source-chain-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pin chain coordinate mapping dependency
+        run: python3 -m pip install pyliftover==0.4.1
+      - name: Validate chain MD5/coordinate 1base/multimap and ref-allele HOLD cases
+        run: python3 -m unittest discover -s tests/is -p 'test_UCSC_GRCh37_GRCh38_chain.py' -v
+      - name: Verify genuine UCSC two-way publisher MD5 and technical WASH7P indel coordinate pilot
+        run: python3 scripts/is/audit_UCSC_GRCh37_GRCh38_chain.py --out-dir artifacts/is_original_ucsc_liftover
+      - name: Archive only technical coordinates and MD5 checks, no genotypes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-UCSC-hg19-hg38-bidirectional-publisher-MD5-technical-QC
+          path: artifacts/is_original_ucsc_liftover/
+          retention-days: 60
+          if-no-files-found: warn

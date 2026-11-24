@@ -1,0 +1,54 @@
+name: IS GSE331114 cell quality and immune marker support
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_gse331114_cell_marker_qc.py'
+      - 'tests/is/test_gse331114_cell_marker_qc.py'
+      - '.github/workflows/is_gse331114_cell_marker_qc.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  marker-qc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [AIS, Control]
+        index: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test marker support and sample QC independently of actual GEO
+        run: python3 -m unittest discover -s tests/is -p 'test_gse331114_cell_marker_qc.py' -v
+      - name: Retrieve original 8-Sample processed count QC evidence
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 43010007530
+          pattern: is-gse331114-*
+          merge-multiple: false
+          path: downloaded_gse331114
+      - name: Process real 10x MEX only for this sample (ephemeral)
+        run: |
+          python3 scripts/is/audit_gse331114_cell_marker_qc.py \
+            --group ${{ matrix.group }} \
+            --index ${{ matrix.index }} \
+            --source-artifacts downloaded_gse331114 \
+            --out-dir artifacts/is_gse331114_cell_marker_qc
+      - name: Keep only per-GSM summary evidence; no individual barcodes or raw matrices
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gse331114-marker-${{ matrix.group }}-${{ matrix.index }}
+          path: artifacts/is_gse331114_cell_marker_qc/
+          retention-days: 45
+          if-no-files-found: warn

@@ -1,0 +1,59 @@
+name: IS EAS GWAS metadata / feasibility gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/is/audit_gigastroke_eas_metadata.py'
+      - 'scripts/is/audit_stroke_phenotype_register.py'
+      - 'scripts/is/validate_is_eas_study_design.py'
+      - 'scripts/is/validate_is_optional_enrichment.py'
+      - 'tests/is/test_is_optional_enrichment.py'
+      - 'config/research/is_optional_magma_ldscseg_v1.json'
+      - 'docs/research/is_magma_ldscseg_methods_decision_2026-11-11.md'
+      - 'tests/is/test_is_eas_study_design.py'
+      - 'config/research/is_eur_eas_regulatory_v1.json'
+      - 'docs/research/is_eur_eas_regulatory_protocol_architecture_v1.md'
+      - 'data/metadata/stroke_eas_phenotype_register_2026-11-11.json'
+      - 'docs/research/stroke_diagnosis_pheno_ancestry_protocol_2026-11-11.md'
+      - 'docs/research/is_eas_novelty_feasibility_2026-11-09.md'
+      - '.github/workflows/is_eas_metadata_audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  eas-metadata-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate study map
+        run: python3 scripts/is/audit_gigastroke_eas_metadata.py --self-test
+      - name: Check live GWAS Catalog v2 metadata (strict, read-only)
+        run: python3 scripts/is/audit_gigastroke_eas_metadata.py --output-dir artifacts/is_eas_gwas_catalog
+      - name: Audit stroke clinical phenotype provenance (schema PASS, cohort diagnosis HOLD)
+        run: python3 scripts/is/audit_stroke_phenotype_register.py --output-dir artifacts/is_eas_phenotypes
+      - name: Test research-design assumptions and failure guardrails
+        run: python3 -m unittest discover -s tests/is -p 'test_is_eas_study_design.py' -v
+      - name: Audit research-design gates (design only)
+        run: python3 scripts/is/validate_is_eas_study_design.py --output-dir artifacts/is_eas_design_gate
+      - name: Test optional MAGMA and LDSC-SEG interpretation safeguards
+        run: python3 -m unittest discover -s tests/is -p 'test_is_optional_enrichment.py' -v
+      - name: Audit optional MAGMA / LDSC-SEG readiness (no biological computation)
+        run: python3 scripts/is/validate_is_optional_enrichment.py --output-dir artifacts/is_eas_optional_enrichment
+      - name: Attach audit evidence even if source is unavailable
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-eas-study-design-and-source-metadata
+          path: |
+            artifacts/is_eas_gwas_catalog/
+            artifacts/is_eas_phenotypes/
+            artifacts/is_eas_design_gate/
+            artifacts/is_eas_optional_enrichment/
+          if-no-files-found: warn
+          retention-days: 30
