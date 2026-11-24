@@ -1,0 +1,40 @@
+name: HCC Stage55 HCCDB25 Public Dynamic Route Module Evidence
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/hcc/audit_stage55_hccdb_dynamic_modules.py"
+      - "tests/test_hcc_stage55_hccdb_dynamic_modules.py"
+      - ".github/workflows/hcc-stage55-hccdb-dynamic-modules.yml"
+permissions:
+  contents: read
+jobs:
+  source-provenance-unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify strict source-only routes and no false RNA GO
+        run: python -m unittest discover -s tests -p 'test_hcc_stage55_hccdb_dynamic_modules.py' -v
+  hccdb-public-modules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inspect official public script and linked manifest module graph
+        run: |
+          python scripts/hcc/audit_stage55_hccdb_dynamic_modules.py \
+            --out results/hcc/stage55/hccdb25_public_dynamic_module_evidence.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-stage55-public-module-aggregates
+          path: results/hcc/stage55/*.json
+          retention-days: 30
+          if-no-files-found: warn
