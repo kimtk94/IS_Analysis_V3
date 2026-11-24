@@ -1,0 +1,82 @@
+name: Publication ocular and CKD focused public evidence
+on:
+  push:
+    branches: [research/publication-ocular-ckd-source-20261124]
+    paths:
+      - 'scripts/publication_ocular_ckd_sources.py'
+      - '.github/workflows/publication-ocular-ckd-sources.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  ocular-cross-drug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - run: python3 scripts/publication_ocular_ckd_sources.py selftest
+      - name: Retrieve fixed candidate archive and complete public GEO tables
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 60 --max-filesize 1000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o "$RUNNER_TEMP/panel.zip"
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 80 --max-filesize 50000000 "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE16nnn/GSE16643/matrix/GSE16643_series_matrix.txt.gz" -o "$RUNNER_TEMP/matrix.gz"
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 80 --max-filesize 50000000 "https://ftp.ncbi.nlm.nih.gov/geo/platforms/GPL6nnn/GPL6480/soft/GPL6480_family.soft.gz" -o "$RUNNER_TEMP/platform.gz"
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python3 scripts/publication_ocular_ckd_sources.py ocular --root "$RUNNER_TEMP" --out outputs/ocular.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-24h-cross-drug-summary
+          path: outputs/ocular.json
+          if-no-files-found: error
+  ocular-missing-arms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - run: python3 scripts/publication_ocular_ckd_sources.py selftest
+      - name: Retrieve original ENA manifests and the exact previous DEE2 release
+        run: |
+          set -eu
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 60 --max-filesize 100000 "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA729873&result=read_run&fields=secondary_study_accession,study_accession,experiment_accession,run_accession,sample_accession,sample_alias,library_name,experiment_title&format=tsv" -o "$RUNNER_TEMP/ena.tsv"
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 60 --max-filesize 100000 "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA729873&result=read_run&fields=run_accession,fastq_ftp,fastq_md5,fastq_bytes&format=tsv" -o "$RUNNER_TEMP/fastq.tsv"
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 80 --max-filesize 30000000 "https://dee2.io/huge/hsapiens/SRP319815_NA.zip" -o "$RUNNER_TEMP/counts.zip"
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python3 scripts/publication_ocular_ckd_sources.py recovery --root "$RUNNER_TEMP" --out outputs/recovery.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-missing-arm-source-inventory
+          path: outputs/recovery.json
+          if-no-files-found: error
+  ckd-ckb-supplement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/publication_ocular_ckd_sources.py selftest
+      - run: python3 -m pip install openpyxl==3.1.5
+      - name: Retrieve only publisher-linked public Supplementary Data 4
+        run: |
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 90 --max-filesize 50000000 "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-025-56935-2/MediaObjects/41467_2025_56935_MOESM7_ESM.xlsx" -o "$RUNNER_TEMP/ckb.xlsx"
+      - run: python3 scripts/publication_ocular_ckd_sources.py ckd --root "$RUNNER_TEMP" --out outputs/ckd.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-ckb-candidate-coverage
+          path: outputs/ckd.json
+          if-no-files-found: error
