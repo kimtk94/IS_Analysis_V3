@@ -67,7 +67,7 @@ def main():
     union=set().union(*(set(v) for v in q.values()))
     lookup=union|set(KNOWN)
     for sh in w.worksheets:
-        m=re.fullmatch(r"Suppl[.]?\s*Table\s*(17|18|19|27|38)(?:[a-zA-Z])?",sh.title,re.I)
+        m=re.fullmatch(r"Suppl[.]?\s*Table[.]?\s*(17|18|19|27|38)(?:[a-zA-Z])?",sh.title,re.I)
         if not m:continue
         number=int(m.group(1));found.setdefault(number,[]).append(sh.title)
         first=[];matched_rs=set();n=0;selected=[]
