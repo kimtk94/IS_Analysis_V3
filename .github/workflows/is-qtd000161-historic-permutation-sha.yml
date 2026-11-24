@@ -1,0 +1,40 @@
+name: IS QTD000161 Historical 20261011 vs Live Permuted Gzip SHA
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "scripts/is/audit_qtd000161_historic_permuted_sha.py"
+      - "tests/test_is_qtd000161_historic_permuted_sha.py"
+      - ".github/workflows/is-qtd000161-historic-permutation-sha.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_qtd000161_historic_permuted_sha.py"
+      - "tests/test_is_qtd000161_historic_permuted_sha.py"
+      - ".github/workflows/is-qtd000161-historic-permutation-sha.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archived-original-gzip-sha:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify 9 permutation source and SHA scientific nonpromotion controls
+        run: python3 -m unittest discover -s tests -p 'test_is_qtd000161_historic_permuted_sha.py' -v
+      - name: Download bounded complete original EBI QTD permutation gzip and verify hash
+        run: python3 scripts/is/audit_qtd000161_historic_permuted_sha.py --output ci_reports/is_qtd_permuted_historical_source_sha.json
+      - name: Preserve source whole-file checksum result and explicit scientific HOLD
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-qtd-permuted-historic-gzip-sha
+          path: ci_reports/is_qtd_permuted_historical_source_sha.json
+          retention-days: 30
+          if-no-files-found: ignore

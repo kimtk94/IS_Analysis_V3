@@ -1,0 +1,42 @@
+name: IS GIGASTROKE AIS Official Original FTP Source Check
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "scripts/is/audit_gigastroke_ais_original_ftp.py"
+      - "tests/test_is_gigastroke_ais_original_ftp.py"
+      - ".github/workflows/is-gigastroke-ais-original-ftp.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_gigastroke_ais_original_ftp.py"
+      - "tests/test_is_gigastroke_ais_original_ftp.py"
+      - ".github/workflows/is-gigastroke-ais-original-ftp.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  official-source-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run nine bounded checksum and schema negative controls
+        run: python3 -m unittest discover -s tests -p 'test_is_gigastroke_ais_original_ftp.py' -v
+      - name: Real original EBI FTP/YAML/header probe
+        run: python3 scripts/is/audit_gigastroke_ais_original_ftp.py --mode probe --output ci_reports/is_giga_ais_ftp_probe.json
+      - name: Verified original file checksum and bounded full gzip scan where source eligible
+        run: python3 scripts/is/audit_gigastroke_ais_original_ftp.py --mode full --output ci_reports/is_giga_ais_ftp_full.json
+      - name: Publish aggregate evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-giga-ais-original-ftp-metadata-and-hash
+          path: ci_reports/is_giga_ais_ftp_*.json
+          if-no-files-found: ignore
+          retention-days: 30

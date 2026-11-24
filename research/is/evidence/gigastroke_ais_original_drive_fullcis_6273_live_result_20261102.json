@@ -1,0 +1,48 @@
+{
+  "evidence_type": "ACTUAL_OFFICIAL_GIGASTROKE_EAS_AIS_TO_DRIVE_ALL_FOUR_GENE_CIS_SNP_ORIENTATION_NUMERIC_CROSSWALK",
+  "official_source_accession": "GCST90104545",
+  "source_run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41439023099",
+  "source_job_id": 125255928210,
+  "official_gwas_original_filename": "GCST90104545_buildGRCh37.tsv.gz",
+  "original_file_sha256": "c521d5695414bdedcc84d2ea21d588e330c75a672f36a87c3fd092b4c55687a3",
+  "original_file_md5": "904e12e33ec3c2eeefe4dc93bec4995c",
+  "original_file_data_rows": 6725216,
+  "source_drive_tsv_sha256": "2ddd5e80e84f2798200d2c926bb8833210dbc50fd4c2178edf8f2626bc097571",
+  "source_drive_url": "https://drive.google.com/file/d/1eGY5PmwevFTCVcBTP9lqvXOprCAxZ7NU/view",
+  "ci_unit_test_passed": 23,
+  "fullcis_crosswalk": {
+    "by_stratum": {
+      "nonpalindromic_pass": 5326,
+      "nonpalindromic_total": 5326,
+      "palindromic_review_pass": 947,
+      "palindromic_review_total": 947
+    },
+    "failure_examples_bounded": [],
+    "full_reprocessed_ebi_cis_gwas_lineage_gate": "6273_SOURCE_VARIANT_NUMERICAL_CONCORDANCE_PASS_NOT_COLOC",
+    "full_studywide_6725216_GWAS_canonical_equivalence_verified": false,
+    "nonpalindromic_numerical_gate": "PASS",
+    "original_GTEx_V8_QTL_lineage_verified": false,
+    "palindromic_numeric_screen": "PASS_ORIENTATION_STILL_REVIEW",
+    "palindromic_strand_orientation_independently_resolved": false,
+    "sample_size_case_fraction_approved": false,
+    "scientific_status": "HOLD",
+    "screen_fail": 0,
+    "screen_pass": 6273,
+    "screen_total_expected": 6273
+  },
+  "original_numeric_qc": {
+    "finite_beta_se_p_positive_se_rows": 6725216,
+    "palindromic_at_or_cg_rows": 1028002,
+    "valid_eaf_rows": 6725216,
+    "wald_two_sided_comparable_rows": 66586
+  },
+  "source_file_integrity_gate": "ORIGINAL_FILE_MD5_AND_GZIP_ROWS_PASS_REVIEW_REQUIRED",
+  "original_QTL_lineage_verified": false,
+  "BBJ_GIGA_independent_replication_verified": false,
+  "case_fraction_approved": false,
+  "palindromic_ambiguity_resolved": false,
+  "full_studywide_canonical_verified": false,
+  "MR_performed": false,
+  "coloc_performed": false,
+  "scientific_status": "HOLD"
+}

@@ -1,0 +1,128 @@
+{
+  "record_type": "REAL_OFFICIAL_GTEX_API_V2_V8_COLLAPSED_MODEL_FOUR_GENE_TSS_EVIDENCE",
+  "source_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41460057633",
+  "job_id": 125326500423,
+  "tests_passed": 9,
+  "observed_source": {
+    "FastQTL_original_tested_gene_BED_TSS_verified": false,
+    "GENCODE_v26_identifiers": {
+      "C4orf22": {
+        "chromosome": "4",
+        "gencodeId": "ENSG00000197826.11",
+        "regular_TSS": 80335720,
+        "strand": "+"
+      },
+      "CALHM2": {
+        "chromosome": "10",
+        "gencodeId": "ENSG00000138172.10",
+        "regular_TSS": 103452402,
+        "strand": "-"
+      },
+      "FGF5": {
+        "chromosome": "4",
+        "gencodeId": "ENSG00000138675.16",
+        "regular_TSS": 80266599,
+        "strand": "+"
+      },
+      "NEURL": {
+        "chromosome": "10",
+        "gencodeId": "ENSG00000107954.10",
+        "regular_TSS": 103493979,
+        "strand": "+"
+      }
+    },
+    "GTEx_API_datasetId": "gtex_v8",
+    "GTEx_API_sequential_queries": true,
+    "all_four_gene_exon_models_parsed": true,
+    "api_gate": "FOUR_COLLAPSED_EXONS_VERIFIED_QTD_2_OUTSIDE_NOT_FASTQTL_CERTIFIED",
+    "by_gene": {
+      "C4orf22": {
+        "GTEx_v8_collapsed_model_TSS": 80335720,
+        "URL": "https://gtexportal.org/api/v2/dataset/collapsedGeneModelExon?datasetId=gtex_v8&gencodeId=ENSG00000197826.11&page=0&itemsPerPage=10000",
+        "collapsed_TSS_approved": true,
+        "collapsed_TSS_cis_lower": 79335720,
+        "collapsed_TSS_cis_upper": 81335720,
+        "datasetId": "gtex_v8",
+        "delta_TSS_bp": 0,
+        "exon_entries_found": 12,
+        "gate": "COLLAPSED_EXON_MODEL_TSS_VERIFIED_NOT_FASTQTL_GENE_BED",
+        "gencodeId": "ENSG00000197826.11",
+        "regular_GENCODE26_TSS": 80335720,
+        "response_sha256": "355f76af8bbdef63981e2ac6a979e2aecc619f1e07f231dfc6aec89d2a39d263",
+        "top_level_keys": [
+          "data",
+          "paging_info"
+        ]
+      },
+      "CALHM2": {
+        "GTEx_v8_collapsed_model_TSS": 103452402,
+        "URL": "https://gtexportal.org/api/v2/dataset/collapsedGeneModelExon?datasetId=gtex_v8&gencodeId=ENSG00000138172.10&page=0&itemsPerPage=10000",
+        "collapsed_TSS_approved": true,
+        "collapsed_TSS_cis_lower": 102452402,
+        "collapsed_TSS_cis_upper": 104452402,
+        "datasetId": "gtex_v8",
+        "delta_TSS_bp": 0,
+        "exon_entries_found": 5,
+        "gate": "COLLAPSED_EXON_MODEL_TSS_VERIFIED_NOT_FASTQTL_GENE_BED",
+        "gencodeId": "ENSG00000138172.10",
+        "regular_GENCODE26_TSS": 103452402,
+        "response_sha256": "b3f884393a2b97272d0c732de2e73ed4dbc281da13f565b8842dd3ae32640dda",
+        "top_level_keys": [
+          "data",
+          "paging_info"
+        ]
+      },
+      "FGF5": {
+        "GTEx_v8_collapsed_model_TSS": 80266599,
+        "QTD_only_outside_collapsed_cis": true,
+        "QTD_only_variant": "4:81266618:T:G",
+        "URL": "https://gtexportal.org/api/v2/dataset/collapsedGeneModelExon?datasetId=gtex_v8&gencodeId=ENSG00000138675.16&page=0&itemsPerPage=10000",
+        "collapsed_TSS_approved": true,
+        "collapsed_TSS_cis_lower": 79266599,
+        "collapsed_TSS_cis_upper": 81266599,
+        "datasetId": "gtex_v8",
+        "delta_TSS_bp": 0,
+        "exon_entries_found": 6,
+        "gate": "COLLAPSED_EXON_MODEL_TSS_VERIFIED_NOT_FASTQTL_GENE_BED",
+        "gencodeId": "ENSG00000138675.16",
+        "outside_bp": 19,
+        "regular_GENCODE26_TSS": 80266599,
+        "response_sha256": "add669cd63a4d99c5adf98a1b3f438af092fcbd7a1c9a62afcd6974334449af3",
+        "top_level_keys": [
+          "data",
+          "paging_info"
+        ]
+      },
+      "NEURL": {
+        "GTEx_v8_collapsed_model_TSS": 103493979,
+        "QTD_only_outside_collapsed_cis": true,
+        "QTD_only_variant": "10:102493750:T:C",
+        "URL": "https://gtexportal.org/api/v2/dataset/collapsedGeneModelExon?datasetId=gtex_v8&gencodeId=ENSG00000107954.10&page=0&itemsPerPage=10000",
+        "collapsed_TSS_approved": true,
+        "collapsed_TSS_cis_lower": 102493979,
+        "collapsed_TSS_cis_upper": 104493979,
+        "datasetId": "gtex_v8",
+        "delta_TSS_bp": 0,
+        "exon_entries_found": 9,
+        "gate": "COLLAPSED_EXON_MODEL_TSS_VERIFIED_NOT_FASTQTL_GENE_BED",
+        "gencodeId": "ENSG00000107954.10",
+        "outside_bp": 229,
+        "regular_GENCODE26_TSS": 103493979,
+        "response_sha256": "ea6e433d6df2edfad4c67175b1251bbf1a86fcf47c1de6fce41fa02b435a838d",
+        "top_level_keys": [
+          "data",
+          "paging_info"
+        ]
+      }
+    },
+    "coloc_performed": false,
+    "schema": "IS_GTExV8_API_CollapsedExon_TSS_v1",
+    "scientific_status": "HOLD",
+    "source_variant_missingness_proven": false,
+    "two_missing_QTD_variants_outside_API_collapsed_TSS": true
+  },
+  "linked_prior_official_GENCODE_v26_SHA256": "e84157bb3ddfe6b1dd0b8816ec71b553074ed162ab0940ac48b80375f6cb18bd",
+  "linked_prior_original_GTEx_vs_QTD_CIS_source_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41455461447",
+  "scientific_promotion": "API collapsed exon model and standard GENCODE v26 TSS identical for 4 genes; two QTD-only SNPs outside ±1Mb by 19bp/229bp",
+  "limitation": "Original FastQTL tested gene BED not independently authenticated; full QTL version bytes, GWAS per-variant N, EAS LD and formal coloc remain HOLD"
+}

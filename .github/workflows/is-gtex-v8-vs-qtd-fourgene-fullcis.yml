@@ -1,0 +1,49 @@
+name: IS GTEx V8 Original vs QTD000161 Four-Gene Full-Cis Comparison
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "scripts/is/audit_gtex_v8_qtd_four_gene_fullcis.py"
+      - "scripts/is/audit_gtex_v8_vs_qtd_direct_tabix.py"
+      - "tests/test_is_gtex_v8_qtd_four_gene_fullcis.py"
+      - ".github/workflows/is-gtex-v8-vs-qtd-fourgene-fullcis.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_gtex_v8_qtd_four_gene_fullcis.py"
+      - "scripts/is/audit_gtex_v8_vs_qtd_direct_tabix.py"
+      - "tests/test_is_gtex_v8_qtd_four_gene_fullcis.py"
+      - ".github/workflows/is-gtex-v8-vs-qtd-fourgene-fullcis.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  four-gene-full-cis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run ten full-cis source identity and negative controls
+        run: python3 -m unittest discover -s tests -p 'test_is_gtex_v8_qtd_four_gene_fullcis.py' -v
+      - name: Install pinned HTTPS Tabix with EBI certificate bundle
+        run: |
+          python3 -m pip install --disable-pip-version-check 'pysam==0.23.3'
+          test -f /etc/ssl/certs/ca-certificates.crt
+      - name: Compare original and reprocessed QTL in two prior full-cis windows
+        env:
+          CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+          SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+        run: python3 scripts/is/audit_gtex_v8_qtd_four_gene_fullcis.py --output ci_reports/is_gtex_original_vs_qtd_fourgene_fullcis.json
+      - name: Upload bounded aggregate evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gtex-original-vs-qtd-fourgene-fullcis
+          path: ci_reports/is_gtex_original_vs_qtd_fourgene_fullcis.json
+          retention-days: 30
+          if-no-files-found: ignore

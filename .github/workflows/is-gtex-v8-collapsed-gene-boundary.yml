@@ -1,0 +1,40 @@
+name: IS GTEx V8 Original Collapsed Gene TSS Boundary Confirmation
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "scripts/is/audit_gtex_v8_actual_collapsed_model_qtl_exclusions.py"
+      - "tests/test_is_gtex_v8_actual_collapsed_model_qtl_exclusions.py"
+      - ".github/workflows/is-gtex-v8-collapsed-gene-boundary.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_gtex_v8_actual_collapsed_model_qtl_exclusions.py"
+      - "tests/test_is_gtex_v8_actual_collapsed_model_qtl_exclusions.py"
+      - ".github/workflows/is-gtex-v8-collapsed-gene-boundary.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-collapsed-gene-tss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test GTEx-v8 collapsed gene strand, boundary and scientific HOLD rules
+        run: python3 -m unittest discover -s tests -p 'test_is_gtex_v8_actual_collapsed_model_qtl_exclusions.py' -v
+      - name: Read publicly accessible original GTEx V8 collapsed gene model (no requester-pays)
+        run: python3 scripts/is/audit_gtex_v8_actual_collapsed_model_qtl_exclusions.py --output ci_reports/is_gtex_v8_collapsed_model_qtd_exceptions.json
+      - name: Archive bounded four-gene source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gtex-v8-actual-collapsed-gene-boundaries
+          path: ci_reports/is_gtex_v8_collapsed_model_qtd_exceptions.json
+          if-no-files-found: ignore
+          retention-days: 30

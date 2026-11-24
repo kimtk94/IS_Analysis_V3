@@ -1,0 +1,40 @@
+name: IS GTEx Original V8 vs EBI Reprocessed QTL Source Discovery
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "scripts/is/audit_gtex_v8_original_imported_discovery.py"
+      - "tests/test_is_gtex_v8_original_imported_discovery.py"
+      - ".github/workflows/is-gtex-v8-original-vs-ebi-qtl-discovery.yml"
+  pull_request:
+    paths:
+      - "scripts/is/audit_gtex_v8_original_imported_discovery.py"
+      - "tests/test_is_gtex_v8_original_imported_discovery.py"
+      - ".github/workflows/is-gtex-v8-original-vs-ebi-qtl-discovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  official-original-qtl-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Eight offline source-identity and negative-control tests
+        run: python3 -m unittest discover -s tests -p 'test_is_gtex_v8_original_imported_discovery.py' -v
+      - name: Inspect GTEx original imported vs QTD000161 official HTTPS FTP indexes
+        run: python3 scripts/is/audit_gtex_v8_original_imported_discovery.py --output ci_reports/is_gtex_v8_original_imported_discovery.json
+      - name: Store bounded evidence artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-gtex-original-v8-vs-reprocessed-QTD000161-discovery
+          path: ci_reports/is_gtex_v8_original_imported_discovery.json
+          if-no-files-found: ignore
+          retention-days: 30

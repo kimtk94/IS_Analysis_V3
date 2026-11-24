@@ -1,0 +1,99 @@
+{
+  "evidence_type": "LIVE_OFFICIAL_EBI_GTExV8_IMPORTED_AND_QTD000161_INDEX_DISCOVERY",
+  "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41442187211",
+  "job_id": 125266505870,
+  "test_count": 8,
+  "source_result": {
+    "GTEx_v8_imported_root": {
+      "assets": [
+        {
+          "directory": true,
+          "name": "eQTL"
+        },
+        {
+          "directory": true,
+          "name": "GTEx_V8"
+        },
+        {
+          "directory": true,
+          "name": "MetaLCL"
+        }
+      ],
+      "directory_sha256": "8cb82d73781cc0b0689203dfa5339f658c089e1483a673a058e4d833fc1ebef9",
+      "directory_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/imported/",
+      "files_discovered": 3,
+      "gate": "OFFICIAL_INDEX_DISCOVERED"
+    },
+    "GTEx_v8_original_N_nominal_allpairs_retrieved": false,
+    "GTEx_v8_original_imported_retrieved": false,
+    "donors_from_official_catalogue": 175,
+    "original_GTEx_v8_FastQTL_effects_compared": false,
+    "qtl_dataset": "QTD000161",
+    "qtl_study": "QTS000015",
+    "release6_QTD_original_bytes_sha256_verified": false,
+    "reprocessed_QTD_dataset": {
+      "assets": [
+        {
+          "directory": true,
+          "name": "QTS000015"
+        },
+        {
+          "directory": false,
+          "name": "QTD000161.all.tsv.gz"
+        },
+        {
+          "directory": false,
+          "name": "QTD000161.all.tsv.gz.tbi"
+        },
+        {
+          "directory": false,
+          "name": "QTD000161.cc.tsv.gz"
+        },
+        {
+          "directory": false,
+          "name": "QTD000161.cc.tsv.gz.tbi"
+        },
+        {
+          "directory": false,
+          "name": "QTD000161.permuted.tsv.gz"
+        }
+      ],
+      "directory_sha256": "96ddbdae4f10e1acf6dbeebb58244e11ae190b18f72d291ae529b43cc638d194",
+      "directory_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000161/",
+      "files_discovered": 6,
+      "gate": "OFFICIAL_INDEX_DISCOVERED"
+    },
+    "reprocessed_QTD_gzip_source_prefix": {
+      "file_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000161/QTD000161.all.tsv.gz",
+      "gate": "SOURCE_QTD_HEADER_FOUND_NOT_RELEASE_PIN",
+      "gene_and_variant_fields_observed": true,
+      "header": [
+        "molecular_trait_id",
+        "chromosome",
+        "position",
+        "ref",
+        "alt",
+        "variant",
+        "ma_samples",
+        "maf",
+        "pvalue",
+        "beta",
+        "se",
+        "type",
+        "ac",
+        "an",
+        "r2",
+        "molecular_trait_object_id",
+        "gene_id",
+        "median_tpm",
+        "rsid"
+      ],
+      "prefix_sha256_not_full_file": "77fa264c05d46f9e32634f8a8176ae56c6965101b60d1aefb6d1f84bfa0c6cdb"
+    },
+    "schema": "is-original-GTEx-v8-vs-EBI-QTD000161-official-asset-discovery-v1",
+    "scientific_status": "HOLD",
+    "source": "EMBL-EBI eQTL Catalogue",
+    "source_discovery_gate": "PUBLIC_SOURCE_INDEXES_DISCOVERED_ORIGINAL_QTL_COMPARISON_PENDING",
+    "tissue": "brain_cerebellar_hemisphere"
+  }
+}

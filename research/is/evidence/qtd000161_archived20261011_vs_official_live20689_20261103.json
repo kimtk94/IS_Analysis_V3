@@ -1,0 +1,100 @@
+{
+  "provenance": "REAL_DRIVE_HISTORICAL_QTD_2026_10_11_VS_OFFICIAL_EBI_CURRENT_2026_11_03",
+  "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41553486065",
+  "job_id": 125646570406,
+  "unit_tests": 10,
+  "archive_drive_id": "12g0HrusD3ONV2v9ormnCDMfLNGdXqibU",
+  "independently_verified_historical_tsv_SHA256": "a80d5a6903aea551d5ee6f8bebf12772aea411a7cd29437bd545d5d2452768a3",
+  "reported_source_manifest_file": "IS_PRIORITY4_EBI_FULL_CIS_RECONSTRUCTION_MANIFEST.json",
+  "source_manifest_file_drive_id": "1dFLd6tcfq8E0oK6Wk44abM12IrAdIInH",
+  "live_QTD_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000161/QTD000161.all.tsv.gz",
+  "source_result": {
+    "archive_to_live_gate": "20689_HISTORICAL_RECONSTRUCTED_QTL_VARIANT_STATISTICS_MATCH_LIVE_QTD",
+    "coloc_performed": false,
+    "frozen_archived_GDrive_source_SHA256": "a80d5a6903aea551d5ee6f8bebf12772aea411a7cd29437bd545d5d2452768a3",
+    "frozen_archived_source_GDrive_ID": "12g0HrusD3ONV2v9ormnCDMfLNGdXqibU",
+    "frozen_two_panel_SHA256": {
+      "4": "e34ec9d1200ce68838e39174a0c54f550f1b8d99af7d4eac9c1904d6f2f2555e",
+      "10": "a493c7d8ef32bb142e45e7775d288226bede0a095d001dfc5ba499c30cee7779"
+    },
+    "historic_file_byte_identity_to_manifest_confirmed_locally": true,
+    "historic_raw_EBI_QTD_gzip_hash_known": false,
+    "live_statistic_comparison": {
+      "archived_gene_variant_pairs": 20689,
+      "archived_to_current_QTD_stats_gate": "20689_HISTORICAL_RECONSTRUCTED_QTL_VARIANT_STATISTICS_MATCH_LIVE_QTD",
+      "bounded_difference_examples": [],
+      "by_gene": {
+        "C4orf22": {
+          "historic_records": 5490,
+          "live_records": 5490,
+          "matched_variant_keys": 5490,
+          "numerical_pass": 5490
+        },
+        "CALHM2": {
+          "historic_records": 4868,
+          "live_records": 4868,
+          "matched_variant_keys": 4868,
+          "numerical_pass": 4868
+        },
+        "FGF5": {
+          "historic_records": 5511,
+          "live_records": 5511,
+          "matched_variant_keys": 5511,
+          "numerical_pass": 5511
+        },
+        "NEURL": {
+          "historic_records": 4820,
+          "live_records": 4820,
+          "matched_variant_keys": 4820,
+          "numerical_pass": 4820
+        }
+      },
+      "coloc_performed": false,
+      "difference_classes": {
+        "numerical_pass": 20689
+      },
+      "live_gene_variant_pairs": 20689,
+      "numerically_concordant_beta_se_p": 20689,
+      "original_2023_EBI_release6_gzip_sha256_authenticated": false,
+      "original_GTEx_v8_FastQTL_equivalence_verified": false,
+      "scientific_status": "HOLD",
+      "variant_keys_in_both": 20689
+    },
+    "official_live_source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000161/QTD000161.all.tsv.gz",
+    "original_GTEx_model_authenticated": false,
+    "schema": "IS_QTD000161_20261011_archive_vs_20261103_official_source_v1",
+    "scientific_status": "HOLD",
+    "source_scans": {
+      "4": {
+        "counts": {
+          "complex_indel_mnv_rows": 1245,
+          "duplicate_exact_id_rows": 410,
+          "region_total": 50650,
+          "single_base_SNP_rows": 10166,
+          "target_seen": 11411
+        },
+        "scanned": 50650,
+        "status": "SCREEN_VALID",
+        "target_rows": 11411
+      },
+      "10": {
+        "counts": {
+          "complex_indel_mnv_rows": 1071,
+          "duplicate_exact_id_rows": 374,
+          "region_total": 269971,
+          "single_base_SNP_rows": 8991,
+          "target_seen": 10062
+        },
+        "scanned": 269971,
+        "status": "SCREEN_VALID",
+        "target_rows": 10062
+      }
+    }
+  },
+  "what_is_not_proven": [
+    "Original 2023 EBI QTD all.tsv.gz whole-file compressed SHA256",
+    "Exact EBI release-6 source program and method equivalence across entire catalogue",
+    "Original GTEx V8 FastQTL statistical equivalence",
+    "GWAS per-variant N/case fraction, EAS LD, valid coloc/causal genes"
+  ]
+}

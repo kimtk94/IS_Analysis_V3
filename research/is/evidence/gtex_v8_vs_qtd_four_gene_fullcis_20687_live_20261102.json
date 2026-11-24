@@ -1,0 +1,203 @@
+{
+  "evidence_type": "ACTUAL_LIVE_ORIGINAL_GTEXV8_TO_QTD000161_FOUR_GENE_WHOLE_REPROCESSED_CIS_TESTED_VARIANT_COMPARISON",
+  "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41452103778",
+  "job_id": 125299566212,
+  "verified_unit_tests_passed": 12,
+  "input_original_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/imported/GTEx_V8/ge/Brain_Cerebellar_Hemisphere.tsv.gz",
+  "input_reprocessed_url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000161/QTD000161.all.tsv.gz",
+  "predeclared_regions": [
+    "4:79000000-81500000",
+    "10:101500000-106500000"
+  ],
+  "original_md5_list": {
+    "original_tissue_file_md5_in_official_manifest": true,
+    "source_md5_manifest_sha256": "8bd762c5466770505811b7e5d66f9e8fedaa590808296286b7e8d5ebe84d8b46"
+  },
+  "source_gate": "FOUR_GENE_FULL_CIS_SOURCE_COMPARISON_SCREEN_PASS_NOT_COLOC",
+  "whole_source_compressed_MD5_recomputed": false,
+  "reprocessed_exact_2023_release6_bytes_verified": false,
+  "whole_reprocessed_CIS_20689_count_match": true,
+  "all_window_scans_complete": true,
+  "total_original_gene_variant_records": 24963,
+  "total_reprocessed_gene_variant_records": 20689,
+  "total_overlap_gene_variant_records": 20687,
+  "by_gene": {
+    "C4orf22": {
+      "beta_numerically_near_equal": 0,
+      "beta_sign_fraction": 0.7859744990892532,
+      "beta_sign_matches": 4315,
+      "causal_gene_inferred": false,
+      "coloc_performed": false,
+      "comparison_status": "SOURCE_MODELS_DIFFERENT_OR_EQUALITY_REVIEW",
+      "gene": "C4orf22",
+      "gene_id": "ENSG00000197826",
+      "is_complete_full_cis_only_if_separate_cis_interval_confirmed": false,
+      "matched_same_trait_and_exact_GRCh38_REF_ALT_pairs": 5490,
+      "median_abs_SE_difference": 0.0037174999999999986,
+      "median_abs_beta_difference": 0.0655982,
+      "median_abs_log10_p_difference": 0.18713071913544618,
+      "original_distinct_valid_trait_variant_pairs": 6821,
+      "original_only_variant": 1331,
+      "original_region_rows": 6821,
+      "original_unique_tested_variant": 6821,
+      "p_numerically_near_equal": 0,
+      "reprocessed_distinct_valid_trait_variant_pairs": 5490,
+      "reprocessed_expected_previous_QTD_n_variants": 5490,
+      "reprocessed_only_variant": 0,
+      "reprocessed_region_rows": 5490,
+      "reprocessed_unique_tested_variant": 5490,
+      "reprocessed_variant_denominator_matches_prior_QTD_fullcis_audit": true,
+      "sampled_region_limited": true,
+      "source_fields_complete": true
+    },
+    "CALHM2": {
+      "beta_numerically_near_equal": 0,
+      "beta_sign_fraction": 0.7855382087099425,
+      "beta_sign_matches": 3824,
+      "causal_gene_inferred": false,
+      "coloc_performed": false,
+      "comparison_status": "SOURCE_MODELS_DIFFERENT_OR_EQUALITY_REVIEW",
+      "gene": "CALHM2",
+      "gene_id": "ENSG00000138172",
+      "is_complete_full_cis_only_if_separate_cis_interval_confirmed": false,
+      "matched_same_trait_and_exact_GRCh38_REF_ALT_pairs": 4868,
+      "median_abs_SE_difference": 0.023863999999999996,
+      "median_abs_beta_difference": 0.077284995,
+      "median_abs_log10_p_difference": 0.24333311323200085,
+      "original_distinct_valid_trait_variant_pairs": 5678,
+      "original_only_variant": 810,
+      "original_region_rows": 5678,
+      "original_unique_tested_variant": 5678,
+      "p_numerically_near_equal": 0,
+      "reprocessed_distinct_valid_trait_variant_pairs": 4868,
+      "reprocessed_expected_previous_QTD_n_variants": 4868,
+      "reprocessed_only_variant": 0,
+      "reprocessed_region_rows": 4868,
+      "reprocessed_unique_tested_variant": 4868,
+      "reprocessed_variant_denominator_matches_prior_QTD_fullcis_audit": true,
+      "sampled_region_limited": true,
+      "source_fields_complete": true
+    },
+    "FGF5": {
+      "beta_numerically_near_equal": 0,
+      "beta_sign_fraction": 0.7196007259528131,
+      "beta_sign_matches": 3965,
+      "causal_gene_inferred": false,
+      "coloc_performed": false,
+      "comparison_status": "SOURCE_MODELS_DIFFERENT_OR_EQUALITY_REVIEW",
+      "gene": "FGF5",
+      "gene_id": "ENSG00000138675",
+      "is_complete_full_cis_only_if_separate_cis_interval_confirmed": false,
+      "matched_same_trait_and_exact_GRCh38_REF_ALT_pairs": 5510,
+      "median_abs_SE_difference": 0.058347800000000005,
+      "median_abs_beta_difference": 0.11438288,
+      "median_abs_log10_p_difference": 0.3843273679564867,
+      "original_distinct_valid_trait_variant_pairs": 6831,
+      "original_only_variant": 1321,
+      "original_region_rows": 6831,
+      "original_unique_tested_variant": 6831,
+      "p_numerically_near_equal": 0,
+      "reprocessed_distinct_valid_trait_variant_pairs": 5511,
+      "reprocessed_expected_previous_QTD_n_variants": 5511,
+      "reprocessed_only_variant": 1,
+      "reprocessed_region_rows": 5511,
+      "reprocessed_unique_tested_variant": 5511,
+      "reprocessed_variant_denominator_matches_prior_QTD_fullcis_audit": true,
+      "sampled_region_limited": true,
+      "source_fields_complete": true
+    },
+    "NEURL": {
+      "beta_numerically_near_equal": 0,
+      "beta_sign_fraction": 0.6360240713841046,
+      "beta_sign_matches": 3065,
+      "causal_gene_inferred": false,
+      "coloc_performed": false,
+      "comparison_status": "SOURCE_MODELS_DIFFERENT_OR_EQUALITY_REVIEW",
+      "gene": "NEURL",
+      "gene_id": "ENSG00000107954",
+      "is_complete_full_cis_only_if_separate_cis_interval_confirmed": false,
+      "matched_same_trait_and_exact_GRCh38_REF_ALT_pairs": 4819,
+      "median_abs_SE_difference": 0.053076,
+      "median_abs_beta_difference": 0.085782,
+      "median_abs_log10_p_difference": 0.3095980715192899,
+      "original_distinct_valid_trait_variant_pairs": 5633,
+      "original_only_variant": 814,
+      "original_region_rows": 5633,
+      "original_unique_tested_variant": 5633,
+      "p_numerically_near_equal": 0,
+      "reprocessed_distinct_valid_trait_variant_pairs": 4820,
+      "reprocessed_expected_previous_QTD_n_variants": 4820,
+      "reprocessed_only_variant": 1,
+      "reprocessed_region_rows": 4820,
+      "reprocessed_unique_tested_variant": 4820,
+      "reprocessed_variant_denominator_matches_prior_QTD_fullcis_audit": true,
+      "sampled_region_limited": true,
+      "source_fields_complete": true
+    }
+  },
+  "source_scan_statistics": {
+    "4": {
+      "region": "4:79000000-81500000",
+      "original": {
+        "counts": {
+          "complex_indel_mnv_rows": 1009,
+          "duplicate_exact_id_rows": 2,
+          "invalid_statistic_rows": 6,
+          "region_total": 68362,
+          "single_base_SNP_rows": 12651,
+          "target_seen": 13660
+        },
+        "scanned": 68362,
+        "status": "SCREEN_VALID",
+        "target_rows": 13660
+      },
+      "reprocessed": {
+        "counts": {
+          "complex_indel_mnv_rows": 1245,
+          "duplicate_exact_id_rows": 410,
+          "region_total": 50650,
+          "single_base_SNP_rows": 10166,
+          "target_seen": 11411
+        },
+        "scanned": 50650,
+        "status": "SCREEN_VALID",
+        "target_rows": 11411
+      }
+    },
+    "10": {
+      "region": "10:101500000-106500000",
+      "original": {
+        "counts": {
+          "complex_indel_mnv_rows": 844,
+          "invalid_statistic_rows": 35,
+          "region_total": 337394,
+          "single_base_SNP_rows": 10502,
+          "target_seen": 11346
+        },
+        "scanned": 337394,
+        "status": "SCREEN_VALID",
+        "target_rows": 11346
+      },
+      "reprocessed": {
+        "counts": {
+          "complex_indel_mnv_rows": 1071,
+          "duplicate_exact_id_rows": 374,
+          "region_total": 269971,
+          "single_base_SNP_rows": 8991,
+          "target_seen": 10062
+        },
+        "scanned": 269971,
+        "status": "SCREEN_VALID",
+        "target_rows": 10062
+      }
+    }
+  },
+  "science_status": "HOLD",
+  "limitations": [
+    "QTD complete tested variant denominator within historical predeclared windows, not necessarily original complete tested universe",
+    "original GTEx-v8 3.4GB source whole-file checksum not recomputed",
+    "historical inherited QTL identity not authenticated",
+    "variant-specific GWAS case fraction and suitable LD not approved",
+    "no causal gene or coloc"
+  ]
+}

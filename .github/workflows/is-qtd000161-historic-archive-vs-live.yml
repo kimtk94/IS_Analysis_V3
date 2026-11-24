@@ -1,0 +1,53 @@
+name: IS Historical QTD000161 Archive vs Official Live Four-Gene 20689 Statistics
+
+on:
+  push:
+    branches: [feat/is-gigastroke-eas-ancestry-v2-20261102]
+    paths:
+      - "research/is/evidence/is_priority4_archived_qtd000161_chr4_source20261011.tsv"
+      - "research/is/evidence/is_priority4_archived_qtd000161_chr10_source20261011.tsv"
+      - "scripts/is/audit_qtd000161_archived_20261011_vs_live.py"
+      - "scripts/is/audit_gtex_v8_qtd_four_gene_fullcis.py"
+      - "scripts/is/audit_gtex_v8_vs_qtd_direct_tabix.py"
+      - "tests/test_is_qtd000161_archived_vs_live.py"
+      - ".github/workflows/is-qtd000161-historic-archive-vs-live.yml"
+  pull_request:
+    paths:
+      - "research/is/evidence/is_priority4_archived_qtd000161_chr4_source20261011.tsv"
+      - "research/is/evidence/is_priority4_archived_qtd000161_chr10_source20261011.tsv"
+      - "scripts/is/audit_qtd000161_archived_20261011_vs_live.py"
+      - "tests/test_is_qtd000161_archived_vs_live.py"
+      - ".github/workflows/is-qtd000161-historic-archive-vs-live.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  historic-reconstructed-qtl-vs-live-ebi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify frozen 20689 archive panels and 10 fail-closed statistical tests
+        run: python3 -m unittest discover -s tests -p 'test_is_qtd000161_archived_vs_live.py' -v
+      - name: Install pinned htslib with OS TLS trust
+        run: |
+          python3 -m pip install --disable-pip-version-check 'pysam==0.23.3'
+          test -f /etc/ssl/certs/ca-certificates.crt
+      - name: Compare every historical archive QTL variant beta SE p to current official EBI QTD
+        env:
+          CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+          SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+        run: python3 scripts/is/audit_qtd000161_archived_20261011_vs_live.py --output ci_reports/is_qtd000161_archived_vs_live.json
+      - name: Archive source comparison counters and limited failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: is-historic-qtd-20261011-vs-current-official
+          path: ci_reports/is_qtd000161_archived_vs_live.json
+          retention-days: 30
+          if-no-files-found: ignore

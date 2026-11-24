@@ -1,0 +1,139 @@
+{
+  "evidence_type": "REAL_GTEX_V8_ORIGINAL_VS_EBI_REPROCESSED_QTL_TWO_SMALL_REGIONS_20261102",
+  "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41446592395",
+  "job_id": 125281114890,
+  "source": {
+    "GTEx_v8": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/imported/GTEx_V8/ge/Brain_Cerebellar_Hemisphere.tsv.gz",
+    "EBI_QTD000161": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000161/QTD000161.all.tsv.gz"
+  },
+  "source_results": {
+    "GTEx_original_complete_cis_universe_authenticated": false,
+    "GTEx_original_ftp": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/imported/GTEx_V8/ge/Brain_Cerebellar_Hemisphere.tsv.gz",
+    "QTD000161_2023_release6_file_sha256_authenticated": false,
+    "coloc_performed": false,
+    "historical_inherited_source_proven_equal_to_GTEx_v8_original": false,
+    "official_original_md5_list": {
+      "original_tissue_file_md5_in_official_manifest": true,
+      "source_md5_manifest_sha256": "8bd762c5466770505811b7e5d66f9e8fedaa590808296286b7e8d5ebe84d8b46"
+    },
+    "original_full_file_checksum_recomputed": false,
+    "original_md5_manifest_expected": "c07a1731eb96aafbd7aed131cb97515a",
+    "original_source_tabix_transport": "mock",
+    "reference_genome_context": "GTEx v8 GRCh38, must confirm reported REF/ALT in both",
+    "remote_transport_cryptographic_integrity_verified": false,
+    "reprocessed_QTL_ftp": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000161/QTD000161.all.tsv.gz",
+    "reprocessed_tabix_transport": "mock",
+    "sampled_regions": [
+      {
+        "beta_numerically_near_equal": 0,
+        "beta_sign_fraction": 0.6607142857142857,
+        "beta_sign_matches": 74,
+        "causal_gene_inferred": false,
+        "coloc_performed": false,
+        "comparison_status": "SOURCE_MODELS_DIFFERENT_OR_EQUALITY_REVIEW",
+        "matched_same_trait_and_exact_GRCh38_REF_ALT_pairs": 112,
+        "median_abs_SE_difference": 0.018835450000000004,
+        "median_abs_beta_difference": 0.064281985,
+        "median_abs_log10_p_difference": 0.21012862949028255,
+        "original_distinct_valid_trait_variant_pairs": 162,
+        "original_extract_status": "SCREEN_VALID",
+        "original_region_rows": 171,
+        "p_numerically_near_equal": 0,
+        "region_GRCh38": "4:79759900-79764900",
+        "reprocessed_distinct_valid_trait_variant_pairs": 112,
+        "reprocessed_extract_status": "SCREEN_VALID",
+        "reprocessed_region_rows": 128,
+        "sampled_region_limited": true,
+        "source_fields_complete": true
+      },
+      {
+        "beta_numerically_near_equal": 0,
+        "beta_sign_fraction": 0.7467532467532467,
+        "beta_sign_matches": 345,
+        "causal_gene_inferred": false,
+        "coloc_performed": false,
+        "comparison_status": "SOURCE_MODELS_DIFFERENT_OR_EQUALITY_REVIEW",
+        "matched_same_trait_and_exact_GRCh38_REF_ALT_pairs": 462,
+        "median_abs_SE_difference": 0.029451100000000015,
+        "median_abs_beta_difference": 0.08707590000000001,
+        "median_abs_log10_p_difference": 0.36724176324498004,
+        "original_distinct_valid_trait_variant_pairs": 576,
+        "original_extract_status": "SCREEN_VALID",
+        "original_region_rows": 624,
+        "p_numerically_near_equal": 2,
+        "region_GRCh38": "10:103079000-103084000",
+        "reprocessed_distinct_valid_trait_variant_pairs": 484,
+        "reprocessed_extract_status": "SCREEN_VALID",
+        "reprocessed_region_rows": 572,
+        "sampled_region_limited": true,
+        "source_fields_complete": true
+      }
+    ],
+    "schema": "IS_GTExv8_OriginalVsQTD000161_BoundedTabix_v1",
+    "scientific_status": "HOLD",
+    "source_contigs": {
+      "chr4_and_chr10_in_original": true,
+      "chr4_and_chr10_in_reprocessed": true,
+      "original_count": 23,
+      "reprocessed_count": 23
+    },
+    "source_header_provenance": {
+      "original": {
+        "origin": "actual_original_gzip_Bgzf_prefix",
+        "prefix_sha256_not_full_file": "c0c9cb682b912e3a3158833af3317c15c82a177328da2f80b34aa9464d4f5671"
+      },
+      "reprocessed": {
+        "origin": "actual_original_gzip_Bgzf_prefix",
+        "prefix_sha256_not_full_file": "2e6295860e3c1bfae068167c6ceed1dd34e612da5b78385dd60b46473dc6f315"
+      }
+    },
+    "source_headers": {
+      "original": [
+        "variant",
+        "r2",
+        "pvalue",
+        "molecular_trait_object_id",
+        "molecular_trait_id",
+        "maf",
+        "gene_id",
+        "median_tpm",
+        "beta",
+        "se",
+        "an",
+        "ac",
+        "chromosome",
+        "position",
+        "ref",
+        "alt",
+        "type",
+        "rsid"
+      ],
+      "reprocessed": [
+        "molecular_trait_id",
+        "chromosome",
+        "position",
+        "ref",
+        "alt",
+        "variant",
+        "ma_samples",
+        "maf",
+        "pvalue",
+        "beta",
+        "se",
+        "type",
+        "ac",
+        "an",
+        "r2",
+        "molecular_trait_object_id",
+        "gene_id",
+        "median_tpm",
+        "rsid"
+      ]
+    },
+    "source_region_gate": "SMALL_REGION_GTEXv8_VS_QTD_QTL_NUMERIC_COMPARE_PASS_REVIEW_SOURCE_DIFFERENCES",
+    "source_tabix_backend": "pysam_libcurl_explicit_system_CA",
+    "tissue": "Brain_Cerebellar_Hemisphere",
+    "total_exact_pairs_two_small_regions": 574
+  },
+  "notes": "Region-wide gene-trait pairs, not limited to four candidate genes; no causal or coloc promotion."
+}

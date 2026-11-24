@@ -1,0 +1,572 @@
+{
+  "record_type": "ACTUAL_GTEXV8_TO_QTD_EXACT_GRCH38_UNMATCHED_VARIANT_ROOT_CAUSE_SCREEN",
+  "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41455461447",
+  "job_id": 125310889367,
+  "unit_tests_passed": 16,
+  "source_comparison_gate": "FOUR_GENE_FULL_CIS_SOURCE_COMPARISON_SCREEN_PASS_NOT_COLOC",
+  "original_source_file": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/imported/GTEx_V8/ge/Brain_Cerebellar_Hemisphere.tsv.gz",
+  "reprocessed_source_file": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000161/QTD000161.all.tsv.gz",
+  "source_QTD_fullcis_records": 20689,
+  "source_GTExv8_in_region_records": 24963,
+  "exact_matched_records": 20687,
+  "source_only_records": 4276,
+  "summary": {
+    "C4orf22": {
+      "original_unique_tested_variants": 6821,
+      "reprocessed_unique_tested_variants": 5490,
+      "matched_variants": 5490,
+      "original_only_variant": 1331,
+      "original_only_SNP_count": 1244,
+      "original_only_indel_mnv_count": 87,
+      "reprocessed_only_variant_diagnostics": {
+        "qtd_only_diagnostics": [],
+        "qtd_only_diagnostics_truncated": false,
+        "qtd_only_variant_count": 0
+      }
+    },
+    "CALHM2": {
+      "original_unique_tested_variants": 5678,
+      "reprocessed_unique_tested_variants": 4868,
+      "matched_variants": 4868,
+      "original_only_variant": 810,
+      "original_only_SNP_count": 738,
+      "original_only_indel_mnv_count": 72,
+      "reprocessed_only_variant_diagnostics": {
+        "qtd_only_diagnostics": [],
+        "qtd_only_diagnostics_truncated": false,
+        "qtd_only_variant_count": 0
+      }
+    },
+    "FGF5": {
+      "original_unique_tested_variants": 6831,
+      "reprocessed_unique_tested_variants": 5511,
+      "matched_variants": 5510,
+      "original_only_variant": 1321,
+      "original_only_SNP_count": 1236,
+      "original_only_indel_mnv_count": 85,
+      "reprocessed_only_variant_diagnostics": {
+        "qtd_only_diagnostics": [
+          {
+            "chr": "4",
+            "diagnostic_only_not_harmonized": true,
+            "gene_id": "ENSG00000138675",
+            "independent_ref_fasta_indel_normalization_checked": false,
+            "matched_after_liftover_or_strand_reversal": false,
+            "original_candidate_variants_nearby_bounded": [],
+            "original_nearby_plusminus5bp_row_count": 0,
+            "original_same_gene_same_position_row_count": 0,
+            "qtd_ALT": "G",
+            "qtd_GRCh38_pos": 81266618,
+            "qtd_REF": "T",
+            "qtd_beta": -0.102885,
+            "qtd_p": 0.261125,
+            "qtd_se": 0.0912328,
+            "qtd_variant_type": "SNP",
+            "ref_alt_reversed_same_position": false
+          }
+        ],
+        "qtd_only_diagnostics_truncated": false,
+        "qtd_only_variant_count": 1
+      }
+    },
+    "NEURL": {
+      "original_unique_tested_variants": 5633,
+      "reprocessed_unique_tested_variants": 4820,
+      "matched_variants": 4819,
+      "original_only_variant": 814,
+      "original_only_SNP_count": 741,
+      "original_only_indel_mnv_count": 73,
+      "reprocessed_only_variant_diagnostics": {
+        "qtd_only_diagnostics": [
+          {
+            "chr": "10",
+            "diagnostic_only_not_harmonized": true,
+            "gene_id": "ENSG00000107954",
+            "independent_ref_fasta_indel_normalization_checked": false,
+            "matched_after_liftover_or_strand_reversal": false,
+            "original_candidate_variants_nearby_bounded": [],
+            "original_nearby_plusminus5bp_row_count": 0,
+            "original_same_gene_same_position_row_count": 0,
+            "qtd_ALT": "C",
+            "qtd_GRCh38_pos": 102493750,
+            "qtd_REF": "T",
+            "qtd_beta": -0.0133939,
+            "qtd_p": 0.88187,
+            "qtd_se": 0.0899905,
+            "qtd_variant_type": "SNP",
+            "ref_alt_reversed_same_position": false
+          }
+        ],
+        "qtd_only_diagnostics_truncated": false,
+        "qtd_only_variant_count": 1
+      }
+    }
+  },
+  "original_invalid_source_rows": {
+    "4": {
+      "original_invalid_target_examples": [
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "4",
+          "gene_id": "ENSG00000138675",
+          "p_raw": "1",
+          "position": 79661497,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "4",
+          "gene_id": "ENSG00000197826",
+          "p_raw": "1",
+          "position": 79661497,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "4",
+          "gene_id": "ENSG00000138675",
+          "p_raw": "1",
+          "position": 80180357,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "G",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "4",
+          "gene_id": "ENSG00000197826",
+          "p_raw": "1",
+          "position": 80180357,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "G",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "4",
+          "gene_id": "ENSG00000138675",
+          "p_raw": "1",
+          "position": 80553010,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "A",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "4",
+          "gene_id": "ENSG00000197826",
+          "p_raw": "1",
+          "position": 80553010,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "A",
+          "se_raw": "-nan"
+        }
+      ],
+      "original_invalid_count": 6
+    },
+    "10": {
+      "original_invalid_target_examples": [
+        {
+          "alt": "C",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102478170,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "T",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "G",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102570732,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "GA",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "G",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102570732,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "GA",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "A",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102595512,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "A",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102595512,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102707736,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102707736,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "G",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102710980,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "A",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "G",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102710980,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "A",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102717376,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102717376,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102719378,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102719378,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "C",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102720540,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "G",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "C",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102720540,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "G",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "A",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102720726,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "G",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "A",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102720726,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "G",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "A",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102721801,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "T",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "A",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102721801,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "T",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "G",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102726914,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "A",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "G",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102726914,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "A",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "G",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102822515,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "G",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102822515,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102978254,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102978254,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 102993540,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 102993540,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "A",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 103411019,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "G",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "A",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 103411019,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "G",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "A",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 103637466,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "G",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "A",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 103637466,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "G",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "G",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 104389408,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "A",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "G",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 104389408,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "A",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000107954",
+          "p_raw": "1",
+          "position": 104393177,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        },
+        {
+          "alt": "T",
+          "beta_raw": "0",
+          "chromosome": "10",
+          "gene_id": "ENSG00000138172",
+          "p_raw": "1",
+          "position": 104393177,
+          "reason": "NONFINITE_OR_NONPOSITIVE_SE_OR_INVALID_P",
+          "ref": "C",
+          "se_raw": "-nan"
+        }
+      ],
+      "original_invalid_count": 35
+    }
+  },
+  "scientific_note": "No same-gene original record at exact or nearby +/-5 positions for two QTD-only SNPs; source missingness cause unverified, not strand-resolved or ref-FASTA independently normalized.",
+  "scientific_status": "HOLD",
+  "case_fraction_approved": false,
+  "coloc_performed": false
+}
