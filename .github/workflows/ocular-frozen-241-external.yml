@@ -1,0 +1,38 @@
+name: Ocular frozen-panel external strain sensitivity
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular_frozen_241_external.py'
+      - 'tests/test_ocular_frozen_241_external.py'
+      - '.github/workflows/ocular-frozen-241-external.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  external:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_ocular_frozen_241_external.py
+      - name: Verify frozen derived results and evaluate public third study
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          curl -fLsS --max-time 60 --max-filesize 1000000 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/kimtk94/IS_Analysis_V3/actions/artifacts/14912728421/zip" \
+            -o "$RUNNER_TEMP/frozen.zip"
+          python3 scripts/ocular_frozen_241_external.py --panel "$RUNNER_TEMP/frozen.zip" --out outputs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-frozen-241-seven-day-external
+          path: outputs/
+          retention-days: 90
+          if-no-files-found: warn
