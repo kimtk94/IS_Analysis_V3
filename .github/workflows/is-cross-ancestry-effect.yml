@@ -1,0 +1,69 @@
+name: IS fixed EAS EUR reported effect contrast
+on:
+  push:
+    branches: [research/is-cross-ancestry-effect-20261124]
+    paths: ['scripts/is/publication_cross_ancestry_contrast.py','.github/workflows/is-cross-ancestry-effect.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  extract:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ancestry: EAS
+            accession: GCST90104545
+          - ancestry: EUR
+            accession: GCST90104540
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m scripts.is.publication_cross_ancestry_contrast selftest
+      - name: Download exact original publisher source and metadata
+        run: |
+          set -eu
+          base="https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/${{ matrix.accession }}"
+          file="${{ matrix.accession }}_buildGRCh37.tsv.gz"
+          curl -fLsS --connect-timeout 20 --max-time 300 --max-filesize 300000000 "$base/$file" -o "$RUNNER_TEMP/source.gz"
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 120000 "$base/$file-meta.yaml" -o "$RUNNER_TEMP/source.yaml"
+      - run: python -m scripts.is.publication_cross_ancestry_contrast extract --ancestry ${{ matrix.ancestry }} --root "$RUNNER_TEMP" --legacy legacy/docs/data/is/IS_30_REGIONS_SIX_OUTCOMES_GWAS_CONTEXT_500KB.tsv --out outputs/${{ matrix.ancestry }}.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-fixed-24-${{ matrix.ancestry }}
+          path: outputs/
+          if-no-files-found: error
+  compare:
+    needs: extract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: is-fixed-24-*
+          path: inputs
+          merge-multiple: true
+      - run: python -m scripts.is.publication_cross_ancestry_contrast combine --root inputs --out outputs/contrast.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-fixed-24-eas-eur-contrasts
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
