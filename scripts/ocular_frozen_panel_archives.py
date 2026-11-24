@@ -61,7 +61,7 @@ def chronic_stats(z,panel):
                 n=int(r["strains_3_matching_primary"])
             else:
                 primary=float(r["primary_500nM_48h_log2FC"])
-                effect=float(r["third_500nM_7d_CPM_log2ratio"])
+                effect=float(r["third_500nM_7d_log2_CPM_ratio"])
                 n=int(r["three_strain_sign_match_n"])
             if not math.isclose(primary,panel[gid]["acute_log2fc"],rel_tol=0,abs_tol=1e-5) or not math.isfinite(effect) or n not in range(4):
                 raise ValueError("Frozen external reference mismatch "+gid)
