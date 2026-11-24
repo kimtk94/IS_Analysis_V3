@@ -1,0 +1,560 @@
+{
+  "schema_version": "hcc-validation-1.0",
+  "created_at": "2026-10-30",
+  "protocol": "research/hcc/validation/HCC_VALIDATION_MASTER.md",
+  "current_claim_level": "PUBLIC_PROCESSED_OMICS_TECHNICAL_QC_ONLY",
+  "allowed_statuses": [
+    "NOT_STARTED",
+    "PARTIAL",
+    "BLOCKED",
+    "PASS",
+    "FAIL"
+  ],
+  "status_semantics": {
+    "NOT_STARTED": "No check attempted",
+    "PARTIAL": "Some inspected evidence, not sufficient to pass",
+    "BLOCKED": "Prerequisite (access, matrix, endpoint or power) missing",
+    "PASS": "Direct primary-source evidence and independent verification support gate",
+    "FAIL": "Well-posed, sufficiently powered validation test failed (not a low power null)"
+  },
+  "promotion_policy": {
+    "allow_pass_without_evidence": false,
+    "requires_analysis_evidence": true,
+    "requires_reviewer_approval": true,
+    "require_patient_n_for_paired_claim": true,
+    "ci_green_is_biological_pass": false,
+    "study_paper_pvalues_are_not_new_results": true
+  },
+  "research_routes": {
+    "A": "replicated matched RNA/protein interaction plus cellular origin",
+    "B": "robust null/boundary with precise CI",
+    "C": "internal-only effect, no generalization",
+    "D": "inconclusive wide CI",
+    "E": "unpaired pathway triangulation fallback",
+    "F": "descriptive cell origin",
+    "G": "biological analysis only, no recurrence",
+    "H": "association but no incremental clinical value",
+    "I": "novelty insufficient",
+    "J": "externally validated biology-guided clinical value"
+  },
+  "references": [
+    {
+      "id": "L01",
+      "title": "Jiang Nature 2019",
+      "url": "https://doi.org/10.1038/s41586-019-0987-8",
+      "benchmark": "HBV proteomic subtypes SOAT1/cholesterol"
+    },
+    {
+      "id": "L02",
+      "title": "Gao Cell 2019",
+      "url": "https://doi.org/10.1016/j.cell.2019.08.052",
+      "benchmark": "HBV 159 paired patients, protein RNA context and PYCR2/ADH1A"
+    },
+    {
+      "id": "L03",
+      "title": "Ng Nat Commun 2022",
+      "url": "https://doi.org/10.1038/s41467-022-29960-8",
+      "benchmark": "Cross etiology 114 patients 122 tumors, 51 proteome biopsies"
+    },
+    {
+      "id": "L04",
+      "title": "Lu HCC single-cell atlas",
+      "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE149614",
+      "benchmark": "71,915 cells, 21 samples, 10 patients"
+    },
+    {
+      "id": "L05",
+      "title": "TCGA clinical data resource",
+      "url": "https://doi.org/10.1016/j.cell.2018.02.052",
+      "benchmark": "OS/DSS/DFI/PFI endpoint distinction"
+    },
+    {
+      "id": "L06",
+      "title": "TRIPOD+AI & PROBAST+AI",
+      "url": "https://doi.org/10.1136/bmj-2023-078378",
+      "benchmark": "Clinical prediction reporting and risk of bias"
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "V00",
+      "title": "공개 출처·이용권·정보보안",
+      "stage": "acquisition",
+      "status": "PARTIAL",
+      "priority": "P0",
+      "pass_criteria": "DOI/accessions, public or controlled licence, data access ledger",
+      "paper_refs": [
+        "L02",
+        "L03"
+      ],
+      "observation": "Public cohort sources known; access rights to every quantitative matrix not confirmed",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41054812247",
+          "level": "preliminary_public_metadata"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Gather actual sample/patient-level quantitative evidence; do not promote from metadata alone"
+    },
+    {
+      "id": "V01",
+      "title": "파일 무결성·정량 스키마",
+      "stage": "acquisition",
+      "status": "PARTIAL",
+      "priority": "P0",
+      "pass_criteria": "actual file schema, SHA256, assay, units, organism, gene identifiers, case roles",
+      "paper_refs": [
+        "L02",
+        "L03"
+      ],
+      "observation": "Xing 2023 official protein XLSX quantitative QC and 152 T/N clinical sample-label rows structurally matched; 31 clinical columns completeness measured, codebook still pending",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41055576655",
+          "level": "preliminary_public_metadata"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092590299",
+          "level": "source_file_sanitized_schema_qc_not_biological_inference"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155499877",
+          "level": "source_hash_verified_aggregate_clinical_complete_case_prescreen"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-31",
+      "next_action": "Public Ng/Suter numeric T/P matrices and 50/48 strict source biopsy-patient join now verified; check assay transformation/normalization, missingness and feature annotation before full PASS."
+    },
+    {
+      "id": "V02",
+      "title": "동일 조직 RNA–Protein 정량 매칭",
+      "stage": "pairedomics",
+      "status": "PARTIAL",
+      "priority": "P0",
+      "pass_criteria": "non-sensitive patient/biopsy RNA and protein matrix join counts with source hashes",
+      "paper_refs": [
+        "L02",
+        "L03"
+      ],
+      "observation": "Ng/Suter 2022 publicly released preprocessed numeric T/P/PP matrices: all five layers align on 50 samples; strict public RDS sample aliases matched 50/50 to Ng official Supplementary Data 1 biopsies, 50 both RNA/proteomics flags Y, 48 unique patients. Preprocessing units, imputation, batch correction, etiology clinical codebook and scientific reviewer sign-off remain pending. Cross-RDS label orientation caution from #41188805830: 50 official sample alias strings and 48 patient groups can match the metadata while actual HCCfullz numeric columns are permuted across 48/50 patient groups. Source label-string membership is NOT validated numeric biopsy/phenotype identity. Stage29 independent author third prebuilt HCCdata.rds source-object CI #41190572889: after transient orientation 50 biopsy rows by 188 T/116 P/158 PP network features and exact biopsy names, SAME-NAME per-feature rho medians HCCdata vs HCCfull: T=P=PP=1.000000 (100% selected features >0.95); versus HCCfullz same-name: T=0.028955582, P=0.070204082, PP=0.030252101 (0% >0.95). Strong internal source-object support HCCfull sample labels and invalid HCCfullz as direct clinical join, but HCCdata is same authors NOT independent raw clinical patient label proof.",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053421959",
+          "level": "preliminary_public_metadata"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160494201",
+          "level": "source_pinned_numeric_quant_matrix_with_strict_sample_alias_50_biopsies_48_patients_not_scientific_PASS"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160770924",
+          "level": "source_pinned_numeric_quant_matrix_with_strict_sample_alias_50_biopsies_48_patients_not_scientific_PASS"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41190572889",
+          "level": "Suter_third_prebuilt_HCCdata_network_50x188_50x116_50x158_vs_full_same_names_gene_rho_1_each_layer_versus_fullz_near_zero;_NOT_independent_cohort"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": 48,
+      "independent_event_n": null,
+      "last_updated": "2026-10-31",
+      "next_action": "D-046 third author HCCdata source confirms HCCfull within-Suter biopsy names (50-by-selected-feature) but does not independently authenticate raw Ng clinical sample identities. Avoid HCCfullz direct case phenotype joins. Obtain publisher original sequencing/proteomics sample manifest/units and independent Gao matched matrices before clinical covariate or etiology/survival claims."
+    },
+    {
+      "id": "V03",
+      "title": "RNA·Protein QC/정규화",
+      "stage": "pairedomics",
+      "status": "PARTIAL",
+      "priority": "P0",
+      "pass_criteria": "QC report on actual quantitative matrices, identifier harmonization, missingness/batch",
+      "paper_refs": [
+        "L01",
+        "L02",
+        "L03"
+      ],
+      "observation": "Source-pinned Suter HCCfull RDS T/P 50-biopsy numeric-layer QA verified; zero nonfinite values across 20,356 T and 5,585 P features, global negatives and zero patterns audited; exact T/P row-label overlap 0 due to Ensembl-versus-protein identifier namespaces. S5 Appendix imputation, normalization and exact feature gene mapping not yet reviewed. Suter public HCCinfo RDS source gene mapping directly verifies 188 reduced RNA, 116 reduced protein features and 114 one-to-one shared gene labels, but full feature ID crosswalk still missing and S5 normalization remains unreviewed. Stage23 latest completed CI measured 5,390 mapped proteome features / 5,437 distinct Ensembl genes (union incl. ambiguous links), 43 multi-gene features and 5,343 one-to-one genes; 5,490 paper comparable count NOT exact reproduced mapping; JSON-vs-TSV provenance correction queued on feasibility branch. Stage24 source SHA256 RDS 20,356T×5,585P with 5,343 mapped strict pair correlation descriptive QC passed; no preimputation missingness/batch documentation or original Ng 2022 normalization reproduction yet. Stage25 final PLOS published S5 official PDF 97109 bytes SHA256 2ab792e2a5b2445c5e5d702e09dd957eeff42b8e3e158716da6fd2caab4bd26a fetched in CI. Text section indicators RNA upper quartile to1000/log2, protein log2/filter+clustering-only imputation/unimputed DE, PP separate batch correction. Automated keyword flags are not exact source RDS T/P transformation validation; method/lineage review required. Stage25 final-S5 publisher source parser corrected and verified median-subtraction ('substraction') in proteome & phosphoproteome, upper-quartile normalized log2 transcriptome, protein and PP clustering-only imputation/unimputed DE, PP-only source batch-correction indicator. Source-article method audit remains distinct from HCCfull numerical preprocessing reproduction. Stage26 source-pinned numeric full/fullz comparison revealed RNA T 20,356 vs 19,768 features (588 excluded), matching all 50 biopsies; fullz T/P/PP per-gene SD median 1, but median absolute residual to direct per-gene scale(full) T=0.780626 P=0.826316 PP=0.795543. This rules out simple same-axis zscore identity, not the original production transformation lineage. Stage27 full vs fullz after exact feature/50-biopsy label alignment: within-feature Spearman across 50 samples median M/CN=1 but T=-0.002431585 (19768 shared), P=0.024057623 (5585), PP=0.037118848 (7889). This is not simple monotonic row normalization; current observed source generation unknown; additional sample-permutation forensic pending. Stage27b CI #41185636861 four jobs SUCCESS: 50 source samples best-match position same-label M 50/50, CN 46/50, RNA T 2/50, Protein P 2/50, PP 2/50. T/P/PP each form one-to-one inferred 50-sample permutation, row-standardized sample-similarity best medians T 0.80011227, P 0.79190709, PP 0.77786129 (NOT bounded correlation coefficients). Cross-omic shared permutation and original patient metadata consistency are NOT proven. Stage28 CI #41186682016 successful independent disjoint-gene training/holdout: T 19768, P 5585, PP 7889 features split 50:50, identical T/P/PP inferred 50/50 sample permutation, train vs reverse-holdout inferred 50/50; same named column positions only 2/50. On independently heldout features original across-RDS Spearman median T=-0.001872749/P=0.024345738/PP=0.036110444, after candidate permutation T=P=PP=1.000000, fraction heldout features rho>0.95 after mapping 100%. This proves rank-level source sample permutation explanation but not which sample names truly correspond to original patients or exact numerical z-score transform. Stage28B actual GitHub CI #41187009479 SUCCESS on independently held-out features: after common 50-biopsy column permutation, HCCfullz T/P/PP equals row-standardized HCCfull at better than 1e-6 on 100% tested cells, with max abs residual rounded to 0 at 9 decimals; before candidate order correction median absolute residual T=0.780477824 P=0.824260984 PP=0.795386541. Thus rank and numeric scaling differences are explained by one common sample-column permutation + gene-wise zscore for shared source features. 588 RNA features absent from fullz and original biopsy label orientation remain unverified. Stage29 source RNA feature exclusion independent CI #41187760168 SUCCESS: all 588/588 HCCfull RNA rows absent from HCCfullz have SD exactly 0 across 50 source biopsy columns; retained 0/19768 are constant (minimum SD 0.008226619). This resolves exact membership selection as zero-variance gene row filtering at operational source-object level. Author-generated original preprocessing script not verified. Stage29 run #41188805830 separately successful patient-label job: full/fullz have same 50 biopsy label sets, within each RDS T/P/PP share order, but full vs fullz orders differ; cross-source numeric-matched biopsy/patient label agrees only 2/50, different source patient groups 48/50. This demonstrates a serious cross-object patient phenotype misattribution risk. No authoritative biological label orientation has been independently validated. Stage29 independent author third prebuilt HCCdata.rds source-object CI #41190572889: after transient orientation 50 biopsy rows by 188 T/116 P/158 PP network features and exact biopsy names, SAME-NAME per-feature rho medians HCCdata vs HCCfull: T=P=PP=1.000000 (100% selected features >0.95); versus HCCfullz same-name: T=0.028955582, P=0.070204082, PP=0.030252101 (0% >0.95). Strong internal source-object support HCCfull sample labels and invalid HCCfullz as direct clinical join, but HCCdata is same authors NOT independent raw clinical patient label proof.",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162144728",
+          "level": "source_pinned_50_sample_numeric_distribution_QC_not_normalization_approved"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162706947",
+          "level": "source_sha256_verified_selected_HCCinfo_gene_crosswalk_188T_116P_114_unambiguous_not_full_mapping"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41171170211",
+          "level": "measured_full_current_uniprot_5437_ambiguous_gene_union_not_exact_paper_gene_set"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41173779578",
+          "level": "processed_full_quantitative_5343_source_mapped_spearman_source_and_patient_dimension_QC_not_batch_correction_validation"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41180067497",
+          "level": "2022_final_published_Suter_S5_sha256_verified_pdf_section_method_indicators_only_not_full_matrix_reproduction"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41180127111",
+          "level": "final_published_2022_S5_SHA_pinned_PDF_per_T_P_PP_source_text_method_flags_NOT_HCCfull_lineage"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41181240430",
+          "level": "source_hashed_full_fullz_empirical_5modality_feature_overlap_and_zresidual_non_equivalence"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185391498",
+          "level": "stage27_pinned_Suter_source_loader_no_writer_in_checked_scripts_AND_50biopsy_crossRDS_per_feature_Spearman_nonconcordance"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185636861",
+          "level": "source_pinned_Stage27b_50x50_sample_alignment_matches_T_P_PP_2of50_positions_each_bijective_technical_only"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41186682016",
+          "level": "Stage28_crossmodal_disjoint_feature_heldout_50sample_permutation_identical_T_P_PP_50_50_and_Spearman_median_restored_1"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41187009479",
+          "level": "stage28b_source_SHA256_independent_gene_holdout_T_P_PP_per_feature_zscore_numerically_recovered_to_lt_1e-6_after_one_column_permutation"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41187760168",
+          "level": "stage29_588_of_588_excluded_rna_rows_exact_zero_variance_and_all_retained_19768_positive_variance"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41190572889",
+          "level": "Suter_third_prebuilt_HCCdata_network_50x188_50x116_50x158_vs_full_same_names_gene_rho_1_each_layer_versus_fullz_near_zero;_NOT_independent_cohort"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-31",
+      "next_action": "D-046 HCCdata third Suter source object corroborates HCCfull same-sample axes across all T/P/PP (rho 1) and fullz same-label misalignment. Use HCCfull as source-object molecular reference; HCCfullz direct clinical joins forbidden pending genuine original raw clinical/sample manifest to establish identity. Zero-SD 588 RNA feature filter/row zscore/50-sample permutation GO_TECHNICAL. V03 remains PARTIAL; external sample provenance and assay processing HOLD."
+    },
+    {
+      "id": "V04",
+      "title": "환자 단위 병인 분류",
+      "stage": "etiology",
+      "status": "PARTIAL",
+      "priority": "P0",
+      "pass_criteria": "single/mixed category patient counts and missingness after quantitative join",
+      "paper_refs": [
+        "L03"
+      ],
+      "observation": "Ng/Suter processed RNA+protein numeric matrices source-aligned in 50 biopsies/48 distinct patients (exact Ng Supplementary Data 1 sample-identity join). Source-reported exclusive labels ALD12 HCV11 NAFLD7, ALD+HCV7; other small source categories suppressed, any-exposure ALD24 HCV18 HBV7 NAFLD9. Prior invalid ALD31 corrected by explicit non-alcoholic-vs-alcoholic regex test; clinician-verified etiology codebook still pending. Source-verified ALD-only12/HCV-only11 SMD age=0.077, male sex=0.667, BCLC early 0/A=0.260; MELD medians 11/8. Source Child-Pugh class interpretable for ALD8/HCV3 only; SMD withheld. No source technical batch, independent clinical codebook or adequately adjusted mechanism result.",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41053421959",
+          "level": "preliminary_public_metadata"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155985179",
+          "level": "source_sha256_binary_code_imbalance_uninterpreted"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161332568",
+          "level": "strict_48_patient_source_label_exposure_counts__not_clinical_codebook"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41163343921",
+          "level": "source_pinned_patient_level_confounder_smd_and_low_child_pugh_coverage_guard_not_inference"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": 48,
+      "independent_event_n": null,
+      "last_updated": "2026-10-31",
+      "next_action": "Do not declare etiologic differential omics: ALD12/HCV11 n23, sex SMD 0.667, BCLC SMD 0.260 and Child-Pugh low coverage; inspect batch/protein-RSEM transformations and independent replication. Only descriptive feasibility may proceed."
+    },
+    {
+      "id": "V05",
+      "title": "병기·치료·batch 교란",
+      "stage": "etiology",
+      "status": "PARTIAL",
+      "priority": "P1",
+      "pass_criteria": "stage and treatment balance, interaction adjustability, cohort platform confounding",
+      "paper_refs": [
+        "L03"
+      ],
+      "observation": "Ng/Suter original Supplementary Data 1 patient-deduplicated source matched N=48; ALD-only12 versus HCV-only11. Median age 67 vs 69; early BCLC(0/A) 7/12 versus 5/11 and advanced(B/C/D) 5/12 vs 6/11; male 12/12 versus 9/11. Age, sex, BCLC, Edmondson, MELD, cirrhosis headers found, treatment and batch not identified; within-person Edmondson disagreement observed. Not a balanced, adjusted clinical model.",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161928470",
+          "level": "source_patient_48_demographic_stage_covariate_prescreen_no_causal_adjustment"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-31",
+      "next_action": "Confirm all candidate clinical values and source codebook; acquire treatment and assay batch metadata, assess residual confounding and duplicate-biopsy handling before any adjusted RNA/Protein etiology effect."
+    },
+    {
+      "id": "V06",
+      "title": "원논문 양성 대조군 재현",
+      "stage": "benchmark",
+      "status": "NOT_STARTED",
+      "priority": "P1",
+      "pass_criteria": "measured-feature positive control effect sizes, CIs and discrepancies",
+      "paper_refs": [
+        "L01",
+        "L02",
+        "L03"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V07",
+      "title": "RNA–Protein concordance",
+      "stage": "mechanism",
+      "status": "PARTIAL",
+      "priority": "P1",
+      "pass_criteria": "patient-level mapped gene/protein association + uncertainty + FDR",
+      "paper_refs": [
+        "L02",
+        "L03"
+      ],
+      "observation": "Stage24 real public Ng/Suter processed 5,343 strict one-gene-one-protein feature pairs, 50 biopsies/48 distinct patients, source-pinned aggregate Spearman across patients: median rho=0.284086 q10=-0.052106 q90=0.627182; 46 single-biopsy patients median=0.284490, 50 nonindependent biopsies median=0.282881. All 5343 defined, positive rho fraction=0.858132; no gene-level p-value/FDR/CI or independent replication. Ng paper median 0.287 is not exact reproduction due processed measurement and gene universe differences. Stage25 patient-wise 48x leave-one-out median rho 0.273127 to 0.292900 (max 0.010959 departure from baseline 0.284086); fixed-seed 80x patient bootstrap empirical rho median interval 0.243922 to 0.329928. Technical source/aggregate postflight SUCCESS, not gene-level CI, FDR, batch/purity control or external replication. Stage26 official Ng Source Data SuppFig13g (NOT main Fig2b) contains 5481 distinct published ENSG gene IDs, 5253 overlap with current strict 5343, 228 published-only, 90 current-only; this is a supplement-specific set comparison, NOT exact original Fig2b source gene-set verification. Preliminary earlier output falsely labelled physical sheet28 as Fig2b, corrected via workbook relationships. Stage27 negative cross-RDS control: processed T/P/PP values from HCCfull are not rank-preserved in HCCfullz despite same feature ID and same labeled 50 biopsy columns. Stage24 rho 0.284086 strictly dataset-specific until provenance explained; cannot use fullz as a direct Spearman sensitivity substitute. D-038 SOURCE CORRECTION: earlier D-036 assertion that 5481 gene set was SuppFig13g was caused by lexicographically sorting worksheet XML paths then treating array position as sheet number. True file was sheet8.xml = original Fig2b (5481 ENSG source genes, published Spearman rho median 0.287059), paired with sheet7.xml = original Fig2a (15272 ENSG, rho median 0.203142). Thus actual original Figure2b gene ID overlap with current strict 5343 is 5253, original-only 228, current-only 90. Provenance GO, source correlation effect replication NOT done. Corrected Stage26-v3 official actual Fig2b original membership verification #41185931131 (all three jobs SUCCESS) confirms 5481 original Ng ENSG IDs vs 5343 strict current mapped ENSG IDs, intersection 5253, 228 original-only, 90 mapped-only. This is primary source gene membership GO; original published per-gene rho numerical reproduction HOLD. Stage29 original actual Fig2b effect vector job 124499343862 within workflow #41188201726 SUCCESS: exactly 5253 shared genes, 48 independent patient-mean primary source median rho 0.285931394 vs original same-5253 rho median 0.292669683, paired per-gene effect Pearson 0.975014947, Spearman 0.972556921, sign agreement 0.961736151, median absolute rho diff 0.026940583 and fraction |delta|>0.2 0.011612412. Naive 50 biopsies effect-vector Spearman 0.976246752/sign 0.965733866; singleton 46 Spearman 0.966590844/sign 0.955834761. These are within-source corroboration from published Ng cohort, NOT external independent patient replication, and original expression/RSEM/normal-reference pipeline not reproduced. Whole CI workflow #41188201726 failed in a separate patient-label job; the named Fig2b job succeeded.",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41173779578",
+          "level": "source_SHA_pinned_processed_5343_strict_pairs_48_patient_descriptive_spearman_aggregate_only_not_gene_level_inference"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41179643931",
+          "level": "Stage25_real_source_pinned_48patient_LOPO_and_80bootstrap_aggregate_technical_sensitivity_NOT_INFERENTIAL"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41181240430",
+          "level": "published_SuppFig13g_5481_vs_current_5343_exact_ENSG_intersection_5253_not_Fig2b_reproduction"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185391498",
+          "level": "stage27_source_specific_descriptive_Spearman_limits_NO_between_file_equivalence"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185474022",
+          "level": "actual_Ng_Fig2b_source_5481_original_gene_ID_universe_meaning_verified_by_workbook_rels_and_median_rho_0_287059;_previous_SuppFig13g_name_SUPERSEDED"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41185931131",
+          "level": "corrected_numeric_sorted_workbook_Fig2b_original_5481_actual_gene_membership_source_pass_5253_overlap"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41188201726",
+          "level": "stage29_specific_successful_job_124499343862_published_Fig2b_5253_effect_vector_vs_48_patient_mean_Pearson_0.975015_Spearman_0.972557_sign_96.17pct;_whole_workflow_not_all_green"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": 48,
+      "independent_event_n": null,
+      "last_updated": "2026-10-31",
+      "next_action": "V07 GO_TECHNICAL_FIG2B_EFFECT_CORROBORATION 5253 genes; HOLD_ORIGINAL_RAW_RECONSTRUCTION, HOLD_EXTERNAL_PATIENT_REPLICATION and HOLD_BIOLOGICAL_CLAIM. Independently obtain matched Gao 2019 patient RNA and proteome sample-quantitative matrices, verify original sample identity/annotation and fit same prespecified per-gene/pathway estimand. Do not claim new discovery from within-source agreement."
+    },
+    {
+      "id": "V08",
+      "title": "병인×Pathway interaction",
+      "stage": "mechanism",
+      "status": "NOT_STARTED",
+      "priority": "P1",
+      "pass_criteria": "prelocked interaction coefficient+CI and multiple test family",
+      "paper_refs": [
+        "L03"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V09",
+      "title": "독립 Proteome 재현",
+      "stage": "replication",
+      "status": "NOT_STARTED",
+      "priority": "P1",
+      "pass_criteria": "independent patient cohort, direction/size/CI/heterogeneity",
+      "paper_refs": [
+        "L01",
+        "L02"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V10",
+      "title": "scRNA 세포기원·pseudobulk",
+      "stage": "cellorigin",
+      "status": "NOT_STARTED",
+      "priority": "P2",
+      "pass_criteria": "GSE149614 patient-level pseudobulk, cell/site QC, sensitivity",
+      "paper_refs": [
+        "L04"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V11",
+      "title": "Spatial 독립검증",
+      "stage": "cellorigin",
+      "status": "NOT_STARTED",
+      "priority": "P2",
+      "pass_criteria": "comparable tissue, independent patients, spatial vs mixture effects",
+      "paper_refs": [
+        "L04"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V12",
+      "title": "재발/OS endpoint 적합성",
+      "stage": "clinical",
+      "status": "PARTIAL",
+      "priority": "P1",
+      "pass_criteria": "codebook, time zero, unique patient N, true recurrence events, censoring, therapy",
+      "paper_refs": [
+        "L05"
+      ],
+      "observation": "Xing 152 matched clinical rows have numeric binary candidate RFS codes 0=26/1=126 and candidate survival codes 0=82/1=70, each with 152 positive numeric durations; coding direction, units/time origin/censoring not verified; GSE14520 recurrence also remains unverified",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41052039696",
+          "level": "preliminary_public_metadata"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092972318",
+          "level": "source_file_sanitized_schema_qc_not_biological_inference"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155499877",
+          "level": "source_hash_verified_aggregate_clinical_complete_case_prescreen"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-31",
+      "next_action": "Confirm Xing Table S1 RFS/OS 0/1 codebook, units, time-zero and censoring before using N=152/143/125 candidate complete-case cohorts for event analysis"
+    },
+    {
+      "id": "V13",
+      "title": "임상모델 독립 외부 검증",
+      "stage": "clinical",
+      "status": "BLOCKED",
+      "priority": "P2",
+      "pass_criteria": "locked score, independent external cohort, clinical baseline, C-index delta CI and calibration",
+      "paper_refs": [
+        "L05",
+        "L06"
+      ],
+      "observation": "External recurrence event cohort and score unavailable",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Resolve missing access/valid matrix or switch research route"
+    },
+    {
+      "id": "V14",
+      "title": "강건성·음성 대조군",
+      "stage": "robustness",
+      "status": "NOT_STARTED",
+      "priority": "P2",
+      "pass_criteria": "batch/site sensitivity, alternate normalization, neg controls, permutation",
+      "paper_refs": [
+        "L03",
+        "L06"
+      ],
+      "observation": "",
+      "evidence": [],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-30",
+      "next_action": "Run stage-specific analysis and report estimates/uncertainty"
+    },
+    {
+      "id": "V15",
+      "title": "재현성·리포팅",
+      "stage": "reporting",
+      "status": "PARTIAL",
+      "priority": "P0",
+      "pass_criteria": "commit SHA, source hash, tests, figures and claim/evidence register",
+      "paper_refs": [
+        "L06"
+      ],
+      "observation": "Source-SHA256-constrained Xing proteome/clinical structural join and aggregate clinical missingness are recorded with synthetic CI regression tests; no inferential biological claims",
+      "evidence": [
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/pull/251",
+          "level": "preliminary_public_metadata"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41092590299",
+          "level": "source_file_sanitized_schema_qc_not_biological_inference"
+        },
+        {
+          "url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41155499877",
+          "level": "source_hash_verified_aggregate_clinical_complete_case_prescreen"
+        }
+      ],
+      "analysis_evidence": [],
+      "reviewer_approved": false,
+      "independent_patient_n": null,
+      "independent_event_n": null,
+      "last_updated": "2026-10-31",
+      "next_action": "Keep SHA-locked source and CI evidence + D-018; do not promote biological PASS until reviewed codebook and quantitative multi-omics evidence"
+    }
+  ]
+}
