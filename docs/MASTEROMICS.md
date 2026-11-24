@@ -1,0 +1,360 @@
+# MasterOmics 0.1 — central engine and CKD/IS migration
+
+One execution engine now supports project-specific scientific DAGs under the same
+checkpoint, provenance and artifact-contract machinery. CKD remains the pQTL/MR-first
+program; ischemic stroke follows the frozen Japanese BBJ locus-first thesis design with
+GIGASTROKE/EAS replication and functional convergence. Code stays in Git; datasets and
+results live outside it, and legacy scripts remain frozen references until parity or
+explicit replacement is demonstrated.
+
+Canonicalization policy and the migration boundary from the parallel MASTER pipeline v1
+are defined in `MASTEROMICS_CANONICALIZATION.md`. MasterOmics owns orchestration; useful
+modules from the parallel branch are ported behind MasterOmics contracts rather than run
+as a second engine.
+
+## Server setup and execution
+
+Use Python >=3.11. Create an environment and install `requirements-masteromics.lock`
+before a run. R packages required: TwoSampleMR, coloc, susieR, jsonlite; for cohort:
+lme4, survival. R packages are never installed by the runner. Actual R MR, coloc, SuSiE and cohort models passed synthetic integration CI
+run 37104819367. Production CKD/IS/KoGES validation remains required.
+CI records full installed R versions; production environment locking is still required.
+
+For CKD generic execution, copy the reviewed recipe/registry examples and fill every
+placeholder from observed data, including SHA256, trait SD/case fraction, same-build
+cis intervals and ancestry-matched signed LD. The canonical ischemic-stroke example is
+a read-only locus-first migration contract and the generic pQTL compiler rejects it by
+design; use the IS adapter/blueprint path described below. Do not relabel a GRCh37
+outcome as GRCh38: validated liftover/reference-allele normalization is an upstream
+requirement. Dense per-locus LD is supported; genome-wide matrices are not.
+
+```bash
+cd /srv/is-analysis/MasterOmics
+python3 -m masteromics inventory /srv/is-analysis/data /srv/is-analysis/input_inventory.json
+python3 -m masteromics run projects/ckd.json --registry projects/datasets.json --jobs 4 --plan
+bash server/masteromics_run.sh projects/ckd.json --registry projects/datasets.json --jobs 4
+
+python3 -m masteromics is-adapter /srv/is-analysis /srv/is-analysis/results/masteromics/is_baseline
+python3 -m masteromics blueprint init --root /srv/is-analysis/masteromics_workspace
+python3 -m masteromics blueprint inspect /srv/is-analysis/masteromics_workspace/ischemic_stroke/project.json
+```
+
+`--jobs 4` runs up to four independent stages concurrently within each project.
+Projects run sequentially to limit memory. BLAS/R thread counts should be set during
+server setup to prevent each job from consuming all CPUs. Never start two jobs for
+the same output root. Locks prevent this. A failed project returns nonzero while
+independent ready work may finish. Downstream stages are blocked.
+
+## IS frozen-baseline adapter
+
+The first IS production-migration adapter is read-only. It does not rerun BBJ,
+GIGASTROKE, colocalization, fine-mapping, or cell-type analyses. It validates the
+frozen source schemas, primary BBJ loci, four core mechanism genes, mouse-layer
+freeze, and human vascular handoff, then writes baseline provenance/evidence artifacts.
+
+The canonical thesis migration contract is `projects/ischemic_stroke.example.json`.
+The prior pQTL-oriented recipe is preserved as
+`projects/ischemic_stroke_pqtl_legacy.example.json` with reference-only status.
+Production source identity is frozen in `projects/ischemic_stroke.baseline_pins.json`;
+the default CLI/server path verifies file size and SHA256 for all ten baseline
+sources, including the large BBJ/GIGASTROKE files, BBJ SuSiE summary, and molecular
+ABF/SuSiE colocalization evidence.
+
+```bash
+python3 -m masteromics is-adapter \
+  /srv/is-analysis \
+  /srv/is-analysis/results/masteromics/is_baseline
+
+bash server/masteromics_is_adapter.sh \
+  /srv/is-analysis/results/masteromics/is_baseline
+```
+
+A successful production adapter audit reports `checksum_status=COMPLETE` with each
+source marked `VERIFIED_PIN`, plus `FROZEN_RESULTS_NOT_RECOMPUTED` and
+`ADAPTER_AUDIT_ONLY`. It also writes `IS_STAGE_COVERAGE.tsv`: the current frozen
+baseline covers 9 of the 12 IS catalog stages through `celltype`; `human_annotation`
+is `PENDING_AUTHOR_ANNOTATION`, and `evidence`/`report` remain blocked upstream. This
+is still not equivalent to an executable MasterOmics IS stage binding. The next gate
+is explicit per-stage binding with parity checks against the frozen artifacts.
+
+The migration registry is the next read-only layer. It requires a successful pinned
+baseline adapter run and then hashes/registers the frozen source artifacts against the
+12-stage IS catalog. It records 9 stages through `celltype` as `MIGRATED_FROZEN` while
+keeping `human_annotation`, `evidence`, and `report` scientifically blocked.
+
+```bash
+python3 -m masteromics is-stage-migration \
+  /srv/is-analysis \
+  /srv/is-analysis/results/masteromics/is_baseline \
+  /srv/is-analysis/results/masteromics/is_stage_migration
+
+bash server/masteromics_is_stage_migration.sh \
+  /srv/is-analysis/results/masteromics/is_stage_migration
+```
+
+A successful registry reports
+`MIGRATION_PROVENANCE_REGISTERED_NOT_EXECUTABLE`. It is provenance registration only;
+it does not convert frozen results into newly executed MasterOmics results and does not
+bypass the GSE256493 author-annotation gate.
+
+The frozen-prefix binder can then connect only those nine registered stages to an IS
+blueprint. Each bound stage re-verifies the migration record plus source size/SHA256 and
+emits a small `FROZEN_PASSTHROUGH` JSON artifact. The binder deliberately leaves
+`human_annotation`, `evidence`, and `report` unbound, so the full blueprint remains
+`BLOCKED_UNBOUND_ADAPTERS` rather than being reported as a completed rerun.
+
+```bash
+python3 -m masteromics is-bind bind \
+  /srv/is-analysis/masteromics_workspace/ischemic_stroke/project.json \
+  /srv/is-analysis/results/masteromics/is_stage_migration \
+  /srv/is-analysis/masteromics_workspace/ischemic_stroke/config/project.frozen.json
+
+python3 -m masteromics blueprint inspect \
+  /srv/is-analysis/masteromics_workspace/ischemic_stroke/config/project.frozen.json
+
+python3 -m masteromics is-bind materialize \
+  /srv/is-analysis/results/masteromics/is_stage_migration \
+  /srv/is-analysis/results/masteromics/is_frozen_prefix_verified
+```
+
+`is-bind materialize` re-verifies source size/SHA256 for the nine frozen-ready stages
+and emits only `FROZEN_PASSTHROUGH` provenance artifacts plus a verification summary.
+It does not execute or relabel the legacy analysis, and the full blueprint remains
+`BLOCKED_UNBOUND_ADAPTERS` until `human_annotation`, `evidence`, and `report` are bound.
+
+## IS human-annotation execution handoff
+
+The only current scientific gate before integrated IS evidence is the adult-control human
+vascular reference annotation. The canonical execution notebook is mirrored at
+`notebooks/is/IS_Phase9F_E_Human_Vascular_12GB_R3.ipynb`; its Drive/Colab identity,
+input RDS SHA256, output folder and scientific guardrail are pinned in
+`projects/ischemic_stroke.human_annotation.json`.
+
+R3 is fail-closed: it accepts only an explicit metadata-column override or one
+unambiguous exact author-style annotation field name. It never promotes a heuristic
+score-selected metadata column to author annotation. Results are isolated under
+`results/R3_STRICT_AUTHOR/` in Drive.
+
+The `human_annotation` stage remains unbound until R3 produces both:
+
+- `HUMAN_AUTHOR_ANNOTATION_FREEZE.tsv`
+- `HUMAN_RUN_MANIFEST.json`
+
+and those outputs pass source/provenance and inference-level review. The reference is
+for localization only (`REFERENCE_LOCALIZATION_NOT_DISEASE_DGE`); it is not stroke
+differential-expression evidence.
+
+## Dataset contract
+
+One dataset is one trait/assay. Explicit mappings for `chr,pos,effect_allele,
+other_allele,beta,se,pval,eaf,n` are required. Registry fields include ID, path,
+checksum, optional download URL, ancestry, build, effect scale and trait type.
+OR/log10P and archives require explicit upstream conversion; they are not guessed.
+Current adapter handles delimited plain/gzip tables in memory. Stage full regional
+inputs for very large studies; never use only significant SNPs for coloc. Multi-assay
+files must be split or adapted before registration. Genome-wide streaming adapters
+are not yet implemented.
+
+LD consists of a square TSV with identical variant-key row and column order and a
+variants TSV with `key,effect_allele` (the allele counted by signed correlation).
+Key is `BUILD:CHR:POS:SORTED_ALLELE_PAIR`, e.g. `GRCh38:1:100:AG`. The matrix must be
+finite, symmetric, PSD, diagonal one, and cover all requested SNPs. LD signs are
+aligned to exposure alleles before fine-mapping. EUR exposure and EAS outcome use
+separate panels. This cross-ancestry analysis is not independent exposure replication.
+Gene intervals must document coordinate source and cis-window convention externally.
+
+## Implemented analysis
+
+Acquisition/checksum → full normalization → interval/significance/F filtering →
+LD-based greedy clumping → conservative allele harmonization → Wald/fixed IVW/
+multiplicative IVW → official TwoSampleMR median/Egger → regional coloc ABF with
+three priors → signed-LD SuSiE/coloc.susie → annotation → final evidence.
+
+Ambiguous palindromic SNPs are all dropped. Strand complements and indels are
+intentionally unsupported in this first adapter. No silent fallback. Missing LD,
+invalid builds, missing constant sample size, undefined quantitative trait SD,
+no instruments, insufficient regional overlap, and nonconverged SuSiE stop the
+relevant unit. No credible sets produce `UNRESOLVED_NO_CREDIBLE_SET`, not shared.
+Current bootstrap methods use a fixed seed. MR is a statistical estimate, not proof
+of a causal protein mechanism. Sample overlap, conditional-vs-marginal pQTL, LD
+reference mismatch, assay-binding artifacts and phenotype transformations require
+study-specific review. ST16 conditional independent signals do not replace full
+marginal pGWAS for regional analyses.
+
+Final outputs: `MASTER_MR_EVIDENCE.tsv` (BH within method across configured tests),
+`MASTER_CANDIDATE_EVIDENCE.json` (all requested scientific output tables, source
+checksums), `run_manifest.json`, `run_summary.json`, stage QC, logs and checkpoints.
+NaN tests are excluded from BH. Declare the intended testing family when selecting
+units; candidate-only BH does not represent proteome-wide FDR.
+
+## Cohort boundary
+
+Optional `cohort: {panel: ABSOLUTE_TSV, pcs: [PC1,PC2,...]}` executes an eGFR mixed
+model with score×time, age, sex, PCs and random intercept/slope. Panel columns are
+`id,time,egfr,score,age,sex,PC...`; repeated time rows/missing covariates fail.
+A precomputed score panel or the dosage/weight scoring adapter below can be used.
+Genotype QC, raw KoGES endpoint construction, eQTL integration, reverse MR,
+Steiger and leave-one-out are not implemented in this release. Do not mark them
+completed. Public training data without genotype cannot validate a genetic score.
+A project requiring these can add external command stages using `dag`, with explicit
+input hashes and TSV/JSON output contracts; a marker file alone is not evidence.
+
+## Resume and validation
+
+Same input/config/core/external script hashes and validated unchanged output → skip.
+Input, configuration or code changes invalidate the stage and its downstream chain.
+Each stage writes private temporary outputs and promotes only validated files.
+A successful checkpoint is written after all outputs are promoted. No biological
+empty outputs are currently promoted; they fail for review. Pipeline success means
+all configured stages passed, not that unconfigured methods ran.
+
+Python tests cover real synthetic effect 0.5, LD/build mismatches, allele swaps,
+palindromic drops, output corruption, changed inputs/external code, header-only
+rejection, dependency ordering and resume. R integration tests passed in GitHub CI: median/Egger effect 0.5, shared-locus
+ABF and SuSiE posterior checks, full DAG/resume, LD order rejection, mixed slope
+and Cox effect recovery. Production CKD/IS fits have not been run.
+
+Development source: kimtk94/IS_Analysis_V3 commit 7b7311bf123c79128cfc936634dec72c705bd2a4.
+Reviewed legacy MR, coloc/SuSiE entrypoints and workflow stubs; not all historical
+code/backups/results or raw data. This new implementation remains separate from
+legacy result interpretation.
+
+### Additional cohort modules
+
+`score DOSAGES WEIGHTS OUTPUT` computes an allele-aligned weighted genetic score.
+Dosages must contain `id,key,dosage,effect_allele,other_allele,build`; weights contain
+`key,beta,effect_allele,other_allele,build`. All weighted variants must be present for
+every retained person. No silent imputation or participant dropping. Input genotype
+QC, relatedness filtering and ancestry PCA must be completed upstream.
+
+A cohort recipe can instead provide `dosages`, `weights`, `phenotypes`, `pcs` and
+optional `incident_panel`; score and phenotype join then run automatically. Incident
+panel columns: `id,followup,event,baseline_ckd,score,age,sex,PC...`. Endpoint definitions
+and timing are externally prespecified; prevalent CKD is excluded. Cox output includes
+HR and proportional-hazards diagnostics. Event derivation from raw KoGES and genotype
+QC are still upstream adapters. These R cohort models passed synthetic CI; real KoGES fits remain unexecuted.
+
+## Read-only server preflight
+
+```bash
+python3 -m masteromics doctor projects/ckd.example.json --registry projects/datasets.example.json --output /srv/is-analysis/masteromics_preflight.json
+```
+
+The example recipe intentionally reports BLOCKED_INPUTS until actual bindings are
+provided. Doctor checks registry identity metadata, headers, cis coordinates, LD
+paths and ancestry/build, pinned checksum syntax and R availability. It never
+downloads or reads whole raw datasets. READY_FOR_SCIENTIFIC_GATES is configuration
+readiness, not biological validation or a completed scientific run.
+
+Latest verified CI: 7 Python tests plus 4 actual R integration tests and syntax/compile
+checks. Code commit 4beb307b7db4397466dd6248133f02fd5c6756b1;
+https://github.com/kimtk94/IS_Analysis_V3/actions/runs/37106138379.
+The independent legacy-script versus central-module coloc/SuSiE comparison passed
+on synthetic inputs with posterior absolute tolerance 1e-6. This is not a
+production-data validation.
+
+## Server regression against existing CKD results
+
+Run in an isolated checkout of `feat/masteromics-central-engine`. The adapter
+reads existing results; it writes only a new, separate output directory. No
+packages are installed and no legacy results are overwritten.
+
+```bash
+bash server/masteromics_regression.sh --genes SDCCAG8 GSTA3 --stages mr coloc
+# Once the first run passes, compare all nine CKD candidates including SuSiE:
+bash server/masteromics_regression.sh --stages mr coloc susie
+```
+
+Defaults: `/srv/is-analysis/results/ckd/stage1`, `stage2b_coloc`,
+`stage2c_susie`; LD: `/srv/is-analysis/data/ckd/stage2c_ld/ld`.
+Override with `--root`, `--stage1-root`, `--stage2b-root`, `--stage2c-root`,
+`--ld-root`. Set `MASTEROMICS_PYTHON` to the scientific Python interpreter;
+otherwise it checks the checkout, the existing `/srv/is-analysis/IS_Analysis_V3`
+checkout and `/srv/is-analysis` for `.venv-ckd/bin/python`, then uses `python3`.
+Rscript must resolve to the intended existing R environment. The wrapper respects
+`CKD_R_LIB`/`R_LIBS_USER`, otherwise reuses `/srv/is-analysis/.Rlib` if present.
+Set `MASTEROMICS_REGRESSION_OUT` to a fresh output directory when needed.
+
+`REGRESSION_COMPARISON.tsv` contains baseline and new values, absolute deltas,
+explicit tolerances, and PASS/DIFFERENCE for Wald/IVW beta, SE, P, IVW Q, SNP
+counts, coloc H0–H4, SuSiE maximum H4 and credible-set counts.
+Default acceptance is `abs(delta) <= atol + 1e-6 * abs(legacy)`: MR atol 1e-8,
+posterior atol 1e-4; counts must match exactly. `REGRESSION_SUMMARY.json` records
+input/baseline/LD/code hashes, coverage and errors. Exit 0 means all requested
+comparisons passed. Missing genes, missing inputs, failed fits or unresolved
+SuSiE produce nonzero exit and an INCOMPLETE report. DIFFERENCE needs review;
+it is never automatically accepted. SuSiE holds a dense matrix in memory;
+more than 8,000 variants requires explicit `--max-ld-variants` override.
+
+The numerical replay freezes the original harmonized instrument set and full
+regional inputs, and retains legacy median-rounded sample sizes and coloc
+outcome sdY estimation. This proves numerical parity for prepared inputs,
+not end-to-end equivalence from raw archives/genotypes. Central production
+recipes still require an explicit phenotype sdY. `POLICY_DELTA.tsv` separately
+records coloc changes after removing palindromic SNPs; these policy changes do
+not count as same-input numerical failures. New clumping/instrument policies
+must be reviewed separately from the legacy primary anchor Wald result.
+
+The numerical regression/replay adapter currently supports the legacy **CKD**
+schemas, EUR regional/LD analysis and EUR/EAS Stage1 MR. It still rejects IS
+regional replay rather than interpreting stroke files as CKD inputs. IS now has
+a pinned read-only baseline/schema adapter, but explicit executable stage bindings
+and numerical parity for the IS pipeline remain pending. Synthetic legacy/new
+CKD parity remains tested in CI.
+
+## CKD source-statistics rebuild (migration adapter)
+
+`python -m masteromics.rebuild --out ABSOLUTE_NEW_ROOT` re-extracts ST16 from
+Sun2023.xlsx, streams seven local raw EUR/EAS outcome files into matched tables,
+re-runs reviewed Stage1 harmonization/proteome-wide screening and Stage2 candidate
+selection, and extracts/lifts full marginal pQTL regions from local archives.
+Central MR/ABF/SuSiE modules then compare these rebuilt inputs/results against
+historical baselines. This migration reuses legacy preparation Python adapters;
+it does not yet replace all preparation logic with the generic canonical schema.
+The public source files must already be downloaded. No automatic environment
+installation, Drive sync or credentials are used.
+
+```bash
+python -m pip install -r requirements-masteromics-rebuild.lock
+bash server/masteromics_rebuild.sh --out /srv/is-analysis/results/masteromics/rebuild/ckd_raw_v1 --plan
+bash server/masteromics_rebuild.sh --out /srv/is-analysis/results/masteromics/rebuild/ckd_raw_v1
+```
+
+The default raw root is `/srv/is-analysis/data/ckd/rawdata`. Overrides:
+`--root`, `--raw-root`, `--pqtl-root`, `--coordinates`, `--chain`, `--baseline`,
+`--ld-root`. Plan only checks source paths; execution checks Python/R packages
+and candidate archives. Use `MASTEROMICS_PYTHON` and `CKD_R_LIB` as in regression.
+The default LD limit is 8,200 (tested HLA-E has 8,193 variants).
+
+Default mode explicitly reuses the existing reference LD metadata and binary
+matrix; freshly extracted full regions are matched to that reference order.
+`--rebuild-ld` runs the reviewed bcftools/plink2 adapter in an isolated root and
+may download reference chromosomes. It requires `curl`, `bcftools`, `plink2`.
+It does not reuse historical SuSiE inputs/fits. LD regeneration is sequential
+and may require substantial disk space and runtime.
+
+Output contains `REBUILD_SUMMARY.json`, `REBUILD_NUMERICAL_COMPARISON.tsv`,
+`POLICY_DELTA.tsv`, per-stage logs, original-source SHA256 and validated preparation
+checkpoints. Stage1 harmonized/MR tables (all seven outcomes), candidate rows,
+and full regional rows are compared by stable keys rather than gzip bytes.
+Floating cells use rtol 1e-6/atol 1e-12; numeric regression retains its own
+explicit tolerances. Preparation stages resume only when source/code/output
+hashes match. Modified inputs or outputs require a new output root; partial
+stages are never promoted. Numerical comparisons are rerun on resume.
+
+INCOMPLETE retains missing/nonconverged/unresolved analyses; DIFFERENCE retains
+preparation or numerical mismatches. No automatic acceptance. CKD only;
+IS schema migration, tissue annotation and KoGES/genotype cohort validation
+are not included. Full source-statistics execution still requires server
+verification; CI covers adapter unit tests, comparison logic/checkpoints,
+and the numerical modules, not production archives.
+
+## Shared engine, project-specific CKD/IS blueprints
+
+See `docs/MASTEROMICS_ARCHITECTURE.md` for the project-specific catalogs and shared
+engine/binding boundaries. CKD keeps the pQTL/MR/cohort DAG; ischemic stroke uses the
+12-stage BBJ locus-first DAG. `python -m masteromics blueprint init --root ROOT` creates
+both directory/config skeletons without reading production data. `blueprint inspect`
+validates the project-specific topology and `blueprint run --plan` shows binding
+coverage. Execution remains blocked by unbound adapters or unset scientific policies;
+no scaffold stage is reported as scientifically complete.
