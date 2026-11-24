@@ -1,0 +1,51 @@
+name: HCC Stage61 Public Metadata-Only HCCDB Download API Preflight
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/hcc/audit_stage61_public_metadata_preflight.mjs"
+      - "tests/test_hcc_stage61_public_metadata_preflight.mjs"
+      - ".github/workflows/hcc-stage61-public-metadata-preflight.yml"
+permissions:
+  contents: read
+
+jobs:
+  source-and-no-phi-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned AST tools
+        run: npm install --no-save --ignore-scripts acorn@8.15.0 acorn-walk@8.3.4
+      - name: Validate two-source evidence, headers, and fail-closed biological gates
+        run: node --test tests/test_hcc_stage61_public_metadata_preflight.mjs
+
+  source-double-pinned-head-check:
+    strategy:
+      fail-fast: false
+      matrix:
+        endpoint: ['download','download2','download3']
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned AST tools
+        run: npm install --no-save --ignore-scripts acorn@8.15.0 acorn-walk@8.3.4
+      - name: Source-pin two JS bundles before unauthenticated public HEAD preflight
+        run: |
+          node scripts/hcc/audit_stage61_public_metadata_preflight.mjs \
+            --endpoint '${{ matrix.endpoint }}' \
+            --out 'results/hcc/stage61/${{ matrix.endpoint }}_public_api_header_evidence.json'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-stage61-${{ matrix.endpoint }}-public-metadata-headers
+          path: results/hcc/stage61/*.json
+          if-no-files-found: warn
+          retention-days: 30
