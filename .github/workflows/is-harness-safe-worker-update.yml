@@ -4,15 +4,29 @@ on:
   push:
     branches: [main]
     paths:
-      - "scripts/is/github_issue_queue_worker.py"
-      - "scripts/is/harness_research_jobs.py"
-      - "scripts/is/harness_science_pipeline.py"
-      - "scripts/is/harness_archived_evidence.py"
-      - "tests/test_is_harness_research_jobs.py"
-      - "tests/test_is_harness_science_pipeline.py"
-      - "tests/test_is_harness_archived_evidence.py"
-      - ".github/workflows/is-harness-safe-worker-update.yml"
+      - 'scripts/is/github_issue_queue_worker.py'
+      - 'scripts/is/harness_research_jobs.py'
+      - 'scripts/is/harness_science_pipeline.py'
+      - 'scripts/is/harness_archived_evidence.py'
+      - 'deploy/is-harness/**'
+      - 'tests/test_is_harness*.py'
+      - 'tests/test_is_worker*.py'
+      - '.github/workflows/is-harness-safe-worker-update.yml'
+  pull_request:
+    paths:
+      - 'deploy/is-harness/**'
+      - 'tests/test_is_worker*.py'
+      - '.github/workflows/is-harness-safe-worker-update.yml'
   workflow_dispatch:
+    inputs:
+      operation:
+        description: Validate only, or install the selected revision after stopping research timers
+        required: true
+        default: validate
+        type: choice
+        options:
+          - validate
+          - install
 
 permissions:
   contents: read
@@ -22,19 +36,42 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  validate-and-install:
-    runs-on: ubuntu-latest
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runtimes
+        run: |
+          python -m pip install -r requirements-test.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends r-base-core
+      - name: Validate the complete execution foundation
+        run: bash scripts/codex_smoke_test.sh --fixture-only
+
+  install:
+    # A code push validates only. Installation is a separate explicit operation;
+    # it neither starts a service nor enables a timer.
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'install'
+    needs: validate
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
     environment: is-research-readonly
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - name: Validate allowlisted research scripts
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Export the immutable worker bundle
         run: |
-          python3 -m py_compile scripts/is/github_issue_queue_worker.py scripts/is/harness_research_jobs.py scripts/is/harness_science_pipeline.py scripts/is/harness_archived_evidence.py
-          python3 -m unittest discover -s tests -p 'test_is_harness*.py' -v
+          python3 deploy/is-harness/install_worker.py \
+            --repo-root "$GITHUB_WORKSPACE" --revision "$GITHUB_SHA" \
+            --export-bundle "$RUNNER_TEMP/is-harness-bundle"
       - name: Configure verified SSH identity
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
@@ -52,33 +89,59 @@ jobs:
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/is_harness_key ~/.ssh/known_hosts
           ssh-keygen -y -f ~/.ssh/is_harness_key >/dev/null
-      - name: Stage and install worker under research home only
+      - name: Install verified modules and units without activation
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
-          set -eu
-          SSH_ARGS=(-o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 -i "$HOME/.ssh/is_harness_key")
-          TARGET="${SSH_USER}@${SSH_HOST}"
-          scp "${SSH_ARGS[@]}" scripts/is/github_issue_queue_worker.py "$TARGET:is-harness/.queue_worker.pending.py"
-          scp "${SSH_ARGS[@]}" scripts/is/harness_research_jobs.py "$TARGET:is-harness/.research_jobs.pending.py"
-          scp "${SSH_ARGS[@]}" scripts/is/harness_science_pipeline.py "$TARGET:is-harness/.science_pipeline.pending.py"
-          scp "${SSH_ARGS[@]}" scripts/is/harness_archived_evidence.py "$TARGET:is-harness/.archived_evidence.pending.py"
-          ssh "${SSH_ARGS[@]}" "$TARGET" 'bash -se' <<'REMOTE'
           set -euo pipefail
-          cd "$HOME/is-harness"
-          lock="/run/user/$(id -u)/is-harness-queue.lock"
-          test -d "/run/user/$(id -u)" || { echo "User runtime directory unavailable"; exit 3; }
-          flock -w 90 "$lock" bash -se <<'LOCKED'
-          python3 -m py_compile .queue_worker.pending.py .research_jobs.pending.py .science_pipeline.pending.py .archived_evidence.pending.py
-          chmod 600 .queue_worker.pending.py .research_jobs.pending.py .science_pipeline.pending.py .archived_evidence.pending.py
-          mv -f .archived_evidence.pending.py harness_archived_evidence.py
-          mv -f .science_pipeline.pending.py harness_science_pipeline.py
-          mv -f .research_jobs.pending.py harness_research_jobs.py
-          mv -f .queue_worker.pending.py github_issue_queue_worker.py
-          echo "RESEARCH_HARNESS_SCRIPTS_INSTALLED"
-          LOCKED
-          systemctl --user start is-harness-queue.service || echo "Service trigger unavailable; scheduled timer will run next"
+          SSH_ARGS=(-o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ForwardAgent=no -o ConnectTimeout=15 -i "$HOME/.ssh/is_harness_key")
+          TARGET="${SSH_USER}@${SSH_HOST}"
+          REMOTE_STAGE=$(ssh "${SSH_ARGS[@]}" "$TARGET" 'umask 077; mktemp -d "$HOME/.is-harness-stage.XXXXXXXX"')
+          if [[ ! "$REMOTE_STAGE" =~ ^/[a-zA-Z0-9_./-]+/\.is-harness-stage\.[a-zA-Z0-9]+$ ]]; then
+            echo '::error::Unexpected remote staging path'; exit 2
+          fi
+          cleanup() {
+            ssh "${SSH_ARGS[@]}" "$TARGET" "rm -rf -- '$REMOTE_STAGE'" || echo '::warning::Temporary staging cleanup failed'
+          }
+          trap cleanup EXIT
+          INSTALLER_SHA256=$(sha256sum "$RUNNER_TEMP/is-harness-bundle/install_worker.py" | cut -d ' ' -f 1)
+          scp "${SSH_ARGS[@]}" -r "$RUNNER_TEMP/is-harness-bundle" "$TARGET:$REMOTE_STAGE/bundle"
+          ssh "${SSH_ARGS[@]}" "$TARGET" "bash -se -- '$REMOTE_STAGE' '$GITHUB_SHA' '$INSTALLER_SHA256'" <<'REMOTE'
+          set -euo pipefail
+          stage="$1"
+          revision="$2"
+          installer_sha256="$3"
+          [[ "$revision" =~ ^[0-9a-f]{40}$ ]] || { echo 'Invalid revision'; exit 2; }
+          [[ "$installer_sha256" =~ ^[0-9a-f]{64}$ ]] || { echo 'Invalid installer digest'; exit 2; }
+          [ "$(id -u)" -ne 0 ] || { echo 'Install as the non-root research account'; exit 2; }
+          # An already active timer could run immediately after installation.
+          # Query state only; an operator stops timers after examining live work.
+          for unit in is-harness-queue.service is-harness-queue.timer is-auto-next.service is-auto-next.timer; do
+            query_status=0
+            state=$(systemctl --user show "$unit" --property=LoadState --property=ActiveState --no-pager) || query_status=$?
+            load_state=$(printf '%s\n' "$state" | sed -n 's/^LoadState=//p')
+            active_state=$(printf '%s\n' "$state" | sed -n 's/^ActiveState=//p')
+            if [ "$query_status" -ne 0 ] && [ "$load_state:$active_state" != not-found:inactive ]; then
+              echo "HOLD_SYSTEMD_UNAVAILABLE: $unit"; exit 3
+            fi
+            case "$load_state:$active_state" in
+              loaded:inactive|loaded:failed|masked:inactive|not-found:inactive) ;;
+              *) echo "HOLD_ACTIVE_OR_UNKNOWN_UNIT: $unit"; exit 3 ;;
+            esac
+          done
+          if pgrep -f '[g]ithub_issue_queue_worker.py|[a]uto_next.py|[h]arness_research_jobs.py|[h]arness_science_pipeline.py' >/dev/null; then
+            echo 'HOLD_RESEARCH_PROCESS_PRESENT'; exit 3
+          else
+            process_status=$?
+            [ "$process_status" -eq 1 ] || { echo 'HOLD_PROCESS_INVENTORY_UNAVAILABLE'; exit 3; }
+          fi
+          printf '%s  %s\n' "$installer_sha256" "$stage/bundle/install_worker.py" | sha256sum --check --status
+          python3 "$stage/bundle/install_worker.py" \
+            --bundle-dir "$stage/bundle" --revision "$revision" \
+            --execution-lock /srv/is-analysis/results/is/github_actions_runs/is_research_execution.lock
+          systemctl --user daemon-reload
+          echo 'WORKER_BUNDLE_INSTALLED; service and timers were not activated'
           REMOTE
       - name: Remove SSH identity
         if: always()

@@ -1,0 +1,6 @@
+{
+  "schema":"is-harness-heartbeat-v1",
+  "observed_at":"2026-11-24T00:00:00Z",
+  "watcher_status":"UNCHANGED_SOURCES_FAST_CHECK",
+  "private_payload":"SYNTHETIC_SECRET_MUST_NOT_APPEAR"
+}

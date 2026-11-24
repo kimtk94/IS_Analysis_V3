@@ -1,0 +1,4 @@
+#!/bin/bash
+set -eu
+printf 'INSTALL %s\n' "$*" >> "$DEPLOY_TEST_COMMANDS"
+exit "${DEPLOY_TEST_INSTALL_EXIT:-0}"

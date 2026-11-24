@@ -11,6 +11,7 @@ on:
         options:
           - inventory
           - headers
+          - worker-status
 
 permissions:
   contents: read
@@ -25,6 +26,10 @@ jobs:
     timeout-minutes: 15
     environment: is-research-readonly
     steps:
+      - uses: actions/checkout@v4
+        if: inputs.audit == 'worker-status'
+        with:
+          persist-credentials: false
       - name: Check SSH secrets
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
@@ -47,6 +52,7 @@ jobs:
           chmod 600 ~/.ssh/id_is_audit ~/.ssh/known_hosts
           ssh-keygen -y -f ~/.ssh/id_is_audit > /dev/null
       - name: Run approved read-only audit
+        if: inputs.audit != 'worker-status'
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
@@ -86,6 +92,17 @@ jobs:
             *) echo "Unsupported audit"; exit 2;;
           esac
           REMOTE
+      - name: Inspect worker metadata without installation or execution
+        if: inputs.audit == 'worker-status'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          set -euo pipefail
+          test -s scripts/is/audit_queue_runtime.py
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes \
+            -o ForwardAgent=no -o ConnectTimeout=15 -i ~/.ssh/id_is_audit \
+            "$SSH_USER@$SSH_HOST" 'python3 -I -B -' < scripts/is/audit_queue_runtime.py
       - name: Delete SSH identity
         if: always()
         run: rm -f ~/.ssh/id_is_audit

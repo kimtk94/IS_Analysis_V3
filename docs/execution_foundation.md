@@ -80,11 +80,32 @@ Follow [the pinned worker installation guide](../deploy/is-harness/README.md).
 All worker modules and units must come from the same reviewed commit. The
 installer validates that package before any timer is enabled.
 
+The worker-update workflow separates validation from installation: pushes and
+pull requests run tests only. A manual `operation=install` transfers the exact
+commit's verified bundle, installs all modules and units, and reloads systemd
+definitions without starting services or enabling timers. It holds while a
+queue/AUTO_NEXT service, timer, related process, or execution lock is active.
+The server research checkout is not updated as part of this home-directory
+installation; its revision must be reconciled separately.
+
+For diagnosis, select `audit=worker-status` in `IS Server Read-Only SSH Audit`.
+The streamed check reports installed hashes/receipt, checkout revision, systemd
+state, existing locks, process counts, bounded evidence freshness, and categorized
+journal failures. It does not execute the worker, expose credentials or raw logs,
+or write server state. Missing or unreadable observations remain explicit holds.
+
 A stale queued or running request produces a visible hold instead of a green
 "refresh succeeded" impression. A hold does not prove that a server process has
 stopped. Check service status, installed revision, worker logs, execution locks,
 and existing outputs before deciding whether a request should be retried.
 The maintenance code does not automatically close or requeue old Issues.
+
+For a stranded request such as #244, collect the read-only runtime report first,
+then reconcile the request with any running process, execution lock, and existing
+result/completion evidence. A queued request's age is based on its creation time;
+editing or relabeling the same old Issue does not make it runnable under the
+stale-request rule. Only after the actual execution outcome is known should an
+operator resolve the old request and decide whether a new request is required.
 
 ## Cached fits and reference checks
 

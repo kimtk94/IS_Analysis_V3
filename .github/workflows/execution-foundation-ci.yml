@@ -12,6 +12,8 @@ on:
       - 'requirements-test.txt'
       - '.dockerignore'
       - '.github/workflows/execution-foundation-ci.yml'
+      - '.github/workflows/is-harness-safe-worker-update.yml'
+      - '.github/workflows/is-server-readonly-ssh-audit.yml'
   pull_request:
     paths:
       - 'scripts/**'
@@ -22,6 +24,8 @@ on:
       - 'requirements-test.txt'
       - '.dockerignore'
       - '.github/workflows/execution-foundation-ci.yml'
+      - '.github/workflows/is-harness-safe-worker-update.yml'
+      - '.github/workflows/is-server-readonly-ssh-audit.yml'
   workflow_dispatch:
 
 permissions:

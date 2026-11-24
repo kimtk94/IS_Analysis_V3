@@ -1,0 +1,4 @@
+#!/bin/bash
+set -eu
+[ "$*" = '-u' ] || exit 90
+printf '%s\n' "${DEPLOY_TEST_UID:-1001}"

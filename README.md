@@ -151,8 +151,9 @@ python3 -u "$CODE_ROOT/scripts/ukb_ppp_batch_manifest_runner_fast.py" \
   --test-data-only --stop-on-error
 ```
 
-Test samples are recreated under
-`$IDO1_TEST_OUTDIR/test_data/{EUR,EAS}/<GENE>.tsv`; current task states are
+Test samples are created under
+`$IDO1_TEST_OUTDIR/test_data/{EUR,EAS}/<source-stem>.tsv`, using the manifest's
+source filename rather than only the gene symbol; current task states are
 rewritten to `batch_progress.tsv` and successful samples have status `sampled`.
 
 Omit both `--download-only` and `--run` for a safe dry run. Use `--run` instead

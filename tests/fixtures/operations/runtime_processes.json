@@ -1,0 +1,3 @@
+[
+  {"pid":11001,"argv":["/usr/bin/python3","unrelated_application.py","--token","SYNTHETIC_SECRET_MUST_NOT_APPEAR"]}
+]

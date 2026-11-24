@@ -1,2 +1,11 @@
+[Unit]
+Description=Synthetic fixture queue timer
+
 [Timer]
+OnBootSec=30s
 OnUnitInactiveSec=60s
+AccuracySec=10s
+Unit=is-harness-queue.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,20 @@
+#!/bin/bash
+set -eu
+printf '%s\n' "$*" >> "$DEPLOY_TEST_COMMANDS"
+if [ "${2:-}" = show ]; then
+  [ "${DEPLOY_TEST_SYSTEMD_ERROR:-0}" = 0 ] || exit 1
+  if [ "${3:-}" = "${DEPLOY_TEST_ABSENT_UNIT:-}" ]; then
+    printf 'LoadState=not-found\nActiveState=inactive\n'
+    exit 4
+  fi
+  state=inactive
+  if [ "${3:-}" = "${DEPLOY_TEST_ACTIVE_UNIT:-}" ]; then
+    state="${DEPLOY_TEST_ACTIVE_STATE:-active}"
+  fi
+  printf 'LoadState=loaded\nActiveState=%s\n' "$state"
+elif [ "${2:-}" = daemon-reload ]; then
+  exit "${DEPLOY_TEST_RELOAD_EXIT:-0}"
+else
+  echo 'UNEXPECTED_MUTATION' >&2
+  exit 90
+fi
