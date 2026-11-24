@@ -10,7 +10,7 @@ permissions:
 jobs:
   full-egfr:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,7 +25,7 @@ jobs:
         run: |
           set -eu
           curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 5000000 "https://zenodo.org/api/records/16976585" -o "$RUNNER_TEMP/zenodo.json"
-          curl -fLsS --connect-timeout 20 --max-time 300 --max-filesize 740000000 "https://zenodo.org/api/records/16976585/files/GWAS_summary_statistics.txt.gz/content" -o "$RUNNER_TEMP/koges.gz"
+          python3 scripts/download_koges_public_ranges.py --output "$RUNNER_TEMP/koges.gz"
       - run: python3 scripts/ckd_korean_egfr_full.py --root "$RUNNER_TEMP" --out outputs/koges_egfr.json
       - uses: actions/upload-artifact@v4
         with:
