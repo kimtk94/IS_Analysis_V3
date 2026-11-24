@@ -4,6 +4,8 @@ on:
     paths:
       - 'scripts/ocular_frozen_241_external.py'
       - 'tests/test_ocular_frozen_241_external.py'
+      - 'scripts/ocular_frozen_panel_archives.py'
+      - 'tests/test_ocular_frozen_panel_archives.py'
       - '.github/workflows/ocular-frozen-241-external.yml'
   workflow_dispatch:
 permissions:
@@ -11,6 +13,7 @@ permissions:
   actions: read
 jobs:
   external:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -36,3 +39,40 @@ jobs:
           path: outputs/
           retention-days: 90
           if-no-files-found: warn
+
+  archived-results:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_ocular_frozen_241_external.py
+      - run: python3 tests/test_ocular_frozen_panel_archives.py
+      - name: Download only four pinned gene-level result archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          cd "$RUNNER_TEMP"
+          for id in 14912728421 13041944372 13044762180 13037335888; do
+            curl -fLsS --retry 1 --max-time 60 --max-filesize 4000000 \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/kimtk94/IS_Analysis_V3/actions/artifacts/$id/zip" \
+              -o "$id.zip"
+          done
+      - run: |
+          python3 scripts/ocular_frozen_panel_archives.py \
+            --panel "$RUNNER_TEMP/14912728421.zip" \
+            --score050 "$RUNNER_TEMP/13041944372.zip" \
+            --dual55 "$RUNNER_TEMP/13044762180.zip" \
+            --seven-day "$RUNNER_TEMP/13037335888.zip" \
+            --out outputs/archives
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-frozen-241-archive-sensitivity
+          path: outputs/archives/
+          if-no-files-found: warn
+          retention-days: 90
