@@ -97,17 +97,30 @@ def geo_matrix(acc,root):
             q=root/"counts.gz";qsrc=fetch(geo_base(acc)+"/suppl/"+file,q,30000000)
             with gzip.open(q,"rt",encoding="utf-8-sig",newline="") as f:
                 rd=csv.reader(f,delimiter="\t")
-                h=next(rd);require(len(h)>1 and len(set(h))==len(h),"Count header schema")
-                expected=set(samples);titles=set(fields["!Sample_title"][0])
-                columns=h[1:]
-                exact_type="GSM" if set(columns)==expected and len(columns)==81 else "title" if set(columns)==titles and len(columns)==81 else "UNRESOLVED"
-                # Preserve count-header patterns, never raw individual sample IDs.
-                counts_audit={"source":qsrc,"column_count":len(columns),"first_column":h[0][:100],
-                  "column_patterns":dict(collections.Counter(re.sub(r"\d+","#",x)[:100] for x in columns)),"sample_identity":exact_type}
-                require(exact_type!="UNRESOLVED","No exact count-column identity")
+                h=next(rd);first=next(rd)
+                require(len(set(h))==len(h),"Duplicate count header")
+                require(qsrc["sha256"]=="7b928762b2b5eeafc19729168df5ae5b041ea974f5634e0b430eef1f59ea4007","Observed count source SHA changed")
+                if len(h)==81 and len(first)==82:
+                    columns=h
+                    row_id_layout="header omits row-name column"
+                elif len(h)==82 and len(first)==82:
+                    columns=h[1:]
+                    row_id_layout="explicit row-name header"
+                else:
+                    raise ValueError("Count header and first row widths "+repr((len(h),len(first))))
+                expected=set(samples);titles=fields["!Sample_title"][0]
+                def canonical(label):
+                    m=re.fullmatch(r"([A-Z]+)_?([0-9]+)",label)
+                    return m.groups() if m else None
+                norm_cols=[canonical(x) for x in columns];norm_titles=[canonical(x) for x in titles]
+                exact_type="GSM" if set(columns)==expected else "title" if set(columns)==set(titles) else "explicit_single_underscore_title_convention" if None not in norm_cols+norm_titles and len(set(norm_cols))==len(set(norm_titles))==81 and set(norm_cols)==set(norm_titles) else "UNRESOLVED"
+                counts_audit={"source":qsrc,"column_count":len(columns),"row_id_layout":row_id_layout,
+                  "header_width":len(h),"data_row_width":len(first),"column_patterns":dict(collections.Counter(re.sub(r"\d+","#",x)[:100] for x in columns)),"sample_identity":exact_type}
+                require(exact_type!="UNRESOLVED","No one-to-one count-column identity")
                 features=set();totals=[0]*len(columns);rows=0;stable_ensembl=0;nonnegative_integer_rows=0
-                for rr in rd:
-                    rows+=1;require(rows<=250000 and len(rr)==len(h),"Count row bound or width")
+                import itertools
+                for rr in itertools.chain([first],rd):
+                    rows+=1;require(rows<=250000 and len(rr)==len(columns)+1,"Count row bound or width")
                     require(rr[0] not in features,"Duplicate count feature")
                     features.add(rr[0]);stable_ensembl+=bool(re.fullmatch(r"ENSG\d+(?:\.\d+)?",rr[0]))
                     require(all(re.fullmatch(r"\d+(?:\.0+)?",x) for x in rr[1:]),"Noninteger count")
