@@ -1,0 +1,126 @@
+name: Publication sprint - focused public analyses
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/publication_sprint.py'
+      - 'tests/test_publication_sprint.py'
+      - '.github/workflows/publication-sprint.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /docs/data/is/IS_30_REGIONS_SIX_OUTCOMES_GWAS_CONTEXT_500KB.tsv
+            /docs/data/is/IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv
+            /docs/data/is/IS_EAS5_98_BH05_FDR_EGENE_FULLCIS_GWAS_ALLELE_READINESS.tsv
+            /docs/data/is/IS_EAS5_SAME_SNP_ASSOCIATION_GENE_TISSUE_QC.tsv
+      - run: python3 tests/test_publication_sprint.py
+      - run: python3 -m pip install -r requirements.txt openpyxl
+      - run: bash scripts/codex_smoke_test.sh
+
+  ocular:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 0d39a9b41aa500d39327fdd8709f9ccb179f8502
+          path: ocular_source
+          persist-credentials: false
+          sparse-checkout: scripts/ocular
+      - run: python3 -m pip install openpyxl==3.1.5
+      - name: Verify frozen P5d ZIP, then compare with independent published TM table
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          mkdir -p outputs
+          curl --fail --silent --show-error --location --max-time 90 --max-filesize 4000000 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/kimtk94/IS_Analysis_V3/actions/artifacts/12995175346/zip" \
+            -o "$RUNNER_TEMP/p5d.zip"
+          python3 scripts/publication_sprint.py ocular --pool-zip "$RUNNER_TEMP/p5d.zip" --ocular-source ocular_source --out outputs/ocular.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-three-way-aggregate
+          path: outputs/ocular.json
+          if-no-files-found: warn
+          retention-days: 90
+
+  muscle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_muscle_stage2a_gtex.py
+      - name: Run original 20 RT loci against significant skeletal-muscle eQTL/sQTL
+        run: |
+          set -eu
+          python3 scripts/muscle_stage1_gwas_audit.py --input config/muscle/stage1_seed_loci.tsv --outdir "$RUNNER_TEMP/stage1"
+          timeout 8m python3 scripts/muscle_stage2a_gtex.py --input "$RUNNER_TEMP/stage1/MUSCLE_STAGE1_GWAS_AUDIT.tsv" --outdir "$RUNNER_TEMP/stage2"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: muscle-significant-qtl-derived
+          path: |
+            ${{ runner.temp }}/stage2/MUSCLE_STAGE2A_SUMMARY.json
+            ${{ runner.temp }}/stage2/MUSCLE_STAGE2A_VARIANT_NORMALIZATION.tsv
+            ${{ runner.temp }}/stage2/MUSCLE_STAGE2A_EQTL.tsv
+            ${{ runner.temp }}/stage2/MUSCLE_STAGE2A_SQTL.tsv
+            ${{ runner.temp }}/stage2/MUSCLE_STAGE2A_CANDIDATE_GENES.tsv
+          if-no-files-found: warn
+          retention-days: 90
+
+  skin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/publication_sprint.py skin --out outputs/skin.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: skin-korean-wrinkle-access
+          path: outputs/skin.json
+          retention-days: 90
+
+  oral:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/publication_sprint.py oral --out outputs/oral.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: oral-tpm-structure
+          path: outputs/oral.json
+          retention-days: 90
