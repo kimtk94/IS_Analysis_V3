@@ -9,8 +9,9 @@ from __future__ import annotations
 import argparse, csv, gzip, hashlib, json, math
 from collections import defaultdict
 from pathlib import Path
-from scripts.is import audit_gws_eas_24_leads_original as old
-from scripts.is import p3a_publisher_md5_gate as gate
+import importlib
+old=importlib.import_module("scripts.is.audit_gws_eas_24_leads_original")
+gate=importlib.import_module("scripts.is.p3a_publisher_md5_gate")
 
 def digest(path, algo):
     with path.open("rb") as f:
