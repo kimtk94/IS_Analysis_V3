@@ -1,0 +1,69 @@
+name: HCC Stage57 Cached Public HCCDB SPA and Source-Backed Chunks
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/hcc/audit_stage57_cached_spa.py"
+      - "tests/test_hcc_stage57_cached_spa.py"
+      - ".github/workflows/hcc-stage57-cached-spa.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  offline-source-and-lineage-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test strict public source allowlist, complete HTTP and no patient GO
+        run: python -m unittest discover -s tests -p 'test_hcc_stage57_cached_spa.py' -v
+
+  static-official-source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch full public document-linked HCCDB JS and verify SHA256
+        run: |
+          python scripts/hcc/audit_stage57_cached_spa.py \
+            --mode source \
+            --out results/hcc/stage57/official_html_js_full_source.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-stage57-official-static-route-source
+          path: results/hcc/stage57/*.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  cached-chromium-route-observation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned Python Playwright
+        run: python -m pip install 'playwright==1.56.0'
+      - name: Install Chromium
+        run: python -m playwright install chromium
+      - name: Replay only validated first-party JS and observe runtime-requested chunks
+        run: |
+          python scripts/hcc/audit_stage57_cached_spa.py \
+            --mode browser \
+            --out results/hcc/stage57/cached_hccdb_browser_route_chunks.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-stage57-cached-public-browser-evidence
+          path: results/hcc/stage57/*.json
+          if-no-files-found: warn
+          retention-days: 30
