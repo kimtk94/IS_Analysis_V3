@@ -4,6 +4,25 @@ Reproducible UKB-PPP EUR/EAS pQTL preparation and downstream-analysis scaffoldin
 The repository deliberately separates ephemeral code (`CODE_ROOT`) from persistent
 Google Drive data (`WORK_ROOT`). See [the migration and execution guide](docs/v3_migration_guide.md).
 
+## Reviewed source and execution cleanup
+
+The [2026-11-24 cleanup record](docs/repository_cleanup_20261124.md) describes
+source-specific preparation/QC outputs, preserved evidence, restored ocular
+dependencies, and the fixed CKM source revision. Preparation and CI status are
+separate from scientific completion.
+
+For a fresh checkout, run the small offline regression suite with:
+
+```bash
+python3 -m pip install -r requirements-test.txt
+bash scripts/codex_smoke_test.sh
+```
+
+Install base R (`Rscript`) to execute the preparation, cache, and ocular metadata
+regressions. CI installs it and runs these checks. Without it, the local runner
+reports the affected checks as skipped. The source-data integration suite needs
+the separate, immutable legacy checkout described in the cleanup record.
+
 ## Quick start (Colab)
 
 ```bash

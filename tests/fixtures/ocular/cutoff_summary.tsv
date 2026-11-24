@@ -1,0 +1,3 @@
+score_cutoff	expected_classification_score_threshold
+0.50	0.50
+0.75	0.75

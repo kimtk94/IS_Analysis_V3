@@ -1,0 +1,11 @@
+CHROM	GENPOS	ID	ALLELE0	ALLELE1	A1FREQ	TEST	BETA	SE	LOG10P
+8	39910010	rs_underflow	A	G	0	ADD	0.2	0.05	400
+8	39910020	rs_frequency_one	C	T	1	ADD	-0.3	0.05	10
+8	39910030	rs_frequency_missing	G	A	NA	ADD	0.2	0.05	10
+8	39910040	rs_frequency_infinite	G	A	Inf	ADD	0.2	0.05	10
+8	39910050	rs_frequency_negative	G	A	-0.1	ADD	0.2	0.05	10
+8	39910060	rs_beta_infinite	G	A	0.2	ADD	Inf	0.05	10
+8	39910070	rs_f_overflow	G	A	0.2	ADD	1e308	1	10
+8	39910080.5	rs_fractional_position	G	A	0.2	ADD	0.2	0.05	10
+8	39910090	rs_nonadditive_invalid	G	A	Inf	DOM	Inf	0	Inf
+17	63480000	rs_other_chromosome	G	A	0.2	ADD	0.2	0.05	10

@@ -1,17 +1,6 @@
 name: CKM TPMI 433.21 main dispatcher with pinned research code
 
 on:
-  push:
-    paths:
-      - '.github/workflows/ckm-tpmi-43321-lead-grch37.yml'
-      - 'scripts/ckm_stroke/identify_tpmi_43321_lead_variant.py'
-      - 'scripts/ckm_stroke/map_tpmi_43321_lead_ensembl.py'
-      - 'tests/test_ckm_tpmi_43321_significant_lead.py'
-      - 'tests/test_ckm_tpmi_43321_lead_liftover.py'
-      - 'scripts/ckm_stroke/prepare_tpmi_43321_gigastroke_lookup.py'
-      - 'tests/test_ckm_tpmi_43321_gigastroke_lookup.py'
-      - 'scripts/ckm_stroke/match_tpmi_43321_gigastroke_ais.py'
-      - 'tests/test_ckm_tpmi_43321_gigastroke_ais.py'
   pull_request:
     paths:
       - '.github/workflows/ckm-tpmi-43321-lead-grch37.yml'
@@ -54,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: research/ckm-stroke-staged-actions-20261111
+          ref: 4aff051003c6a65421516e69956c905498848a76
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -70,14 +59,14 @@ jobs:
           python -m unittest discover -s tests -p 'test_ckm_tpmi_43321_gigastroke_ais.py' -v
 
   extract-pinned-original-lead:
-    if: (github.event_name == 'workflow_dispatch' && inputs.run_original_source == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[tpmi-lead-original]')) || (github.event_name == 'issue_comment' && github.event.issue.number == 284 && github.event.comment.user.login == 'kimtk94' && (github.event.comment.body == '/tpmi-run-source-20261121' || github.event.comment.body == '/tpmi-run-ais-20261121'))
+    if: (github.event_name == 'workflow_dispatch' && inputs.run_original_source == true) || (github.event_name == 'issue_comment' && github.event.issue.number == 284 && github.event.comment.user.login == 'kimtk94' && (github.event.comment.body == '/tpmi-run-source-20261121' || github.event.comment.body == '/tpmi-run-ais-20261121'))
     needs: offline-allele-assembly-tests
     runs-on: ubuntu-latest
     timeout-minutes: 24
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: research/ckm-stroke-staged-actions-20261111
+          ref: 4aff051003c6a65421516e69956c905498848a76
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -119,7 +108,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: research/ckm-stroke-staged-actions-20261111
+          ref: 4aff051003c6a65421516e69956c905498848a76
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -147,7 +136,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: research/ckm-stroke-staged-actions-20261111
+          ref: 4aff051003c6a65421516e69956c905498848a76
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -176,7 +165,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: research/ckm-stroke-staged-actions-20261111
+          ref: 4aff051003c6a65421516e69956c905498848a76
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -198,7 +187,7 @@ jobs:
           retention-days: 30
 
   report-ci-status:
-    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[tpmi-lead-original]')) || (github.event_name == 'issue_comment' && github.event.issue.number == 284 && github.event.comment.user.login == 'kimtk94' && (github.event.comment.body == '/tpmi-run-source-20261121' || github.event.comment.body == '/tpmi-run-ais-20261121')))
+    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && github.event.issue.number == 284 && github.event.comment.user.login == 'kimtk94' && (github.event.comment.body == '/tpmi-run-source-20261121' || github.event.comment.body == '/tpmi-run-ais-20261121')))
     needs:
       - offline-allele-assembly-tests
       - extract-pinned-original-lead

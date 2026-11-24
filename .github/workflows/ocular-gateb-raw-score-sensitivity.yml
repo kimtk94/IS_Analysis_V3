@@ -1,18 +1,49 @@
-name: Ocular Gate B Full Raw-UMI BeamA 0.50 vs 0.75 edgeR
+name: Ocular Gate B Source Validation and Manual Raw-UMI Sensitivity
 on:
   pull_request:
     paths:
       - '.github/workflows/ocular-gateb-raw-score-sensitivity.yml'
+      - 'scripts/ocular/ocular_p1_integrity.py'
+      - 'scripts/ocular/ocular_p4_pseudobulk_pilot.py'
+      - 'scripts/ocular/ocular_p4_fullcohort.py'
+      - 'scripts/ocular/ocular_p5_edger.R'
+      - 'scripts/ocular/ocular_gateb_edger_cutoff_sensitivity.py'
+      - 'tests/test_ocular_source_integration.py'
+      - 'tests/test_ocular_p5_summary.R'
+      - 'tests/fixtures/ocular/**'
   workflow_dispatch:
 
 permissions:
   contents: read
-  actions: read
 
 jobs:
+  offline-source-validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install runtimes for small offline fixtures and R source parsing
+        run: |
+          python -m pip install 'numpy==1.26.4' 'PyYAML==6.0.2'
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends r-base-core
+      - name: Validate source imports, synthetic count conservation, and cutoff metadata
+        run: |
+          command -v Rscript
+          python -m unittest discover -s tests -p 'test_ocular_source_integration.py' -v
+
   score-050-independent-refit:
+    # This job downloads and streams the original 18 matrices. Never run it on a PR.
+    if: github.event_name == 'workflow_dispatch'
+    needs: offline-source-validation
     runs-on: ubuntu-24.04
     timeout-minutes: 85
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -23,7 +54,7 @@ jobs:
           python -m pip install 'numpy==1.26.4'
           sudo apt-get update -qq
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends r-base-core r-bioc-edger r-cran-statmod r-cran-jsonlite
-          python -m py_compile scripts/ocular/ocular_p4_fullcohort.py scripts/ocular/ocular_gateb_edger_cutoff_sensitivity.py
+          python -m py_compile scripts/ocular/ocular_p1_integrity.py scripts/ocular/ocular_p4_pseudobulk_pilot.py scripts/ocular/ocular_p4_fullcohort.py scripts/ocular/ocular_gateb_edger_cutoff_sensitivity.py
           Rscript -e 'invisible(parse(file="scripts/ocular/ocular_p5_edger.R"));stopifnot(requireNamespace("edgeR",quietly=TRUE));cat("GATE_B_R_PARSE_PASS\n")'
       - name: Reconstruct 57 donor pairs from original 18 complete 10x matrices at BeamA 0.50
         run: |
