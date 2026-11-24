@@ -4,6 +4,8 @@ on:
     paths:
       - 'scripts/ocular_frozen_241_external.py'
       - 'tests/test_ocular_frozen_241_external.py'
+      - 'scripts/ocular_paired_panel_validation.py'
+      - 'tests/test_ocular_paired_panel_validation.py'
       - 'scripts/ocular_frozen_panel_archives.py'
       - 'tests/test_ocular_frozen_panel_archives.py'
       - '.github/workflows/ocular-frozen-241-external.yml'
@@ -75,4 +77,40 @@ jobs:
           name: ocular-frozen-241-archive-sensitivity
           path: outputs/archives/
           if-no-files-found: warn
+          retention-days: 90
+
+  paired-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_ocular_paired_panel_validation.py
+      - name: Fetch the frozen panel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --retry 1 --max-time 45 --max-filesize 1000000 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/14912728421/zip" \
+            -o "$RUNNER_TEMP/panel.zip"
+      - name: Fetch public ENA run metadata and the DEE2 project counts
+        run: |
+          fields='secondary_study_accession,study_accession,experiment_accession,run_accession,sample_accession,sample_alias,library_name,experiment_title'
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 60 --max-filesize 100000 \
+            "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA729873&result=read_run&fields=${fields}&format=tsv" \
+            -o "$RUNNER_TEMP/ena.tsv"
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 80 --max-filesize 30000000 \
+            'https://dee2.io/huge/hsapiens/SRP319815_NA.zip' -o "$RUNNER_TEMP/counts.zip"
+      - name: Evaluate both prespecified donor-paired panels
+        run: |
+          python3 scripts/ocular_paired_panel_validation.py --panel "$RUNNER_TEMP/panel.zip" \
+            --ena "$RUNNER_TEMP/ena.tsv" --bundle "$RUNNER_TEMP/counts.zip" \
+            --out outputs/paired/panel_summary.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-paired-donor-panels
+          path: outputs/paired/panel_summary.json
+          if-no-files-found: error
           retention-days: 90

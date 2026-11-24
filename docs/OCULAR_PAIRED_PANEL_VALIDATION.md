@@ -11,3 +11,13 @@ Use DEE2 STAR gene counts and match by stable Ensembl gene ID. Scale each librar
 Before examining expression results, specify the primary population as complete pairs with DEE2 PASS or WARN for both arms. Report the per-arm QC flags and any pair exclusions. Summarize the median signed score and the count of positive, negative and tied pairs. Use the two-sided exact sign test across non-tied donor pairs for each panel and control the family of two tests with Holm adjustment. An exact zero is a tie. Report the complete-pair results including failed QC runs as a sensitivity analysis when their count data are usable. Do not select responder subgroups or genes by the validation outcomes.
 
 This analysis estimates a panel-level response in cultured trabecular meshwork. Interpretation is specific to the source cohort, processing method and CPM normalization. It supplies no new per-gene FDR, causal time-course effect or glaucoma clinical endpoint.
+
+## Reproduction
+
+Download the frozen panel ZIP from GitHub Actions artifact 14912728421, the ENA read-run report and the DEE2 hsapiens project bundle SRP319815_NA.zip. The study-specific command checks the bundle digest and the sorted ENA field projection before joining the two sources by run and experiment. The output contains panel-level statistics and the availability of each pair.
+
+```bash
+python3 scripts/ocular_paired_panel_validation.py --panel frozen.zip --ena ena.tsv --bundle SRP319815_NA.zip --out paired/panel_summary.json
+```
+
+The paired-validation job in the ocular workflow uses the same command and publishes the JSON as an artifact. Source records are available from [ENA](https://www.ebi.ac.uk/ena/browser/view/PRJNA729873) and [DEE2](https://dee2.io/huge/hsapiens/SRP319815_NA.zip).
