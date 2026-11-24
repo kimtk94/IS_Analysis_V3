@@ -1,0 +1,28 @@
+name: Publication stroke subtype contrasts and original paper baseline
+on:
+  pull_request:
+    paths:
+      - 'scripts/publication_stroke_contrasts.py'
+      - 'tests/test_publication_stroke_contrasts.py'
+      - '.github/workflows/publication-stroke-contrasts.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  published-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_publication_stroke_contrasts.py
+      - run: python3 -m pip install openpyxl==3.1.5
+      - run: python3 scripts/publication_stroke_contrasts.py --out outputs/stroke-contrasts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-stroke-contrast-baseline
+          path: outputs/stroke-contrasts/
+          retention-days: 90
+          if-no-files-found: warn
