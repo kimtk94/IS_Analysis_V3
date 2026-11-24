@@ -1,0 +1,23 @@
+name: Ocular GSE313736 observed metadata readback
+on:
+  push:
+    branches: [research/publication-ocular-ckd-source-20261124]
+    paths: ['scripts/ocular_gse313736_metadata_readback.py','.github/workflows/ocular-gse313736-readback.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/ocular_gse313736_metadata_readback.py --root "$RUNNER_TEMP" --out outputs/readback.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gse313736-exact-metadata-coverage
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
