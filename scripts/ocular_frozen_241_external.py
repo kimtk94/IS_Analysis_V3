@@ -121,6 +121,7 @@ def get_source(p):
 def main():
     a=argparse.ArgumentParser(description=__doc__)
     a.add_argument("--panel",type=Path,required=True)
+    a.add_argument("--cpm", type=Path, help="Replay the original SHA-256-pinned GEO gzip from disk.")
     a.add_argument("--out",type=Path,required=True)
     args=a.parse_args()
     args.out.mkdir(parents=True,exist_ok=True)
@@ -128,8 +129,14 @@ def main():
     summary={"status":"HOLD_7DAY_SOURCE","frozen_panel_sha256":PIN,"frozen_cpm_sha256":CPM_PIN,
        "interpretation":"Frozen earlier 241-gene/16-ECM panel tested against published GSE301517 normalized CPM. Technical repeats averaged within each of three strains and strains weighted equally. This extends a previously inspected cohort, not a wholly unexamined holdout; strain donor independence not verified. Gene-level FDR and causal time/dose inference unavailable. Expression cutoffs are descriptive sensitivity strata, not selected thresholds. No gene-independence binomial p-value."}
     with tempfile.TemporaryDirectory() as d:
-        p=Path(d)/"cpm.gz"
-        url,attempts=get_source(p)
+        if args.cpm is None:
+            p = Path(d) / "cpm.gz"
+            url, attempts = get_source(p)
+            summary["cpm_input"] = "download"
+        else:
+            p = args.cpm
+            url, attempts = CPM, []
+            summary["cpm_input"] = "local_verified_copy"
         summary["attempts"]=attempts
         if url is not None:
             obs,n=parse_cpm(p,panel)
