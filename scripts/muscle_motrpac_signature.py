@@ -38,9 +38,20 @@ def main():
     x=da.loc[mask,cols].copy();del da
     require(len(x)>1000 and x.full_model.nunique()==1 and x.contrast.nunique()==1 and not x.feature_id.duplicated().any(),"Fixed contrast/model identity")
     x["feature_id"]=x.feature_id.astype(str)
-    require(x.feature_id.str.fullmatch(r"ENSG[0-9]+(?:\.[0-9]+)?").all(),"Unexpected RNA feature ID")
-    require(np.isfinite(x[["logFC","p_value","adj_p_value"]].to_numpy(dtype=float)).all(),"Nonfinite source statistics")
-    require(x.p_value.between(0,1).all() and x.adj_p_value.between(0,1).all(),"P-value bounds")
+    total_rows=len(x)
+    standard=x.feature_id.str.fullmatch(r"ENSG[0-9]+(?:\.[0-9]+)?")
+    finite=np.isfinite(x[["logFC","p_value","adj_p_value"]].to_numpy(dtype=float)).all(axis=1)
+    require((x.loc[finite,"p_value"].between(0,1)&x.loc[finite,"adj_p_value"].between(0,1)).all(),"P-value bounds")
+    source_sig=finite & (x.adj_p_value<.05) & (x.logFC!=0)
+    source_fdr_up=int((source_sig&(x.logFC>0)).sum());source_fdr_down=int((source_sig&(x.logFC<0)).sum())
+    model=str(x.full_model.iloc[0]);contrast=str(x.contrast.iloc[0])
+    print("FEATURE_ID_GATE",{"total":total_rows,"canonical":int(standard.sum()),"noncanonical":int((~standard).sum()),
+          "noncanonical_examples":x.loc[~standard,"feature_id"].head(8).tolist(),"nonfinite":int((~finite).sum())},flush=True)
+    # Exclude noncanonical/unestimable source rows from the mapping pool, without changing
+    # source FDR family or threshold and before reading any validation expression.
+    require(int(standard.sum())>=.9*total_rows and int(finite.sum())>=.9*total_rows,"Too few canonical/estimable features")
+    id_gate={"canonical":int(standard.sum()),"noncanonical":int((~standard).sum()),"nonfinite":int((~finite).sum())}
+    x=x.loc[standard&finite].copy()
     m,ms=load(a.root,"HUMAN_FEATURE_TO_GENE")
     mc=["assay","feature_id","entrez_gene","ensembl_gene","gene_symbol"]
     require(set(mc)<=set(m),"Feature map schema")
@@ -63,8 +74,8 @@ def main():
     require(not panel.entrez.duplicated().any() and not panel.ensembl.duplicated().any(),"Unique panel identity")
     output=a.out/"panel.tsv";panel[["entrez","ensembl","symbol","sign","logFC","p_value","adj_p_value"]].to_csv(output,sep="\t",index=False,na_rep="")
     summary={"status":"FROZEN_SOURCE_ONLY_NO_VALIDATION_OUTCOME","publisher_package":"2.0.8","source_collection":"c2.0","contrast_short":SHORT,
-       "model":str(x.full_model.iloc[0]),"contrast":str(x.contrast.iloc[0]),"source_rows":len(x),
-       "source_fdr_up":int((sig&(x.logFC>0)).sum()),"source_fdr_down":int((sig&(x.logFC<0)).sum()),
+       "model":model,"contrast":contrast,"source_rows":total_rows,"feature_id_gate":id_gate,
+       "source_fdr_up":source_fdr_up,"source_fdr_down":source_fdr_down,
        "unique_mapped":int(x.entrez_gene.notna().sum()),"eligible_fdr_up":int((choices.logFC>0).sum()),"eligible_fdr_down":int((choices.logFC<0).sum()),
        "panel_up":int((panel.sign==1).sum()),"panel_down":int((panel.sign==-1).sum()),
        "panel_sha256":hashlib.sha256(output.read_bytes()).hexdigest(),"sources":[ds,ms]}
