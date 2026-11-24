@@ -1,0 +1,24 @@
+name: Ocular independent 16-hour bulk TM source qualification
+on:
+  push:
+    branches: [research/publication-ocular-ckd-source-20261124]
+    paths: ['scripts/ocular_16h_holdout_source.py','.github/workflows/ocular-16h-holdout-source.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m py_compile scripts/ocular_16h_holdout_source.py
+      - run: python3 scripts/ocular_16h_holdout_source.py --root "$RUNNER_TEMP" --out outputs/source.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-16h-holdout-source-inventory
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
