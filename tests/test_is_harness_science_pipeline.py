@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import Mock
 
 FILE = Path(__file__).resolve().parents[1] / "scripts/is/harness_science_pipeline.py"
 spec = importlib.util.spec_from_file_location("is_science_stage_under_test",FILE)
@@ -21,6 +22,32 @@ def tsv(path,header,rows):
 
 
 class ScienceGateTests(unittest.TestCase):
+    def test_fasta_cache_distinguishes_ref_lengths_in_both_row_orders(self):
+        fixtures = Path(__file__).parent / "fixtures"
+        with (fixtures / "is_mixed_ref_length_variants.tsv").open(newline="") as handle:
+            reader = csv.DictReader(handle, delimiter="\t")
+            header, variants = reader.fieldnames, list(reader)
+        sequence = "".join(
+            line.strip() for line in
+            (fixtures / "is_mixed_ref_length_reference.fa").read_text().splitlines()
+            if not line.startswith(">")
+        )
+        for rows in (variants, list(reversed(variants))):
+            with self.subTest(order=[r["mapped_variant_GRCh37"] for r in rows]):
+                reference = Mock(ref=True, status="APPROVED_REFERENCE_AVAILABLE")
+                reference.reference.side_effect = lambda chrom, pos, size: sequence[pos-1:pos-1+size]
+                with tempfile.TemporaryDirectory() as td:
+                    path = Path(td) / "variants.tsv"
+                    tsv(path, header, rows)
+                    result = science.independent_p2_qc(path, fasta=reference, max_rows=10)
+                self.assertEqual(result["counters"]["fasta_ref_equal_rows"], 2)
+                self.assertEqual(result["counters"].get("fasta_ref_mismatch_rows", 0), 0)
+                self.assertEqual(reference.reference.call_count, 2)
+                self.assertEqual(
+                    {call.args for call in reference.reference.call_args_list},
+                    {("1", 1, 1), ("1", 1, 2)},
+                )
+
     def test_variant_keys_not_evidence_of_causality(self):
         self.assertEqual(science.parse_variant("chr1:123:a:g"),("1",123,"A","G"))
         self.assertEqual(science.parse_variant("1:123:A:G"),science.parse_variant("chr1:123:A:G"))

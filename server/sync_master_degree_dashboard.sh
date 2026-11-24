@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-ROOT="/srv/is-analysis/IS_Analysis_V3"
+set -euo pipefail
+CODE_ROOT="${CODE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+RESULTS_ROOT="${DASHBOARD_RESULTS_ROOT:-${IS_ANALYSIS_ROOT:-/srv/is-analysis}/results}"
 DASH="${DASHBOARD_REPO:-/srv/is-analysis/brain_research_mr_scrna_seq}"
 
 echo "===== MASTER DEGREE DASHBOARD SYNC ====="
-echo "SOURCE=$ROOT"
+echo "RESULTS=$RESULTS_ROOT"
 echo "DASHBOARD=$DASH"
 
 if [ ! -d "$DASH/.git" ]; then
@@ -14,11 +16,7 @@ if [ ! -d "$DASH/.git" ]; then
   exit 2
 fi
 
-python3 "$ROOT/server/publish_research_dashboard.py" \
-  --source "$ROOT" \
+python3 "$CODE_ROOT/server/publish_research_dashboard.py" \
+  --results-root "$RESULTS_ROOT" \
   --dashboard-repo "$DASH" \
   --git-push
-
-RC=$?
-echo "SYNC_RC=$RC"
-exit $RC

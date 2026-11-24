@@ -231,6 +231,46 @@ class BatchRunnerTests(unittest.TestCase):
             self.assertEqual(set(staged), {row["source_file"] for row in progress})
             self.assertEqual({"downloaded"}, {row["status"] for row in progress})
 
+    def test_run_passes_unique_source_identity_and_actual_batch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            args = ["--base", str(root / "raw"), "--qc-dir", str(root / "qc"),
+                    "--outdir", str(root / "out"), "--standardized-dir", str(root / "std"),
+                    "--instrument-dir", str(root / "inst"), "--download-manifest",
+                    str(ROOT / "tests/fixtures/ukb_ppp_preparation_manifest.tsv"),
+                    "--gene-coordinate-file", str(ROOT / "tests/fixtures/gene_coordinates_hg38.tsv"),
+                    "--batch-size", "1", "--focus-gene", "IDO1", "--run"]
+            with mock.patch.object(runner.subprocess, "run") as prepare:
+                self.assertEqual(0, runner.main(args))
+
+            with (root / "qc/batch_progress.tsv").open() as handle:
+                progress = list(csv.DictReader(handle, delimiter="\t"))
+            self.assertEqual(4, len(progress))
+            self.assertEqual(4, len(prepare.call_args_list))
+            self.assertEqual({"batch_002"}, {row["batch_id"] for row in progress})
+            self.assertEqual(4, len({row["source_id"] for row in progress}))
+            for field in ("standardized_path", "instrument_path", "legacy_path"):
+                self.assertEqual(4, len({row[field] for row in progress}))
+            for row, call in zip(progress, prepare.call_args_list):
+                command = call.args[0]
+                self.assertEqual(row["batch_id"], command[command.index("--batch-id") + 1])
+                self.assertEqual(row["source_id"], command[command.index("--source-id") + 1])
+                self.assertEqual((row["ancestry"], "batch_002", "IDO1"),
+                                 Path(row["instrument_path"]).parts[-4:-1])
+
+    def test_source_ids_distinguish_sanitized_names_and_survive_manifest_reordering(self):
+        rows = runner.read_tsv(ROOT / "tests/fixtures/ukb_ppp_preparation_manifest.tsv")[2:4]
+        rows[0]["source_file"] = "IDO1+assay.tsv"
+        rows[1]["source_file"] = "IDO1?assay.tsv"
+        self.assertEqual(runner.safe_source_stem(rows[0]["source_file"]),
+                         runner.safe_source_stem(rows[1]["source_file"]))
+        original = {row["source_url"]: runner.preparation_source_id(row)
+                    for row in runner.add_source_keys(rows)}
+        reordered = {row["source_url"]: runner.preparation_source_id(row)
+                     for row in runner.add_source_keys(list(reversed(rows)))}
+        self.assertEqual(2, len(set(original.values())))
+        self.assertEqual(original, reordered)
+
     def test_test_data_mode_applies_line_limits(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

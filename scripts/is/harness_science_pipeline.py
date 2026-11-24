@@ -316,12 +316,14 @@ def independent_p2_qc(variants_path: Path, fasta=None, max_rows=2_000_000):
                 if abs(b_af-e_af)>0.2:
                     counters["bbj_eas_af_delta_gt_0_2_review"] += 1
             if fa.ref is not None and mapped:
-                loc = mapped[:2]
-                if loc not in seen_fasta:
-                    seen_fasta[loc] = fa.reference(*loc, len(mapped[2]))
-                if seen_fasta[loc] is None:
+                # An SNV and an indel can share a coordinate but require
+                # different reference lengths. Cache the complete query.
+                reference_key = (*mapped[:2], len(mapped[2]))
+                if reference_key not in seen_fasta:
+                    seen_fasta[reference_key] = fa.reference(*reference_key)
+                if seen_fasta[reference_key] is None:
                     counters["fasta_ref_unavailable"] += 1
-                elif mapped[2] == seen_fasta[loc]:
+                elif mapped[2] == seen_fasta[reference_key]:
                     counters["fasta_ref_equal_rows"] += 1
                     if dual_match and not palindromic(mapped):
                         group["fasta_and_nonpal_allele_key_equal"] += 1

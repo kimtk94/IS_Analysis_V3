@@ -4,6 +4,39 @@ Reproducible UKB-PPP EUR/EAS pQTL preparation and downstream-analysis scaffoldin
 The repository deliberately separates ephemeral code (`CODE_ROOT`) from persistent
 Google Drive data (`WORK_ROOT`). See [the migration and execution guide](docs/v3_migration_guide.md).
 
+## Validate a fresh checkout
+
+Self-contained code regressions do not require Synapse, Google Drive, the old
+research checkout, or production GWAS/QTL downloads:
+
+```bash
+python3 -m pip install -r requirements-test.txt
+bash scripts/codex_smoke_test.sh --fixture-only
+```
+
+Install base R (`Rscript`) to include the preparation and cache regression tests.
+Without R, Python reports those tests as skipped. The **Execution foundation
+regressions** GitHub Actions workflow installs both Python dependencies and base
+R so those tests execute in CI.
+
+Four additional historical-source integration suites authenticate files from
+the pinned old research commit. Run them only after preparing that checkout:
+
+```bash
+git fetch --no-tags origin 0bf646fd6f29322d17da878253f37def24c01c74
+git worktree add --detach legacy 0bf646fd6f29322d17da878253f37def24c01c74
+bash scripts/codex_smoke_test.sh --with-legacy
+```
+
+`--with-legacy` fails immediately if required files are absent; their original
+hash checks remain enforced. With no flag, smoke runs the self-contained suite
+in a fresh clone and the full suite when `legacy/` is present, preserving the
+existing prepared source-audit CI gate. To run only the historical checks, use
+`python3 scripts/run_repository_tests.py --suite legacy`.
+
+See [execution and deployment maintenance](docs/execution_foundation.md) for
+output-path migration, result-root configuration, and queue recovery checks.
+
 ## Quick start (Colab)
 
 ```bash
@@ -13,6 +46,7 @@ export SOURCE_WORK_ROOT=/content/drive/MyDrive/IS_Analysis_V2
 cd "$CODE_ROOT"
 bash scripts/setup_ido1_test_drive.sh
 source "$WORK_ROOT/ido1_test.env"
+python3 -m pip install -r requirements-test.txt
 bash scripts/codex_smoke_test.sh
 ```
 
@@ -123,6 +157,11 @@ rewritten to `batch_progress.tsv` and successful samples have status `sampled`.
 
 Omit both `--download-only` and `--run` for a safe dry run. Use `--run` instead
 to download the selected batch and run the R preparation step for each archive.
+
+Prepared batch outputs are isolated by ancestry, batch, gene, and source. The
+execution plan and progress TSV record their exact paths; downstream consumers
+should use those paths rather than assuming a shared `<GENE>.tsv`. See the
+[output migration guide](docs/execution_foundation.md#prepared-output-identity).
 
 Runtime outputs and raw archives are ignored by Git. Only synthetic fixtures are
 committed.

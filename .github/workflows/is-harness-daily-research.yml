@@ -46,13 +46,52 @@ jobs:
               sort: 'created', direction: 'desc',
             });
             const existing = recent.data.find(issue => !issue.pull_request && issue.title === title);
+            // If the worker is offline or a previous research refresh is still
+            // queued/running, hold the queue. Stale work must be visibly failed,
+            // not reported as a successful research refresh. Never requeue it.
+            const pendingResearchJobs = [];
+            for (const label of ['is-harness-queued', 'is-harness-running']) {
+              const response = await github.rest.issues.listForRepo({
+                owner, repo, state: 'open', labels: label, per_page: 100,
+                sort: 'created', direction: 'asc',
+              });
+              const pending = response.data;
+              if (pending.length >= 100) {
+                core.setFailed('HOLD_QUEUE_INVENTORY_LIMIT: inspect the ' + label +
+                  ' backlog before continuing; no issue was changed.');
+                return;
+              }
+              const researchJobs = pending.filter(issue => {
+                if (issue.pull_request) return false;
+                try {
+                  return JSON.parse(issue.body || '{}').operation === 'research-refresh';
+                } catch { return false; }
+              });
+              for (const issue of researchJobs) {
+                const timestamp = label === 'is-harness-running' ? issue.updated_at : issue.created_at;
+                const ageMs = Date.now() - Date.parse(timestamp);
+                if (!Number.isFinite(ageMs) || ageMs < 0 || ageMs >= 60 * 60 * 1000) {
+                  core.setFailed('HOLD_STALE_REQUEST: research refresh #' + issue.number +
+                    ' is ' + label + '; inspect the worker and request state before manual recovery. ' +
+                    'No issue was changed and no replacement was queued.');
+                  return;
+                }
+                pendingResearchJobs.push({ issue, label });
+              }
+            }
+            if (pendingResearchJobs.length) {
+              const { issue, label } = pendingResearchJobs[0];
+              core.warning('Skipped slot ' + title + ': existing research refresh #' +
+                issue.number + ' is ' + label);
+              return;
+            }
             if (existing) {
               core.notice('Slot already registered: #' + existing.number + ' (' + title + ')');
               return;
             }
-            // Server performs a local source-metadata check every ~5 minutes.
-            // GitHub cron cannot see private server file updates; its role is a
-            // low-volume hourly failover, not 288 identical audit Issues/day.
+
+            // Server watches local source metadata; GitHub is an hourly failover.
+            // Check pending/stale work first so a recent success cannot hide it.
             const latestPassed = recent.data.find(issue =>
               !issue.pull_request &&
               issue.labels?.some(l => l.name === 'is-harness-done') &&
@@ -61,25 +100,6 @@ jobs:
             if (latestPassed && (Date.now() - Date.parse(latestPassed.updated_at)) < 60 * 60 * 1000) {
               core.notice('Recent validated research refresh exists; server watches input changes. No duplicate Issue.');
               return;
-            }
-
-            // If the worker is offline or a previous research refresh is still
-            // queued/running, do not accumulate potentially unbounded backlog.
-            for (const label of ['is-harness-queued', 'is-harness-running']) {
-              const pending = await github.rest.issues.listForRepo({
-                owner, repo, state: 'open', labels: label, per_page: 100,
-              });
-              const existingResearchJob = pending.data.find(issue => {
-                if (issue.pull_request) return false;
-                try {
-                  return JSON.parse(issue.body || '{}').operation === 'research-refresh';
-                } catch { return false; }
-              });
-              if (existingResearchJob) {
-                core.warning('Skipped slot ' + title + ': existing research refresh #' +
-                  existingResearchJob.number + ' is ' + label);
-                return;
-              }
             }
 
             const created = await github.rest.issues.create({

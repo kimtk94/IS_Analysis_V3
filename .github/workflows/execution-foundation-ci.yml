@@ -1,0 +1,56 @@
+name: Execution foundation regressions
+
+on:
+  push:
+    branches: [main, 'maintenance/**']
+    paths:
+      - 'scripts/**'
+      - 'workflow/**'
+      - 'server/**'
+      - 'deploy/is-harness/**'
+      - 'tests/**'
+      - 'requirements-test.txt'
+      - '.dockerignore'
+      - '.github/workflows/execution-foundation-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'workflow/**'
+      - 'server/**'
+      - 'deploy/is-harness/**'
+      - 'tests/**'
+      - 'requirements-test.txt'
+      - '.dockerignore'
+      - '.github/workflows/execution-foundation-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: execution-foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fixtures-python-and-r:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runtimes
+        run: |
+          python -m pip install -r requirements-test.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends r-base-core
+          Rscript --version
+      - name: Run self-contained Python and R regressions
+        run: bash scripts/codex_smoke_test.sh --fixture-only
+      - name: Check shell syntax and Python compilation
+        run: |
+          git ls-files -z '*.sh' | xargs -0 -r -n1 bash -n
+          python -m compileall -q scripts workflow server

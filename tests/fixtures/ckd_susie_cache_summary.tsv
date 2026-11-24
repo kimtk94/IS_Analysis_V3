@@ -1,0 +1,4 @@
+snp	pos37	effect_allele	other_allele	beta	varbeta	MAF	N
+rsSYNTH1	101	G	A	0.10	0.0025	0.20	100
+rsSYNTH2	202	T	C	0.20	0.0036	0.30	100
+rsSYNTH3	303	C	A	-0.10	0.0016	0.40	100

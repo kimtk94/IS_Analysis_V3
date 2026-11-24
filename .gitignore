@@ -1,6 +1,8 @@
 # Runtime data and analysis products belong on persistent storage, not in Git.
 data/rawdata/
 results/
+# Optional pinned historical checkout for source integration validation.
+legacy/
 *.tar
 *.tar.gz
 *.tgz

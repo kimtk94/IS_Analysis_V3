@@ -5,8 +5,13 @@ ROOT=pathlib.Path("/srv/is-analysis")
 REPO=ROOT/"IS_Analysis_V3"
 RESULTS=ROOT/"results/is"
 API="https://api.github.com/repos/kimtk94/IS_Analysis_V3"
-WORKER_VERSION="20261016-science-heartbeat-v2"
+WORKER_VERSION="20261124-stale-queue-hold-v3"
+STALE_REQUEST_SECONDS=3600
 ALLOWED={"status","inventory","tests","mkdir-output","headers","eas5-audit","candidate-2225-audit","figure-manifest","research-refresh"}
+
+class QueueHold(RuntimeError):
+    """Queue state cannot safely authorize further automated execution."""
+
 def is_trusted_issue(author, operation, title):
     """Bot may only enqueue restricted scheduled research refresh jobs."""
     if author.lower() == "kimtk94":
@@ -81,6 +86,52 @@ def is_pending_research_issue(issue):
     except (ValueError,TypeError):
         return False
 
+def stale_request_hold(issue, now_utc, stale_after_seconds=STALE_REQUEST_SECONDS):
+    """Report an aged request without assuming its execution has stopped.
+
+    Queued age uses creation time so unrelated edits cannot indefinitely refresh
+    a backlog. Running age uses the last update, which includes the start comment.
+    This is an operator hold, never permission to kill, delete, or requeue a job.
+    """
+    labels={label.get("name") for label in issue.get("labels",[])}
+    state=("running" if "is-harness-running" in labels else
+           "queued" if "is-harness-queued" in labels else None)
+    if state is None:
+        return None
+    unknown=(f"HOLD_REQUEST_TIME_UNKNOWN issue=#{issue.get('number','UNKNOWN')} "
+             f"state={state}; valid timestamp required before execution")
+    timestamp=issue.get("updated_at" if state=="running" else "created_at")
+    if not timestamp:
+        return unknown
+    try:
+        observed=dt.datetime.fromisoformat(timestamp.replace("Z","+00:00"))
+        if observed.tzinfo is None or now_utc.tzinfo is None:
+            return unknown
+        age=(now_utc-observed).total_seconds()
+    except (ValueError,TypeError,AttributeError):
+        return unknown
+    if age<0:
+        return unknown
+    if age<stale_after_seconds:
+        return None
+    return (f"HOLD_STALE_REQUEST issue=#{issue.get('number','UNKNOWN')} "
+            f"state={state} age_seconds={int(age)}; "
+            "operator inspection required; no automatic requeue or cancellation")
+
+
+def open_pending_issues(token):
+    """Bound inventory calls; completed Issues cannot hide an old pending job."""
+    issues={}
+    for label in ("is-harness-queued", "is-harness-running"):
+        path=(f"/issues?state=open&labels={label}"
+              "&sort=created&direction=asc&per_page=100")
+        batch=api("GET",path,token)
+        if len(batch)>=100:
+            raise QueueHold(f"HOLD_QUEUE_INVENTORY_LIMIT label={label}; inspect backlog before execution")
+        for issue in batch:
+            issues[issue["number"]]=issue
+    return list(issues.values())
+
 def ensure_scheduled_research_issue(token,now_utc):
     """Server-side fallback if GitHub cron is delayed; no catch-up or arbitrary jobs.
 
@@ -88,6 +139,15 @@ def ensure_scheduled_research_issue(token,now_utc):
     Existing GitHub-scheduled Issues use exactly the same title and JSON body.
     """
     title=scheduled_slot_title(now_utc)
+    # Always inspect both pending states before the local fast path. Otherwise a
+    # stranded running job could be hidden by a recent input-metadata snapshot.
+    active=[issue for issue in open_pending_issues(token) if is_pending_research_issue(issue)]
+    for issue in active:
+        hold=stale_request_hold(issue,now_utc)
+        if hold:
+            return hold
+    if active:
+        return "PENDING_REFRESH_EXISTS"
     # Five-minute heartbeat checks local source metadata first.
     # No new Issue is needed when all sources match the latest full audit.
     if unchanged_inputs_within_hour(now_utc):
@@ -95,10 +155,6 @@ def ensure_scheduled_research_issue(token,now_utc):
     recent=api("GET","/issues?state=all&sort=created&direction=desc&per_page=100",token)
     if any("pull_request" not in issue and issue.get("title")==title for issue in recent):
         return "SLOT_ALREADY_ENQUEUED"
-    # Block backlogs if any previous refresh is still queued or running.
-    active=api("GET","/issues?state=open&sort=updated&direction=desc&per_page=100",token)
-    if any(is_pending_research_issue(issue) for issue in active):
-        return "PENDING_REFRESH_EXISTS"
     created=api("POST","/issues",token,{
         "title":title,
         "body":json.dumps({"operation":"research-refresh"}),
@@ -176,7 +232,7 @@ def _run_job_unlocked(op):
     elif op=="inventory":
         commands=[["find",str(RESULTS/"audits"),"-maxdepth","3","-type","f","-name","IS_EAS5*"]]
     elif op=="tests":
-        commands=[["python3","-m","pytest","-q","tests/test_is_public_nominal_qtl_readiness.py","tests/test_is_public_nominal_qtl_region_queue.py","tests/test_is_gwas_qtl_snp_harmonization.py","tests/test_is_inventory_snp_inputs.py"]]
+        commands=[["bash","scripts/codex_smoke_test.sh"]]
     elif op=="headers":
         base=RESULTS/"audits"
         targets=[
@@ -217,17 +273,29 @@ def main():
     token=os.environ.get("IS_QUEUE_GITHUB_TOKEN","")
     if not token: p.error("IS_QUEUE_GITHUB_TOKEN missing")
     while True:
+        held_request=False
+        claimed_issue=None
         try:
             try:
                 poll_time=dt.datetime.now(dt.timezone.utc)
                 fallback=ensure_scheduled_research_issue(token,poll_time)
                 heartbeat_state=record_heartbeat(poll_time,fallback)
+                held_request=fallback.startswith("HOLD_")
                 if fallback not in {"UNCHANGED_SOURCES_FAST_CHECK"}:
                     print("five-minute scheduling:",fallback,"heartbeat:",heartbeat_state,flush=True)
+            except QueueHold as hold:
+                held_request=True
+                print(str(hold),flush=True)
+                record_heartbeat(poll_time,str(hold))
             except Exception as fallback_error:
                 # Scheduling error must never block manual or GitHub-enqueued jobs.
                 print("five-minute scheduling unavailable:",
                       type(fallback_error).__name__,str(fallback_error)[:300],flush=True)
+            if held_request:
+                if args.once:
+                    raise SystemExit(2)
+                time.sleep(args.interval)
+                continue
             issues=api("GET","/issues?state=open&labels=is-harness-queued&per_page=30",token)
             print(f"queue poll: {len(issues)} queued issue(s)", flush=True)
             for issue in issues:
@@ -248,7 +316,13 @@ def main():
                 if not is_trusted_issue(author, op, issue.get("title","")):
                     print(f"issue #{num}: skipped (untrusted author for {op})",flush=True)
                     continue
+                hold=stale_request_hold(issue,dt.datetime.now(dt.timezone.utc))
+                if hold:
+                    held_request=True
+                    print(hold,flush=True)
+                    continue
                 # Claim by removing queued label BEFORE executing. If claim fails, do not execute.
+                claimed_issue=num
                 try: api("DELETE",f"/issues/{num}/labels/is-harness-queued",token)
                 except urllib.error.HTTPError as e:
                     detail=e.read().decode("utf-8",errors="replace")[:700]
@@ -282,9 +356,17 @@ def main():
                     except urllib.error.HTTPError: pass
                     api("POST",f"/issues/{num}/labels",token,{"labels":["is-harness-done" if status=="PASS" else "is-harness-failed"]})
                 print(f"issue #{num}: {status}",flush=True)
+                # A single service activation has one bounded execution budget.
+                # Leave additional queued work for the next timer invocation.
+                break
         except Exception as e:
+            if claimed_issue is not None:
+                print(f"HOLD_QUEUE_STATE_UNCERTAIN issue=#{claimed_issue}; inspect remote labels and execution before manual recovery; no automatic retry",flush=True)
             print("queue poll error:",type(e).__name__,str(e)[:300],flush=True)
             if args.once: raise SystemExit(1) from e
-        if args.once: break
+        if args.once:
+            if held_request:
+                raise SystemExit(2)
+            break
         time.sleep(args.interval)
 if __name__=="__main__": main()

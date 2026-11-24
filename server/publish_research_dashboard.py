@@ -2,7 +2,7 @@
 """Publish research results from IS_Analysis_V3 into the private Vercel dashboard repo.
 
 Designed for:
-  source: /srv/is-analysis/IS_Analysis_V3
+  results: /srv/is-analysis/results (separate from the code checkout)
   dashboard clone: a local clone of kimtk94/brain_research_mr_scrna_seq
 
 The script never stores credentials. Optional --git-push uses the dashboard
@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import shutil
 import subprocess
 from datetime import datetime, timezone
@@ -23,8 +24,9 @@ IMAGE_EXTS = {".png", ".svg", ".jpg", ".jpeg", ".webp"}
 
 def read_json(path: Path) -> Optional[Dict[str, Any]]:
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
+        value = json.loads(path.read_text(encoding="utf-8"))
+        return value if isinstance(value, dict) else None
+    except (OSError, UnicodeError, ValueError):
         return None
 
 def read_tsv(path: Path) -> List[Dict[str, str]]:
@@ -63,8 +65,8 @@ def copy_figures(source_root: Path, dashboard_public: Path, slug: str) -> List[D
         })
     return figures
 
-def ckd_manifest(root: Path, public: Path) -> Dict[str, Any]:
-    base = root / "results" / "ckd"
+def ckd_manifest(results_root: Path, public: Path) -> Dict[str, Any]:
+    base = results_root / "ckd"
     metrics: List[Dict[str, str]] = []
     highlights: List[str] = []
 
@@ -105,17 +107,19 @@ def ckd_manifest(root: Path, public: Path) -> Dict[str, Any]:
             if key in j:
                 metrics.append({"label": label, "value": str(j[key])})
 
-    if not metrics:
-        metrics = [
-            {"label": "Eligible proteins", "value": "1,936"},
-            {"label": "Strong cis signals", "value": "10,010", "note": "F>10, MHC excluded"},
-        ]
-    return {"status": "live", "metrics": metrics, "highlights": highlights, "figures": copy_figures(base, public, "ckd")}
+    return {
+        "status": "live" if metrics else "pending",
+        "input_status": "metrics_loaded" if metrics else "missing_or_unreadable_metrics",
+        "metrics": metrics,
+        "highlights": highlights,
+        "figures": copy_figures(base, public, "ckd") if base.is_dir() else [],
+    }
 
-def muscle_manifest(root: Path, public: Path) -> Dict[str, Any]:
-    base = root / "results"
+def muscle_manifest(results_root: Path, public: Path) -> Dict[str, Any]:
+    base = results_root / "muscle"
     metrics: List[Dict[str, str]] = []
     highlights: List[str] = []
+    status = "pending"
 
     s1 = first_match(base, "MUSCLE_STAGE1_SUMMARY.json")
     if s1:
@@ -126,11 +130,14 @@ def muscle_manifest(root: Path, public: Path) -> Dict[str, Any]:
             metrics.append({"label": "RT studies", "value": str(len(j["study_counts"]))})
         if "n_methods_threshold_pass" in j:
             metrics.append({"label": "Methods-threshold pass", "value": str(j["n_methods_threshold_pass"])})
-        highlights.append("Stage 1 GWAS locus audit summary was detected and synced.")
+        if metrics:
+            status = "stage1"
+            highlights.append("Stage 1 GWAS locus audit summary was detected and synced.")
 
     s2 = first_match(base, "MUSCLE_STAGE2A_SUMMARY.json")
     if s2:
         j = read_json(s2) or {}
+        previous_count = len(metrics)
         for key, label in (
             ("n_input_variants", "Stage 2A input variants"),
             ("n_variants_with_significant_eqtl", "Variants with muscle eQTL"),
@@ -139,38 +146,43 @@ def muscle_manifest(root: Path, public: Path) -> Dict[str, Any]:
         ):
             if key in j:
                 metrics.append({"label": label, "value": str(j[key])})
-        highlights.append("GTEx v10 Muscle_Skeletal eQTL/sQTL summary was detected and synced.")
+        if len(metrics) > previous_count:
+            status = "stage2a"
+            highlights.append("GTEx v10 Muscle_Skeletal eQTL/sQTL summary was detected and synced.")
 
-    if not metrics:
-        metrics = [
-            {"label": "Primary RT loci", "value": "20", "note": "Yang 2024 + Gu 2026"},
-            {"label": "HIIT comparator loci", "value": "8"},
-            {"label": "Current stage", "value": "Stage 2A", "note": "GTEx skeletal-muscle eQTL/sQTL"},
-        ]
-    return {"status": "stage2a", "metrics": metrics, "highlights": highlights, "figures": copy_figures(base / "muscle", public, "muscle") if (base / "muscle").exists() else []}
-
-def generic_manifest(root: Path, public: Path, slug: str, result_dir: str) -> Dict[str, Any]:
-    base = root / "results" / result_dir
     return {
-        "status": "live" if base.exists() else "pending",
-        "metrics": [],
-        "highlights": [],
-        "figures": copy_figures(base, public, slug) if base.exists() else [],
+        "status": status,
+        "input_status": "metrics_loaded" if metrics else "missing_or_unreadable_metrics",
+        "metrics": metrics,
+        "highlights": highlights,
+        "figures": copy_figures(base, public, "muscle") if base.is_dir() else [],
     }
 
-def run(source: Path, dashboard_repo: Path, git_push: bool) -> Path:
+def generic_manifest(results_root: Path, public: Path, slug: str, result_dir: str) -> Dict[str, Any]:
+    base = results_root / result_dir
+    figures = copy_figures(base, public, slug) if base.is_dir() else []
+    return {
+        "status": "live" if figures else "pending",
+        "input_status": "figures_loaded" if figures else "missing_figures",
+        "metrics": [],
+        "highlights": [],
+        "figures": figures,
+    }
+
+def run(results_root: Path, dashboard_repo: Path, git_push: bool) -> Path:
     public = dashboard_repo / "research-dashboard" / "public"
     if not public.exists():
         raise SystemExit(f"Dashboard public directory not found: {public}")
 
     manifest = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "source_root": str(source),
+        "source_root": str(results_root.parent),
+        "results_root": str(results_root),
         "studies": {
-            "ckd": ckd_manifest(source, public),
-            "is": generic_manifest(source, public, "is", "is"),
-            "metabolic-resilience": generic_manifest(source, public, "metabolic-resilience", "metabolic_resilience"),
-            "muscle": muscle_manifest(source, public),
+            "ckd": ckd_manifest(results_root, public),
+            "is": generic_manifest(results_root, public, "is", "is"),
+            "metabolic-resilience": generic_manifest(results_root, public, "metabolic-resilience", "metabolic_resilience"),
+            "muscle": muscle_manifest(results_root, public),
         },
     }
 
@@ -179,8 +191,11 @@ def run(source: Path, dashboard_repo: Path, git_push: bool) -> Path:
     out.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     if git_push:
+        tracked_paths = ["research-dashboard/public/data/research-manifest.json"]
+        if (public / "generated").is_dir():
+            tracked_paths.append("research-dashboard/public/generated")
         cmds = [
-            ["git", "add", "research-dashboard/public/data/research-manifest.json", "research-dashboard/public/generated"],
+            ["git", "add", *tracked_paths],
             ["git", "commit", "-m", "Auto-sync research dashboard outputs"],
             ["git", "push"],
         ]
@@ -197,11 +212,18 @@ def run(source: Path, dashboard_repo: Path, git_push: bool) -> Path:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--source", type=Path, default=Path("/srv/is-analysis/IS_Analysis_V3"))
+    roots = ap.add_mutually_exclusive_group()
+    roots.add_argument("--results-root", type=Path,
+                       help="Directory containing ckd/, is/, and muscle/ results")
+    roots.add_argument("--source", type=Path,
+                       help="Legacy work-root option; reads its results/ subdirectory")
     ap.add_argument("--dashboard-repo", type=Path, required=True)
     ap.add_argument("--git-push", action="store_true")
     args = ap.parse_args()
-    out = run(args.source.resolve(), args.dashboard_repo.resolve(), args.git_push)
+    results_root = (args.results_root or
+                    (args.source / "results" if args.source is not None else
+                     Path(os.environ.get("IS_ANALYSIS_ROOT", "/srv/is-analysis")) / "results"))
+    out = run(results_root.resolve(), args.dashboard_repo.resolve(), args.git_push)
     print(f"manifest={out}")
 
 if __name__ == "__main__":

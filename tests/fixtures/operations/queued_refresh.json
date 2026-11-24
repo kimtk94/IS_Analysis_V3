@@ -1,0 +1,9 @@
+{
+  "number":17,
+  "title":"IS Harness scheduled research refresh 2020-01-01 09:00 KST",
+  "body":"{\"operation\":\"research-refresh\"}",
+  "user":{"login":"github-actions[bot]"},
+  "labels":[{"name":"is-harness-queued"}],
+  "created_at":"2020-01-01T00:00:00Z",
+  "updated_at":"2020-01-01T00:00:00Z"
+}

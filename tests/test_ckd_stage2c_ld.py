@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import importlib.util
+import json
 import unittest
 from pathlib import Path
+from unittest.mock import mock_open, patch
 
 P = Path(__file__).resolve().parents[1] / "scripts" / "prepare_ckd_stage2c_ld.py"
 spec = importlib.util.spec_from_file_location("m", P)
@@ -10,6 +12,21 @@ spec.loader.exec_module(m)
 
 
 class Stage2CLDTests(unittest.TestCase):
+    def test_related_id_formats_and_actual_exclusion(self):
+        fixture = Path(__file__).parent / "fixtures" / "ckd_related_ids_cases.json"
+        for case in json.loads(fixture.read_text(encoding="utf-8")):
+            with self.subTest(case=case["name"]):
+                with patch.object(Path, "open", mock_open(read_data=case["text"])):
+                    if case.get("error"):
+                        with self.assertRaises(ValueError):
+                            m.parse_related_ids(fixture)
+                    else:
+                        excluded = m.parse_related_ids(fixture)
+                        self.assertEqual(excluded, set(case["expected"]))
+                        retained = [sample for sample in ["SYNTH_A", "SYNTH_B", "UNRELATED"]
+                                    if sample not in excluded]
+                        self.assertEqual(retained, ["UNRELATED"])
+
     def test_choose_region_block(self):
         blocks={"1":[(100,200),(201,400)]}
         lo,hi,src,rawlo,rawhi,trunc=m.choose_region("1",150,[80,90,100,150,200,250],blocks,500)
