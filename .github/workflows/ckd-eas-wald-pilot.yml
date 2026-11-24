@@ -1,0 +1,54 @@
+name: CKD fixed EAS sentinel Wald pilot
+on:
+  push:
+    branches: [research/ckd-eas-wald-20261124]
+    paths: ['scripts/ckd_eas_wald_pilot.py','.github/workflows/ckd-eas-wald-pilot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  outcome:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - trait: egfr
+            file_id: 42774049
+          - trait: bun
+            file_id: 43218600
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/ckd_eas_wald_pilot.py selftest
+      - run: python3 -m pip install pyliftover==0.4.1
+      - name: Retrieve frozen aggregate pQTL archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 45 --max-filesize 1000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14922665771/zip" -o "$RUNNER_TEMP/panel.zip"
+      - name: Obtain exact public build chains and publisher outcome metadata
+        run: |
+          set -eu
+          for pair in hg38:hg19 hg19:hg38; do
+            from=${pair%:*}
+            to=${pair#*:}
+            up=$(echo "$to" | sed 's/^h/H/')
+            curl -fLsS --retry 1 --connect-timeout 15 --max-time 60 --max-filesize 10000000 "https://hgdownload.soe.ucsc.edu/goldenPath/$from/liftOver/${from}To${up}.over.chain.gz" -o "$RUNNER_TEMP/${from}To${up}.over.chain.gz"
+            curl -fLsS --retry 1 --connect-timeout 15 --max-time 45 --max-filesize 1000000 "https://hgdownload.soe.ucsc.edu/goldenPath/$from/liftOver/md5sum.txt" -o "$RUNNER_TEMP/$from.md5"
+          done
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 45 --max-filesize 1000000 "https://api.figshare.com/v2/articles/24356587" -o "$RUNNER_TEMP/figshare.json"
+      - name: Download publisher original GWAS (bounded)
+        run: |
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 180 --max-filesize 160000000 "https://ndownloader.figshare.com/files/${{ matrix.file_id }}" -o "$RUNNER_TEMP/outcome.gz"
+      - name: Verify source and calculate fixed exploratory Wald ratios
+        run: python3 scripts/ckd_eas_wald_pilot.py ${{ matrix.trait }} --root "$RUNNER_TEMP" --out outputs/${{ matrix.trait }}.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-eas-${{ matrix.trait }}-wald-pilot
+          path: outputs/${{ matrix.trait }}.json
+          if-no-files-found: error
+          retention-days: 90
