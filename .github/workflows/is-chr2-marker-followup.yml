@@ -1,0 +1,49 @@
+name: IS chr2 fixed marker subtype and public reference follow-up
+on:
+  push:
+    branches: [research/is-cross-ancestry-effect-20261124]
+    paths: ['scripts/is/chr2_marker_followup.py','.github/workflows/is-chr2-marker-followup.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  archived-subtypes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - name: Retrieve previous verified contrast artifact only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 1000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14925237590/zip" -o "$RUNNER_TEMP/prior.zip"
+      - run: python3 scripts/is/chr2_marker_followup.py contrast --root "$RUNNER_TEMP" --legacy legacy/docs/data/is/IS_30_REGIONS_SIX_OUTCOMES_GWAS_CONTEXT_500KB.tsv --out outputs/subtypes.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-chr2-archived-subtype-contrasts
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
+  public-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m py_compile scripts/is/chr2_marker_followup.py
+      - run: python3 scripts/is/chr2_marker_followup.py reference --out outputs/reference.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-chr2-public-reference-and-koges
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
