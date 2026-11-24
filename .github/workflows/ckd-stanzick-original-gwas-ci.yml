@@ -1,0 +1,43 @@
+name: CKD Stanzick Original GWAS Target Audit
+on:
+  push:
+    branches: [research/thesis-evidence-freeze-20261015]
+    paths:
+      - 'scripts/audit_ckd_stanzick_four_variants.py'
+      - '.github/workflows/ckd-stanzick-original-gwas-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-gwas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: is-research-readonly
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare read-only SSH
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for name in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            test -n "${!name}" || exit 1
+          done
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/ckd_audit
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/ckd_audit ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/ckd_audit >/dev/null
+      - name: Read Stanzick full raw GWAS only
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -o ConnectTimeout=15 -i ~/.ssh/ckd_audit "$SSH_USER@$SSH_HOST" 'python3 -' < scripts/audit_ckd_stanzick_four_variants.py
+      - name: Remove identity
+        if: always()
+        run: rm -f ~/.ssh/ckd_audit

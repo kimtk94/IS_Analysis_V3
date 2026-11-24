@@ -1,0 +1,17 @@
+name: CKD UMOD Serverless Input Gate
+on:
+  push:
+    branches: [research/thesis-evidence-freeze-20261015]
+    paths:
+      - '.github/workflows/ckd-umod-serverless-gate.yml'
+      - 'scripts/ckd_umod_serverless_gate.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  input-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check whether serverless UMOD input bundle is available
+        run: python3 scripts/ckd_umod_serverless_gate.py
