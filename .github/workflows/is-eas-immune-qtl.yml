@@ -1,0 +1,43 @@
+name: IS East Asian immune regulatory candidate evidence
+on:
+  push:
+    branches: [research/is-cross-ancestry-effect-20261124]
+    paths: ['scripts/is/eas_immune_qtl_source.py','.github/workflows/is-eas-immune-qtl.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  japanese-conditional:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/is/eas_immune_qtl_source.py selftest
+      - name: Download exact public Japanese conditional archive
+        run: |
+          curl -fLsS --connect-timeout 20 --max-time 360 --max-filesize 570000000 "https://ddbj.nig.ac.jp/public/ddbj_database/gea/experiment/E-GEAD-000/E-GEAD-398/E-GEAD-398.processed.zip" -o "$RUNNER_TEMP/conditional.zip"
+      - run: python scripts/is/eas_immune_qtl_source.py scan --root "$RUNNER_TEMP" --out outputs/japanese.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-japanese-conditional-fixed-genes
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
+  maeea-nominal-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/is/eas_immune_qtl_source.py metadata --out outputs/maeea.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-maeea-nominal-file-inventory
+          path: outputs/
+          if-no-files-found: error
