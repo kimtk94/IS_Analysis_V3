@@ -1,0 +1,60 @@
+name: Ocular P9 Prospective TM Functional Validation Evidence
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  three-orthogonal-validation-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [panel, audit, protocol]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify P9 static parser
+        run: |
+          python -m py_compile scripts/ocular/ocular_p9_tm_validation_panel.py
+      - name: Retrieve immutable public aggregate evidence from P5b, P7a, P8a
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ matrix.mode }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/p9/p5" "$RUNNER_TEMP/p9/p7" "$RUNNER_TEMP/p9/p8" "ocular-p9-${MODE}-public"
+          gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p9/p5"
+          gh run download 41179413138 -n ocular-p7-emt-gate -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p9/p7"
+          gh run download 41181407360 -n ocular-p8-emt-gate -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p9/p8"
+          test -s "$RUNNER_TEMP/p9/p5/p5_all_gene_results.tsv.gz"
+          test -s "$RUNNER_TEMP/p9/p7/P7a_194_emt_gene_concordance.tsv"
+          test -s "$RUNNER_TEMP/p9/p7/P7a_12_targets_and_TM_ECM_marker_panel.tsv"
+          test -s "$RUNNER_TEMP/p9/p8/P8a_49_double_FDR_significant_EMT_genes.tsv"
+      - name: Execute source-crosswalked P9 test
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          python -u scripts/ocular/ocular_p9_tm_validation_panel.py \
+            --mode "$MODE" \
+            --primary "$RUNNER_TEMP/p9/p5/p5_all_gene_results.tsv.gz" \
+            --p7-panel "$RUNNER_TEMP/p9/p7/P7a_12_targets_and_TM_ECM_marker_panel.tsv" \
+            --p7-emt "$RUNNER_TEMP/p9/p7/P7a_194_emt_gene_concordance.tsv" \
+            --p8-both "$RUNNER_TEMP/p9/p8/P8a_49_double_FDR_significant_EMT_genes.tsv" \
+            --out "ocular-p9-${MODE}-public"
+      - name: Remove downloaded source evidence
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p9"
+      - name: Publish gene-level only, no original donor or raw sequences
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p9-${{ matrix.mode }}-gate
+          path: ocular-p9-${{ matrix.mode }}-public/
+          retention-days: 30
+          if-no-files-found: warn

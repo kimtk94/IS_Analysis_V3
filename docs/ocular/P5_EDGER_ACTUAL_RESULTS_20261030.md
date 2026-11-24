@@ -1,0 +1,32 @@
+# Ocular P5 — actual 57-pair BeamA edgeR QL inference (2026-10-30)
+
+## Independent evidence of execution
+- **[Corrected treatment-group filtering CI run #41074586446](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41074586446)**: completed success, P4 stream and private count export success, R edgeR model fit success, private pseudobulk file removal success. Public [artifact ID 12987425927](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41074586446/artifacts/12987425927) has summary JSON, full **aggregate gene-level** statistics, top100, pool direction table, QC and figures. *No donor-level count matrix or per-donor IDs is included.*
+- Primary frozen selection: GSE313736, 57 paired human TM donors, Chen2025 fine BeamA confidence >=0.75, >=30 SNG cells per arm, source 18 raw 10x matrices, 36,601 gene features, 114 biological donor-condition pseudobulks, 86,077 matrix-matched cells, 1,927,677,307 raw UMIs.
+- edgeR **4.0.16**, R **4.3.3**, TMM normalization, `~ pair_id + treatment`, design rank **58/58**, residual df **56**, robust negative-binomial quasi-likelihood F-test, BH-FDR; gene filter `filterByExpr(d,group=treatment,min.count=10,min.total.count=15)` following edgeR paired-study guide.
+- **16,050 tested genes**, 20,551 excluded by gene-count filter. **13,717 FDR <0.05** (7,225 higher on DEX, 6,492 lower); **10,070 FDR<0.05 AND absolute log2FC >=0.25** (5,210 up and 4,860 down).
+- **High-effect check `|log2FC|>=3` with FDR<0.05: 67 up, 16 down, total 83**. GSE313736 original GEO abstract reported 63 up and 17 down high-effect genes (report's down threshold notation ambiguous). Counts are *approximately consistent*, **exact gene-set overlap is not yet established**.
+- Important: 13,717 / 16,050 = **85.46%** significant, unusually large fraction requiring technical and biological scrutiny. High sample count and strong DEX response can contribute, but DEX and Vehicle each use distinct 10x libraries per pool: technical-treatment confounding cannot be ruled out by donor blocking alone. Prespecified pool G DEX barcode recall 92.743% (other 17 >=95%) stays a sensitivity flag.
+- TMM factors [0.768,1.167]; per-sample pseudo library sizes [2,137,534,36,899,284], common dispersion 0.02426255.
+- Positive controls: `FKBP5` log2FC **3.984**, FDR **3.07e-47**; `FAM107A` **4.233**, FDR **7.72e-39**; `MYOC` **4.026**, FDR **9.65e-41**; `ANGPTL7` **5.144**, FDR **1.89e-37**; `TSC22D3` **2.913**, FDR **7.06e-51**. Clinical GWAS-related `UBE2E3` log2FC **-0.096**, FDR **8.48e-4**, a small transcript change; clinical causality cannot be inferred.
+- Top inferential genes: HIPK2 (logFC 2.740, FDR 8.73e-54), OCA2 (7.143, 8.73e-54), HIF3A (6.351, 8.79e-53), PTK2B (3.146, 7.40e-52), MAOA (4.443, 7.56e-52). **These are candidates, not automatically novel genes**.
+- Top100 signed gene effects show **100/100 with matching effect direction in all 9 donor pools** when assessed by descriptive paired log-CPM deltas. This is *not* nine independently processed laboratories or a leave-one-pool-out QL model: same study protocol, possible repeated technical bias.
+- Diagnostic caveat: In the first P5 artifact, `p5_MDS_aggregate.png` was **blank** because R supplied empty plot labels. The statistical model is unaffected; R source was updated to explicitly plot anonymous MDS coordinates, but that corrected figure has **not been re-executed**. Do not use initial blank MDS figure in manuscript. MA plot is valid.
+- Filtering sensitivity audit: preceding initial run [#41074453212](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41074453212) used `filterByExpr(design=donor+treatment)`, contrary to the preferred paired-study guide; it tested 20,067 genes and reported 16,208 significant. This is **not the primary analysis**. On 16,050 common genes, log2FC Pearson correlation between versions = **0.999997**; FDR totals differ due to filtering/model refit and must not be conflated. The corrected run above is the sole prespecified primary results table.
+
+## Analysis GO vs manuscript GO
+- **GO statistical pipeline/existence of molecular DEX signal:** source files, raw integer pseudobulk, rank, QL model, BH/FDR, known positive-control response and cross-pool sign agreement verified.
+- **HOLD technical exclusion of bias:** 85% discovery fraction, treatment-separate libraries, explicit normalization / sample-embedding MDS/PCA and leave-pool-G-out robust QL re-fit still required. The MA plot alone is inadequate.
+- **HOLD claim of novelty:** original GSE313736 authors already described sc-eQTLs/DEX DEGs; Mehrotra et al. 2026 IOVS (PMID 41636427) already detected FKBP5/FAM107A and TM/SCE ECM/adhesion pathways. Compare exact candidate lists and regulatory mechanisms with published figures before any new mechanistic claim.
+- **HOLD external replication:** PRJNA1243143 has 46 ENA read runs, but donor/sample/DEX/timepoint labeling not verified; different 100 nM versus GSE313736 nominal 500 nM 48h.
+- **STOP clinical adverse-effect prediction claims:** cultured TM data include no directly observed clinical steroid-related delta IOP. Clinical genetic data may require controlled dbGaP phs004037.
+
+## Required next P5b test
+1. Correct and run MDS/PCA with anonymized points, check whether all treatment samples cluster separately across pools or are library confounded; include paired donor displacement plot without donor labels.
+2. Formal leave-one-pool-out 9 refits, especially excluding G DEX dropout, plus alternate BeamA classifier cutoff and 30/50 cell thresholds. Report changes in prioritized FDR and logFC rather than only 9/9 descriptive signs.
+3. Exact overlap of 83 large-effect DEGs vs original 80 high-effect DEGs where available, published FAM107A/FKBP5 positive controls and 2026 ECM gene sets, plus independently verified gene annotation and pathway evidence.
+4. Replicate PRJNA1243143 with verified sample-level metadata. Only after this, decide if any **new** pathway has interpretable causal and clinical implications.
+
+## Provenance and confidentiality
+- Source R: `scripts/ocular/ocular_p5_edger.R`; runner-local private raw matrix export: `scripts/ocular/ocular_p4_fullcohort.py --internal-export-dir`; GitHub Actions: `.github/workflows/ocular-p5-edger.yml` (now workflow_dispatch-only to avoid recurrent 6.5GB downloads).
+- All donor-level raw profiles and pseudonymous sample IDs were removed after execution; Git public artifact contains only gene-level summary statistics and pooled QC, not individual donor counts or identifiers.

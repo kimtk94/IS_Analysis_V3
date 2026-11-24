@@ -1,0 +1,47 @@
+name: Ocular GSE313736 Author80 Public Discovery and Evidence Gate
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/ocular-p0-data-access-audit-20261030
+    paths:
+      - scripts/ocular/ocular_gse313736_author80_public_gate.py
+      - .github/workflows/ocular-gse313736-author80-public-gate.yml
+
+permissions:
+  contents: read
+
+jobs:
+  test-author-table-validator:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and self-test author gene ID, provenance and 63/17 gate
+        run: |
+          python -m py_compile scripts/ocular/ocular_gse313736_author80_public_gate.py
+          python scripts/ocular/ocular_gse313736_author80_public_gate.py --self-test --out /tmp/ocular-author80-self-test
+
+  check-official-public-sources:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Discover public original-author sources without treating hits as verified DEGs
+        run: |
+          mkdir -p ocular-author80-public-inventory
+          python -u scripts/ocular/ocular_gse313736_author80_public_gate.py --out ocular-author80-public-inventory
+      - name: Upload compact public retrieval and HOLD manifest only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gse313736-author80-public-discovery-manifest
+          path: ocular-author80-public-inventory/
+          retention-days: 60
+          if-no-files-found: warn

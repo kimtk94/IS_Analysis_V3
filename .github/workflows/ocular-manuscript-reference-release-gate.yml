@@ -1,0 +1,42 @@
+name: Ocular Thesis Manuscript and Citation Release Gate
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fixture-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile manuscript checks and exercise local URI logic
+        run: |
+          python -m py_compile scripts/ocular/ocular_manuscript_reference_release_gate.py
+          python scripts/ocular/ocular_manuscript_reference_release_gate.py --self-test
+
+  verify-manuscript-and-source-links:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check citation coverage, local path existence and scope language
+        run: |
+          mkdir -p ocular-manuscript-release-gate
+          python -u scripts/ocular/ocular_manuscript_reference_release_gate.py \
+            --repo . --out ocular-manuscript-release-gate
+      - name: Upload source-linked scope and bibliography report only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-thesis-manuscript-reference-release-proof
+          path: ocular-manuscript-release-gate/
+          retention-days: 60
+          if-no-files-found: warn

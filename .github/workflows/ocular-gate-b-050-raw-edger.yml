@@ -1,0 +1,56 @@
+name: Ocular Gate B BeamA Score050 Full Raw-Count QL Sensitivity
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  paired-donor-score050-refit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact edgeR and numeric dependencies
+        run: |
+          python -m pip install 'numpy==1.26.4'
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends r-base-core r-bioc-edger r-cran-statmod r-cran-jsonlite
+          Rscript -e 'stopifnot(requireNamespace("edgeR",quietly=TRUE),requireNamespace("jsonlite",quietly=TRUE));invisible(parse(file="scripts/ocular/ocular_gate_b_050_edger.R"));cat("GATE_B_EDGER_PARSE_PASS\n")'
+          python -m py_compile scripts/ocular/ocular_p4_fullcohort.py scripts/ocular/ocular_gate_b_050_vs_075_compare.py scripts/ocular/ocular_gate_b_050_p4_retry.py
+      - name: Fetch immutable original score075 P5 primary all-gene reference
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/ocular-b50-private" "$RUNNER_TEMP/ocular-b50-primary" ocular-b50-public
+          gh run download 41085982185 -n ocular-p5b-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/ocular-b50-primary"
+          test -s "$RUNNER_TEMP/ocular-b50-primary/p5_all_gene_results.tsv.gz"
+      - name: Stream original 18 10x public libraries once and aggregate at BeamA score050
+        run: |
+          python -u scripts/ocular/ocular_gate_b_050_p4_retry.py --score 0.50 --min-cells 30 --internal-export-dir "$RUNNER_TEMP/ocular-b50-private" --output ocular-b50-public/source_score050_qc.json
+      - name: Fit donor-blocked raw-count score050 edgeR robust QL model
+        run: |
+          Rscript scripts/ocular/ocular_gate_b_050_edger.R "$RUNNER_TEMP/ocular-b50-private" ocular-b50-public
+      - name: Compare all common Ensembl genes with pinned score075 primary model
+        run: |
+          python -u scripts/ocular/ocular_gate_b_050_vs_075_compare.py \
+            --baseline-075 "$RUNNER_TEMP/ocular-b50-primary/p5_all_gene_results.tsv.gz" \
+            --new-050 ocular-b50-public/p5_all_gene_results.tsv.gz \
+            --source-050 ocular-b50-public/source_score050_qc.json \
+            --out ocular-b50-public
+      - name: Destroy donor-level raw-count data and reference copies
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/ocular-b50-private" "$RUNNER_TEMP/ocular-b50-primary"
+      - name: Retain only aggregate statistics and anonymized figures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gate-b-050-full-ql-refit
+          path: ocular-b50-public/
+          retention-days: 30
+          if-no-files-found: warn

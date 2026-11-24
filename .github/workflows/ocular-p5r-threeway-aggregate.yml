@@ -1,0 +1,71 @@
+name: Ocular P5r Parallel Three-Way Public Aggregate Audits
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  three-independent-audits:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [thresholds, timecourse, consensus]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and unit-test portable aggregate audit
+        run: |
+          python -m py_compile scripts/ocular/ocular_p5r_threeway_aggregate_audits.py
+          python scripts/ocular/ocular_p5r_threeway_aggregate_audits.py --self-test
+      - name: Download only relevant previously verified published aggregate artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ matrix.mode }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/p5p" "$RUNNER_TEMP/p5m" "$RUNNER_TEMP/p5o" ocular-p5r-${MODE}-public
+          gh run download 41161006241 -n ocular-p5p-expression-aware -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5p"
+          test -s "$RUNNER_TEMP/p5p/P5p_96_expression_aware_discordances.tsv"
+          case "$MODE" in
+            thresholds)
+              echo "P5R_THRESHOLD_INPUT_READY"
+              ;;
+            timecourse)
+              gh run download 41160429359 -n ocular-p5m-timecourse-96-tiering -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5m"
+              test -s "$RUNNER_TEMP/p5m/P5m_96_conflicts_timecourse_priorities.tsv"
+              ;;
+            consensus)
+              gh run download 41160840453 -n ocular-p5o-96-targeted-pool-sensitivity -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/p5o"
+              test -s "$RUNNER_TEMP/p5o/P5o_96_targeted_paired_pool_sensitivity.tsv"
+              ;;
+            *)
+              echo "INVALID_MODE"; exit 2
+              ;;
+          esac
+      - name: Reconcile and write independent gene-level public evidence
+        env:
+          MODE: ${{ matrix.mode }}
+        run: |
+          python -u scripts/ocular/ocular_p5r_threeway_aggregate_audits.py \
+            --mode "$MODE" \
+            --p5p "$RUNNER_TEMP/p5p/P5p_96_expression_aware_discordances.tsv" \
+            --p5m "$RUNNER_TEMP/p5m/P5m_96_conflicts_timecourse_priorities.tsv" \
+            --p5o "$RUNNER_TEMP/p5o/P5o_96_targeted_paired_pool_sensitivity.tsv" \
+            --output-dir "ocular-p5r-${MODE}-public"
+      - name: Delete downloaded intermediate copies
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/p5p" "$RUNNER_TEMP/p5m" "$RUNNER_TEMP/p5o"
+      - name: Upload mode-specific gene-level public evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocular-p5r-${{ matrix.mode }}-aggregate
+          path: ocular-p5r-${{ matrix.mode }}-public/
+          retention-days: 30
+          if-no-files-found: warn
