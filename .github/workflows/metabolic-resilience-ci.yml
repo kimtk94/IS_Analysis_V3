@@ -27,6 +27,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Main's historical integration tests verify these aggregate source documents.
+      # Pin only the four inputs; no raw GWAS/QTL archives or research execution.
+      - name: Checkout pinned historical source documents for smoke tests
+        uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /docs/data/is/IS_30_REGIONS_SIX_OUTCOMES_GWAS_CONTEXT_500KB.tsv
+            /docs/data/is/IS_EAS5_GENE_TISSUE_ALLELE_HARMONIZED_READINESS.tsv
+            /docs/data/is/IS_EAS5_98_BH05_FDR_EGENE_FULLCIS_GWAS_ALLELE_READINESS.tsv
+            /docs/data/is/IS_EAS5_SAME_SNP_ASSOCIATION_GENE_TISSUE_QC.tsv
+
       - name: Install repository test dependencies
         run: |
           python3 -m pip install --upgrade pip
