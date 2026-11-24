@@ -1,0 +1,38 @@
+name: HCC Stage30 Gao Quant Header Aliquot ID Join
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-quant-aliquot-join.yml'
+      - 'scripts/hcc/probe_stage30_gao_quant_biospecimen_join.py'
+      - 'tests/test_hcc_stage30_quant_aliquot_join.py'
+
+permissions:
+  contents: read
+
+jobs:
+  exact-source-quant-header-to-aliquot-join:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Strict source meta-private exact patient, aliquot and file-header regression
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_quant_aliquot_join.py' -v
+      - name: Read PDC biospecimen private IDs and compare to max 6 Protein Assembly headers per study
+        run: |
+          python scripts/hcc/probe_stage30_gao_quant_biospecimen_join.py \
+            --out results/hcc/stage30/quant_header_vs_PDC_aliquots.json \
+            --review-out results/hcc/stage30/quant_header_vs_PDC_aliquots_review.json
+      - name: Store anonymous case and aliquot header-match counts only
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-gao-protein-phospho-exact-aliquot-header-overlap
+          path: |
+            results/hcc/stage30/quant_header_vs_PDC_aliquots.json
+            results/hcc/stage30/quant_header_vs_PDC_aliquots_review.json
+          retention-days: 30
+          if-no-files-found: error

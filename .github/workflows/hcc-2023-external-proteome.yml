@@ -1,0 +1,78 @@
+name: HCC 2023 External Proteome Supplement Validation
+on:
+  pull_request:
+    paths:
+      - 'scripts/hcc/probe_2023_hcc_proteome_supplement.py'
+      - 'scripts/hcc/probe_pmc2026_cloud_proteomics.py'
+      - 'scripts/hcc/probe_xing2023_clinical_id_join.py'
+      - 'scripts/hcc/probe_xing2023_clinical_layout.py'
+      - 'scripts/hcc/probe_xing2023_clinical_completeness.py'
+      - 'scripts/hcc/probe_xing2023_clinical_complete_case.py'
+      - 'scripts/hcc/probe_xing2023_etiology_codebook_preflight.py'
+      - 'tests/test_hcc_2023_proteome_supplement.py'
+      - 'tests/test_hcc_pmc2026_cloud_proteomics.py'
+      - 'tests/test_hcc_xing2023_clinical_id_join.py'
+      - 'tests/test_hcc_xing2023_clinical_layout.py'
+      - 'tests/test_hcc_xing2023_clinical_completeness.py'
+      - 'tests/test_hcc_xing2023_clinical_complete_case.py'
+      - 'tests/test_hcc_xing2023_etiology_codebook_preflight.py'
+      - '.github/workflows/hcc-2023-external-proteome.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate public XLSX parser with synthetic file
+        run: python -m unittest discover -s tests -p 'test_hcc_2023_proteome_supplement.py' -v
+      - name: Probe published 152 HCC proteomic workbook
+        run: python scripts/hcc/probe_2023_hcc_proteome_supplement.py
+      - name: Test official PMC 2026 Cloud media resolution
+        run: python -m unittest discover -s tests -p 'test_hcc_pmc2026_cloud_proteomics.py' -v
+      - name: Probe official 2026 PMC Cloud supplement media
+        run: python scripts/hcc/probe_pmc2026_cloud_proteomics.py --out results/hcc/feasibility/pmc2026_cloud_mmc3_audit.json
+      - name: Verify 2023 HCC clinical supplement S1 (mmc2)
+        run: python scripts/hcc/probe_pmc2026_cloud_proteomics.py --target mmc2.xlsx --out results/hcc/feasibility/pmc2026_cloud_mmc2_clinical.json
+      - name: Verify 2023 HCC RNA differential supplement S6 (mmc7)
+        run: python scripts/hcc/probe_pmc2026_cloud_proteomics.py --target mmc7.xlsx --out results/hcc/feasibility/pmc2026_cloud_mmc7_rna_de.json
+      - name: Test anonymized cross-workbook patient IDs
+        run: python -m unittest discover -s tests -p 'test_hcc_xing2023_clinical_id_join.py' -v
+      - name: Compare proteomic tumor-normal header keys to clinical data
+        run: python scripts/hcc/probe_xing2023_clinical_id_join.py --out results/hcc/feasibility/xing2023_proteome_clinical_id_overlap.json
+      - name: Test clinical layout orientation without patient identity promotion
+        run: python -m unittest discover -s tests -p 'test_hcc_xing2023_clinical_layout.py' -v
+      - name: Compare within-workbook and external clinical sheet layouts
+        run: python scripts/hcc/probe_xing2023_clinical_layout.py --out results/hcc/feasibility/xing2023_clinical_layout_audit.json
+      - name: Test conservative clinical completeness against synthetic 152 pairs
+        run: python -m unittest discover -s tests -p 'test_hcc_xing2023_clinical_completeness.py' -v
+      - name: Audit 152 matched clinical rows and per-column missingness
+        run: python scripts/hcc/probe_xing2023_clinical_completeness.py --out results/hcc/feasibility/xing2023_clinical_completeness.json
+      - name: Test 152-case clinical complete-case profiles (synthetic)
+        run: python -m unittest discover -s tests -p 'test_hcc_xing2023_clinical_complete_case.py' -v
+      - name: Calculate actual matched-patient preflight complete-case counts
+        run: python scripts/hcc/probe_xing2023_clinical_complete_case.py --out results/hcc/feasibility/xing2023_clinical_complete_case.json
+      - name: Test conservative HBV HCV code shapes and literal etiology labels
+        run: python -m unittest discover -s tests -p 'test_hcc_xing2023_etiology_codebook_preflight.py' -v
+      - name: Audit Xing etiology codebook feasibility on 152 source-matched rows
+        run: python scripts/hcc/probe_xing2023_etiology_codebook_preflight.py --out results/hcc/feasibility/xing2023_etiology_codebook_preflight.json
+      - name: Upload public supplement audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-2023-external-proteome-audit
+          path: |
+            results/hcc/feasibility/2023_152patient_proteome_mmc3_manifest.json
+            results/hcc/feasibility/pmc2026_cloud_mmc3_audit.json
+            results/hcc/feasibility/pmc2026_cloud_mmc2_clinical.json
+            results/hcc/feasibility/pmc2026_cloud_mmc7_rna_de.json
+            results/hcc/feasibility/xing2023_proteome_clinical_id_overlap.json
+            results/hcc/feasibility/xing2023_clinical_layout_audit.json
+            results/hcc/feasibility/xing2023_clinical_completeness.json
+            results/hcc/feasibility/xing2023_clinical_complete_case.json
+            results/hcc/feasibility/xing2023_etiology_codebook_preflight.json
+          if-no-files-found: error

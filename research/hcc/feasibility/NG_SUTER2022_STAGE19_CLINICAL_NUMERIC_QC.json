@@ -1,0 +1,170 @@
+{
+  "schema_version": "hcc-ng-suter-stage19-confounder-quant-qc-v1",
+  "checked_at": "2026-10-31",
+  "source_access": {
+    "Suter_HCC_git_commit": "438f52271d0a86a6701baa7a96e80c516ba575c2",
+    "Ng_clinical_sha256": "edf1d2afd3baaedd56edee8536c16f10e4a62cb6cdac929863a062671ee73d25",
+    "cohort": "50 biopsies from 48 unique source patients",
+    "status": "source_data_matched"
+  },
+  "clinical_confounders": {
+    "source_biopsies_joined": 50,
+    "source_unique_patients": 48,
+    "exclusive_source_etiology_ALD_n": 12,
+    "exclusive_source_etiology_HCV_n": 11,
+    "available_fields": [
+      "age",
+      "sex",
+      "bclc",
+      "edmondson",
+      "meld",
+      "cirrhosis"
+    ],
+    "absent_or_unrecognized_fields": [
+      "treatment",
+      "batch",
+      "child_pugh"
+    ],
+    "ALD": {
+      "patients": 12,
+      "age_median": 67,
+      "age_q1": 62,
+      "age_q3": 74.75,
+      "BCLC_early_0_A": 7,
+      "BCLC_advanced_B_C_D": 5,
+      "male": 12
+    },
+    "HCV": {
+      "patients": 11,
+      "age_median": 69,
+      "age_q1": 56,
+      "age_q3": 76,
+      "BCLC_early_0_A": 5,
+      "BCLC_advanced_B_C_D": 6,
+      "male": 9
+    },
+    "age_median_difference_ALD_minus_HCV_years": -2,
+    "mixed_etiologies_excluded_from_exclusive_comparison": true,
+    "multi_biopsy_patient_conflict_discovered_for_edmondson": true,
+    "single_patients_with_multiple_biopsies_are_not_independent": true,
+    "treatment_or_batch_adjustment_verified": false,
+    "event_codebook_verified": false,
+    "status": "source_demographic_stage_balance_prescreen_only"
+  },
+  "processed_omics": {
+    "file": "HCCfull.rds",
+    "biopsies": 50,
+    "transcriptome": {
+      "features": 20356,
+      "Ensembl_gene_label_count": 20356,
+      "nonfinite_values": 0,
+      "negative_values": 416949,
+      "zero_values": 158871,
+      "global_value_median": 0
+    },
+    "proteome": {
+      "features": 5585,
+      "Ensembl_gene_label_count": 0,
+      "nonfinite_values": 0,
+      "negative_values": 142614,
+      "zero_values": 0,
+      "global_value_median": -0.0211
+    },
+    "transcript_protein_exact_feature_label_overlap": 0,
+    "consequence": "identity mapping Ensembl gene IDs to proteomics protein identifiers is needed; do not claim no biological matching genes",
+    "source_normalization_method_verbatim_S5_appendix_checked": false,
+    "negative_values_not_raw_counts": true,
+    "absence_of_NA_does_not_establish_imputation_method": true,
+    "status": "numeric_matrix_qc_pass_feature_mapping_hold"
+  },
+  "decision": {
+    "exploratory_reanalysis_with_patient_n_48": "GO_DESCRIPTIVE_ONLY",
+    "exclusive_ALD_versus_HCV_crossomics_statistics": "HOLD_CONFIRMATORY__ALLOW_DESCRIPTIVE_ONLY_DUE_TO_SEX_AND_STAGE_CONFOUNDING",
+    "novel_molecular_disease_claim": "NOT_ALLOWED",
+    "confirmed_survival_or_treatment_claim": "NOT_ALLOWED",
+    "V02": "PARTIAL",
+    "V04": "PARTIAL",
+    "V12": "PARTIAL",
+    "V13": "BLOCKED",
+    "selected_114_gene_reduced_crossomics_mapping": "SOURCE_MAPPING_GO_DESCRIPTIVE_VALIDATION",
+    "full_gene_protein_mapping": "HOLD_PENDING_CURATED_CROSSWALK"
+  },
+  "evidence_runs": {
+    "clinical_balance": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161928470",
+    "numeric_qc": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162144728"
+  },
+  "privacy": {
+    "raw_biopsy_ids_patient_ids_per_sample_values_exported": false,
+    "small_source_etiology_cells_suppressed": true
+  },
+  "stage20_reduced_feature_source_gene_mapping": {
+    "checked_at": "2026-10-31",
+    "original_source_repo": "https://github.com/cbg-ethz/HCC",
+    "source_commit": "438f52271d0a86a6701baa7a96e80c516ba575c2",
+    "HCCdata_sha256": "1f04556782d4f8934f804d87d7cfd4062221cebbf12d750d2a2dd26541458b04",
+    "HCCinfo_sha256": "22cc09ed0e5082ae97d9eba15a169aaedd6e8aa88df95638b43f319fc1526694",
+    "source_rds_mapping_structure": "bnInfo_like_allnames, source gene column",
+    "selected_rna_features": 188,
+    "selected_proteome_features": 116,
+    "mapped_rna_features": 188,
+    "mapped_proteome_features": 116,
+    "unique_gene_rna": 188,
+    "unique_gene_proteome": 116,
+    "cross_omics_common_gene_symbols": 114,
+    "unambiguous_one_to_one_genes": 114,
+    "full_20356_transcripts_to_5585_proteins_map_completed": false,
+    "independent_annotation_cross_validation_completed": false,
+    "selected_feature_mapping_method_status": "PASS_SOURCE_GEOMETRY_AND_GENE_LABEL_MATCH",
+    "differential_gene_protein_concordance_association_tested": false,
+    "inferential_research_GO": false,
+    "source_ci_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41162706947"
+  },
+  "stage21_source_confounder_smd": {
+    "source": "Ng2022 Supplementary Data 1 SHA256 pinned, Suter 50 biopsies / 48 patients",
+    "run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41163101027",
+    "final_guardrail_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41163343921",
+    "exclusive_groups": {
+      "ALD": 12,
+      "HCV": 11
+    },
+    "absolute_SMD": {
+      "age": 0.077,
+      "male_sex": 0.667,
+      "BCLC_early_0_A": 0.26,
+      "ChildPugh_A_vs_BC": null
+    },
+    "source_Child_Pugh_class_ABC_interpretable_n": {
+      "ALD": 8,
+      "HCV": 3
+    },
+    "Child_Pugh_SMD_withheld_due_to_low_coverage": true,
+    "MELD": {
+      "ALD_median": 11,
+      "ALD_numeric_n": 12,
+      "HCV_median": 8,
+      "HCV_numeric_n": 10
+    },
+    "source_labeled_cirrhosis_yes": {
+      "ALD": 11,
+      "HCV": 8
+    },
+    "source_BCLC_0_A": {
+      "ALD": 7,
+      "HCV": 5
+    },
+    "source_male": {
+      "ALD": 12,
+      "HCV": 9
+    },
+    "age_median": {
+      "ALD": 67,
+      "HCV": 69
+    },
+    "imbalance_threshold_descriptive": 0.2,
+    "model_ready": false,
+    "scientific_effects_tested": false,
+    "group_comparison_decision": "EXPLORATORY_DESCRIPTIVE_ONLY__CONFIRMATORY_HOLD",
+    "reason": "Sex and BCLC imbalances, low Child-Pugh interpretable HCV N, no batch evidence, n23 and many omics hypotheses",
+    "privacy": "No patient identifiers, source clinical rows or sample abundance values published"
+  }
+}

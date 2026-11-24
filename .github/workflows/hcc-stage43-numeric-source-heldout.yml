@@ -1,0 +1,39 @@
+name: HCC Stage43 Cross-Source Disjoint Feature Numeric Holdout
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage43-numeric-source-heldout.yml'
+      - 'scripts/hcc/audit_stage43_numeric_rank_holdout.py'
+      - 'tests/test_hcc_stage43_numeric_rank_holdout.py'
+
+permissions:
+  contents: read
+
+jobs:
+  numeric-heldout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install fixed numeric audit dependencies
+        run: python -m pip install 'numpy==2.2.6' 'scipy==1.15.3'
+      - name: Verify independent train holdout source candidate and privacy controls
+        run: python -m unittest discover -s tests -p 'test_hcc_stage43_numeric_rank_holdout.py' -v
+      - name: Compare original CDAP/PDC quantitation with source-feature holdout
+        run: |
+          python scripts/hcc/audit_stage43_numeric_rank_holdout.py \
+            --out results/hcc/stage43/heldout_numeric_source.json \
+            --review-out results/hcc/stage43/heldout_numeric_source_review.json
+      - name: Preserve aggregate heldout scores only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage43-heldout-source-numeric-review
+          path: results/hcc/stage43/*.json
+          retention-days: 30
+          if-no-files-found: error

@@ -1,0 +1,39 @@
+name: HCC Stage44 Original Source Affine Transform Double Holdout
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage44-original-affine-heldout.yml'
+      - 'scripts/hcc/audit_stage44_numeric_affine_heldout.py'
+      - 'tests/test_hcc_stage44_numeric_affine_heldout.py'
+
+permissions:
+  contents: read
+
+jobs:
+  source-affine-double-holdout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install numerics
+        run: python -m pip install 'numpy==2.2.6' 'scipy==1.15.3'
+      - name: Validate synthetic affine transform and independent-data negative control
+        run: python -m unittest discover -s tests -p 'test_hcc_stage44_numeric_affine_heldout.py' -v
+      - name: Estimate original PDC to CDAP transform using disjoint features and sample columns
+        run: |
+          python scripts/hcc/audit_stage44_numeric_affine_heldout.py \
+            --out results/hcc/stage44/source_affine_numeric_aggregate.json \
+            --review-out results/hcc/stage44/source_affine_numeric_review.json
+      - name: Upload anonymized source transformation metrics only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage44-source-affine-heldout-metrics
+          path: results/hcc/stage44/*.json
+          retention-days: 30
+          if-no-files-found: error

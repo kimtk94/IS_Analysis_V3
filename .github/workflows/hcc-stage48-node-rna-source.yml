@@ -1,0 +1,42 @@
+name: HCC Stage48 NODE Original RNA Source Inventory
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage48-node-rna-source.yml'
+      - 'scripts/hcc/audit_stage48_node_rna_source.py'
+      - 'tests/test_hcc_stage48_node_rna_source.py'
+permissions:
+  contents: read
+jobs:
+  node-official-public-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Bounded read of official public NODE project and help
+        run: |
+          python scripts/hcc/audit_stage48_node_rna_source.py \
+            --out results/hcc/stage48/node_original_source_inventory.json \
+            --review-out results/hcc/stage48/node_source_postflight.json
+      - name: Upload only public aggregate metadata and conservative gates
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage48-node-original-source-aggregates
+          path: results/hcc/stage48/*.json
+          if-no-files-found: warn
+          retention-days: 30
+  original-rna-manifest-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate official file export interpretation and negative controls
+        run: python -m unittest discover -s tests -p 'test_hcc_stage48_node_rna_source.py' -v

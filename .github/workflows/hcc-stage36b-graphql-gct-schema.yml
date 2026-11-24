@@ -1,0 +1,37 @@
+name: HCC Stage36b PDC Original Quant GCT API Schema Route
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage36b-graphql-gct-schema.yml'
+      - 'scripts/hcc/audit_stage36b_pdc_public_gct_api_schema.py'
+      - 'tests/test_hcc_stage36b_gct_graphql_schema.py'
+
+permissions:
+  contents: read
+
+jobs:
+  public-GCT-API-source-route:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate read-only source schema and no inferred patient claims
+        run: python -m unittest discover -s tests -p 'test_hcc_stage36b_gct_graphql_schema.py' -v
+      - name: Introspect official PDC GraphQL public quant GCT schema
+        run: |
+          python scripts/hcc/audit_stage36b_pdc_public_gct_api_schema.py \
+            --out results/hcc/stage36b/source_schema_aggregate.json \
+            --review-out results/hcc/stage36b/source_schema_postflight.json
+      - name: Preserve public API names and HOLD decision only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage36b-public-GCT-schema-source-evidence
+          path: results/hcc/stage36b/*.json
+          retention-days: 30
+          if-no-files-found: error

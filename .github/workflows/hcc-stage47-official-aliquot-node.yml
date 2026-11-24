@@ -1,0 +1,57 @@
+name: HCC Stage47 Exact Official Aliquot and NODE Access
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage47-official-aliquot-node.yml'
+      - 'scripts/hcc/audit_stage47_official_aliquot_bridge.py'
+      - 'scripts/hcc/probe_node_oep000321.py'
+      - 'tests/test_hcc_stage47_official_aliquot_bridge.py'
+permissions:
+  contents: read
+jobs:
+  official-aliquot-crosswalk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Stage47 numeric audit packages
+        run: python -m pip install 'numpy==2.2.6' 'scipy==1.15.3'
+      - name: Validate positive negative collision and heldout controls
+        run: python -m unittest discover -s tests -p 'test_hcc_stage47_official_aliquot_bridge.py' -v
+      - name: Independently map numeric columns to source labels and official aliquots
+        run: |
+          python scripts/hcc/audit_stage47_official_aliquot_bridge.py \
+            --out results/hcc/stage47/official_aliquot_source_audit.json \
+            --review-out results/hcc/stage47/official_aliquot_decision.json
+      - name: Upload anonymous identity-gate aggregates
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage47-official-aliquot-aggregates
+          path: results/hcc/stage47/*.json
+          retention-days: 30
+          if-no-files-found: warn
+  node-original-rna-access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check official NODE OEP000321 project accessibility without assuming matrix access
+        run: |
+          python scripts/hcc/probe_node_oep000321.py \
+            --out results/hcc/stage47/node_oep000321_access.json
+      - name: Upload NODE access-only metadata
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage47-node-official-access
+          path: results/hcc/stage47/node_oep000321_access.json
+          retention-days: 30
+          if-no-files-found: warn

@@ -1,0 +1,63 @@
+name: HCC Ng Full Proteome UniProt Ensembl Crosswalk
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-ng-full-uniprot-mapping.yml'
+      - 'scripts/hcc/audit_ng_full_feature_namespace.R'
+      - 'scripts/hcc/probe_ng_full_uniprot_ensembl_crosswalk.py'
+      - 'tests/test_hcc_ng_full_uniprot_crosswalk.py'
+      - 'scripts/hcc/validate_ng_crosswalk_metrics.py'
+      - 'tests/test_hcc_ng_crosswalk_metrics.py'
+
+permissions:
+  contents: read
+
+jobs:
+  full-public-crosswalk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test gene crosswalk integrity without a live API
+        run: python -m unittest discover -s tests -p 'test_hcc_ng_full_uniprot_crosswalk.py' -v
+      - name: Test postflight evidence schema and fail-closed scientific status
+        run: python -m unittest discover -s tests -p 'test_hcc_ng_crosswalk_metrics.py' -v
+      - name: Build local full RNA/protein source accession list; preserve public aggregate only
+        env:
+          NG_PRIVATE_FEATURE_IDS_OUT: ${{ runner.temp }}/hcc-source-feature-accessions.txt
+        run: |
+          Rscript scripts/hcc/audit_ng_full_feature_namespace.R \
+            results/hcc/feasibility/ng_full_feature_namespace.json
+      - name: Query public UniProt Ensembl crossrefs and compare exact gene IDs to full RNA
+        run: |
+          python scripts/hcc/probe_ng_full_uniprot_ensembl_crosswalk.py \
+            --private-features "${{ runner.temp }}/hcc-source-feature-accessions.txt" \
+            --out results/hcc/feasibility/ng_full_uniprot_ensembl_crosswalk.json
+      - name: Stage23 validate provenance/count invariants, never scientific PASS
+        run: |
+          python scripts/hcc/validate_ng_crosswalk_metrics.py \
+            --input results/hcc/feasibility/ng_full_uniprot_ensembl_crosswalk.json \
+            --output results/hcc/feasibility/ng_stage23_crosswalk_review.json
+      - name: Delete transient feature IDs
+        if: always()
+        run: rm -f "${{ runner.temp }}/hcc-source-feature-accessions.txt"
+      - name: Archive only aggregate research evidence (no accession lists)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ng-full-uniprot-ensembl-map-metrics
+          path: |
+            results/hcc/feasibility/ng_full_feature_namespace.json
+            results/hcc/feasibility/ng_full_uniprot_ensembl_crosswalk.json
+            results/hcc/feasibility/ng_stage23_crosswalk_review.json
+          retention-days: 30
+          if-no-files-found: warn

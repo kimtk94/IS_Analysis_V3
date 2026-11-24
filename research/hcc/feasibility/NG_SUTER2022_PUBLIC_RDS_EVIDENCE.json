@@ -1,0 +1,127 @@
+{
+  "schema_version": "ng-suter2022-public-quantitative-source-v1",
+  "checked_date": "2026-10-31",
+  "original_paper": {
+    "doi": "10.1038/s41467-022-29960-8",
+    "initial_triple_omics_biopsies": 51,
+    "initial_triple_omics_distinct_patients": 49
+  },
+  "reanalysis_paper": {
+    "doi": "10.1371/journal.pcbi.1009767",
+    "biopsies_after_one_hypermutated_exclusion": 50,
+    "distinct_patients_reported": 48,
+    "normalization_imputation_batch_correction_provenance": "Suter 2022 Methods 2.1; details require S5 Appendix review"
+  },
+  "source": {
+    "repository": "https://github.com/cbg-ethz/HCC",
+    "commit": "438f52271d0a86a6701baa7a96e80c516ba575c2",
+    "format": "RDS",
+    "publicly_readable": true,
+    "original_rds_committed_to_this_repo": false
+  },
+  "files": {
+    "HCCfull.rds": {
+      "M_features": 3519,
+      "CN_features": 20339,
+      "T_features": 20356,
+      "P_features": 5585,
+      "PP_features": 7889,
+      "samples_in_each": 50,
+      "orientation": "features_by_samples",
+      "T_P_exact_sample_label_overlap": 50,
+      "T_P_same_order": true
+    },
+    "HCCfullz.rds": {
+      "M_features": 3519,
+      "CN_features": 20339,
+      "T_features": 19768,
+      "P_features": 5585,
+      "PP_features": 7889,
+      "samples_in_each": 50,
+      "orientation": "features_by_samples",
+      "T_P_exact_sample_label_overlap": 50,
+      "T_P_same_order": true
+    },
+    "HCCdata.rds": {
+      "M_features": 24,
+      "CN_features": 292,
+      "T_features": 188,
+      "P_features": 116,
+      "PP_features": 158,
+      "samples_in_each": 50,
+      "orientation": "samples_by_features",
+      "T_P_exact_sample_label_overlap": 50,
+      "T_P_same_order": true
+    }
+  },
+  "verification": {
+    "source_RDS_files_downloaded_and_parsed": true,
+    "quantitative_numeric_layers_in_all_three_files": true,
+    "source_sha256_in_run_artifact": true,
+    "no_raw_patient_identifiers_or_expression_values_exported": true,
+    "source_layer_sample_label_alignment": "PASS",
+    "exact_RDS_sample_to_Ng_clinical_biopsy_mapping": "PASS_50_OF_50_SOURCE_IDENTITY",
+    "original_quantitation_units": "NOT_YET_VERIFIED",
+    "etiology_sample_group_counts": "SOURCE_REPORTED_LABELS_DEDUPLICATED_48_PATIENTS__CODEBOOK_PARTIAL",
+    "same_patient_omics_scientific_join": "PARTIAL_QUANTITATIVE_MATRIX_SAMPLE_JOIN_VERIFIED__NORMALIZATION_AND_CODEBOOK_PENDING",
+    "V02": "PARTIAL_SOURCE_BIOPSY_PATIENT_JOIN_VERIFIED",
+    "V04": "PARTIAL_SOURCE_LABELS_RECONCILED__CLINICAL_ADJUDICATION_PENDING",
+    "V12": "PARTIAL",
+    "independent_replication": "NOT_YET_VERIFIED",
+    "source_cohort_sha256_verified": true,
+    "matched_biopsies_with_RNA_and_proteomics_flags": 50,
+    "exact_matched_distinct_patients": 48,
+    "unmatched_RDS_samples": 0,
+    "duplicate_patient_biopsies": 2,
+    "published_suter_sample_count_consistent": true,
+    "identity_join_details": {
+      "method": "strict normalized exact identity between public RDS sample column labels and Ng official Supplementary Data 1 tumor biopsy IDs",
+      "source_workbook_sha256": "edf1d2afd3baaedd56edee8536c16f10e4a62cb6cdac929863a062671ee73d25",
+      "public_source_biopsies": 122,
+      "matched_processed_biopsies": 50,
+      "matched_public_biopsies_assay_RNA_and_proteome_Y": 50,
+      "distinct_source_patients": 48,
+      "raw_identifiers_logged": false,
+      "ephemeral_sample_label_file_removed": true,
+      "scientific_limitation": "Published preprocessed matrices (Suter 2022), not raw individual RNA/PRIDE quant re-derivation; imputation, batch correction and etiology category codebook still require review."
+    },
+    "etiology_preflight": {
+      "evidence_run": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161332568",
+      "denominator_distinct_patients": 48,
+      "source_biopsy_match_n": 50,
+      "source_exclusive_single_groups_unreviewed": {
+        "ALD": 12,
+        "HCV": 11,
+        "NAFLD": 7,
+        "HBV": null
+      },
+      "source_mixed_groups_unreviewed": {
+        "ALD+HCV": 7,
+        "ALD+HBV": null,
+        "ALD+NAFLD": null
+      },
+      "source_any_exposure_nonexclusive": {
+        "ALD": 24,
+        "HCV": 18,
+        "HBV": 7,
+        "NAFLD": 9
+      },
+      "source_unclassified_or_other_n": null,
+      "small_cell_threshold_n": 5,
+      "suppressed_source_categories_n": 4,
+      "multi_biopsy_source_label_conflicts_n": 0,
+      "correction": "Initial audit incorrectly classified non-alcoholic liver disease as ALD. Corrected explicit ALD regex with negative lookbehind and source 48-patient rerun passes synthetic and real CI.",
+      "scientific_etiology_codebook_verified": false,
+      "source_category_counts_are_diagnoses_verified_by_clinician": false,
+      "group_comparisons_permitted": "EXPLORATORY_FEASIBILITY_ONLY",
+      "confirmatory_multiomics_interaction_ready": false
+    }
+  },
+  "evidence_runs": [
+    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160271015",
+    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160494201",
+    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41160770924",
+    "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/41161332568"
+  ],
+  "next": "Audit processed T/P value scales, missingness/imputation and technical batch; separately quantify confounder balance for 12 ALD-only vs 11 HCV-only patient groups; source etiology codebook and independent replication before scientific V02/V04 PASS."
+}

@@ -1,0 +1,39 @@
+name: HCC Stage46 Source Exact Four Decimal Rounding Direction
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage46-pdc-cdap-fourdp-direction.yml'
+      - 'scripts/hcc/audit_stage46_pdc_cdp_fourdp_direction.py'
+      - 'tests/test_hcc_stage46_pdc_cdp_fourdp_direction.py'
+
+permissions:
+  contents: read
+
+jobs:
+  original-rounding-direction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install numerical verification packages
+        run: python -m pip install 'numpy==2.2.6' 'scipy==1.15.3'
+      - name: Validate exact four-decimal source direction and negative controls
+        run: python -m unittest discover -s tests -p 'test_hcc_stage46_pdc_cdp_fourdp_direction.py' -v
+      - name: Validate actual PDC vs CDAP original independent 53-feature four-decimal values
+        run: |
+          python scripts/hcc/audit_stage46_pdc_cdp_fourdp_direction.py \
+            --out results/hcc/stage46/original_numeric_rounding_direction.json \
+            --review-out results/hcc/stage46/original_numeric_rounding_postflight.json
+      - name: Upload only anonymous source precision aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage46-original-source-fourdp-direction
+          path: results/hcc/stage46/*.json
+          retention-days: 30
+          if-no-files-found: error

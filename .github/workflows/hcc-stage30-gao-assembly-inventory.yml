@@ -1,0 +1,38 @@
+name: HCC Stage30 Gao Protein Assembly Inventory
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-assembly-inventory.yml'
+      - 'scripts/hcc/probe_stage30_gao_assembly_files.py'
+      - 'tests/test_hcc_stage30_gao_assembly.py'
+
+permissions:
+  contents: read
+
+jobs:
+  source-protein-assembly-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate source-only PDC gene quantitation claim guards
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_gao_assembly.py' -v
+      - name: Query PDC000198/PDC000199 file records for Protein Assembly only
+        run: |
+          python scripts/hcc/probe_stage30_gao_assembly_files.py \
+            --out results/hcc/stage30/gaopdc_assembly_files.json \
+            --review-out results/hcc/stage30/gaopdc_assembly_files_review.json
+      - name: Upload aggregate assembly category/format metadata only
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-pdc-198-199-specific-assembly-formats
+          path: |
+            results/hcc/stage30/gaopdc_assembly_files.json
+            results/hcc/stage30/gaopdc_assembly_files_review.json
+          if-no-files-found: error
+          retention-days: 30

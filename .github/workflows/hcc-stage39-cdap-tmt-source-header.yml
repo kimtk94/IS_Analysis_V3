@@ -1,0 +1,37 @@
+name: HCC Stage39 Original CDAP TMT Report Header Mapping
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage39-cdap-tmt-source-header.yml'
+      - 'scripts/hcc/audit_stage39_original_cdap_report_header.py'
+      - 'tests/test_hcc_stage39_original_cdap_report_header.py'
+
+permissions:
+  contents: read
+
+jobs:
+  cdap-headers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate exact source ratio report columns and safety gates
+        run: python -m unittest discover -s tests -p 'test_hcc_stage39_original_cdap_report_header.py' -v
+      - name: Inspect actual PDC CDAP original TMT report headers
+        run: |
+          python scripts/hcc/audit_stage39_original_cdap_report_header.py \
+            --out results/hcc/stage39/original_tmt_report_header.json \
+            --review-out results/hcc/stage39/original_tmt_review.json
+      - name: Upload anonymous source counts and source hold flags
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage39-original-TMT-CDAP-source-header
+          path: results/hcc/stage39/*.json
+          retention-days: 30
+          if-no-files-found: error

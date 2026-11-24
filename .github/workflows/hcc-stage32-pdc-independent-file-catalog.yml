@@ -1,0 +1,48 @@
+name: HCC Stage32 Direct PDC File Categories Independent of Study UUID
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage32-pdc-independent-file-catalog.yml'
+      - 'scripts/hcc/audit_stage32_pdc_direct_file_categories.py'
+      - 'tests/test_hcc_stage32_direct_file_categories.py'
+
+permissions:
+  contents: read
+
+jobs:
+  source-file-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        study: [PDC000198, PDC000199]
+        category: [Other Metadata, Protein Assembly]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate provenance and no-inference safety rules
+        run: python -m unittest discover -s tests -p 'test_hcc_stage32_direct_file_categories.py' -v
+      - name: Discover official file metadata directly by PDC study accession
+        env:
+          STUDY: ${{ matrix.study }}
+          CATEGORY: ${{ matrix.category }}
+        run: |
+          python scripts/hcc/audit_stage32_pdc_direct_file_categories.py \
+            --study "$STUDY" \
+            --category "$CATEGORY" \
+            --out "results/hcc/stage32/${STUDY}_${CATEGORY// /_}.json" \
+            --review-out "results/hcc/stage32/${STUDY}_${CATEGORY// /_}_review.json"
+      - name: Upload anonymous category audit, including access HOLD evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage32-direct-catalog-${{ matrix.study }}-${{ strategy.job-index }}
+          path: results/hcc/stage32/*.json
+          retention-days: 30
+          if-no-files-found: error

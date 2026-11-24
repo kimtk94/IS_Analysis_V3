@@ -1,0 +1,38 @@
+name: HCC Stage30 Gao Experimental Aliquot Run Alias
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-experimental-alias.yml'
+      - 'scripts/hcc/probe_stage30_gao_experimental_alias.py'
+      - 'tests/test_hcc_stage30_experimental_alias.py'
+
+permissions:
+  contents: read
+
+jobs:
+  pdc-run-alias-to-quant-header:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test official source alias mapping and scientific claim guards
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_experimental_alias.py' -v
+      - name: Compare PDC experimentalMetadata aliquot-run alias to selected bounded quant headers
+        run: |
+          python scripts/hcc/probe_stage30_gao_experimental_alias.py \
+            --out results/hcc/stage30/experimental_alias_match.json \
+            --review-out results/hcc/stage30/experimental_alias_match_review.json
+      - name: Upload only aggregate source alias counts, no original identifiers or URLs
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-pdc-run-alias-quant-column-bridge
+          path: |
+            results/hcc/stage30/experimental_alias_match.json
+            results/hcc/stage30/experimental_alias_match_review.json
+          retention-days: 30
+          if-no-files-found: error

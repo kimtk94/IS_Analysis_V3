@@ -1,0 +1,29 @@
+name: HCC Cheng 2023 Publisher Supplement Audit
+on:
+  pull_request:
+    paths:
+      - 'scripts/hcc/probe_cheng_public_supplements.py'
+      - 'tests/test_hcc_cheng_public_supplements.py'
+      - '.github/workflows/hcc-cheng-supplement-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test bounded publisher XLSX inspector
+        run: python -m unittest discover -s tests -p 'test_hcc_cheng_public_supplements.py' -v
+      - name: Probe official publisher Supplementary Tables S1 to S11
+        run: python scripts/hcc/probe_cheng_public_supplements.py --out results/hcc/feasibility/cheng_supplement_manifest.json
+      - name: Upload non-sensitive manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-cheng-supplement-manifest
+          path: results/hcc/feasibility/cheng_supplement_manifest.json
+          if-no-files-found: error

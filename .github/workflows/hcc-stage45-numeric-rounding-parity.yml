@@ -1,0 +1,39 @@
+name: HCC Stage45 Original Source Numeric Rounding Heldout QC
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage45-numeric-rounding-parity.yml'
+      - 'scripts/hcc/audit_stage45_numeric_precision_holdout.py'
+      - 'tests/test_hcc_stage45_numeric_precision_holdout.py'
+
+permissions:
+  contents: read
+
+jobs:
+  source-precision-qc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install numerical QC dependencies
+        run: python -m pip install 'numpy==2.2.6' 'scipy==1.15.3'
+      - name: Validate independent heldout rounding, nonmatching source, and privacy
+        run: python -m unittest discover -s tests -p 'test_hcc_stage45_numeric_precision_holdout.py' -v
+      - name: Check original PDC source versus CDAP sample-axis parity at bounded rounding tolerances
+        run: |
+          python scripts/hcc/audit_stage45_numeric_precision_holdout.py \
+            --out results/hcc/stage45/source_numeric_rounding_aggregate.json \
+            --review-out results/hcc/stage45/source_numeric_rounding_gate.json
+      - name: Upload aggregate original source precision results only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage45-original-source-precision-evidence
+          path: results/hcc/stage45/*.json
+          retention-days: 30
+          if-no-files-found: error

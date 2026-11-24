@@ -1,0 +1,39 @@
+name: HCC Stage30 PDC Direct Quant Cross-Assay Column Name Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-direct-quant-crossheader.yml'
+      - 'scripts/hcc/probe_stage30_gao_direct_quant_crossheader.py'
+      - 'tests/test_hcc_stage30_direct_crossheader.py'
+
+permissions:
+  contents: read
+
+jobs:
+  official-PDC198-199-quant-header-overlap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify exact source header set overlap and no patient join overclaim
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_direct_crossheader.py' -v
+      - name: Compare first source log2_ratio API header from proteome and phosphoproteome
+        run: |
+          python scripts/hcc/probe_stage30_gao_direct_quant_crossheader.py \
+            --out results/hcc/stage30/direct_quant_crossheader.json \
+            --review-out results/hcc/stage30/direct_quant_crossheader_review.json
+      - name: Upload anonymized source header intersection counts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-PDC198-199-direct-quant-crossheader
+          path: |
+            results/hcc/stage30/direct_quant_crossheader.json
+            results/hcc/stage30/direct_quant_crossheader_review.json
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,37 @@
+name: HCC Stage42 Bounded CDAP versus PDC Quant Numeric Parity Pilot
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage42-cdap-pdc-numeric-parity.yml'
+      - 'scripts/hcc/audit_stage42_cdap_pdc_numeric_prefix.py'
+      - 'tests/test_hcc_stage42_cdap_pdc_numeric_prefix.py'
+
+permissions:
+  contents: read
+
+jobs:
+  source-numeric-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify source feature numeric candidate invariants
+        run: python -m unittest discover -s tests -p 'test_hcc_stage42_cdap_pdc_numeric_prefix.py' -v
+      - name: Compare bounded original PDC198 quantDataMatrix and original TMT report
+        run: |
+          python scripts/hcc/audit_stage42_cdap_pdc_numeric_prefix.py \
+            --out results/hcc/stage42/source_numeric_parity_aggregate.json \
+            --review-out results/hcc/stage42/source_numeric_parity_review.json
+      - name: Persist only aggregate numeric parity and HOLD flags
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage42-source-numeric-parity
+          path: results/hcc/stage42/*.json
+          retention-days: 30
+          if-no-files-found: error

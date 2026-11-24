@@ -1,0 +1,38 @@
+name: HCC Stage30 Gao PDC Case Sample Aliquot Bridge
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-biospecimen-case-bridge.yml'
+      - 'scripts/hcc/probe_stage30_gao_biospecimen_overlap.py'
+      - 'tests/test_hcc_stage30_gao_biospecimen.py'
+
+permissions:
+  contents: read
+
+jobs:
+  official-pdc-biospecimen-protein-phospho-source-match:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test biospecimen sample type, source-case overlap and privacy gates
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_gao_biospecimen.py' -v
+      - name: Query actual PDC Gao 198 and 199 source case sample aliquot metadata
+        run: |
+          python scripts/hcc/probe_stage30_gao_biospecimen_overlap.py \
+            --out results/hcc/stage30/pdc_biospecimen_metadata.json \
+            --review-out results/hcc/stage30/pdc_biospecimen_metadata_review.json
+      - name: Upload aggregate tumor normal and same-case counts with no patient identifiers
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-gao-pdc-proteome-phospho-case-aliquot-aggregates
+          path: |
+            results/hcc/stage30/pdc_biospecimen_metadata.json
+            results/hcc/stage30/pdc_biospecimen_metadata_review.json
+          retention-days: 30
+          if-no-files-found: error

@@ -1,0 +1,39 @@
+name: HCC Stage31 PDC TMT Quant Header Identity Check
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage31-pdc-tmt-column-identity.yml'
+      - 'scripts/hcc/audit_stage31_pdc_tmt_header_templates.py'
+      - 'tests/test_hcc_stage31_tmt_header_templates.py'
+
+permissions:
+  contents: read
+
+jobs:
+  compare-source-quant-header-to-official-TMT-design:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run exact source metadata matching and biological inference safety tests
+        run: python -m unittest discover -s tests -p 'test_hcc_stage31_tmt_header_templates.py' -v
+      - name: Compare 330 PDC numeric header columns against official TMT plex/run channel identities
+        run: |
+          python scripts/hcc/audit_stage31_pdc_tmt_header_templates.py \
+            --out results/hcc/stage31/pdc_tmt_source_header_candidates.json \
+            --review-out results/hcc/stage31/pdc_tmt_source_header_review.json
+      - name: Upload anonymous aggregate counts and source processing provenance only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage31-pdc-quant-TMT-identity-anonymous-audit
+          path: |
+            results/hcc/stage31/pdc_tmt_source_header_candidates.json
+            results/hcc/stage31/pdc_tmt_source_header_review.json
+          retention-days: 30
+          if-no-files-found: error

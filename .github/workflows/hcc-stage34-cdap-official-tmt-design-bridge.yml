@@ -1,0 +1,45 @@
+name: HCC Stage34 CDAP Original to Official TMT Run Plex Bridge
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage34-cdap-official-tmt-design-bridge.yml'
+      - 'scripts/hcc/audit_stage34_cdap_official_tmt_design_join.py'
+      - 'tests/test_hcc_stage34_cdap_official_tmt_design_join.py'
+
+permissions:
+  contents: read
+
+jobs:
+  source-design-exact-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        study: [PDC000198, PDC000199]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test no inferred or row-order patient identities
+        run: python -m unittest discover -s tests -p 'test_hcc_stage34_cdap_official_tmt_design_join.py' -v
+      - name: Cross-check original CDAP analytical sample against PDC run plex and reporter source
+        env:
+          PDC_STUDY: ${{ matrix.study }}
+        run: |
+          python scripts/hcc/audit_stage34_cdap_official_tmt_design_join.py \
+            --study "$PDC_STUDY" \
+            --out "results/hcc/stage34/${PDC_STUDY}_cdap_tmt_comparison.json" \
+            --review-out "results/hcc/stage34/${PDC_STUDY}_cdap_tmt_review.json"
+      - name: Upload only anonymous source aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage34-cdap-design-${{ matrix.study }}
+          path: results/hcc/stage34/*.json
+          retention-days: 30
+          if-no-files-found: error

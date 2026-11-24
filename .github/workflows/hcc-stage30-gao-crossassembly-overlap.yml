@@ -1,0 +1,38 @@
+name: HCC Stage30 Gao PDC Cross Assay Header Overlap
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage30-gao-crossassembly-overlap.yml'
+      - 'scripts/hcc/probe_stage30_gao_crossassembly_headers.py'
+      - 'tests/test_hcc_stage30_crossassembly.py'
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-cross-study-quant-source-header:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate noninferential source-only sample-header intersection
+        run: python -m unittest discover -s tests -p 'test_hcc_stage30_crossassembly.py' -v
+      - name: Read max 16K from up to 4 protein-assembly candidates per study and compare headers
+        run: |
+          python scripts/hcc/probe_stage30_gao_crossassembly_headers.py \
+            --out results/hcc/stage30/cross_assembly_headers.json \
+            --review-out results/hcc/stage30/cross_assembly_headers_review.json
+      - name: Persist aggregate header token overlap only, no IDs and no signed URLs
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage30-gao-pdc-two-assay-quant-column-overlap
+          path: |
+            results/hcc/stage30/cross_assembly_headers.json
+            results/hcc/stage30/cross_assembly_headers_review.json
+          retention-days: 30
+          if-no-files-found: error

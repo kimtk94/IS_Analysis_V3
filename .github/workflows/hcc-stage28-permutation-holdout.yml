@@ -1,0 +1,48 @@
+name: HCC Stage28 Crossmodal Source Permutation Holdout
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/hcc-stage28-permutation-holdout.yml'
+      - 'scripts/hcc/audit_ng_stage28_crossmodal_permutation.R'
+      - 'scripts/hcc/verify_stage28_crossmodal_permutation.py'
+      - 'tests/test_hcc_stage28_crossmodal_permutation.py'
+
+permissions:
+  contents: read
+
+jobs:
+  sample-axis-holdout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: false
+      - name: Test source SHA, no leaked IDs, and conservative HOLD status
+        run: python -m unittest discover -s tests -p 'test_hcc_stage28_crossmodal_permutation.py' -v
+      - name: Crossmodal source permutation by disjoint training features and independent heldout feature validation
+        run: |
+          Rscript scripts/hcc/audit_ng_stage28_crossmodal_permutation.R \
+            results/hcc/feasibility/stage28_crossmodal_sample_permutation.json
+      - name: Strict scientific-claim and source integrity postflight
+        run: |
+          python scripts/hcc/verify_stage28_crossmodal_permutation.py \
+            --input results/hcc/feasibility/stage28_crossmodal_sample_permutation.json \
+            --out results/hcc/feasibility/stage28_crossmodal_sample_permutation_review.json
+      - name: Upload only modality-level scores and 50-sample mapping agreement counts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcc-stage28-crossmodal-50sample-independent-feature-holdout
+          path: |
+            results/hcc/feasibility/stage28_crossmodal_sample_permutation.json
+            results/hcc/feasibility/stage28_crossmodal_sample_permutation_review.json
+          if-no-files-found: error
+          retention-days: 30
