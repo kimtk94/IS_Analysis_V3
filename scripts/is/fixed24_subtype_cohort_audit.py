@@ -27,15 +27,11 @@ def audit(path):
     out={"status":"HOLD_HEADER_OR_COHORT_SCHEMA","workbook_sha256":PIN,"sheet":"Suppl.Table1","header_first_four_rows":headers,"ancestries":{},"limits":["Only original primary discovery block through Total ALL discovery; no PGS or replication sections.","Control totals are shared published discovery controls, not necessarily subtype-specific controls or unique persons. Do not derive a missing per-SNP N or infer non-overlap.","Match against eight previously verified summary-statistic nominal totals; even exact reconciliation is not certification of log-odds scale, phenotype ascertainment or comparable regression models."]}
     try:
         require(norm(rows[86][0])=="TOTAL ALL DISCOVERY","Discovery cutoff changed")
-        # Exact trait column names; use pinned header aliases, do not infer from row counts.
-        aliases={"AIS":{"AIS","ANY ISCHEMIC STROKE","ANY ISCHAEMIC STROKE","ALL ISCHEMIC STROKE","IS"},"CES":{"CES","CE","CARDIOEMBOLIC STROKE","CARDIOEMBOLIC"},"LAS":{"LAS","LAA","LARGE ARTERY STROKE","LARGE ARTERY ATHEROSCLEROSIS","LARGE-ARTERY STROKE"},"SVS":{"SVS","SVD","SMALL VESSEL STROKE","SMALL VESSEL DISEASE","SMALL-VESSEL STROKE"}}
-        cols={}
-        for trait,al in aliases.items():
-            found={j for i in range(1,5) for j,x in enumerate(rows[i]) if norm(x) in al}
-            require(len(found)==1,"Exact unique header unresolved: "+trait)
-            cols[trait]=next(iter(found))
-        require(cols["AIS"]==10 and len(set(cols.values()))==4 and all(10<=j<=14 for j in cols.values()),"Unexpected trait column mapping")
-        require(any("CONTROL" in norm(rows[i][15]) for i in range(1,5)),"Original control column not corroborated")
+        # Actual blinded header readback run 45539396437: duplicated incident-only
+        # and incident+prevalent columns. Lock the second primary combined block.
+        require(norm(rows[3][9])=="INCIDENT & PREVALENT COMBINED" and
+                [norm(v) for v in rows[4][9:16]]==["AS","AIS","CES","SVS","LAS","ICH","CONTROLS"],"Exact combined-discovery header changed")
+        cols={"AIS":10,"CES":11,"SVS":12,"LAS":13}
         out["trait_columns"]={k:get_column_letter(j+1) for k,j in cols.items()}
         for anc in ("EUR","EAS"):
             starts=[i for i in range(5,86) if norm(rows[i][0])==anc]
