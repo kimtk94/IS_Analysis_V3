@@ -1,0 +1,36 @@
+name: IS two locus curated catalog audit
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/fixed24_two_locus_catalog_audit.py','.github/workflows/is-fixed24-two-locus-catalog-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  curated-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: is-rs2767060-ld-proxy-audit
+          path: inputs/ld
+          run-id: 45549485788
+          github-token: ${{ github.token }}
+      - name: Query documented GWAS Catalog v2 region and exact proxy filters
+        run: |
+          python -m py_compile scripts/is/fixed24_two_locus_catalog_audit.py
+          python scripts/is/fixed24_two_locus_catalog_audit.py --proxy inputs/ld/rs2767060-ld-proxy-audit.json --out outputs/two-locus-catalog-audit.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-fixed24-two-locus-catalog-audit
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
