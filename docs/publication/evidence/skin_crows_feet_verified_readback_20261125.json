@@ -1,0 +1,356 @@
+{
+  "run_id": 45610752424,
+  "job_id": 139193308088,
+  "head_sha": "dfc28b282525ef8799238611faee7b570cf34334",
+  "source": "Actual job stdout",
+  "aggregate": {
+    "status": "SKIN_DERIVED_CREDIBLE_SET_INVENTORY",
+    "accession": "GCST90094904",
+    "catalog": {
+      "original_directory": {
+        "source": {
+          "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/",
+          "bytes": 1763,
+          "sha256": "450fc40252604e5cfb9ba24e785536cbb1b6e416d7ff42deb9eb2f58d7458d9c",
+          "content_range": null,
+          "etag": null
+        },
+        "files": [
+          "GCST90094904_buildGRCh37.tsv",
+          "GCST90094904_buildGRCh37.tsv-meta.yaml",
+          "md5sum.txt"
+        ]
+      },
+      "harmonised_directory": {
+        "source": {
+          "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/",
+          "bytes": 2237,
+          "sha256": "3ac136bb7efdb8a7e6d768aeb05987c3c35b2019570db0e18237137802dac2a9",
+          "content_range": null,
+          "etag": null
+        },
+        "files": [
+          "35421404-GCST90094904-EFO_0008006-Build37.f.tsv.gz",
+          "35421404-GCST90094904-EFO_0008006-Build37.f.tsv.gz-meta.yaml",
+          "35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+          "35421404-GCST90094904-EFO_0008006.h.tsv.gz-meta.yaml",
+          "md5sum.txt"
+        ]
+      }
+    },
+    "study": {
+      "id": "GCST90094904",
+      "traitFromSource": "Facial wrinkles (crow's feet)",
+      "pubmedId": "35421404",
+      "publicationFirstAuthor": "Lee SG",
+      "nSamples": 11079,
+      "hasSumstats": true,
+      "summarystatsLocation": null,
+      "qualityControls": [
+        "Study has non empty or zero nSamples with empty nCases and nControls"
+      ]
+    },
+    "study_source": {
+      "url": "https://api.platform.opentargets.org/api/v4/graphql",
+      "bytes": 301,
+      "sha256": "ad23643d620f8ec11d781aa593bc0c5f55496d3db7fbdd7e30e86b93f10176bd",
+      "content_range": null,
+      "etag": null
+    },
+    "credible_set_source": {
+      "url": "https://api.platform.opentargets.org/api/v4/graphql",
+      "bytes": 3489,
+      "sha256": "b5fd7cc95aab4ac928125ee5a3bfe60c545795b7829a1301fc0a8691acef1ad0",
+      "content_range": null,
+      "etag": null
+    },
+    "count": 7,
+    "credible_sets": [
+      {
+        "studyLocusId": "514119865e22dde8235fae4d30dafdfb",
+        "studyId": "GCST90094904",
+        "chromosome": "15",
+        "position": 27989264,
+        "beta": -0.23563630000092894,
+        "standardError": null,
+        "pValueMantissa": 1.1003375053405762,
+        "pValueExponent": -8,
+        "finemappingMethod": "SuSiE-inf",
+        "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+        "purityMinR2": 0.9887720277349827,
+        "qualityControls": [
+          "Study has quality control flag(s)",
+          "Study locus finemapped without in-sample LD reference"
+        ],
+        "variant": {
+          "id": "15_27989264_G_T"
+        }
+      },
+      {
+        "studyLocusId": "5b51a82bef1524b58cb9992f1782f0ca",
+        "studyId": "GCST90094904",
+        "chromosome": "12",
+        "position": 88716633,
+        "beta": -0.06905505748060256,
+        "standardError": null,
+        "pValueMantissa": 1.189724087715149,
+        "pValueExponent": -13,
+        "finemappingMethod": "SuSiE-inf",
+        "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+        "purityMinR2": 1,
+        "qualityControls": [
+          "Study has quality control flag(s)",
+          "Study locus finemapped without in-sample LD reference"
+        ],
+        "variant": {
+          "id": "12_88716633_A_C"
+        }
+      },
+      {
+        "studyLocusId": "620a2a27eed0cc97da9db6ec46e18d20",
+        "studyId": "GCST90094904",
+        "chromosome": "15",
+        "position": 27983407,
+        "beta": -0.0537617986530152,
+        "standardError": null,
+        "pValueMantissa": 2.997748374938965,
+        "pValueExponent": -12,
+        "finemappingMethod": "SuSiE-inf",
+        "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+        "purityMinR2": 1,
+        "qualityControls": [
+          "Study has quality control flag(s)",
+          "Study locus finemapped without in-sample LD reference"
+        ],
+        "variant": {
+          "id": "15_27983407_C_T"
+        }
+      },
+      {
+        "studyLocusId": "77b15e2529452f5f854cf0ccc1e80fe9",
+        "studyId": "GCST90094904",
+        "chromosome": "2",
+        "position": 222606549,
+        "beta": -0.05333586623867885,
+        "standardError": null,
+        "pValueMantissa": 1.7541091442108154,
+        "pValueExponent": -11,
+        "finemappingMethod": "SuSiE-inf",
+        "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+        "purityMinR2": 0.7400756852702057,
+        "qualityControls": [
+          "Study has quality control flag(s)",
+          "Study locus finemapped without in-sample LD reference"
+        ],
+        "variant": {
+          "id": "2_222606549_C_G"
+        }
+      },
+      {
+        "studyLocusId": "a2da67fd718cb949540ed9c5eaa1a445",
+        "studyId": "GCST90094904",
+        "chromosome": "15",
+        "position": 27953421,
+        "beta": 0.12389422177484656,
+        "standardError": null,
+        "pValueMantissa": 2.9813616275787354,
+        "pValueExponent": -6,
+        "finemappingMethod": "SuSiE-inf",
+        "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+        "purityMinR2": 0.9157693957479082,
+        "qualityControls": [
+          "Study has quality control flag(s)",
+          "Study locus finemapped without in-sample LD reference"
+        ],
+        "variant": {
+          "id": "15_27953421_T_C"
+        }
+      },
+      {
+        "studyLocusId": "ae64843418ee8298c1c35994d28307f6",
+        "studyId": "GCST90094904",
+        "chromosome": "9",
+        "position": 16794420,
+        "beta": 0.40274690322453427,
+        "standardError": null,
+        "pValueMantissa": 2.643862724304199,
+        "pValueExponent": -11,
+        "finemappingMethod": "SuSiE-inf",
+        "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+        "purityMinR2": 1,
+        "qualityControls": [
+          "Study has quality control flag(s)",
+          "Study locus finemapped without in-sample LD reference"
+        ],
+        "variant": {
+          "id": "9_16794420_C_A"
+        }
+      },
+      {
+        "studyLocusId": "faf51bd3d4cd1dbb424d1d5da372db9c",
+        "studyId": "GCST90094904",
+        "chromosome": "19",
+        "position": 3548233,
+        "beta": -0.06857830886724933,
+        "standardError": null,
+        "pValueMantissa": 1.399643898010254,
+        "pValueExponent": -13,
+        "finemappingMethod": "SuSiE-inf",
+        "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+        "purityMinR2": 0.8977824119091021,
+        "qualityControls": [
+          "Study has quality control flag(s)",
+          "Study locus finemapped without in-sample LD reference"
+        ],
+        "variant": {
+          "id": "19_3548233_A_G"
+        }
+      }
+    ],
+    "full_source_readout": {
+      "status": "COMPLETE_MD5_VERIFIED_LEAD_SCAN",
+      "lead_total": 7,
+      "matched": 6,
+      "filename": "35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+      "metadata_source": {
+        "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/35421404-GCST90094904-EFO_0008006.h.tsv.gz-meta.yaml",
+        "bytes": 849,
+        "sha256": "4bdca8c697f5408e29ed60640669eff41be3c9fb101a89fc223bfa0c396f8c2a",
+        "content_range": null,
+        "etag": "\"351-62dbf7d1883f6\""
+      },
+      "metadata": {
+        "gwas_id": "GCST90094904",
+        "data_file_name": "35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+        "genome_assembly": "GRCh38",
+        "is_harmonised": true,
+        "trait_description": [
+          "Facial wrinkles (crow's feet)"
+        ],
+        "samples": [
+          {
+            "sample_ancestry_category": [
+              "East Asian"
+            ],
+            "sample_ancestry": [
+              "Korean"
+            ],
+            "sample_size": 11079
+          }
+        ],
+        "data_file_md5sum": "10b0c0ad379b755b80f6d84f7014ef4d"
+      },
+      "expected_md5": "10b0c0ad379b755b80f6d84f7014ef4d",
+      "checksum_source": {
+        "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/md5sum.txt",
+        "bytes": 206,
+        "sha256": "dfc8fc33508cdc8ebe89213a04288e0462cfb8f050fd0c9731e9771e7c6f841f",
+        "content_range": null,
+        "etag": "\"ce-62dbf7d18c47b\""
+      },
+      "remote_size": 166468623,
+      "size_probe": {
+        "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+        "bytes": 1,
+        "sha256": "ffe679bb831c95b67dc17819c63c5090d221aac6f4c7bf530f594ab43d21fa1e",
+        "content_range": "bytes 0-0/166468623",
+        "etag": "\"9ec1c0f-5e37bd11ac1be\""
+      },
+      "full_source": {
+        "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+        "bytes": 166468623,
+        "md5": "10b0c0ad379b755b80f6d84f7014ef4d",
+        "sha256": "567e55db53cb9528680073dd122190528bd640a0706c286d40999f4b283e5927"
+      },
+      "header": [
+        "hm_variant_id",
+        "hm_rsid",
+        "hm_chrom",
+        "hm_pos",
+        "hm_other_allele",
+        "hm_effect_allele",
+        "hm_beta",
+        "hm_odds_ratio",
+        "hm_ci_lower",
+        "hm_ci_upper",
+        "hm_effect_allele_frequency",
+        "hm_code",
+        "variant_id",
+        "p_value",
+        "chromosome",
+        "base_pair_location",
+        "effect_allele",
+        "other_allele",
+        "effect_allele_frequency",
+        "beta",
+        "standard_error",
+        "odds_ratio",
+        "ci_lower",
+        "ci_upper"
+      ],
+      "rows_scanned": 4950621,
+      "lead_rows": {
+        "15_27989264_G_T": {
+          "status": "MATCHED_FULL_SOURCE_LEAD",
+          "beta_alt": -0.8006,
+          "standard_error": 0.1401,
+          "p_value": 1.119e-8,
+          "hm_code": 11,
+          "rsid": "rs730502"
+        },
+        "12_88716633_A_C": {
+          "status": "MATCHED_FULL_SOURCE_LEAD",
+          "beta_alt": -0.9851,
+          "standard_error": 0.1328,
+          "p_value": 1.244e-13,
+          "hm_code": 10,
+          "rsid": "rs72620727"
+        },
+        "15_27983407_C_T": {
+          "status": "MATCHED_FULL_SOURCE_LEAD",
+          "beta_alt": -1.794,
+          "standard_error": 0.2571,
+          "p_value": 3.115e-12,
+          "hm_code": 10,
+          "rsid": "rs74653330"
+        },
+        "2_222606549_C_G": {
+          "status": "HOLD_EFFECT",
+          "reason": "palindromic or non-SNV lead"
+        },
+        "15_27953421_T_C": {
+          "status": "MATCHED_FULL_SOURCE_LEAD",
+          "beta_alt": 0.9746,
+          "standard_error": 0.2086,
+          "p_value": 0.000002988,
+          "hm_code": 10,
+          "rsid": "rs921221"
+        },
+        "9_16794420_C_A": {
+          "status": "MATCHED_FULL_SOURCE_LEAD",
+          "beta_alt": 0.8818,
+          "standard_error": 0.1323,
+          "p_value": 2.675e-11,
+          "hm_code": 10,
+          "rsid": "rs12376135"
+        },
+        "19_3548233_A_G": {
+          "status": "MATCHED_FULL_SOURCE_LEAD",
+          "beta_alt": -1.017,
+          "standard_error": 0.1375,
+          "p_value": 1.505e-13,
+          "hm_code": 10,
+          "rsid": "rs2240751"
+        }
+      },
+      "limits": [
+        "Full file MD5/CRC and exact GRCh38 nonpalindromic lead matches required. Source-derived SE only. Same GWAS as Open Targets, not independent validation or LD-pruned MR. No estimate of missing SE from rounded P-values."
+      ]
+    },
+    "limits": [
+      "Open Targets postprocessed fine-mapping of the same original Korean GWAS (Lee et al 2022), not independent replication or full original summary statistics. Lead effects may be missing; no new colocalization, instrument selection, MR or merging distinct wrinkle phenotypes. Check ancestry and LD source before mechanistic use."
+    ],
+    "mode": "GCST90094904",
+    "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+  }
+}

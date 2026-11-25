@@ -1,0 +1,85 @@
+name: Early Skin molecular context and focused source diagnostics
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/publication/early_skin_molecular_context.py'
+      - '.github/workflows/early-skin-molecular-context.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        mode: [sun, protected, fibroblast, oral_labels, hcc_schema]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
+          path: prior
+      - uses: actions/checkout@v4
+        with:
+          ref: 040eee7a16e3a1079e4ab5e2bcbd74ac3bea9bc7
+          path: indexed
+      - uses: actions/checkout@v4
+        with:
+          ref: 31426ee098c6e6f9b482a1dd4cf90e63fb51e6d8
+          path: orthogonal
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install PyYAML==6.0.2 openpyxl==3.1.5
+      - run: python scripts/publication/early_skin_molecular_context.py selftest
+      - name: Read exact public source
+        env:
+          MODE: ${{ matrix.mode }}
+        run: python -u scripts/publication/early_skin_molecular_context.py "$MODE" --out "evidence/$MODE.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: early-context-${{ matrix.mode }}
+          path: evidence/${{ matrix.mode }}.json
+          if-no-files-found: error
+          retention-days: 30
+  combine:
+    needs: source
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
+          path: prior
+      - uses: actions/checkout@v4
+        with:
+          ref: 040eee7a16e3a1079e4ab5e2bcbd74ac3bea9bc7
+          path: indexed
+      - uses: actions/checkout@v4
+        with:
+          ref: 31426ee098c6e6f9b482a1dd4cf90e63fb51e6d8
+          path: orthogonal
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install PyYAML==6.0.2 openpyxl==3.1.5
+      - run: python scripts/publication/early_skin_molecular_context.py selftest
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: early-context-*
+          merge-multiple: true
+          path: inputs
+      - run: python -u scripts/publication/early_skin_molecular_context.py combine --root inputs --out evidence/combine.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: early-context-combine
+          path: evidence/combine.json
+          if-no-files-found: error
+          retention-days: 30
