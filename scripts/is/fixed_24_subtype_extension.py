@@ -9,7 +9,9 @@ from pathlib import Path
 from urllib.parse import urljoin
 import yaml
 from pyliftover import LiftOver
-from scripts.is.audit_gws_eas_24_leads_original import read_legacy_180,compare
+import importlib
+legacy_helpers=importlib.import_module('scripts.is.audit_gws_eas_24_leads_original')
+read_legacy_180,compare=legacy_helpers.read_legacy_180,legacy_helpers.compare
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/"indexed_helpers/scripts/is"))
 import fixed_subtype_indexed as base
