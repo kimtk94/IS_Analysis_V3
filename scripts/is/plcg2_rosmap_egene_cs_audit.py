@@ -46,27 +46,38 @@ def read_perm(path):
     if target:target["BH_across_complete_source_genes"]=adj[GENE];target["passes_BH_0.05"]=adj[GENE]<.05
     return {"status":"COMPLETE_OFFICIAL_PERMUTATION_READ","tested_gene_count":len(data),"BH_lt_0.05_gene_count":sum(v<.05 for v in adj.values()),"PLCG2":target}
 def read_cs(path):
-    sets=collections.defaultdict(list);total=0;seen=set()
+    """Use the observed release header, not the older documented CS columns."""
+    sets=collections.defaultdict(list);total=0;seen=set();skipped_other_genes=0
+    fields="molecular_trait_id gene_id cs_id variant rsid cs_size pip pvalue beta se z cs_min_r2 region".split()
     with gzip.open(path,"rt",encoding="utf8",newline="") as f:
         t=csv.DictReader(f,delimiter="\t")
-        need={"molecular_trait_id","variant","chromosome","position","ref","alt","cs_id","cs_index","cs_size","pip","z","cs_min_r2","cs_avg_r2","finemapped_region","cs_log10bf"}
-        require(need<=set(t.fieldnames or []),"Official credible-set schema; observed="+repr(t.fieldnames)+"; missing="+repr(sorted(need-set(t.fieldnames or []))))
+        require(t.fieldnames==fields,"Unexpected observed-release CS schema: "+repr(t.fieldnames))
         for row in t:
-            total+=1;require(total<=2500000 and None not in row,"CS row bound/width")
-            if row["molecular_trait_id"]!=GENE:continue
-            ref,alt=row["ref"],row["alt"];pos=int(row["position"])
-            require(row["chromosome"].removeprefix("chr")=="16" and pos>0 and row["variant"]==f"chr16_{pos}_{ref}_{alt}","PLCG2 CS variant key")
-            p=float(row["pip"]);z=float(row["z"]);lo=float(row["cs_min_r2"]);avg=float(row["cs_avg_r2"])
-            require(all(math.isfinite(v) for v in (p,z,lo,avg)) and 0<=p<=1 and 0<=lo<=1 and 0<=avg<=1,"CS statistics")
-            key=(row["cs_id"],row["variant"]);require(key not in seen,"Duplicate CS variant");seen.add(key)
-            sets[row["cs_id"]].append({"variant":row["variant"],"position":pos,"ref":ref,"alt":alt,"pip":p,"z":z,"cs_index":row["cs_index"],"cs_size":int(row["cs_size"]),"cs_min_r2":lo,"cs_avg_r2":avg,"finemapped_region":row["finemapped_region"],"cs_log10bf":float(row["cs_log10bf"])})
+            total+=1;require(total<=2500000 and None not in row and all(v is not None for v in row.values()),"CS row bound/width")
+            if row["molecular_trait_id"]!=GENE and row["gene_id"]!=GENE:
+                skipped_other_genes+=1;continue
+            require(row["gene_id"]==row["molecular_trait_id"]==GENE,"Inconsistent target gene identity")
+            m=re.fullmatch(r"chr16_([0-9]+)_([ACGTN]+)_([ACGTN]+)",row["variant"])
+            require(m is not None,"Noncanonical target GRCh38 variant key: "+row["variant"][:120])
+            pos,ref,alt=int(m[1]),m[2],m[3]
+            require(pos>0 and ref!=alt,"Target coordinate/alleles")
+            pip,p,beta,se,z,lo=map(float,[row["pip"],row["pvalue"],row["beta"],row["se"],row["z"],row["cs_min_r2"]])
+            require(all(math.isfinite(v) for v in (pip,p,beta,se,z,lo)) and 0<=pip<=1 and 0<=p<=1 and se>0 and 0<=lo<=1,"CS effect/LD statistics")
+            key=(row["cs_id"],row["variant"]);require(key not in seen and bool(row["cs_id"]),"Duplicate or empty CS identity");seen.add(key)
+            require(int(row["cs_size"])>0 and bool(row["region"]),"CS size/region")
+            if row["variant"]==VAR:
+                require("rs7203740" in re.findall(r"rs[0-9]+",row["rsid"]),"Target C/T rsID mismatch")
+                require(math.isclose(beta,.279006,rel_tol=1e-5) and math.isclose(se,.068636,rel_tol=1e-5) and math.isclose(p,.0000551034,rel_tol=1e-5),"Target CS nominal values disagree with pinned QTL")
+            sets[row["cs_id"]].append({"variant":row["variant"],"rsid":row["rsid"],"position":pos,"ref":ref,"alt":alt,"pip":pip,"p":p,"beta_ALT":beta,"se":se,"z":z,"cs_size":int(row["cs_size"]),"cs_min_r2":lo,"region_as_published":row["region"]})
     require(total>0,"Empty credible sets source")
     summary=[]
     for k,rows in sorted(sets.items()):
-        require(all(v["cs_size"]==len(rows) for v in rows),"Incomplete PLCG2 credible set")
-        lead=max(rows,key=lambda v:v["pip"])
-        summary.append({"cs_id":k,"size":len(rows),"top_pip_variant":lead["variant"],"top_pip":lead["pip"],"target_CT":[v for v in rows if v["variant"]==VAR],"other_CA":[v for v in rows if v["variant"]=="chr16_81775211_C_A"],"cs_min_r2":lead["cs_min_r2"],"cs_avg_r2":lead["cs_avg_r2"],"finemapped_region":lead["finemapped_region"],"members":rows})
-    return {"status":"COMPLETE_OFFICIAL_CREDIBLE_SET_READ","total_source_rows":total,"PLCG2_credible_sets":summary,"PLCG2_credible_set_count":len(summary),"target_CT_in_any_CS":any(s["target_CT"] for s in summary)}
+        require(all(v["cs_size"]==len(rows) for v in rows),"Incomplete PLCG2 credible set: "+str([k,len(rows),sorted({v["cs_size"] for v in rows})]))
+        require(len({v["cs_min_r2"] for v in rows})==1 and len({v["region_as_published"] for v in rows})==1,"Inconsistent CS metadata")
+        lead=max(rows,key=lambda v:(v["pip"],v["variant"]))
+        summary.append({"cs_id":k,"size":len(rows),"top_pip_variant":lead["variant"],"top_pip_rsid":lead["rsid"],"top_pip":lead["pip"],"target_CT":[v for v in rows if v["variant"]==VAR],"other_CA":[v for v in rows if v["variant"]=="chr16_81775211_C_A"],"cs_min_r2":lead["cs_min_r2"],"region_as_published":lead["region_as_published"],"members":rows})
+    return {"status":"COMPLETE_OFFICIAL_CREDIBLE_SET_READ","actual_header":fields,"total_source_rows":total,"other_gene_rows":skipped_other_genes,"target_gene_rows":total-skipped_other_genes,"PLCG2_credible_sets":summary,"PLCG2_credible_set_count":len(summary),"target_CT_in_any_CS":any(s["target_CT"] for s in summary),"unavailable_in_release":["cs_avg_r2","cs_log10bf","cs_index","posterior_mean","posterior_sd"],"limits":["Coordinates and alleles parsed from official GRCh38 variant key; no inferred missing CS statistics. PIP and LD purity are source-reported. Absence from a published CS is not proof of no molecular effect."]}
+
 def run(root,work):
     p=json.loads((root/"is_fixed24_two_locus_qtl_extension_20261125.json").read_text())
     x=p["result"];require(p["provenance"]["run_id"]==45549445784 and x["read_source_locus_pairs"]==5,"Prior extension identity")
@@ -82,13 +93,18 @@ def run(root,work):
     # Permutation filename follows documented source naming; 404 is HOLD.
     perm=nominal.replace(".all.tsv.gz",".permuted.tsv.gz")
     out={"status":"POST_READOUT_OFFICIAL_PLCG2_EGENE_CS_AUDIT","dataset":DATASET,"gene_id":GENE,"target_variant":VAR,"nominal_qtl":h[0],"sources":{},"limits":["Official gene-level permutation/FDR and SuSiE credible-set evidence, not independent replication; same ROSMAP QTL dataset as nominal result.","Exact C/T not rsID alone. Presence in QTL credible set does not imply shared causal variant with stroke GWAS. Absence can reflect no published set or signal structure; not absence of all regulation.","No regional GWAS/QTL comparison, MR or colocalization. Nominal N/AN not automatically model N; ancestry and overlap not certified. Source failure remains HOLD."]}
-    for i,(k,url,parser) in enumerate((("permutation",perm,read_perm),("credible_sets",cs,read_cs))):
-        if i:time.sleep(5)
+    # Reuse the independently archived exact permutation readback; do not redownload.
+    archived=json.loads((root/"is_plcg2_rosmap_egene_cs_20261125.json").read_text())
+    q=archived["result"]["sources"]["permutation"]
+    require(archived["provenance"]["run_id"]==45550125894 and q["status"]=="COMPLETE_OFFICIAL_PERMUTATION_READ" and q["tested_gene_count"]==23076 and q["source"]["sha256"]=="adf13cbe9f784cd56a832700b710ffd6abe76a962a38918667a1d80c51413091","Prior permutation provenance")
+    out["sources"]["permutation"]={**q,"reused_verified_run":45550125894}
+    for k,url,parser in (("credible_sets",cs,read_cs),):
         dst=work/(k+".gz");url=url.replace("ftp://","https://",1)
         try:
             source=download(url,dst)
-            out["sources"][k]={"source":source,**parser(dst)}
-        except (OSError,ValueError,KeyError,TypeError,EOFError) as e:out["sources"][k]={"status":"HOLD_SOURCE_OR_SCHEMA","url":url,"reason":str(e)[:220]}
+            out["sources"][k]={"source":source}
+            out["sources"][k].update(parser(dst))
+        except (OSError,ValueError,KeyError,TypeError,EOFError) as e:out["sources"][k]={**out["sources"].get(k,{}),"status":"HOLD_SOURCE_OR_SCHEMA","url":url,"reason":str(e)[:1200]}
         finally:dst.unlink(missing_ok=True)
     return out
 def main():
