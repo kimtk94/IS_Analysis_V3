@@ -1,0 +1,36 @@
+name: IS rs2767060 reference locus audit
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/rs2767060_regional_annotation.py','.github/workflows/is-rs2767060-regional-annotation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  reference-locus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: is24-anchor
+          path: inputs/anchor
+          run-id: 45534891070
+          github-token: ${{ github.token }}
+      - name: Exact source identity, regional genes and reference LD
+        run: |
+          python -m py_compile scripts/is/rs2767060_regional_annotation.py
+          python scripts/is/rs2767060_regional_annotation.py --manifest inputs/anchor/manifest.json --out outputs/rs2767060-regional-annotation.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-rs2767060-reference-locus
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
