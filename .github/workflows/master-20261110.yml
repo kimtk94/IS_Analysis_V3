@@ -1,0 +1,27 @@
+name: MASTER 2026-11-10 eight scientific input gates
+on:
+  pull_request:
+    paths:
+      - 'scripts/research/master_20261110.py'
+      - '.github/workflows/master-20261110.yml'
+  workflow_dispatch:
+jobs:
+  input-gate:
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify bounded official input
+        run: python3 scripts/research/master_20261110.py --track ${{ matrix.track }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: master-20261110-${{ matrix.track }}
+          path: results/master_20261110/*.json
+          if-no-files-found: warn
