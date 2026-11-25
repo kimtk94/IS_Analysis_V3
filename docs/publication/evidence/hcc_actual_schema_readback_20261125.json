@@ -1,0 +1,300 @@
+{
+  "run_id": 45612527929,
+  "job_id": 139199468686,
+  "head_sha": "8541ff3cb5c69cb3f61e49f0af3f9a6820cfce1b",
+  "source": "Actual job stdout",
+  "aggregate": {
+    "status": "HCC_PUBLISHER_SCHEMA_DIAGNOSTICS",
+    "workbooks": {
+      "Transcriptomics_Tums_NTL_Normals.xlsx": {
+        "source": {
+          "url": "https://zenodo.org/records/16992982/files/Transcriptomics_Tums_NTL_Normals.xlsx?download=1",
+          "bytes": 59825342,
+          "sha256": "ebf7abcde8e5a053032b458fb4fd75a0b0675fed753f38210c942b3ae7c249d6",
+          "content_range": null,
+          "etag": null,
+          "published_md5": "9012a374588a273bcb930b83643bf1b0"
+        },
+        "sheets": [
+          {
+            "sheet": 1,
+            "dimensions": [
+              3,
+              2
+            ],
+            "note_concepts": {
+              "TPM": 1,
+              "normalised": 1,
+              "normal": 2,
+              "unifocal": 2,
+              "multifocal": 2,
+              "Ensembl": 2,
+              "tumor": 1,
+              "non-tumor": 1
+            }
+          },
+          {
+            "sheet": 2,
+            "dimensions": [
+              16484,
+              140
+            ],
+            "first_header_is_blank": true,
+            "first_column_shapes": {
+              "ensembl_gene": 16483
+            },
+            "first_column_unique": 16483,
+            "fixed_gene_exact_label_counts": {
+              "SOAT1": 0,
+              "HMGCR": 0,
+              "SQLE": 0,
+              "LDLR": 0,
+              "FASN": 0,
+              "ACACA": 0,
+              "ACLY": 0,
+              "SREBF2": 0
+            }
+          },
+          {
+            "sheet": 3,
+            "dimensions": [
+              23415,
+              108
+            ],
+            "first_header_is_blank": true,
+            "first_column_shapes": {
+              "ensembl_gene": 23414
+            },
+            "first_column_unique": 23414,
+            "fixed_gene_exact_label_counts": {
+              "SOAT1": 0,
+              "HMGCR": 0,
+              "SQLE": 0,
+              "LDLR": 0,
+              "FASN": 0,
+              "ACACA": 0,
+              "ACLY": 0,
+              "SREBF2": 0
+            }
+          }
+        ]
+      },
+      "Proteomics_Tums_NTL_Normals.xlsx": {
+        "source": {
+          "url": "https://zenodo.org/records/16992982/files/Proteomics_Tums_NTL_Normals.xlsx?download=1",
+          "bytes": 6751340,
+          "sha256": "2687a8ac7497f20802a4991cd0cf3ab2939a03aebccc5a5bcf367ecd2bb448c0",
+          "content_range": null,
+          "etag": null,
+          "published_md5": "aee43ad590214e713b395c4f60d827a1"
+        },
+        "sheets": [
+          {
+            "sheet": 1,
+            "dimensions": [
+              3,
+              2
+            ],
+            "note_concepts": {
+              "protein": 3,
+              "log2": 1,
+              "normal": 2,
+              "unifocal": 2,
+              "multifocal": 2,
+              "tumor": 1,
+              "non-tumor": 1
+            }
+          },
+          {
+            "sheet": 2,
+            "dimensions": [
+              5194,
+              50
+            ],
+            "first_header_is_blank": true,
+            "first_column_shapes": {
+              "short_alphanumeric": 5193
+            },
+            "first_column_unique": 5193,
+            "fixed_gene_exact_label_counts": {
+              "SOAT1": 1,
+              "HMGCR": 0,
+              "SQLE": 1,
+              "LDLR": 0,
+              "FASN": 1,
+              "ACACA": 1,
+              "ACLY": 1,
+              "SREBF2": 0
+            }
+          },
+          {
+            "sheet": 3,
+            "dimensions": [
+              5194,
+              44
+            ],
+            "first_header_is_blank": true,
+            "first_column_shapes": {
+              "short_alphanumeric": 5193
+            },
+            "first_column_unique": 5193,
+            "fixed_gene_exact_label_counts": {
+              "SOAT1": 1,
+              "HMGCR": 0,
+              "SQLE": 1,
+              "LDLR": 0,
+              "FASN": 1,
+              "ACACA": 1,
+              "ACLY": 1,
+              "SREBF2": 0
+            }
+          }
+        ]
+      }
+    },
+    "manifest": {
+      "source": {
+        "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1186%2Fs12943-026-02604-x/MediaObjects/12943_2026_2604_MOESM3_ESM.xlsx",
+        "bytes": 30810,
+        "sha256": "1b7aa84bc224adb25cba9f01f628f8e6bf29b383b0891817bc1dabd555e23989",
+        "content_range": null,
+        "etag": "\"de238265d94120efc9af9f7342bafefd\""
+      },
+      "public_headers": [
+        {
+          "column": 1,
+          "published_header": "Patient Number"
+        },
+        {
+          "column": 2,
+          "published_header": "Biopsy ID"
+        },
+        {
+          "column": 3,
+          "published_header": "Tumor Nodule Number (radiological assignment)"
+        },
+        {
+          "column": 4,
+          "published_header": "Tumor Label"
+        },
+        {
+          "column": 5,
+          "published_header": "Patient status"
+        },
+        {
+          "column": 6,
+          "published_header": "Days post Dx"
+        },
+        {
+          "column": 7,
+          "published_header": "Biopsy location"
+        },
+        {
+          "column": 8,
+          "published_header": "Biopsy location (Lobe)"
+        },
+        {
+          "column": 9,
+          "published_header": "Edmondson grade"
+        },
+        {
+          "column": 10,
+          "published_header": "Chronic liver disease"
+        },
+        {
+          "column": 11,
+          "published_header": "Immunophenotype classification"
+        },
+        {
+          "column": 12,
+          "published_header": "infiltrating TIL (%)"
+        },
+        {
+          "column": 13,
+          "published_header": "stromal TIL (%)"
+        },
+        {
+          "column": 14,
+          "published_header": "Tumor Content (histological assessment)"
+        },
+        {
+          "column": 15,
+          "published_header": "Necrosis (%)"
+        },
+        {
+          "column": 16,
+          "published_header": "Major Growth Pattern"
+        },
+        {
+          "column": 17,
+          "published_header": "VETC (%)"
+        },
+        {
+          "column": 18,
+          "published_header": "ESTIMATE Stromal Score"
+        },
+        {
+          "column": 19,
+          "published_header": "ESTIMATE Immune Score"
+        },
+        {
+          "column": 20,
+          "published_header": "ESTIMATE Score"
+        },
+        {
+          "column": 21,
+          "published_header": "Hoshida Molecular subtype"
+        },
+        {
+          "column": 22,
+          "published_header": "WES Platform"
+        },
+        {
+          "column": 23,
+          "published_header": "WES Mean Target Depth"
+        },
+        {
+          "column": 24,
+          "published_header": "WES PCT TARGET 50X"
+        },
+        {
+          "column": 25,
+          "published_header": "WES Purity"
+        },
+        {
+          "column": 26,
+          "published_header": "WES Ploidy"
+        },
+        {
+          "column": 27,
+          "published_header": "RNA-seq Number of Aligned Reads Millions"
+        },
+        {
+          "column": 28,
+          "published_header": "Source of WES data (HCC)"
+        },
+        {
+          "column": 29,
+          "published_header": "Source of RNA-seq data (HCC)"
+        },
+        {
+          "column": 30,
+          "published_header": "Source of WES data (NTL)"
+        },
+        {
+          "column": 31,
+          "published_header": "Source of RNA-seq data (NTL)"
+        },
+        {
+          "column": 32,
+          "published_header": "Source of proteomics data"
+        }
+      ]
+    },
+    "limits": [
+      "Exact first-column fixed gene keys and public header labels only. No raw expression or participant data, no assumed tissue from sheet order, no tests. Previously 47 and 41 exact label intersections, 22 with manifest, but patient/tissue/feature match unverified."
+    ],
+    "mode": "hcc_schema",
+    "scientific_status": "HOLD_NOVELTY_AND_CAUSAL_VALIDATION"
+  }
+}
