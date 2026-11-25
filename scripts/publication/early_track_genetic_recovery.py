@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Frozen CKM common-instrument recovery; Skin official credible-set inventory (not MR)."""
-import argparse,collections,hashlib,json,math,re,sys,tempfile,time
+import argparse,collections,concurrent.futures,csv,gzip,hashlib,json,math,re,subprocess,sys,tempfile,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 for folder in ("prior","ckm","indexed"):
@@ -32,20 +32,65 @@ def resolve(r,a,b):
     sign=old.orientation(r["ea"],r["oa"],alt,ref)[0]
     return {"status":"MATCHED_REFERENCE","chr":str(r["chrom"]),"pos":p38,"ref":ref,"alt":alt,"exposure_sign":sign,
             "grch37_position":p37,"grch37_alleles":v37,"reference_order_changed":v37!=v38}
+def ref_query(host,ids):
+    from urllib.request import Request,urlopen
+    from urllib.parse import urlsplit
+    require(host in {"grch37.rest.ensembl.org","rest.ensembl.org"},"reference host")
+    if len(ids)>1:
+        url="https://"+host+"/variation/homo_sapiens"
+        data=json.dumps({"ids":ids}).encode()
+    else:
+        url="https://"+host+"/variation/human/"+ids[0]+"?content-type=application/json"
+        data=None
+    req=Request(url,data=data,headers={"User-Agent":"IS-frozen-reference-recovery/1.1","Accept":"application/json","Content-Type":"application/json","Accept-Encoding":"identity"})
+    last=None
+    for attempt in range(2):
+        try:
+            with urlopen(req,timeout=18) as f:
+                require(f.status==200 and urlsplit(f.geturl()).hostname==host,"reference HTTP/redirect")
+                raw=f.read(2_000_001)
+            require(0<len(raw)<=2_000_000,"reference transfer cap")
+            obj=json.loads(raw)
+            if len(ids)==1:obj={ids[0]:obj}
+            require(isinstance(obj,dict),"reference JSON object")
+            return obj,{"host":host,"ids":ids,"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest()}
+        except (OSError,ValueError) as e:
+            last=e
+            if attempt==0:time.sleep(2)
+    raise last
+def reference_build(host,ids):
+    obs={};provenance=[];failures={}
+    try:
+        obj,src=ref_query(host,ids);provenance.append(src)
+        obs.update({k:v for k,v in obj.items() if k in ids and isinstance(v,dict) and v.get("name")==k})
+    except (OSError,ValueError) as e:failures["batch"]=str(e)[:150]
+    missing=[k for k in ids if k not in obs]
+    def one(k):
+        try:
+            o,src=ref_query(host,[k]);v=o.get(k)
+            require(isinstance(v,dict) and v.get("name")==k,"individual reference ID")
+            return k,v,src,None
+        except (OSError,ValueError,TypeError) as e:return k,None,None,str(e)[:150]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+        for k,v,src,err in pool.map(one,missing):
+            if v is not None:obs[k]=v;provenance.append(src)
+            else:failures[k]=err
+    return obs,{"host":host,"received":len(obs),"batch_or_individual_sources":provenance,"transport_failures":failures}
 def reference():
     with tempfile.TemporaryDirectory() as td:
-        p=Path(td)/"ldl.gz";src=old.download(old.LDL_URL,p,60_000_000,180)
+        p=Path(td)/"ldl.gz";src=old.download(old.LDL_URL,p,60_000_000,180,retry=1)
         require(src["sha256"]=="ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce","frozen exposure hash")
         panel,selection=old.load_ldl(p)
     require(tuple(r["rsid"] for r in panel)==REQUIRED_IDS and selection["source_rows"]==2437751 and selection["eligible_genomewide_significant_rows"]==2511,"frozen panel drift")
     refs={}
     for assembly,host in (("GRCh37","grch37.rest.ensembl.org"),("GRCh38","rest.ensembl.org")):
-        raw,prov=base.get("https://"+host+"/variation/homo_sapiens",10_000_000,body=json.dumps({"ids":list(REQUIRED_IDS)}).encode())
-        refs[assembly]=(json.loads(raw),prov)
+        refs[assembly]=reference_build(host,list(REQUIRED_IDS))
     res={}
     for r in panel:
         k=r["rsid"]
-        try:res[k]=resolve(r,refs["GRCh37"][0].get(k),refs["GRCh38"][0].get(k))
+        try:
+            require(k in refs["GRCh37"][0] and k in refs["GRCh38"][0],"reference transport/identity unavailable")
+            res[k]=resolve(r,refs["GRCh37"][0].get(k),refs["GRCh38"][0].get(k))
         except (ValueError,KeyError,TypeError,IndexError) as e:res[k]={"status":"HOLD_REFERENCE","reason":str(e)[:150]}
     return {"status":"FROZEN_LDL_REFERENCE_RECOVERY","panel":panel,"selection":selection,"exposure_source":src,"reference_sources":{k:v[1] for k,v in refs.items()},"reference":res,
             "matched":sum(v["status"]=="MATCHED_REFERENCE" for v in res.values()),
@@ -57,6 +102,8 @@ def read_reference(root):
 def extract(name,root):
     import urllib.error
     x=read_reference(root);refs=x["reference"];idx.PANEL=REQUIRED_IDS
+    if x["matched"]<old.MIN_N:
+        return {"status":"HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM","outcome":name,"reference_exposure_sha":x["exposure_source"]["sha256"],"reference_matched":x["matched"],"matched":0,"effects":{},"source_metadata_qualified":False,"limits":["Fewer than the fixed minimum of ten eligible references; no heavy outcome requests."]}
     get=idx.get
     def retry(url,cap,span=None):
         for attempt in range(2):
@@ -94,6 +141,105 @@ def gql(query):
     obj=json.loads(raw);require(not obj.get("errors"),"GraphQL schema/response error: "+str(obj.get("errors",""))[:180])
     require(isinstance(obj.get("data"),dict),"missing GraphQL data")
     return obj["data"],src
+def skin_source_contract(acc,catalog,leads):
+    """Older GWAS files are not indexed; exact complete harmonised file only, no reconstructed SE."""
+    import yaml
+    from urllib.request import Request,urlopen
+    from urllib.parse import urlsplit
+    folder=base.SKIN_BASE+acc+"/harmonised/"
+    names=catalog.get("harmonised_directory",{}).get("files",[])
+    matches=[n for n in names if re.fullmatch(r"35421404-"+acc+r"-EFO_\d+\.h\.tsv\.gz",n)]
+    out={"status":"HOLD_FULL_SOURCE","lead_total":len(leads),"matched":0}
+    stage="filename"
+    try:
+        require(len(matches)==1,"unique publication-prefixed harmonised file absent")
+        name=matches[0];url=folder+name;out["filename"]=name
+        stage="metadata"
+        md_raw,ms=base.get(url+"-meta.yaml",500_000);md=yaml.safe_load(md_raw)
+        require(isinstance(md,dict),"metadata object")
+        out.update(metadata_source=ms,metadata={k:md.get(k) for k in ("gwas_id","data_file_name","genome_assembly","is_harmonised","trait_description","samples","data_file_md5sum")})
+        require(md.get("gwas_id")==acc and md.get("data_file_name")==name,"metadata accession/filename mismatch")
+        require(str(md.get("genome_assembly","")).upper()=="GRCH38" and md.get("is_harmonised") is True,"not verified harmonised GRCh38")
+        stage="checksum"
+        checks,cs=base.get(folder+"md5sum.txt",100_000)
+        found=[]
+        for line in checks.decode("ascii").splitlines():
+            m=re.fullmatch(r"([a-fA-F0-9]{32})\s+\*?(?:\./)?(.+)",line.strip())
+            if m and m[2]==name:found.append(m[1].lower())
+        require(len(found)==1,"unique published MD5 absent")
+        expected=found[0]
+        if md.get("data_file_md5sum"):
+            require(str(md["data_file_md5sum"]).lower()==expected,"published checksums differ")
+        out.update(expected_md5=expected,checksum_source=cs)
+        stage="size"
+        _,probe=base.get(url,1,(0,0))
+        m=re.fullmatch(r"bytes 0-0/(\d+)",probe.get("content_range",""))
+        require(m is not None,"missing exact remote size")
+        size=int(m[1]);out.update(remote_size=size,size_probe=probe)
+        require(0<size<=600_000_000,"compressed source over 600 MB cap")
+        stage="complete_download"
+        with tempfile.TemporaryDirectory() as td:
+            p=Path(td)/"source.gz";digest=hashlib.md5();sha=hashlib.sha256();n=0
+            req=Request(url,headers={"User-Agent":"IS-fixed-skin-source/1.0","Accept-Encoding":"identity"})
+            with urlopen(req,timeout=60) as f,p.open("wb") as dest:
+                require(f.status==200 and urlsplit(f.geturl()).hostname=="ftp.ebi.ac.uk","source HTTP/redirect")
+                for block in iter(lambda:f.read(1_048_576),b""):
+                    n+=len(block);require(n<=size,"transfer exceeded exact size")
+                    digest.update(block);sha.update(block);dest.write(block)
+            require(n==size and digest.hexdigest()==expected,"complete source size/MD5 mismatch")
+            out.update(full_source={"url":url,"bytes":n,"md5":digest.hexdigest(),"sha256":sha.hexdigest()})
+            stage="header"
+            targets=collections.defaultdict(list)
+            for z in leads:
+                v=z["variant"]["id"];ch,pos,ref,alt=v.split("_")
+                targets[(ch,pos)].append((v,ref,alt))
+            pool=collections.defaultdict(list);count=0;expanded=0;invalid=0
+            with gzip.open(p,"rt",encoding="utf-8",newline="") as f:
+                h=f.readline().rstrip("\r\n").lstrip("#").split("\t")
+                require(len(set(h))==len(h),"duplicate GWAS header")
+                out["header"]=h
+                def choose(*keys):
+                    for k in keys:
+                        if k in h:return h.index(k)
+                    raise ValueError("missing required field: "+"/".join(keys))
+                ci=choose("hm_chrom","chromosome");pi=choose("hm_pos","base_pair_location")
+                ea=choose("hm_effect_allele","effect_allele");oa=choose("hm_other_allele","other_allele")
+                bi=choose("hm_beta","beta");si=choose("standard_error","hm_standard_error");pv=choose("p_value","hm_p_value")
+                co=choose("hm_code","harmonisation_code")
+                rs=next((h.index(k) for k in ("hm_rsid","rsid","rs_id") if k in h),None)
+                stage="full_scan"
+                maxcol=max(ci,pi)
+                for line in f:
+                    count+=1;expanded+=len(line)
+                    require(expanded<=3_000_000_000 and count<=30_000_000,"decompressed scan cap")
+                    a=line.split("\t",maxcol+1)
+                    require(len(a)>maxcol,"short coordinate row")
+                    hit=targets.get((a[ci].removeprefix("chr"),a[pi].strip()))
+                    if hit is None:continue
+                    row=line.rstrip("\r\n").split("\t");require(len(row)==len(h),"target row width")
+                    for vid,ref,alt in hit:
+                        x,y=row[ea].upper(),row[oa].upper()
+                        if {x,y}!={ref,alt}:continue
+                        z={"status":"HOLD_EFFECT","reason":"unresolved allele or statistic"}
+                        try:
+                            require(len(ref)==len(alt)==1 and {ref,alt} not in ({"A","T"},{"C","G"}),"palindromic or non-SNV lead")
+                            require(int(row[co]) in (10,11,12,13),"unresolved harmonisation code")
+                            b,se,pv0=float(row[bi]),float(row[si]),float(row[pv])
+                            require(all(math.isfinite(v) for v in (b,se,pv0)) and se>0 and 0<=pv0<=1,"invalid beta/SE/p")
+                            z={"status":"MATCHED_FULL_SOURCE_LEAD","beta_alt":b if x==alt else -b,"standard_error":se,"p_value":pv0,"hm_code":int(row[co])}
+                            if rs is not None and re.fullmatch(r"rs\d+",row[rs]):z["rsid"]=row[rs]
+                        except (ValueError,IndexError,TypeError) as e:z["reason"]=str(e)[:120]
+                        pool[vid].append(z)
+            require(count>=100_000,"incomplete GWAS row count")
+            rows={}
+            for z in leads:
+                vid=z["variant"]["id"];v=pool[vid]
+                rows[vid]=v[0] if len(v)==1 else {"status":"HOLD_MISSING_OR_NONUNIQUE_SOURCE_ROW","rows":len(v)}
+            out.update(status="COMPLETE_MD5_VERIFIED_LEAD_SCAN",rows_scanned=count,lead_rows=rows,matched=sum(v["status"]=="MATCHED_FULL_SOURCE_LEAD" for v in rows.values()))
+    except (OSError,EOFError,ValueError,TypeError,KeyError,IndexError,UnicodeError) as e:out.update(stage=stage,reason=str(e)[:200])
+    out["limits"]=["Full file MD5/CRC and exact GRCh38 nonpalindromic lead matches required. Source-derived SE only. Same GWAS as Open Targets, not independent validation or LD-pruned MR. No estimate of missing SE from rounded P-values."]
+    return out
+
 def skin(acc):
     require(acc in SKIN,"unexpected skin accession")
     folder=base.SKIN_BASE+acc+"/";catalog={}
@@ -116,7 +262,7 @@ def skin(acc):
         require(str(v["id"].split("_")[0])==str(z["chromosome"]) and int(v["id"].split("_")[1])==int(z["position"]),"lead coordinate disagreement")
         for k in ("beta","standardError","pValueMantissa","purityMinR2"):
             require(z.get(k) is None or isinstance(z[k],(int,float)) and math.isfinite(z[k]),"invalid lead statistic")
-    return {"status":"SKIN_DERIVED_CREDIBLE_SET_INVENTORY","accession":acc,"catalog":catalog,"study":s,"study_source":ms,"credible_set_source":ps,"count":p["count"],"credible_sets":rows,
+    return {"status":"SKIN_DERIVED_CREDIBLE_SET_INVENTORY","accession":acc,"catalog":catalog,"study":s,"study_source":ms,"credible_set_source":ps,"count":p["count"],"credible_sets":rows,"full_source_readout":skin_source_contract(acc,catalog,rows),
             "limits":["Open Targets postprocessed fine-mapping of the same original Korean GWAS (Lee et al 2022), not independent replication or full original summary statistics. Lead effects may be missing; no new colocalization, instrument selection, MR or merging distinct wrinkle phenotypes. Check ancestry and LD source before mechanistic use."]}
 def selftest():
     r={"rsid":"rs123","chrom":1,"pos":10,"ea":"A","oa":"C"}
@@ -138,7 +284,7 @@ def main():
         elif a.mode=="combine":x=combine(a.root)
         elif a.mode in OUTCOMES:x=extract(a.mode,a.root)
         else:x=skin(a.mode)
-    except (OSError,ValueError,TypeError,KeyError,IndexError) as e:x={"status":"HOLD_SOURCE_OR_CONTRACT","reason":str(e)[:220]}
+    except (OSError,ValueError,TypeError,KeyError,IndexError,subprocess.CalledProcessError) as e:x={"status":"HOLD_SOURCE_OR_CONTRACT","reason":str(e)[:220]}
     x["mode"]=a.mode;x["scientific_status"]="HOLD_INDEPENDENT_VALIDATION"
     a.out.parent.mkdir(parents=True,exist_ok=True);a.out.write_text(json.dumps(x,indent=2,allow_nan=False)+"\n");print(json.dumps(x,indent=2,allow_nan=False),flush=True)
 if __name__=="__main__":main()
