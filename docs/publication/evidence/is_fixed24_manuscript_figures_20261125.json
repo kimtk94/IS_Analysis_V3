@@ -1,0 +1,68 @@
+{
+  "provenance": {
+    "run_id": 45560663167,
+    "job_id": 139023311714,
+    "artifact_id": 14998000760,
+    "reported_artifact_zip_sha256": "786e9275b07c08772c5ec3e76d9c1771a54fbd7d389b514436dfc66d07b3e843",
+    "source_commit": "261f804459cd9d9f24a0a8af54b524778f7e4215",
+    "readback": "Actual aggregate stdout; reported artifact ZIP hash not independently downloaded."
+  },
+  "result": {
+    "status": "FIXED_FAMILY_FIGURES_GENERATED",
+    "matched": 158,
+    "unresolved": 34,
+    "sig_zero": 11,
+    "sig_max": 4,
+    "matrix_shape": [
+      24,
+      8
+    ],
+    "png_shapes": [
+      [
+        4310,
+        3783,
+        4
+      ],
+      [
+        1615,
+        4065,
+        4
+      ]
+    ],
+    "files": [
+      {
+        "name": "LEGENDS.md",
+        "bytes": 1190
+      },
+      {
+        "name": "is_fixed24_all_contrasts.pdf",
+        "bytes": 29602
+      },
+      {
+        "name": "is_fixed24_all_contrasts.png",
+        "bytes": 495405
+      },
+      {
+        "name": "is_fixed24_all_contrasts.svg",
+        "bytes": 32950
+      },
+      {
+        "name": "is_fixed24_complete_contrasts.tsv",
+        "bytes": 29796
+      },
+      {
+        "name": "is_fixed24_conservative_contrasts.pdf",
+        "bytes": 23291
+      },
+      {
+        "name": "is_fixed24_conservative_contrasts.png",
+        "bytes": 207690
+      },
+      {
+        "name": "is_fixed24_conservative_contrasts.svg",
+        "bytes": 11542
+      }
+    ],
+    "visual_inspection": false
+  }
+}

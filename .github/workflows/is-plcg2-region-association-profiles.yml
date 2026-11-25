@@ -1,0 +1,36 @@
+name: IS PLCG2 descriptive association profiles
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/plcg2_region_association_profiles.py','.github/workflows/is-plcg2-region-association-profiles.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  profiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: is-plcg2-region-coverage
+          path: inputs
+          run-id: 45560562264
+          github-token: ${{ github.token }}
+      - name: Verify aggregate parity and create descriptive profiles
+        run: |
+          python -m pip install 'matplotlib==3.10.1' 'numpy==2.2.4'
+          python scripts/is/plcg2_region_association_profiles.py --input inputs/plcg2-region-coverage.json --evidence docs/publication/evidence/is_plcg2_region_coverage_20261125.json --out outputs/profiles
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-plcg2-descriptive-association-profiles
+          path: outputs/profiles/
+          if-no-files-found: error
+          retention-days: 90

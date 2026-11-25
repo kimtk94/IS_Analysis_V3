@@ -1,0 +1,544 @@
+{
+  "provenance": {
+    "run_id": 45560562264,
+    "job_id": 139022978617,
+    "artifact_id": 14997647839,
+    "reported_artifact_zip_sha256": "87d210d9a0d648433fefb2269da69da26cf2f4d7c762caabad191ae8eb41a49e",
+    "source_commit": "e0b03922f23c991e8e670b1fe66c232a4d641808",
+    "readback": "Actual aggregate stdout; reported artifact ZIP hash not independently downloaded."
+  },
+  "result": {
+    "status": "POST_READOUT_REGION_COVERAGE_GATE",
+    "GRCh38_region": "16:81275211-82275211",
+    "gene": "ENSG00000197943",
+    "target": "chr16_81775211_C_T",
+    "official_eGene_lead": "chr16_81878856_T_G",
+    "comparisons": {
+      "EAS_CES": {
+        "status": "DESCRIPTIVE_ALLELE_MATCHED_REGION",
+        "matched": 2230,
+        "qtl_denominator": 3555,
+        "qtl_coverage": 0.6272855133614628,
+        "exclusion_counts": {
+          "no_unique_eligible_pair": 1325
+        },
+        "target": [
+          {
+            "variant": "chr16_81775211_C_T",
+            "rsid": "rs7203740",
+            "pos": 81775211,
+            "ref": "C",
+            "alt": "T",
+            "qtl_beta_ALT": 0.279006,
+            "qtl_se": 0.068636,
+            "qtl_p": 0.0000551034,
+            "qtl_alt_eaf": 0.8375,
+            "gwas_beta_ALT": 0.2772,
+            "gwas_se": 0.0565,
+            "gwas_p": 9.198e-7,
+            "gwas_alt_eaf": 0.5622
+          }
+        ],
+        "official_lead": [
+          {
+            "variant": "chr16_81878856_T_G",
+            "rsid": "rs11640696",
+            "pos": 81878856,
+            "ref": "T",
+            "alt": "G",
+            "qtl_beta_ALT": -0.249511,
+            "qtl_se": 0.0378643,
+            "qtl_p": 1.04157e-10,
+            "qtl_alt_eaf": 0.50625,
+            "gwas_beta_ALT": -0.0638,
+            "gwas_se": 0.0535,
+            "gwas_p": 0.2334,
+            "gwas_alt_eaf": 0.3094
+          }
+        ],
+        "matched_gwas_p_lt_5e_8": 0,
+        "top_matched_gwas": {
+          "variant": "chr16_81775211_C_T",
+          "rsid": "rs7203740",
+          "pos": 81775211,
+          "ref": "C",
+          "alt": "T",
+          "qtl_beta_ALT": 0.279006,
+          "qtl_se": 0.068636,
+          "qtl_p": 0.0000551034,
+          "qtl_alt_eaf": 0.8375,
+          "gwas_beta_ALT": 0.2772,
+          "gwas_se": 0.0565,
+          "gwas_p": 9.198e-7,
+          "gwas_alt_eaf": 0.5622
+        },
+        "top_matched_qtl": {
+          "variant": "chr16_81878856_T_G",
+          "rsid": "rs11640696",
+          "pos": 81878856,
+          "ref": "T",
+          "alt": "G",
+          "qtl_beta_ALT": -0.249511,
+          "qtl_se": 0.0378643,
+          "qtl_p": 1.04157e-10,
+          "qtl_alt_eaf": 0.50625,
+          "gwas_beta_ALT": -0.0638,
+          "gwas_se": 0.0535,
+          "gwas_p": 0.2334,
+          "gwas_alt_eaf": 0.3094
+        },
+        "gwas": {
+          "status": "REGION_GWAS_READ",
+          "source": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104546/harmonised/GCST90104546.h.tsv.gz",
+          "source_provenance": {
+            "metadata_sha256": "130558c9b92d8feeba7810bd594b3d38f42e92d05d050437050b7f7234ad9daa",
+            "index_sha256": "64bccd62990a88d52b91498adb0741e834ab6f33b9993208bf4f0acac3a58820",
+            "header_range_sha256": "6fe1d2f164c02dc8dfd759385d68e4a3e4e880d0a9273cd47491d9c2ac10772f",
+            "source_total_bytes": 224019417,
+            "publisher_full_file_md5": "a6db3b3dc34224c54da27fc13fc704ac"
+          },
+          "range": {
+            "region": [
+              81275211,
+              82275211
+            ],
+            "range": "bytes 194841702-195053716/224019417",
+            "sha256": "66bcc9a35efe7fbfa3f8f15fcdb83643df53859fcfaecf8ea9de327a8c90f5d2",
+            "decoded_rows": 4173,
+            "in_region_rows": 3090,
+            "compressed_bytes": 212015
+          },
+          "counts": {
+            "excluded_non_strict_allele": 677
+          },
+          "unique_strict_keys": 2413,
+          "prior_target_matched": true
+        }
+      },
+      "EAS_SVS": {
+        "status": "DESCRIPTIVE_ALLELE_MATCHED_REGION",
+        "matched": 2398,
+        "qtl_denominator": 3555,
+        "qtl_coverage": 0.6745428973277074,
+        "exclusion_counts": {
+          "no_unique_eligible_pair": 1157
+        },
+        "target": [
+          {
+            "variant": "chr16_81775211_C_T",
+            "rsid": "rs7203740",
+            "pos": 81775211,
+            "ref": "C",
+            "alt": "T",
+            "qtl_beta_ALT": 0.279006,
+            "qtl_se": 0.068636,
+            "qtl_p": 0.0000551034,
+            "qtl_alt_eaf": 0.8375,
+            "gwas_beta_ALT": -0.0173,
+            "gwas_se": 0.0234,
+            "gwas_p": 0.4587,
+            "gwas_alt_eaf": 0.5594
+          }
+        ],
+        "official_lead": [
+          {
+            "variant": "chr16_81878856_T_G",
+            "rsid": "rs11640696",
+            "pos": 81878856,
+            "ref": "T",
+            "alt": "G",
+            "qtl_beta_ALT": -0.249511,
+            "qtl_se": 0.0378643,
+            "qtl_p": 1.04157e-10,
+            "qtl_alt_eaf": 0.50625,
+            "gwas_beta_ALT": -0.04,
+            "gwas_se": 0.0222,
+            "gwas_p": 0.071,
+            "gwas_alt_eaf": 0.30710000000000004
+          }
+        ],
+        "matched_gwas_p_lt_5e_8": 0,
+        "top_matched_gwas": {
+          "variant": "chr16_82172674_G_A",
+          "rsid": "rs11641736",
+          "pos": 82172674,
+          "ref": "G",
+          "alt": "A",
+          "qtl_beta_ALT": -0.0148688,
+          "qtl_se": 0.0460846,
+          "qtl_p": 0.747091,
+          "qtl_alt_eaf": 0.7758928571428572,
+          "gwas_beta_ALT": -0.1163,
+          "gwas_se": 0.0287,
+          "gwas_p": 0.00005128,
+          "gwas_alt_eaf": 0.8685
+        },
+        "top_matched_qtl": {
+          "variant": "chr16_81878856_T_G",
+          "rsid": "rs11640696",
+          "pos": 81878856,
+          "ref": "T",
+          "alt": "G",
+          "qtl_beta_ALT": -0.249511,
+          "qtl_se": 0.0378643,
+          "qtl_p": 1.04157e-10,
+          "qtl_alt_eaf": 0.50625,
+          "gwas_beta_ALT": -0.04,
+          "gwas_se": 0.0222,
+          "gwas_p": 0.071,
+          "gwas_alt_eaf": 0.30710000000000004
+        },
+        "gwas": {
+          "status": "REGION_GWAS_READ",
+          "source": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104548/harmonised/GCST90104548.h.tsv.gz",
+          "source_provenance": {
+            "metadata_sha256": "6f24f822197b6e793e577d42dedbca13758e76057c068425b215a2bb67ca259a",
+            "index_sha256": "616a8cc29b934f051987f3852c50efc09cbf6c988d9ceb1bd03b49244d710baa",
+            "header_range_sha256": "0d09e0ac8352125a265c498f5e3f364ca5ca9250c762f71983da054740a42b05",
+            "source_total_bytes": 256107854,
+            "publisher_full_file_md5": "354f1f21c79f34b68e67cc9860f9a007"
+          },
+          "range": {
+            "region": [
+              81275211,
+              82275211
+            ],
+            "range": "bytes 222820117-223049857/256107854",
+            "sha256": "41dbd8aa36dd357a7fbff0e4dd4d45c2eb9476ce6e4b9f72f967e4f44c707c81",
+            "decoded_rows": 4513,
+            "in_region_rows": 3584,
+            "compressed_bytes": 229741
+          },
+          "counts": {
+            "excluded_non_strict_allele": 789
+          },
+          "unique_strict_keys": 2795,
+          "prior_target_matched": true
+        }
+      },
+      "EUR_CES": {
+        "status": "DESCRIPTIVE_ALLELE_MATCHED_REGION",
+        "matched": 2963,
+        "qtl_denominator": 3555,
+        "qtl_coverage": 0.8334739803094233,
+        "exclusion_counts": {
+          "no_unique_eligible_pair": 592
+        },
+        "target": [],
+        "official_lead": [
+          {
+            "variant": "chr16_81878856_T_G",
+            "rsid": "rs11640696",
+            "pos": 81878856,
+            "ref": "T",
+            "alt": "G",
+            "qtl_beta_ALT": -0.249511,
+            "qtl_se": 0.0378643,
+            "qtl_p": 1.04157e-10,
+            "qtl_alt_eaf": 0.50625,
+            "gwas_beta_ALT": -0.0001,
+            "gwas_se": 0.0161,
+            "gwas_p": 0.9953,
+            "gwas_alt_eaf": 0.4837
+          }
+        ],
+        "matched_gwas_p_lt_5e_8": 0,
+        "top_matched_gwas": {
+          "variant": "chr16_81522510_A_G",
+          "rsid": "rs12597170",
+          "pos": 81522510,
+          "ref": "A",
+          "alt": "G",
+          "qtl_beta_ALT": -0.0393414,
+          "qtl_se": 0.0888863,
+          "qtl_p": 0.658228,
+          "qtl_alt_eaf": 0.06339285714285714,
+          "gwas_beta_ALT": 0.1299,
+          "gwas_se": 0.0338,
+          "gwas_p": 0.0001212,
+          "gwas_alt_eaf": 0.07220000000000004
+        },
+        "top_matched_qtl": {
+          "variant": "chr16_81878856_T_G",
+          "rsid": "rs11640696",
+          "pos": 81878856,
+          "ref": "T",
+          "alt": "G",
+          "qtl_beta_ALT": -0.249511,
+          "qtl_se": 0.0378643,
+          "qtl_p": 1.04157e-10,
+          "qtl_alt_eaf": 0.50625,
+          "gwas_beta_ALT": -0.0001,
+          "gwas_se": 0.0161,
+          "gwas_p": 0.9953,
+          "gwas_alt_eaf": 0.4837
+        },
+        "gwas": {
+          "status": "REGION_GWAS_READ",
+          "source": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104541/harmonised/GCST90104541.h.tsv.gz",
+          "source_provenance": {
+            "metadata_sha256": "3b30f72de182b6df8bd5416ce31704f1345b9eefacde7f0ce59ee15e969db112",
+            "index_sha256": "b071de06d7cb029cb024b7464c51c39376fc4b2e9891be22b4724f74b672b608",
+            "header_range_sha256": "21d3bb707428f865094a4a82da15b5c6420d9ee8091ce776f3c1355d45005011",
+            "source_total_bytes": 300057788,
+            "publisher_full_file_md5": "10d2a72dc2d6cf816b7a69154215b9ca"
+          },
+          "range": {
+            "region": [
+              81275211,
+              82275211
+            ],
+            "range": "bytes 260281194-260543918/300057788",
+            "sha256": "c659127ec8c6551161d4d9fdb79a49204ccf6a8c6913c63b14136fcca7396c7c",
+            "decoded_rows": 4878,
+            "in_region_rows": 3850,
+            "compressed_bytes": 262725
+          },
+          "counts": {
+            "excluded_non_strict_allele": 829
+          },
+          "unique_strict_keys": 3021,
+          "prior_target_matched": false
+        }
+      },
+      "EUR_SVS": {
+        "status": "DESCRIPTIVE_ALLELE_MATCHED_REGION",
+        "matched": 2612,
+        "qtl_denominator": 3555,
+        "qtl_coverage": 0.7347398030942335,
+        "exclusion_counts": {
+          "no_unique_eligible_pair": 943
+        },
+        "target": [],
+        "official_lead": [
+          {
+            "variant": "chr16_81878856_T_G",
+            "rsid": "rs11640696",
+            "pos": 81878856,
+            "ref": "T",
+            "alt": "G",
+            "qtl_beta_ALT": -0.249511,
+            "qtl_se": 0.0378643,
+            "qtl_p": 1.04157e-10,
+            "qtl_alt_eaf": 0.50625,
+            "gwas_beta_ALT": -0.0314,
+            "gwas_se": 0.021,
+            "gwas_p": 0.1346,
+            "gwas_alt_eaf": 0.48829999999999996
+          }
+        ],
+        "matched_gwas_p_lt_5e_8": 0,
+        "top_matched_gwas": {
+          "variant": "chr16_81617356_G_A",
+          "rsid": "rs4611450",
+          "pos": 81617356,
+          "ref": "G",
+          "alt": "A",
+          "qtl_beta_ALT": -0.0384897,
+          "qtl_se": 0.0480472,
+          "qtl_p": 0.423434,
+          "qtl_alt_eaf": 0.2526785714285714,
+          "gwas_beta_ALT": 0.0737,
+          "gwas_se": 0.0252,
+          "gwas_p": 0.003437,
+          "gwas_alt_eaf": 0.2576
+        },
+        "top_matched_qtl": {
+          "variant": "chr16_81878856_T_G",
+          "rsid": "rs11640696",
+          "pos": 81878856,
+          "ref": "T",
+          "alt": "G",
+          "qtl_beta_ALT": -0.249511,
+          "qtl_se": 0.0378643,
+          "qtl_p": 1.04157e-10,
+          "qtl_alt_eaf": 0.50625,
+          "gwas_beta_ALT": -0.0314,
+          "gwas_se": 0.021,
+          "gwas_p": 0.1346,
+          "gwas_alt_eaf": 0.48829999999999996
+        },
+        "gwas": {
+          "status": "REGION_GWAS_READ",
+          "source": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104543/harmonised/GCST90104543.h.tsv.gz",
+          "source_provenance": {
+            "metadata_sha256": "fb0f110eaba812869446d5db51ec99d74a3ef80385b7b526e4b975641edaaab4",
+            "index_sha256": "c2c7bb7cdc26dc9544c96c688df00f3708ca96c2c87dc2772a3f91338bedd0f4",
+            "header_range_sha256": "3317377f63b3531f7df2b19ffe2b9e679ac69fb156979e8f771211716c9f835c",
+            "source_total_bytes": 268125493,
+            "publisher_full_file_md5": "db571ff9ad3f821abc57b208d88f4a0e"
+          },
+          "range": {
+            "region": [
+              81275211,
+              82275211
+            ],
+            "range": "bytes 232794476-233008419/268125493",
+            "sha256": "7d5387526722494805fe4b574c0fffe27c25e482fbde95b238fd9a9f63242d0d",
+            "decoded_rows": 4240,
+            "in_region_rows": 3342,
+            "compressed_bytes": 213944
+          },
+          "counts": {
+            "excluded_non_strict_allele": 724
+          },
+          "unique_strict_keys": 2618,
+          "prior_target_matched": false
+        }
+      }
+    },
+    "limits": [
+      "Fixed index +/-500 kb post-readout descriptive window; not a certified complete cis universe. All strict nonpalindromic SNPs retained, not P-selected.",
+      "Original cross-file lead estimate parity remains HOLD. Use only separately verified nominal QTL values for descriptive coverage; permutation data retained solely as separate eGene evidence. No inference of model equivalence.",
+      "Exact coordinate and allele pair plus corroborating rsID; no proxy or ambiguous strand substitution. Region rows and index/header bytes only; no independent full-file checksum or FASTA certificate.",
+      "ROSMAP molecular ancestry not matched to EAS; nominal N/AN not model N or sdY. No approved cohort LD, effect-scale equivalence, formal coloc, MR, fine mapping or independent replication. Coverage alone is not a pass for formal coloc."
+    ],
+    "qtl": {
+      "status": "REGION_QTL_READ",
+      "source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000025/QTD000434/QTD000434.all.tsv.gz",
+      "header_origin": "ORIGINAL_HEADER",
+      "index_sha256": "6cbf12826e19a61594662972a1205ba38cdd3071984e51c24261bff8ace9806a",
+      "header_range_sha256": "fb014e2e796411100d85552eea8f15e66b76a228ae4174a111ad968a7fd15452",
+      "source_total_bytes": 4039836192,
+      "original_full_file_downloaded": false,
+      "ranges": [
+        {
+          "region": [
+            81275211,
+            81525210
+          ],
+          "range": "bytes 1500072331-1500964806/4039836192",
+          "sha256": "daa69f09b9296c23a130eb25800eed741448eb18a3731bd25686393136af7f32",
+          "decoded_rows": 37007,
+          "in_region_rows": 32936,
+          "compressed_bytes": 892476
+        },
+        {
+          "region": [
+            81525211,
+            81775210
+          ],
+          "range": "bytes 1500843046-1501743902/4039836192",
+          "sha256": "0d44824f427dad4e38e52307060a1349f8ce96798940c96436bb62d64b816d61",
+          "decoded_rows": 37030,
+          "in_region_rows": 29442,
+          "compressed_bytes": 900857
+        },
+        {
+          "region": [
+            81775211,
+            82025210
+          ],
+          "range": "bytes 1501586044-1502517396/4039836192",
+          "sha256": "86915e09c242d9f50a841119042dd883c1be16f519a4cfa704f491e9de5aa20c",
+          "decoded_rows": 38243,
+          "in_region_rows": 35384,
+          "compressed_bytes": 931353
+        },
+        {
+          "region": [
+            82025211,
+            82275210
+          ],
+          "range": "bytes 1502441416-1502851249/4039836192",
+          "sha256": "c380fcaabeafe4011d3ddf45dc78b3e80646c01971ee466c52d268d941f163fd",
+          "decoded_rows": 16724,
+          "in_region_rows": 14101,
+          "compressed_bytes": 409834
+        },
+        {
+          "region": [
+            82275211,
+            82275211
+          ],
+          "range": "bytes 1502757014-1502851249/4039836192",
+          "sha256": "97758f774a13502d73de83a543d67a87192f9452f3f1885fbee218d2646c82dd",
+          "decoded_rows": 3211,
+          "in_region_rows": 0,
+          "compressed_bytes": 94236
+        }
+      ],
+      "counts": {
+        "target_rows": 5771,
+        "identical_alias_rows": 408
+      },
+      "unique_valid_variants_in_window": 5363,
+      "official_cis_tested_variants": 11248,
+      "strict_nonpal_snp_count": 3555,
+      "target": {
+        "pos": 81775211,
+        "ref": "C",
+        "alt": "T",
+        "beta_ALT": 0.279006,
+        "se": 0.068636,
+        "p": 0.0000551034,
+        "alt_eaf": 0.8375,
+        "an": 1120,
+        "maf": 0.172321,
+        "rsids": [
+          "rs7203740"
+        ],
+        "type": "SNP"
+      },
+      "official_lead": {
+        "pos": 81878856,
+        "ref": "T",
+        "alt": "G",
+        "beta_ALT": -0.249511,
+        "se": 0.0378643,
+        "p": 1.04157e-10,
+        "alt_eaf": 0.50625,
+        "an": 1120,
+        "maf": 0.49375,
+        "rsids": [
+          "rs11640696"
+        ],
+        "type": "SNP"
+      },
+      "crossfile_lead_parity": {
+        "status": "HOLD_ESTIMATE_EQUIVALENCE",
+        "permutation": {
+          "molecular_trait_id": "ENSG00000197943",
+          "n_variants": "11248",
+          "variant": "chr16_81878856_T_G",
+          "chromosome": "16",
+          "position": "81878856",
+          "pvalue": "7.86674e-11",
+          "p_beta": "9.57778e-07",
+          "p_perm": "0.000999001",
+          "beta": "-0.246995",
+          "BH_across_complete_source_genes": 0.000004532749205906481,
+          "passes_BH_0.05": true
+        },
+        "nominal": {
+          "gene_id": "ENSG00000197943",
+          "molecular_trait_id": "ENSG00000197943",
+          "variant": "chr16_81878856_T_G",
+          "rsid": "rs11640696",
+          "type": "SNP",
+          "ref": "T",
+          "alt": "G",
+          "beta": -0.249511,
+          "se": 0.0378643,
+          "pvalue": 1.04157e-10,
+          "maf": 0.49375,
+          "ac": 567,
+          "an": 1120
+        },
+        "verified_diagnostic_run": 45559352081,
+        "reason": "Exact variant matches but nominal and permutation beta/p differ; cause unresolved. Separate nominal-only descriptive coverage, no merged model or formal coloc."
+      },
+      "nominal_best_in_fixed_window": "chr16_81878856_T_G",
+      "nominal_AN_range": [
+        1120,
+        1120
+      ]
+    },
+    "comparisons_completed": 4,
+    "all_four_common_variants": 1966,
+    "all_four_common_qtl_coverage": 0.5530239099859353,
+    "target_in_all_four": false,
+    "lead_in_all_four": true,
+    "formal_coloc_status": "HOLD"
+  }
+}
