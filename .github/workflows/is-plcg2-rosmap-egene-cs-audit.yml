@@ -1,0 +1,29 @@
+name: IS PLCG2 official eGene and credible set audit
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/plcg2_rosmap_egene_cs_audit.py','.github/workflows/is-plcg2-rosmap-egene-cs-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  egene-cs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit official ROSMAP gene-level and fine-mapping records
+        run: |
+          python -m py_compile scripts/is/plcg2_rosmap_egene_cs_audit.py
+          python -m scripts.is.plcg2_rosmap_egene_cs_audit --evidence-root docs/publication/evidence --work "$RUNNER_TEMP/plcg2" --out outputs/plcg2-rosmap-egene-cs-audit.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-plcg2-rosmap-egene-cs-audit
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
