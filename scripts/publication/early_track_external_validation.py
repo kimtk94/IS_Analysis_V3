@@ -61,9 +61,25 @@ def sized_gzip(url,limit):
     raise error
 
 def platform():
-    url="https://ftp.ncbi.nlm.nih.gov/geo/platforms/GPL6nnn/GPL6244/soft/GPL6244_family.soft.gz"
-    raw,src=sized_gzip(url,180_000_000)
-    h,rows=decode_table(raw,"!platform_table_begin","!platform_table_end")
+    # Fetch ONLY the official GPL record, not the 8.74 GB family including samples.
+    url="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL6244&targ=self&form=text&view=full"
+    raw,src=base.get(url,140_000_000)
+    txt=raw.decode("utf-8-sig")
+    require(re.search(r"(?m)^\^PLATFORM\s*=\s*GPL6244\s*$",txt) is not None,"GPL self record identity")
+    require(not re.search(r"(?m)^\^SAMPLE\s*=",txt),"unexpected sample family record")
+    stream=io.StringIO(txt)
+    for line in stream:
+        if line.strip()=="!platform_table_begin":break
+    else:raise ValueError("GPL self table absent")
+    rr=csv.reader(stream,delimiter="\t");h=next(rr)
+    require(len(set(h))==len(h),"duplicate platform header")
+    def table_rows():
+        for row in rr:
+            if row==["!platform_table_end"]:return
+            require(len(row)==len(h),"platform row width mismatch")
+            yield row
+        raise ValueError("GPL table end absent")
+    rows=table_rows()
     require("ID" in h and "gene_assignment" in h,"official GPL6244 annotation schema")
     i=h.index("ID");j=h.index("gene_assignment");m=collections.defaultdict(list);seen=set()
     for row in rows:
@@ -73,7 +89,7 @@ def platform():
         if not parts or any(len(v)<2 for v in parts):continue
         symbols={v[1].strip() for v in parts}
         if len(symbols)==1 and next(iter(symbols)) in PANEL:m[next(iter(symbols))].append(key)
-    require(len(seen)>=30000,"incomplete GPL6244")
+    require(len(seen)==33297,"official GPL6244 33,297 transcript clusters not reproduced")
     return {g:sorted(set(m[g])) for g in PANEL},src,len(seen)
 def sign_summary(delta,scale):
     from scipy.stats import binomtest
@@ -224,7 +240,8 @@ def protein_effect_readout():
             if key in {"uniprot id","gene symbol","logfc","p-value","p value","fdr","adjusted p-value","regulation","direction"}:
                 glossary[key]=rr[1][:200]
         ws=wb.worksheets[0];it=ws.iter_rows(values_only=True);h=[str(x).strip() for x in next(it)]
-        require(h[:4]==["UniProt ID","Gene symbol","logFC","P-value"] or [x.lower() for x in h[:4]]==["uniprot id","gene symbol","logfc","p-value"],"exact source effect header mismatch")
+        require(len(h)==6 and [x.lower() for x in h[1:4]]==["gene symbol","logfc","p-value"],"explicit Table 6 columns 2-4 mismatch")
+        # Column 1 was not part of the prior fixed gene/statistic contract. No assumed protein ID or direction.
         rows=collections.defaultdict(list);n=0
         for rr in it:
             n+=1;g=rr[1]
@@ -246,7 +263,8 @@ def source_repair_selftest():
     require(a["run_id"]==45607898177 and len(a["records"])==4,"archived first external run")
     # Explicit complete-pair validation and two-sided test consistency.
     require(sign_summary([1]*8,"test")["bonferroni_8"]==0.0625,"sign test correction")
-    print("First external readback provenance and paired correction checks passed.")
+    require(len(json.loads((ROOT/"docs/publication/evidence/early_track_external_second_readback_20261125.json").read_text())["records"])==2,"second run archive missing")
+    print("First and second external readback provenance and paired correction checks passed.")
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("mode",choices=["swiss","korea","protein_source","supplement_effects","protein_effect_readout","selftest"]);p.add_argument("--out",type=Path);a=p.parse_args()
