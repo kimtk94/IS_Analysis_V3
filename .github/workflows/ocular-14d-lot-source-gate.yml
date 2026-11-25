@@ -38,8 +38,12 @@ jobs:
             echo "$platform matrix"
             curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 12000000 "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE65nnn/GSE65240/matrix/GSE65240-$platform"_series_matrix.txt.gz -o "$RUNNER_TEMP/$platform-matrix.gz" || true
             echo "$platform annotation"
-            prefix="${platform:0:${#platform}-3}nnn"
-            curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 25000000 "https://ftp.ncbi.nlm.nih.gov/geo/platforms/$prefix/$platform/soft/${platform}_family.soft.gz" -o "$RUNNER_TEMP/$platform-annot.gz" || true
+            # GEO documented self scope: only the platform record, not its family.
+            if curl -fLsS --connect-timeout 15 --max-time 100 --max-filesize 45000000 "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=$platform&targ=self&view=full&form=text" -o "$RUNNER_TEMP/$platform-annot.soft"; then
+              sha256sum "$RUNNER_TEMP/$platform-annot.soft"
+              gzip -n -c "$RUNNER_TEMP/$platform-annot.soft" > "$RUNNER_TEMP/$platform-annot.gz"
+            fi
+            sleep 2
           done
       - name: Source identity and blinded common candidate coverage
         run: |
