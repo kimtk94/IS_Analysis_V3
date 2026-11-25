@@ -1,0 +1,1877 @@
+{
+  "source": "Actual GitHub Actions stdout and uploaded artifact digests, independent ZIP readback not performed",
+  "heads": {
+    "358": "bc9fcd8f03f8ad37cde0b33859e459ddc5c4096d",
+    "359": "c77c12dc7f9ed67e153ae3ea08046772d5c23113"
+  },
+  "records": [
+    {
+      "run_id": 45611553423,
+      "job_id": 139196100878,
+      "name": "skin (GCST90094903)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "SKIN_DERIVED_CREDIBLE_SET_INVENTORY",
+        "accession": "GCST90094903",
+        "catalog": {
+          "original_directory": {
+            "source": {
+              "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094903/",
+              "bytes": 1763,
+              "sha256": "b12ff6c9f16b4df8e6aaed20dbaf36847a7c218f803f6d33abb146b177c39d2a",
+              "content_range": null,
+              "etag": null
+            },
+            "files": [
+              "GCST90094903_buildGRCh37.tsv",
+              "GCST90094903_buildGRCh37.tsv-meta.yaml",
+              "md5sum.txt"
+            ]
+          },
+          "harmonised_directory": {
+            "source": {
+              "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094903/harmonised/",
+              "bytes": 1939,
+              "sha256": "06e16f2128f48563f29d202fda5e282a1e26118b16fcd8c6c40db23001b13538",
+              "content_range": null,
+              "etag": null
+            },
+            "files": [
+              "35421404-GCST90094903-EFO_0008006-Build37.f.tsv.gz",
+              "35421404-GCST90094903-EFO_0008006.h.tsv.gz",
+              "35421404-GCST90094903-EFO_0008006.h.tsv.gz-meta.yaml",
+              "md5sum.txt"
+            ]
+          }
+        },
+        "study": {
+          "id": "GCST90094903",
+          "traitFromSource": "Facial wrinkles (under eye)",
+          "pubmedId": "35421404",
+          "publicationFirstAuthor": "Lee SG",
+          "nSamples": 11079,
+          "hasSumstats": true,
+          "summarystatsLocation": null,
+          "qualityControls": [
+            "Study has non empty or zero nSamples with empty nCases and nControls"
+          ]
+        },
+        "study_source": {
+          "url": "https://api.platform.opentargets.org/api/v4/graphql",
+          "bytes": 299,
+          "sha256": "063c45bcd7078043aef55e4ae426538359297c6b3ffcb4eea914982507ea06a6",
+          "content_range": null,
+          "etag": null
+        },
+        "credible_set_source": {
+          "url": "https://api.platform.opentargets.org/api/v4/graphql",
+          "bytes": 5962,
+          "sha256": "a2546c77dcc5d35cdc1c197236dafc80b7d1eeaaf4a624e6a9d16fbc0e30f97e",
+          "content_range": null,
+          "etag": null
+        },
+        "count": 12,
+        "credible_sets": [
+          {
+            "studyLocusId": "27a61b428fe8a149882b08c4312f3a53",
+            "studyId": "GCST90094903",
+            "chromosome": "4",
+            "position": 123254257,
+            "beta": -0.046104311742306496,
+            "standardError": null,
+            "pValueMantissa": 5.389942169189453,
+            "pValueExponent": -10,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.30935054452766547,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "4_123254257_G_A"
+            }
+          },
+          {
+            "studyLocusId": "4ae6a77a3df83c876f70140f543c4b4e",
+            "studyId": "GCST90094903",
+            "chromosome": "9",
+            "position": 20312794,
+            "beta": 0.5998279352443477,
+            "standardError": null,
+            "pValueMantissa": 1.0365662574768066,
+            "pValueExponent": -7,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "9_20312794_A_G"
+            }
+          },
+          {
+            "studyLocusId": "6e00b1b1e4ce33342d514a4caac6c6b9",
+            "studyId": "GCST90094903",
+            "chromosome": "2",
+            "position": 108901888,
+            "beta": 0.14309604783250088,
+            "standardError": null,
+            "pValueMantissa": 6.067874431610107,
+            "pValueExponent": -8,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.9393458243728489,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_108901888_G_A"
+            }
+          },
+          {
+            "studyLocusId": "7f90bdb604b3592c9bc914a1fde630a3",
+            "studyId": "GCST90094903",
+            "chromosome": "15",
+            "position": 27988767,
+            "beta": -0.11745508745898525,
+            "standardError": null,
+            "pValueMantissa": 5.226352691650391,
+            "pValueExponent": -6,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.9887720277349827,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "15_27988767_C_T"
+            }
+          },
+          {
+            "studyLocusId": "7fa7ce6878c8eb3771726df0cb57fe51",
+            "studyId": "GCST90094903",
+            "chromosome": "2",
+            "position": 118841801,
+            "beta": 0.06509684290231521,
+            "standardError": null,
+            "pValueMantissa": 2.4397048950195312,
+            "pValueExponent": -12,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.7760011635955545,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_118841801_A_T"
+            }
+          },
+          {
+            "studyLocusId": "90a0253dbf07b9b75f0bf6902c2487ca",
+            "studyId": "GCST90094903",
+            "chromosome": "3",
+            "position": 139302337,
+            "beta": 0.09625676061162704,
+            "standardError": null,
+            "pValueMantissa": 2.4018778800964355,
+            "pValueExponent": -7,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.8694185985310353,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "3_139302337_A_G"
+            }
+          },
+          {
+            "studyLocusId": "a24d8b7fc037e03c7b588f2581675c79",
+            "studyId": "GCST90094903",
+            "chromosome": "3",
+            "position": 139286078,
+            "beta": -0.06534511052533415,
+            "standardError": null,
+            "pValueMantissa": 1.8062909841537476,
+            "pValueExponent": -12,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.88323122129024,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "3_139286078_G_A"
+            }
+          },
+          {
+            "studyLocusId": "c9fb889f136cdc30a82a1813fa7998e9",
+            "studyId": "GCST90094903",
+            "chromosome": "15",
+            "position": 27983407,
+            "beta": -0.05414361927858257,
+            "standardError": null,
+            "pValueMantissa": 1.569138765335083,
+            "pValueExponent": -11,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "15_27983407_C_T"
+            }
+          },
+          {
+            "studyLocusId": "cd42b447148b6d3a4f2c79ddac0ac6c3",
+            "studyId": "GCST90094903",
+            "chromosome": "2",
+            "position": 108947058,
+            "beta": 0.5450845043547491,
+            "standardError": null,
+            "pValueMantissa": 1.4123990535736084,
+            "pValueExponent": -7,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.9880917959739604,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_108947058_T_C"
+            }
+          },
+          {
+            "studyLocusId": "db971381849ced3b60acaea0a8afc45b",
+            "studyId": "GCST90094903",
+            "chromosome": "2",
+            "position": 108872562,
+            "beta": 0.3464622580803513,
+            "standardError": null,
+            "pValueMantissa": 5.013217926025391,
+            "pValueExponent": -9,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.9971672653509669,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_108872562_C_T"
+            }
+          },
+          {
+            "studyLocusId": "e987e0b7a8f0a01c2810d15aac72c572",
+            "studyId": "GCST90094903",
+            "chromosome": "2",
+            "position": 108923197,
+            "beta": -0.3482837913748986,
+            "standardError": null,
+            "pValueMantissa": 3.8791139125823975,
+            "pValueExponent": -8,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_108923197_A_G"
+            }
+          },
+          {
+            "studyLocusId": "ec1dcef5ce91d1750eac5856e0b6fccc",
+            "studyId": "GCST90094903",
+            "chromosome": "9",
+            "position": 20311336,
+            "beta": -0.7559185779770482,
+            "standardError": null,
+            "pValueMantissa": 1.196412205696106,
+            "pValueExponent": -7,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "9_20311336_C_A"
+            }
+          }
+        ],
+        "full_source_readout": {
+          "status": "COMPLETE_MD5_VERIFIED_LEAD_SCAN",
+          "lead_total": 12,
+          "matched": 11,
+          "filename": "35421404-GCST90094903-EFO_0008006.h.tsv.gz",
+          "metadata_source": {
+            "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094903/harmonised/35421404-GCST90094903-EFO_0008006.h.tsv.gz-meta.yaml",
+            "bytes": 847,
+            "sha256": "544c9494d26092c3db01ccd519b42038c5ebfc10be05bec375a04f324541cb7a",
+            "content_range": null,
+            "etag": "\"34f-6106796c7e0ae\""
+          },
+          "metadata": {
+            "gwas_id": "GCST90094903",
+            "data_file_name": "35421404-GCST90094903-EFO_0008006.h.tsv.gz",
+            "genome_assembly": "GRCh38",
+            "is_harmonised": true,
+            "trait_description": [
+              "Facial wrinkles (under eye)"
+            ],
+            "samples": [
+              {
+                "sample_ancestry_category": [
+                  "East Asian"
+                ],
+                "sample_ancestry": [
+                  "Korean"
+                ],
+                "sample_size": 11079
+              }
+            ],
+            "data_file_md5sum": "b523f5b80f14531206f4d0b42a283662"
+          },
+          "expected_md5": "b523f5b80f14531206f4d0b42a283662",
+          "checksum_source": {
+            "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094903/harmonised/md5sum.txt",
+            "bytes": 362,
+            "sha256": "238f32d277a8e91b54ba71d3807cd898e3a4b9f43713996a7ff076c54e7b7f78",
+            "content_range": null,
+            "etag": "\"16a-62dc65cc385ef\""
+          },
+          "checksum_basis": "exact_filename_bound_yaml_only_manifest_entry_absent",
+          "manifest_exact_matches": 0,
+          "remote_size": 166633054,
+          "size_probe": {
+            "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094903/harmonised/35421404-GCST90094903-EFO_0008006.h.tsv.gz",
+            "bytes": 1,
+            "sha256": "ffe679bb831c95b67dc17819c63c5090d221aac6f4c7bf530f594ab43d21fa1e",
+            "content_range": "bytes 0-0/166633054",
+            "etag": "\"9ee9e5e-5e37bccb5c6b7\""
+          },
+          "full_source": {
+            "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094903/harmonised/35421404-GCST90094903-EFO_0008006.h.tsv.gz",
+            "bytes": 166633054,
+            "md5": "b523f5b80f14531206f4d0b42a283662",
+            "sha256": "0c2e1c6cb4411f8dca4d69fa65671e9c68711d1ac6fcc660625371af316f99af"
+          },
+          "header": [
+            "hm_variant_id",
+            "hm_rsid",
+            "hm_chrom",
+            "hm_pos",
+            "hm_other_allele",
+            "hm_effect_allele",
+            "hm_beta",
+            "hm_odds_ratio",
+            "hm_ci_lower",
+            "hm_ci_upper",
+            "hm_effect_allele_frequency",
+            "hm_code",
+            "variant_id",
+            "p_value",
+            "chromosome",
+            "base_pair_location",
+            "effect_allele",
+            "other_allele",
+            "effect_allele_frequency",
+            "beta",
+            "standard_error",
+            "odds_ratio",
+            "ci_lower",
+            "ci_upper"
+          ],
+          "rows_scanned": 4950621,
+          "lead_rows": {
+            "4_123254257_G_A": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -0.9851,
+              "standard_error": 0.1587,
+              "p_value": 5.528e-10,
+              "hm_code": 11,
+              "rsid": "rs4833267"
+            },
+            "9_20312794_A_G": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -0.8773,
+              "standard_error": 0.1649,
+              "p_value": 1.048e-7,
+              "hm_code": 10,
+              "rsid": "rs1456966"
+            },
+            "2_108901888_G_A": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -1.839,
+              "standard_error": 0.3395,
+              "p_value": 6.139e-8,
+              "hm_code": 10,
+              "rsid": "rs144918519"
+            },
+            "15_27988767_C_T": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -0.7758,
+              "standard_error": 0.1703,
+              "p_value": 0.000005271,
+              "hm_code": 11,
+              "rsid": "rs10775263"
+            },
+            "2_118841801_A_T": {
+              "status": "HOLD_EFFECT",
+              "reason": "palindromic or non-SNV lead"
+            },
+            "3_139302337_A_G": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": 0.8192,
+              "standard_error": 0.1586,
+              "p_value": 2.45e-7,
+              "hm_code": 10,
+              "rsid": "rs10460843"
+            },
+            "3_139286078_G_A": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -1.144,
+              "standard_error": 0.1623,
+              "p_value": 1.858e-12,
+              "hm_code": 10,
+              "rsid": "rs10212419"
+            },
+            "15_27983407_C_T": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -2.106,
+              "standard_error": 0.3124,
+              "p_value": 1.607e-11,
+              "hm_code": 10,
+              "rsid": "rs74653330"
+            },
+            "2_108947058_T_C": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -1.767,
+              "standard_error": 0.3357,
+              "p_value": 1.438e-7,
+              "hm_code": 10,
+              "rsid": "rs115957039"
+            },
+            "2_108872562_C_T": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": 1.709,
+              "standard_error": 0.2923,
+              "p_value": 5.095e-9,
+              "hm_code": 11,
+              "rsid": "rs4584990"
+            },
+            "2_108923197_A_G": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -1.473,
+              "standard_error": 0.268,
+              "p_value": 3.943e-8,
+              "hm_code": 10,
+              "rsid": "rs260643"
+            },
+            "9_20311336_C_A": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -0.8354,
+              "standard_error": 0.1578,
+              "p_value": 1.213e-7,
+              "hm_code": 10,
+              "rsid": "rs170374"
+            }
+          },
+          "limits": [
+            "Full file MD5/CRC and exact GRCh38 nonpalindromic lead matches required. Source-derived SE only. Same GWAS as Open Targets, not independent validation or LD-pruned MR. No estimate of missing SE from rounded P-values."
+          ]
+        },
+        "limits": [
+          "Open Targets postprocessed fine-mapping of the same original Korean GWAS (Lee et al 2022), not independent replication or full original summary statistics. Lead effects may be missing; no new colocalization, instrument selection, MR or merging distinct wrinkle phenotypes. Check ancestry and LD source before mechanistic use."
+        ],
+        "mode": "GCST90094903",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is a281800b0e7a338dd205f1518c907ae74cd642e547059edc3c79cc0c866ef560",
+        "Artifact skin-source-GCST90094903.zip successfully finalized. Artifact ID 15021005395"
+      ]
+    },
+    {
+      "run_id": 45611553423,
+      "job_id": 139196101385,
+      "name": "reference",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "FROZEN_LDL_REFERENCE_RECOVERY",
+        "panel": [
+          {
+            "chrom": 1,
+            "pos": 109818530,
+            "rsid": "rs646776",
+            "ea": "T",
+            "oa": "C",
+            "bx": 0.1602,
+            "sx": 0.0044,
+            "p": 1.63e-272,
+            "f": 1325.621900826446,
+            "source_N": 173020.95,
+            "ref_eaf": 0.7876
+          },
+          {
+            "chrom": 2,
+            "pos": 21263900,
+            "rsid": "rs1367117",
+            "ea": "A",
+            "oa": "G",
+            "bx": 0.1186,
+            "sx": 0.004,
+            "p": 9.48e-183,
+            "f": 879.1225,
+            "source_N": 173007.1,
+            "ref_eaf": 0.2876
+          },
+          {
+            "chrom": 3,
+            "pos": 12296469,
+            "rsid": "rs9875338",
+            "ea": "G",
+            "oa": "A",
+            "bx": 0.027,
+            "sx": 0.0037,
+            "p": 2.21e-11,
+            "f": 53.25054784514243,
+            "source_N": 172894.9,
+            "ref_eaf": 0.6121
+          },
+          {
+            "chrom": 4,
+            "pos": 3434885,
+            "rsid": "rs6818397",
+            "ea": "T",
+            "oa": "G",
+            "bx": 0.0224,
+            "sx": 0.004,
+            "p": 1.677e-8,
+            "f": 31.359999999999996,
+            "source_N": 172685,
+            "ref_eaf": 0.4129
+          },
+          {
+            "chrom": 5,
+            "pos": 74656539,
+            "rsid": "rs12916",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.0733,
+            "sx": 0.0038,
+            "p": 7.792e-78,
+            "f": 372.0837950138505,
+            "source_N": 168357,
+            "ref_eaf": 0.4314
+          },
+          {
+            "chrom": 6,
+            "pos": 160578860,
+            "rsid": "rs1564348",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.0481,
+            "sx": 0.005,
+            "p": 2.762e-21,
+            "f": 92.54439999999998,
+            "source_N": 172988.95,
+            "ref_eaf": 0.1451
+          },
+          {
+            "chrom": 7,
+            "pos": 44582331,
+            "rsid": "rs2073547",
+            "ea": "G",
+            "oa": "A",
+            "bx": 0.0485,
+            "sx": 0.0049,
+            "p": 1.923e-21,
+            "f": 97.96959600166598,
+            "source_N": 169889,
+            "ref_eaf": 0.1939
+          },
+          {
+            "chrom": 8,
+            "pos": 126481747,
+            "rsid": "rs2980875",
+            "ea": "A",
+            "oa": "G",
+            "bx": 0.0547,
+            "sx": 0.0036,
+            "p": 2.301e-47,
+            "f": 230.87114197530866,
+            "source_N": 172930,
+            "ref_eaf": 0.5303
+          },
+          {
+            "chrom": 9,
+            "pos": 136154168,
+            "rsid": "rs579459",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.0665,
+            "sx": 0.0045,
+            "p": 2.419e-44,
+            "f": 218.3827160493828,
+            "source_N": 172705.98,
+            "ref_eaf": 0.215
+          },
+          {
+            "chrom": 10,
+            "pos": 113944271,
+            "rsid": "rs2419604",
+            "ea": "A",
+            "oa": "G",
+            "bx": 0.0302,
+            "sx": 0.004,
+            "p": 7.49e-14,
+            "f": 57.0025,
+            "source_N": 172807.03,
+            "ref_eaf": 0.3179
+          },
+          {
+            "chrom": 11,
+            "pos": 61609750,
+            "rsid": "rs174583",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.0522,
+            "sx": 0.0038,
+            "p": 7.003e-41,
+            "f": 188.70083102493078,
+            "source_N": 172982.1,
+            "ref_eaf": 0.6253
+          },
+          {
+            "chrom": 12,
+            "pos": 121416650,
+            "rsid": "rs1169288",
+            "ea": "C",
+            "oa": "A",
+            "bx": 0.0375,
+            "sx": 0.004,
+            "p": 6.447e-21,
+            "f": 87.890625,
+            "source_N": 163086,
+            "ref_eaf": 0.3338
+          },
+          {
+            "chrom": 13,
+            "pos": 32953388,
+            "rsid": "rs4942486",
+            "ea": "T",
+            "oa": "C",
+            "bx": 0.0243,
+            "sx": 0.0037,
+            "p": 2.261e-11,
+            "f": 43.13294375456537,
+            "source_N": 171930.1,
+            "ref_eaf": 0.4617
+          },
+          {
+            "chrom": 14,
+            "pos": 24883887,
+            "rsid": "rs8017377",
+            "ea": "A",
+            "oa": "G",
+            "bx": 0.0303,
+            "sx": 0.0038,
+            "p": 2.516e-15,
+            "f": 63.57963988919668,
+            "source_N": 172866,
+            "ref_eaf": 0.4591
+          },
+          {
+            "chrom": 16,
+            "pos": 72108093,
+            "rsid": "rs2000999",
+            "ea": "A",
+            "oa": "G",
+            "bx": 0.065,
+            "sx": 0.0046,
+            "p": 4.219e-41,
+            "f": 199.6691871455577,
+            "source_N": 171509.95,
+            "ref_eaf": 0.1847
+          },
+          {
+            "chrom": 17,
+            "pos": 45438952,
+            "rsid": "rs6504872",
+            "ea": "T",
+            "oa": "C",
+            "bx": 0.0274,
+            "sx": 0.0037,
+            "p": 3.479e-13,
+            "f": 54.840029218407594,
+            "source_N": 171519,
+            "ref_eaf": 0.4723
+          },
+          {
+            "chrom": 19,
+            "pos": 45412079,
+            "rsid": "rs7412",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.5898,
+            "sx": 0.0101,
+            "p": 0,
+            "f": 3410.097441427311,
+            "source_N": 82533.09,
+            "ref_eaf": 0.93404
+          },
+          {
+            "chrom": 20,
+            "pos": 39724338,
+            "rsid": "rs6065311",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.0417,
+            "sx": 0.0036,
+            "p": 1.656e-30,
+            "f": 134.17361111111111,
+            "source_N": 171333.1,
+            "ref_eaf": 0.4604
+          },
+          {
+            "chrom": 22,
+            "pos": 30378703,
+            "rsid": "rs5763662",
+            "ea": "T",
+            "oa": "C",
+            "bx": 0.0767,
+            "sx": 0.0121,
+            "p": 1.191e-8,
+            "f": 40.180930264326214,
+            "source_N": 162777.24,
+            "ref_eaf": 0.02507
+          }
+        ],
+        "selection": {
+          "source_rows": 2437751,
+          "eligible_genomewide_significant_rows": 2511,
+          "selected_before_coordinate_uniqueness": 19,
+          "selected": 19,
+          "excluded_rows": {
+            "not_genomewide_significant": 2024570,
+            "numeric_frequency_or_N": 17470,
+            "palindrome": 373662,
+            "extended_MHC": 14196,
+            "missing_rsid": 18,
+            "parse": 5324
+          },
+          "header": [
+            "SNP_hg18",
+            "SNP_hg19",
+            "rsid",
+            "A1",
+            "A2",
+            "beta",
+            "se",
+            "N",
+            "P-value",
+            "Freq.A1.1000G.EUR"
+          ],
+          "selection": "One strongest reported P per autosome after exposure-only filters; ties by decreasing F then position/rsID. No outcome-dependent replacements. Exclude A/T, C/G and extended MHC. P=0 allowed only if |z|>=37; treated as underflow, not exact zero. No within-chromosome pair retained."
+        },
+        "exposure_source": {
+          "bytes": 58851380,
+          "sha256": "ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce",
+          "md5": "c01937bd545acc888b119d3f8cb74d76",
+          "url": "https://csg.sph.umich.edu/abecasis/public/lipids2013/jointGwasMc_LDL.txt.gz"
+        },
+        "reference_sources": {
+          "dbSNP_RefSNP": {
+            "rs646776": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/646776",
+              "bytes": 74107,
+              "sha256": "2dc54b891cedd88bec1a57993b0e68d91007f228c926bd7396fc3f70c614e6ae",
+              "content_range": null,
+              "etag": null
+            },
+            "rs1367117": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/1367117",
+              "bytes": 95433,
+              "sha256": "6062a53ac699f5f96c029a0634d96fdaead55fdf8624d74b97ed1c61cce580b0",
+              "content_range": null,
+              "etag": null
+            },
+            "rs9875338": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/9875338",
+              "bytes": 49848,
+              "sha256": "3fb8ac8df37cfd029be7629d8fab13e3146226b9923d3053a3bdcf288f588886",
+              "content_range": null,
+              "etag": null
+            },
+            "rs6818397": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/6818397",
+              "bytes": 72258,
+              "sha256": "e2c36f06870ba0972ea9fa4d779d36898b47f03831b0f170f131f4f1f9a07ef2",
+              "content_range": null,
+              "etag": null
+            },
+            "rs12916": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/12916",
+              "bytes": 91957,
+              "sha256": "4caf4e92b6190ec025202053c3a1f09db898b3b9e359ba21484cc970c1f85a61",
+              "content_range": null,
+              "etag": null
+            },
+            "rs1564348": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/1564348",
+              "bytes": 62651,
+              "sha256": "7b705f97c861dc6b330a3d519ca0b81afe1be0e1b5bb19f94a15502e294fdd0a",
+              "content_range": null,
+              "etag": null
+            },
+            "rs2073547": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/2073547",
+              "bytes": 43001,
+              "sha256": "21eb44f9da4d770931abad5e7bf283c310ace81ea2ac048d2599f3f81c8b61f3",
+              "content_range": null,
+              "etag": null
+            },
+            "rs2980875": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/2980875",
+              "bytes": 48256,
+              "sha256": "575576dda100ff014c136944dfd3cb43fe401a843ce310fdbd3a972984b1fa9b",
+              "content_range": null,
+              "etag": null
+            },
+            "rs579459": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/579459",
+              "bytes": 53050,
+              "sha256": "237c952dbcaf78cd3b9616494a50764bf93ed3f27e4f0204a2ac963ccbb03898",
+              "content_range": null,
+              "etag": null
+            },
+            "rs2419604": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/2419604",
+              "bytes": 64129,
+              "sha256": "746ac4557f9cadaeb644757b7a29ddbdedb47208c6f576f066f02abf363802d1",
+              "content_range": null,
+              "etag": null
+            },
+            "rs174583": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/174583",
+              "bytes": 57317,
+              "sha256": "10d37f09c4faaff04d910cc5320831c96575881cd567dd30faf60aeb2693295e",
+              "content_range": null,
+              "etag": null
+            },
+            "rs1169288": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/1169288",
+              "bytes": 103522,
+              "sha256": "72bf837be359c1540c28bdcc0caa0d38e24ed3e60691148964d4a4fce02b2c3e",
+              "content_range": null,
+              "etag": null
+            },
+            "rs4942486": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/4942486",
+              "bytes": 92507,
+              "sha256": "73a46faa88707aaa11c048d29bd02eecfeaeaf673ccd1185d58c1536c778fe65",
+              "content_range": null,
+              "etag": null
+            },
+            "rs8017377": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/8017377",
+              "bytes": 80636,
+              "sha256": "3e1754e231c6be51dea6e65a7ed1e21233738557b8fe08507fe91ed23dd2b6e9",
+              "content_range": null,
+              "etag": null
+            },
+            "rs2000999": {
+              "url": "https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/2000999",
+              "bytes": 60798,
+              "sha256": "47aa700a86aeb5c50994c92f84485a476a783fe1c44d7c2c5f5163a66ee1977e",
+              "content_range": null,
+              "etag": null
+            }
+          }
+        },
+        "reference": {
+          "rs646776": {
+            "status": "HOLD_REFERENCE",
+            "reason": "multiallelic or incomplete placement"
+          },
+          "rs1367117": {
+            "status": "HOLD_REFERENCE",
+            "reason": "multiallelic or incomplete placement"
+          },
+          "rs9875338": {
+            "status": "MATCHED_REFERENCE",
+            "chr": "3",
+            "pos": 12254970,
+            "ref": "G",
+            "alt": "A",
+            "exposure_sign": -1,
+            "grch37_position": 12296469,
+            "grch37_alleles": [
+              "G",
+              "A"
+            ],
+            "grch37_refseq": "NC_000003.11",
+            "grch38_refseq": "NC_000003.12",
+            "assembly_labels": [
+              [
+                "GRCh37.p13"
+              ],
+              [
+                "GRCh38.p14"
+              ]
+            ],
+            "reference_order_changed": false
+          },
+          "rs6818397": {
+            "status": "HOLD_REFERENCE",
+            "reason": "multiallelic or incomplete placement"
+          },
+          "rs12916": {
+            "status": "HOLD_REFERENCE",
+            "reason": "multiallelic or incomplete placement"
+          },
+          "rs1564348": {
+            "status": "HOLD_REFERENCE",
+            "reason": "multiallelic or incomplete placement"
+          },
+          "rs2073547": {
+            "status": "MATCHED_REFERENCE",
+            "chr": "7",
+            "pos": 44542732,
+            "ref": "A",
+            "alt": "G",
+            "exposure_sign": 1,
+            "grch37_position": 44582331,
+            "grch37_alleles": [
+              "A",
+              "G"
+            ],
+            "grch37_refseq": "NC_000007.13",
+            "grch38_refseq": "NC_000007.14",
+            "assembly_labels": [
+              [
+                "GRCh37.p13"
+              ],
+              [
+                "GRCh38.p14"
+              ]
+            ],
+            "reference_order_changed": false
+          },
+          "rs2980875": {
+            "status": "HOLD_REFERENCE",
+            "reason": "multiallelic or incomplete placement"
+          },
+          "rs579459": {
+            "status": "MATCHED_REFERENCE",
+            "chr": "9",
+            "pos": 133278724,
+            "ref": "C",
+            "alt": "T",
+            "exposure_sign": -1,
+            "grch37_position": 136154168,
+            "grch37_alleles": [
+              "T",
+              "C"
+            ],
+            "grch37_refseq": "NC_000009.11",
+            "grch38_refseq": "NC_000009.12",
+            "assembly_labels": [
+              [
+                "GRCh37.p13"
+              ],
+              [
+                "GRCh38.p14"
+              ]
+            ],
+            "reference_order_changed": true
+          },
+          "rs2419604": {
+            "status": "HOLD_REFERENCE",
+            "reason": "multiallelic or incomplete placement"
+          },
+          "rs174583": {
+            "status": "MATCHED_REFERENCE",
+            "chr": "11",
+            "pos": 61842278,
+            "ref": "C",
+            "alt": "T",
+            "exposure_sign": -1,
+            "grch37_position": 61609750,
+            "grch37_alleles": [
+              "C",
+              "T"
+            ],
+            "grch37_refseq": "NC_000011.9",
+            "grch38_refseq": "NC_000011.10",
+            "assembly_labels": [
+              [
+                "GRCh37.p13"
+              ],
+              [
+                "GRCh38.p14"
+              ]
+            ],
+            "reference_order_changed": false
+          },
+          "rs1169288": {
+            "status": "HOLD_REFERENCE",
+            "reason": "multiallelic or incomplete placement"
+          },
+          "rs4942486": {
+            "status": "HOLD_REFERENCE",
+            "reason": "multiallelic or incomplete placement"
+          },
+          "rs8017377": {
+            "status": "MATCHED_REFERENCE",
+            "chr": "14",
+            "pos": 24414681,
+            "ref": "G",
+            "alt": "A",
+            "exposure_sign": 1,
+            "grch37_position": 24883887,
+            "grch37_alleles": [
+              "G",
+              "A"
+            ],
+            "grch37_refseq": "NC_000014.8",
+            "grch38_refseq": "NC_000014.9",
+            "assembly_labels": [
+              [
+                "GRCh37.p13"
+              ],
+              [
+                "GRCh38.p14"
+              ]
+            ],
+            "reference_order_changed": false
+          },
+          "rs2000999": {
+            "status": "MATCHED_REFERENCE",
+            "chr": "16",
+            "pos": 72074194,
+            "ref": "G",
+            "alt": "A",
+            "exposure_sign": 1,
+            "grch37_position": 72108093,
+            "grch37_alleles": [
+              "G",
+              "A"
+            ],
+            "grch37_refseq": "NC_000016.9",
+            "grch38_refseq": "NC_000016.10",
+            "assembly_labels": [
+              [
+                "GRCh37.p13"
+              ],
+              [
+                "GRCh38.p14"
+              ]
+            ],
+            "reference_order_changed": false
+          },
+          "rs6504872": {
+            "status": "HOLD_REFERENCE",
+            "reason": "dbSNP transport: HTTP Error 429: Too Many Requests"
+          },
+          "rs7412": {
+            "status": "HOLD_REFERENCE",
+            "reason": "dbSNP transport: HTTP Error 429: Too Many Requests"
+          },
+          "rs6065311": {
+            "status": "HOLD_REFERENCE",
+            "reason": "dbSNP transport: HTTP Error 429: Too Many Requests"
+          },
+          "rs5763662": {
+            "status": "HOLD_REFERENCE",
+            "reason": "dbSNP transport: HTTP Error 429: Too Many Requests"
+          }
+        },
+        "matched": 6,
+        "limits": [
+          "Same frozen 19 SNPs. Independent official RefSNP exact primary chromosome SPDI on both builds; original GRCh37 position and nonpalindromic biallelic allele set must match. No proxy, merged IDs, multiallelic rescue or LD certification. If <10 reference matches, stop outcome queries."
+        ],
+        "mode": "reference",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is c7a31113ed5c3770f51c65eb61f39dd814fc9feed7013834eb4ea4c63225eec5",
+        "Artifact genetic-reference.zip successfully finalized. Artifact ID 15019873798"
+      ]
+    },
+    {
+      "run_id": 45611553423,
+      "job_id": 139196498493,
+      "name": "outcomes (LAA)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM",
+        "outcome": "LAA",
+        "reference_exposure_sha": "ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce",
+        "reference_matched": 6,
+        "matched": 0,
+        "effects": {},
+        "source_metadata_qualified": false,
+        "limits": [
+          "Fewer than the fixed minimum of ten eligible references; no heavy outcome requests."
+        ],
+        "mode": "LAA",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 9b2d261fbab52af985bd6c2ea9366f42d791982175cf153984497702b002f062",
+        "Artifact genetic-outcome-LAA.zip successfully finalized. Artifact ID 15020810512"
+      ]
+    },
+    {
+      "run_id": 45611553423,
+      "job_id": 139196498635,
+      "name": "outcomes (SVD)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM",
+        "outcome": "SVD",
+        "reference_exposure_sha": "ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce",
+        "reference_matched": 6,
+        "matched": 0,
+        "effects": {},
+        "source_metadata_qualified": false,
+        "limits": [
+          "Fewer than the fixed minimum of ten eligible references; no heavy outcome requests."
+        ],
+        "mode": "SVD",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is d0507c344d55c613d89571dac58dd1aaaba8ee42152ae15c35c7eea79c003c31",
+        "Artifact genetic-outcome-SVD.zip successfully finalized. Artifact ID 15019624411"
+      ]
+    },
+    {
+      "run_id": 45611553423,
+      "job_id": 139196498760,
+      "name": "outcomes (CE)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM",
+        "outcome": "CE",
+        "reference_exposure_sha": "ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce",
+        "reference_matched": 6,
+        "matched": 0,
+        "effects": {},
+        "source_metadata_qualified": false,
+        "limits": [
+          "Fewer than the fixed minimum of ten eligible references; no heavy outcome requests."
+        ],
+        "mode": "CE",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is b5a99309bcfeca235723ca2a7e2260a819d20c7c719288430afe2a504d436c69",
+        "Artifact genetic-outcome-CE.zip successfully finalized. Artifact ID 15020252186"
+      ]
+    },
+    {
+      "run_id": 45611553423,
+      "job_id": 139196876397,
+      "name": "combine",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "CKM_FROZEN_COMMON_PANEL_READOUT",
+        "reference_matched": 6,
+        "coverage": {
+          "LAA": {
+            "matched": 0,
+            "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM"
+          },
+          "CE": {
+            "matched": 0,
+            "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM"
+          },
+          "SVD": {
+            "matched": 0,
+            "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM"
+          }
+        },
+        "analysis": {
+          "status": "HOLD_TOO_FEW_COMMON_SNP",
+          "common": 0
+        },
+        "limits": [
+          "Original #334 minimum common instrument count, fixed six contrast family, worst-case per-SNP cross-outcome covariance, leave-one-out. No claims of causal or ancestry-specific mechanism; exposure standardization, sample overlap and between-SNP LD still unresolved. Missing not zero."
+        ],
+        "mode": "combine",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is a1383cf31c2909f9c63db6920e045b46db6bfd8ffa3f7e840bd4e2d9423557be",
+        "Artifact genetic-combine.zip successfully finalized. Artifact ID 15020541104"
+      ]
+    },
+    {
+      "run_id": 45611840200,
+      "job_id": 139197090212,
+      "name": "sources (oral_labels)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "ORAL_AUTHOR_LABEL_SCHEMA_AUDIT",
+        "libraries": 9,
+        "complete_joins": 0,
+        "explicit_site_libraries": 0,
+        "records": [
+          {
+            "gsm": "GSM5844648",
+            "status": "HOLD_LABEL_SCHEMA",
+            "sources": {
+              "barcode": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5844nnn/GSM5844648/suppl/GSM5844648_barcodes.tsv.gz",
+                "bytes": 2280343,
+                "sha256": "ee0a960a955fbf426c2318030ed3d41436085e256907d2d3d43f855ff004dc50",
+                "content_range": null,
+                "etag": null
+              },
+              "label": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5844nnn/GSM5844648/suppl/GSM5844648_celltype_metadata-1.csv.gz",
+                "bytes": 22853,
+                "sha256": "f5b55ba9e585e7c5f61d1fe7900ce4147ced508655e5ffaf8ec0df8a5f02f206",
+                "content_range": null,
+                "etag": null
+              }
+            },
+            "raw_barcodes": 737280,
+            "delimiter_profiles": [
+              {
+                "delimiter": "','",
+                "row_width_counts": {
+                  "3": 3944
+                },
+                "rows": 3944
+              },
+              {
+                "delimiter": "'\\t'",
+                "row_width_counts": {
+                  "1": 3944
+                },
+                "rows": 3944
+              },
+              {
+                "delimiter": "';'",
+                "row_width_counts": {
+                  "1": 3944
+                },
+                "rows": 3944
+              }
+            ],
+            "complete_candidate_joins": 0
+          },
+          {
+            "gsm": "GSM6553453",
+            "status": "HOLD_LABEL_SCHEMA",
+            "sources": {
+              "barcode": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553453/suppl/GSM6553453_2-barcodes.tsv.gz",
+                "bytes": 2550196,
+                "sha256": "aa7ac31cee023d0f65678e8c97cb7cf91d3d01a0b3291dfd70452fa677335734",
+                "content_range": null,
+                "etag": null
+              },
+              "label": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553453/suppl/GSM6553453_celltype_metadata-2.csv.gz",
+                "bytes": 14973,
+                "sha256": "d97ac261efd3077311bbaacc1b8c562e730eac20c92727cbc31131876668627f",
+                "content_range": null,
+                "etag": null
+              }
+            },
+            "raw_barcodes": 737280,
+            "delimiter_profiles": [
+              {
+                "delimiter": "','",
+                "row_width_counts": {
+                  "3": 2365
+                },
+                "rows": 2365
+              },
+              {
+                "delimiter": "'\\t'",
+                "row_width_counts": {
+                  "1": 2365
+                },
+                "rows": 2365
+              },
+              {
+                "delimiter": "';'",
+                "row_width_counts": {
+                  "1": 2365
+                },
+                "rows": 2365
+              }
+            ],
+            "complete_candidate_joins": 0
+          },
+          {
+            "gsm": "GSM6553455",
+            "status": "HOLD_LABEL_SCHEMA",
+            "sources": {
+              "barcode": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553455/suppl/GSM6553455_3-barcodes.tsv.gz",
+                "bytes": 2550196,
+                "sha256": "97ba5d2f0b51df8fbc6a9eb43e377e7515485b856b0f9efe29d5e72f7ab73cfe",
+                "content_range": null,
+                "etag": null
+              },
+              "label": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553455/suppl/GSM6553455_celltype_metadata-3.csv.gz",
+                "bytes": 1354,
+                "sha256": "88630f2c96532fe7083ba1bbc1ffb672d51c5d46e49c794a6d9441c613c70f71",
+                "content_range": null,
+                "etag": null
+              }
+            },
+            "raw_barcodes": 737280,
+            "delimiter_profiles": [
+              {
+                "delimiter": "','",
+                "row_width_counts": {
+                  "3": 157
+                },
+                "rows": 157
+              },
+              {
+                "delimiter": "'\\t'",
+                "row_width_counts": {
+                  "1": 157
+                },
+                "rows": 157
+              },
+              {
+                "delimiter": "';'",
+                "row_width_counts": {
+                  "1": 157
+                },
+                "rows": 157
+              }
+            ],
+            "complete_candidate_joins": 0
+          },
+          {
+            "gsm": "GSM6553456",
+            "status": "HOLD_LABEL_SCHEMA",
+            "sources": {
+              "barcode": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553456/suppl/GSM6553456_4-barcodes.tsv.gz",
+                "bytes": 2550196,
+                "sha256": "7d136f6d006051ba71e1c46b21de0836c262cb591ef0b76e078be0fd47b5b7ce",
+                "content_range": null,
+                "etag": null
+              },
+              "label": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553456/suppl/GSM6553456_celltype_metadata-4.csv.gz",
+                "bytes": 51986,
+                "sha256": "c430da1d8a3e505b62f86274671326c3c5b6a15b2efffa49d2dde22f98bb68d3",
+                "content_range": null,
+                "etag": null
+              }
+            },
+            "raw_barcodes": 737280,
+            "delimiter_profiles": [
+              {
+                "delimiter": "','",
+                "row_width_counts": {
+                  "3": 9079
+                },
+                "rows": 9079
+              },
+              {
+                "delimiter": "'\\t'",
+                "row_width_counts": {
+                  "1": 9079
+                },
+                "rows": 9079
+              },
+              {
+                "delimiter": "';'",
+                "row_width_counts": {
+                  "1": 9079
+                },
+                "rows": 9079
+              }
+            ],
+            "complete_candidate_joins": 0
+          },
+          {
+            "gsm": "GSM6553457",
+            "status": "HOLD_LABEL_SCHEMA",
+            "sources": {
+              "barcode": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553457/suppl/GSM6553457_5-barcodes.tsv.gz",
+                "bytes": 2550196,
+                "sha256": "d4175e9b3d7746b68af06897121fede1541eb898a564203470673a63bdfd2ffa",
+                "content_range": null,
+                "etag": null
+              },
+              "label": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553457/suppl/GSM6553457_celltype_metadata-5.csv.gz",
+                "bytes": 883,
+                "sha256": "75b6e247d565f8203beeed7952662146214e4c20f493f8a7825280a1e9f690e7",
+                "content_range": null,
+                "etag": null
+              }
+            },
+            "raw_barcodes": 737280,
+            "delimiter_profiles": [
+              {
+                "delimiter": "','",
+                "row_width_counts": {
+                  "3": 95
+                },
+                "rows": 95
+              },
+              {
+                "delimiter": "'\\t'",
+                "row_width_counts": {
+                  "1": 95
+                },
+                "rows": 95
+              },
+              {
+                "delimiter": "';'",
+                "row_width_counts": {
+                  "1": 95
+                },
+                "rows": 95
+              }
+            ],
+            "complete_candidate_joins": 0
+          },
+          {
+            "gsm": "GSM6553458",
+            "status": "HOLD_LABEL_SCHEMA",
+            "sources": {
+              "barcode": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553458/suppl/GSM6553458_6a-barcodes.tsv.gz",
+                "bytes": 2550196,
+                "sha256": "b95857f5965a05d0911d4a2e58b7a3292b9642f20a8c977bf62beb9729335de2",
+                "content_range": null,
+                "etag": null
+              },
+              "label": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553458/suppl/GSM6553458_celltype_metadata-6a.csv.gz",
+                "bytes": 62996,
+                "sha256": "1a0663b8a99fd3f5ebf21cf753b997053aac005a20a4d4bd42594eb4bc99470f",
+                "content_range": null,
+                "etag": null
+              }
+            },
+            "raw_barcodes": 737280,
+            "delimiter_profiles": [
+              {
+                "delimiter": "','",
+                "row_width_counts": {
+                  "3": 11952
+                },
+                "rows": 11952
+              },
+              {
+                "delimiter": "'\\t'",
+                "row_width_counts": {
+                  "1": 11952
+                },
+                "rows": 11952
+              },
+              {
+                "delimiter": "';'",
+                "row_width_counts": {
+                  "1": 11952
+                },
+                "rows": 11952
+              }
+            ],
+            "complete_candidate_joins": 0
+          },
+          {
+            "gsm": "GSM6553459",
+            "status": "HOLD_LABEL_SCHEMA",
+            "sources": {
+              "barcode": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553459/suppl/GSM6553459_6b-barcodes.tsv.gz",
+                "bytes": 2550196,
+                "sha256": "5bf1d8572b4f037ba2ea884c2646468621c40b1e0dea2e794216185af1d59062",
+                "content_range": null,
+                "etag": null
+              },
+              "label": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553459/suppl/GSM6553459_celltype_metadata-6b.csv.gz",
+                "bytes": 38244,
+                "sha256": "ca68efbf1b07adec461e42e6bbf4696a15a8dae0504255a87662441a0793d432",
+                "content_range": null,
+                "etag": null
+              }
+            },
+            "raw_barcodes": 737280,
+            "delimiter_profiles": [
+              {
+                "delimiter": "','",
+                "row_width_counts": {
+                  "3": 6896
+                },
+                "rows": 6896
+              },
+              {
+                "delimiter": "'\\t'",
+                "row_width_counts": {
+                  "1": 6896
+                },
+                "rows": 6896
+              },
+              {
+                "delimiter": "';'",
+                "row_width_counts": {
+                  "1": 6896
+                },
+                "rows": 6896
+              }
+            ],
+            "complete_candidate_joins": 0
+          },
+          {
+            "gsm": "GSM6553461",
+            "status": "HOLD_LABEL_SCHEMA",
+            "sources": {
+              "barcode": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553461/suppl/GSM6553461_7a-barcodes.tsv.gz",
+                "bytes": 2550196,
+                "sha256": "6fbc3c3694a6921f8df00aa22dc8a1e2bce068130041c7ed2d42f7395de4effa",
+                "content_range": null,
+                "etag": null
+              },
+              "label": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553461/suppl/GSM6553461_celltype_metadata-7a.csv.gz",
+                "bytes": 22261,
+                "sha256": "a9a38dec0e17e4aa26a1286d2d15871ea4fad503eeed75da0716d6e20e0081b7",
+                "content_range": null,
+                "etag": null
+              }
+            },
+            "raw_barcodes": 737280,
+            "delimiter_profiles": [
+              {
+                "delimiter": "','",
+                "row_width_counts": {
+                  "3": 3652
+                },
+                "rows": 3652
+              },
+              {
+                "delimiter": "'\\t'",
+                "row_width_counts": {
+                  "1": 3652
+                },
+                "rows": 3652
+              },
+              {
+                "delimiter": "';'",
+                "row_width_counts": {
+                  "1": 3652
+                },
+                "rows": 3652
+              }
+            ],
+            "complete_candidate_joins": 0
+          },
+          {
+            "gsm": "GSM6553462",
+            "status": "HOLD_LABEL_SCHEMA",
+            "sources": {
+              "barcode": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553462/suppl/GSM6553462_7b-barcodes.tsv.gz",
+                "bytes": 2550196,
+                "sha256": "46c505b33c4e45a959cc96663697b9aae2c137635cde61aff34fd76569e546f8",
+                "content_range": null,
+                "etag": null
+              },
+              "label": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553462/suppl/GSM6553462_celltype_metadata-7b.csv.gz",
+                "bytes": 19532,
+                "sha256": "93f16ebfc3bf7d8c533289ad9b84232bb4cebbdff25f2b6931ab094ae6775bdd",
+                "content_range": null,
+                "etag": null
+              }
+            },
+            "raw_barcodes": 737280,
+            "delimiter_profiles": [
+              {
+                "delimiter": "','",
+                "row_width_counts": {
+                  "3": 3153
+                },
+                "rows": 3153
+              },
+              {
+                "delimiter": "'\\t'",
+                "row_width_counts": {
+                  "1": 3153
+                },
+                "rows": 3153
+              },
+              {
+                "delimiter": "';'",
+                "row_width_counts": {
+                  "1": 3153
+                },
+                "rows": 3153
+              }
+            ],
+            "complete_candidate_joins": 0
+          }
+        ],
+        "limits": [
+          "Author merge order, identity or exact library index suffix only; complete bijection required. Site assignment only single-site source or explicitly labeled author HTO sample code. No guessing from barcode/HTO maxima. Patients 4/6/7 have both LN_MET and LN_FREE per author code; maximum paired sign-test sample size three before eligibility, minimum two-sided p=.25."
+        ],
+        "mode": "oral_labels",
+        "scientific_status": "HOLD_PATIENT_LEVEL_INDEPENDENCE_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 083d4b61dce5772d2c951ef1b4223903d5502dad2db4b0f110e51615f5d3b069",
+        "Artifact orthogonal-oral_labels.zip successfully finalized. Artifact ID 15021135537"
+      ]
+    },
+    {
+      "run_id": 45611840200,
+      "job_id": 139197090782,
+      "name": "sources (hcc_schema)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "HCC_MULTISHEET_EXACT_KEY_AUDIT",
+        "sources": {
+          "Transcriptomics_Tums_NTL_Normals.xlsx": {
+            "url": "https://zenodo.org/records/16992982/files/Transcriptomics_Tums_NTL_Normals.xlsx?download=1",
+            "bytes": 59825342,
+            "sha256": "ebf7abcde8e5a053032b458fb4fd75a0b0675fed753f38210c942b3ae7c249d6",
+            "content_range": null,
+            "etag": null,
+            "published_md5": "9012a374588a273bcb930b83643bf1b0"
+          },
+          "Proteomics_Tums_NTL_Normals.xlsx": {
+            "url": "https://zenodo.org/records/16992982/files/Proteomics_Tums_NTL_Normals.xlsx?download=1",
+            "bytes": 6751340,
+            "sha256": "2687a8ac7497f20802a4991cd0cf3ab2939a03aebccc5a5bcf367ecd2bb448c0",
+            "content_range": null,
+            "etag": null,
+            "published_md5": "aee43ad590214e713b395c4f60d827a1"
+          }
+        },
+        "sample_manifest": {
+          "source": {
+            "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1186%2Fs12943-026-02604-x/MediaObjects/12943_2026_2604_MOESM3_ESM.xlsx",
+            "bytes": 30810,
+            "sha256": "1b7aa84bc224adb25cba9f01f628f8e6bf29b383b0891817bc1dabd555e23989",
+            "content_range": null,
+            "etag": "\"de238265d94120efc9af9f7342bafefd\""
+          },
+          "header_profiles": [
+            {
+              "sheet": 1,
+              "row": 2,
+              "dimensions": [
+                78,
+                32
+              ],
+              "sample_cols": 1,
+              "patient_cols": 1,
+              "tissue_cols": 0
+            }
+          ],
+          "eligible_sample_maps": 1
+        },
+        "RNA_profiles": [
+          {
+            "sheet": 2,
+            "header_row": 1,
+            "dimensions": [
+              16484,
+              140
+            ],
+            "numeric_backed_keys": 139,
+            "duplicate_keys": 0,
+            "exact_supplement_keys": 76,
+            "explicit_gene_columns": 0,
+            "recognized_annotation_terms": []
+          },
+          {
+            "sheet": 3,
+            "header_row": 1,
+            "dimensions": [
+              23415,
+              108
+            ],
+            "numeric_backed_keys": 107,
+            "duplicate_keys": 0,
+            "exact_supplement_keys": 0,
+            "explicit_gene_columns": 0,
+            "recognized_annotation_terms": []
+          }
+        ],
+        "protein_profiles": [
+          {
+            "sheet": 2,
+            "header_row": 1,
+            "dimensions": [
+              5194,
+              50
+            ],
+            "numeric_backed_keys": 49,
+            "duplicate_keys": 0,
+            "exact_supplement_keys": 22,
+            "explicit_gene_columns": 0,
+            "recognized_annotation_terms": []
+          },
+          {
+            "sheet": 3,
+            "header_row": 1,
+            "dimensions": [
+              5194,
+              44
+            ],
+            "numeric_backed_keys": 43,
+            "duplicate_keys": 0,
+            "exact_supplement_keys": 0,
+            "explicit_gene_columns": 0,
+            "recognized_annotation_terms": []
+          }
+        ],
+        "candidate_cross_sheet_joins": [
+          {
+            "rna_sheet": 2,
+            "rna_header": 1,
+            "protein_sheet": 2,
+            "protein_header": 1,
+            "exact_keys": 47,
+            "manifest_keys": 22
+          },
+          {
+            "rna_sheet": 2,
+            "rna_header": 1,
+            "protein_sheet": 3,
+            "protein_header": 1,
+            "exact_keys": 5,
+            "manifest_keys": 0
+          },
+          {
+            "rna_sheet": 3,
+            "rna_header": 1,
+            "protein_sheet": 2,
+            "protein_header": 1,
+            "exact_keys": 5,
+            "manifest_keys": 0
+          },
+          {
+            "rna_sheet": 3,
+            "rna_header": 1,
+            "protein_sheet": 3,
+            "protein_header": 1,
+            "exact_keys": 41,
+            "manifest_keys": 0
+          }
+        ],
+        "confirmed_biopsy_labels": 0,
+        "patient_tissue_context": [],
+        "limits": [
+          "Exact sample manifest/headers only, no forced aliases or across-sheet row-order matching. Patient means within tissue are descriptive, no p-values or causal claims. 2026 cohort explicitly reuses Ng 2022 patients and assays; potential overlap with GSE64041 remains unresolved. No repeated biopsies counted as independent patients."
+        ],
+        "mode": "hcc_schema",
+        "scientific_status": "HOLD_PATIENT_LEVEL_INDEPENDENCE_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 847c29d5e41753e1bb1b31ea2d121510e8f7099b76e21ed6c2f99c5211723174",
+        "Artifact orthogonal-hcc_schema.zip successfully finalized. Artifact ID 15020391875"
+      ]
+    },
+    {
+      "run_id": 45611840200,
+      "job_id": 139197090953,
+      "name": "sources (oral_pilot)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "ORAL_AUTHOR_LABEL_REPAIRED_PILOT",
+        "gsm": "GSM5844648",
+        "sources": {
+          "barcode": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5844nnn/GSM5844648/suppl/GSM5844648_barcodes.tsv.gz",
+            "bytes": 2280343,
+            "sha256": "ee0a960a955fbf426c2318030ed3d41436085e256907d2d3d43f855ff004dc50",
+            "content_range": null,
+            "etag": null
+          },
+          "label": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5844nnn/GSM5844648/suppl/GSM5844648_celltype_metadata-1.csv.gz",
+            "bytes": 22853,
+            "sha256": "f5b55ba9e585e7c5f61d1fe7900ce4147ced508655e5ffaf8ec0df8a5f02f206",
+            "content_range": null,
+            "etag": null
+          },
+          "features": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5844nnn/GSM5844648/suppl/GSM5844648_features.tsv.gz",
+            "bytes": 270591,
+            "sha256": "6d832fb3c893bd0dec671b8ec0bf59125a039214202ddfa08edbf2e8f210b9dd",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5844nnn/GSM5844648/suppl/GSM5844648_matrix.mtx.gz",
+            "bytes": 21072873,
+            "sha256": "5d7f971b132d7981ed0ed32a63b9a36b0352cdabc3c3dc61a821e3f2bf255101",
+            "content_range": null,
+            "etag": null
+          }
+        },
+        "raw_barcodes": 737280,
+        "delimiter_profiles": [
+          {
+            "delimiter": "','",
+            "row_width_counts": {
+              "3": 3944
+            },
+            "rows": 3944
+          },
+          {
+            "delimiter": "'\\t'",
+            "row_width_counts": {
+              "1": 3944
+            },
+            "rows": 3944
+          },
+          {
+            "delimiter": "';'",
+            "row_width_counts": {
+              "1": 3944
+            },
+            "rows": 3944
+          }
+        ],
+        "complete_candidate_joins": 0,
+        "mode": "oral_pilot",
+        "scientific_status": "HOLD_PATIENT_LEVEL_INDEPENDENCE_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is d42fe14c17319e5fc2d1873798b4d1870237b3df82a210effe46f96caca2a447",
+        "Artifact orthogonal-oral_pilot.zip successfully finalized. Artifact ID 15020500995"
+      ]
+    }
+  ]
+}
