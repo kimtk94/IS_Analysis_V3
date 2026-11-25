@@ -1,7 +1,6 @@
 {
   "status": "PLANNING_ONLY_EXTERNAL_LAS_CASE_CONTROL",
   "anchor_evidence": "docs/publication/evidence/is_rs2767060_las_region_20261125.json",
-  "anchor_commit": "6299666fb1b0e7f8fab6b0849bd2b27ca63c4e5f",
   "observed_anchor": {
     "rsid": "rs2767060",
     "pos": 35833363,
@@ -392,5 +391,6 @@
     "Illustrative unrelated additive logistic score/Wald normal approximation, Hardy-Weinberg, assumed control allele frequency and comparable log-odds scale, independent samples, complete genotyping, no covariate/genotype or ascertainment losses. Discovery EAF 0.0596 is not a verified external control frequency; effect size is discovery-selected and may shrink.",
     "24-marker family two-sided alpha 0.05/24, 80%/90% power. Rounded UP to 100 cases. Separate from original 192 contrast family. Assumes same-allele LAS case-control association as validation endpoint, not proof of ancestry heterogeneity or case-case effect. Exact external endpoint, N, model, overlap and power must be locked with authorized investigators before effect retrieval.",
     "GENESIS-K enrolled 5328 total (not LAS count; no verified stroke-free controls). No actual external power, data access, validation, or outreach claimed."
-  ]
+  ],
+  "anchor_evidence_blob_sha": "6299666fb1b0e7f8fab6b0849bd2b27ca63c4e5f"
 }
