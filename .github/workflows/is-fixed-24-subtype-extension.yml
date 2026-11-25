@@ -1,0 +1,118 @@
+name: IS fixed 24 regional markers subtype extension
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/fixed_24_subtype_extension.py','.github/workflows/is-fixed-24-subtype-extension.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  anchor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 81c9a0760c185f8c6f357a70e7c199f172df1015
+          path: indexed_helpers
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 0bf646fd6f29322d17da878253f37def24c01c74
+          path: legacy
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate fixed family and retrieve pinned UCSC chain
+        run: |
+          python -m pip install 'PyYAML==6.0.2' 'pyliftover==0.4.1'
+          python -m scripts.is.fixed_24_subtype_extension selftest
+          curl -fLsS --connect-timeout 20 --max-time 60 --max-filesize 1000000 'https://hgdownload.soe.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz' -o "$RUNNER_TEMP/chain.gz"
+      - name: Confirm EAS AIS indexed effects against frozen historical signed values
+        run: python -m scripts.is.fixed_24_subtype_extension anchor --legacy legacy/docs/data/is/IS_30_REGIONS_SIX_OUTCOMES_GWAS_CONTEXT_500KB.tsv --chain "$RUNNER_TEMP/chain.gz" --out outputs/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is24-anchor
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
+  extract:
+    needs: anchor
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        study: [EUR_AIS, EUR_SVS, EAS_SVS, EUR_CES, EAS_CES, EUR_LAS, EAS_LAS]
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 81c9a0760c185f8c6f357a70e7c199f172df1015
+          path: indexed_helpers
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: is24-anchor
+          path: inputs/
+      - name: Bounded sequential exact indexed requests
+        run: |
+          python -m pip install 'PyYAML==6.0.2' 'pyliftover==0.4.1'
+          python -m scripts.is.fixed_24_subtype_extension extract --study "${{ matrix.study }}" --manifest inputs/manifest.json --out "outputs/${{ matrix.study }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is24-study-${{ matrix.study }}
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
+  combine:
+    needs: [anchor, extract]
+    if: ${{ always() && needs.anchor.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 81c9a0760c185f8c6f357a70e7c199f172df1015
+          path: indexed_helpers
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: is24-anchor
+          path: inputs/anchor
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: is24-study-*
+          path: inputs/studies
+      - name: Preserve complete 192 test denominator, including missing
+        run: |
+          python -m pip install 'PyYAML==6.0.2' 'pyliftover==0.4.1'
+          mkdir -p studies/EAS_AIS
+          cp inputs/anchor/EAS_AIS.json studies/EAS_AIS/
+          for study in EUR_AIS EUR_SVS EAS_SVS EUR_CES EAS_CES EUR_LAS EAS_LAS; do
+            if [ -d "inputs/studies/is24-study-$study" ]; then mv "inputs/studies/is24-study-$study" "studies/$study"; fi
+          done
+          python -m scripts.is.fixed_24_subtype_extension combine --manifest inputs/anchor/manifest.json --root studies --out outputs/contrasts.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is24-subtype-contrasts
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
