@@ -11,32 +11,43 @@ from ocular_exvivo_source_gate import metadata,require,sha
 
 PLATFORMS=("GPL14550","GPL17077")
 EXPECTED={f"GSM159060{3+2*i+j}":(lot,arm) for i,lot in enumerate(("2584","3423","4973")) for j,arm in enumerate(("control","dex"))}
-def annotation(path,panel):
+def annotation(path,panel,platform):
+    """GEO original SOFT table, exact official platform-specific headers."""
     symbols=collections.defaultdict(list)
     for gid,v in panel.items():symbols[v["symbol"].strip().upper()].append(gid)
     symbols={s:v[0] for s,v in symbols.items() if s and len(v)==1}
+    key={"GPL14550":"GENE","GPL17077":"LOCUSLINK_ID"}[platform]
+    expected={"GPL14550":42545,"GPL17077":50739}[platform]
     labels=collections.defaultdict(set);entrez=collections.defaultdict(set);n=0
+    ambiguous=set();seen_ids=set()
     with gzip.open(path,"rt",encoding="utf-8-sig",newline="") as f:
-        h=None
+        identity=False
         for line in f:
-            if line.startswith(("!annotation_table_end","!platform_table_end")):break
+            if line.strip()=="^PLATFORM = "+platform:identity=True
+            if line.strip()=="!platform_table_begin":break
+        else:raise ValueError("Missing platform table start")
+        require(identity,"Wrong SOFT platform")
+        h=next(csv.reader([next(f).rstrip("\r\n")],delimiter="\t"))
+        require({"ID",key,"GENE_SYMBOL","CONTROL_TYPE"}<=set(h) and len(h)==len(set(h)),"Unexpected official platform headers")
+        for line in f:
+            if line.strip()=="!platform_table_end":break
             a=next(csv.reader([line.rstrip("\r\n")],delimiter="\t"))
-            if h is None:
-                if "ID" not in a or "Gene ID" not in a:continue
-                h=a;ss=[v for v in h if v.strip().casefold()=="gene symbol"]
-                require(len(ss)==1 and len(h)==len(set(h)),"Unexpected compact annotation schema")
-                sym=ss[0];continue
-            require(len(a)==len(h),"Annotation width")
+            require(len(a)==len(h),"SOFT annotation width")
             n+=1;require(n<=100000,"Annotation bound")
-            d=dict(zip(h,a));p=d["ID"].strip();e=d["Gene ID"].strip();g=d[sym].strip().upper()
-            if not re.fullmatch(r"A_[0-9]+_P[0-9]+",p) or not re.fullmatch(r"[0-9]+",e) or not g:continue
+            d=dict(zip(h,a));p=d["ID"].strip();e=d[key].strip();g=d["GENE_SYMBOL"].strip().upper()
+            require(p not in seen_ids,"Duplicate original probe ID");seen_ids.add(p)
+            if d["CONTROL_TYPE"].strip().upper()!="FALSE" or not re.fullmatch(r"A_[0-9]+_P[0-9]+",p):continue
+            if not re.fullmatch(r"[0-9]+",e) or not re.fullmatch(r"[A-Z0-9][A-Z0-9_.-]*",g):
+                ambiguous.add(p);continue
             entrez[p].add(e);labels[p].add(g)
-    require(h is not None and n>=10000,"Missing platform annotation")
-    eligible={p:next(iter(v)) for p,v in entrez.items() if len(v)==1 and len(labels[p])==1}
+        else:raise ValueError("Missing platform table end")
+    require(n==expected,"Official platform row count changed")
+    eligible={p:next(iter(v)) for p,v in entrez.items() if len(v)==1 and len(labels[p])==1 and p not in ambiguous}
     symids=collections.defaultdict(set)
     for p,e in eligible.items():symids[next(iter(labels[p]))].add(e)
     mp={p:symbols[s] for p in eligible if (s:=next(iter(labels[p]))) in symbols and len(symids[s])==1}
     return eligible,mp,n
+
 def design(meta,ids,platform):
     require(metadata(meta,"!Series_geo_accession")==[["GSE65240"]],"Wrong series")
     require(metadata(meta,"!Sample_geo_accession")==[ids] and metadata(meta,"!Sample_platform_id")==[[platform]*len(ids)],"Sample/platform mismatch")
@@ -66,7 +77,7 @@ def design(meta,ids,platform):
     return out
 def scan(root,panel,platform):
     matrix=root/(platform+"-matrix.gz");annot=root/(platform+"-annot.gz")
-    eligible,mp,n=annotation(annot,panel)
+    eligible,mp,n=annotation(annot,panel,platform)
     meta,table=read_table(matrix,"!series_matrix_table_begin","!series_matrix_table_end")
     h=next(table);ids=h[1:];require(h[0]=="ID_REF" and 2<=len(ids)<=4 and len(set(ids))==len(ids),"Platform matrix shape")
     samples=design(meta,ids,platform);seen=set();mapped=collections.defaultdict(set);complete=0;nonfinite=0
