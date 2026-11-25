@@ -1,0 +1,75 @@
+{
+  "provenance": {
+    "run_id": 45535697612,
+    "job_id": 138941623841,
+    "artifact_id": 14987116725,
+    "reported_artifact_zip_sha256": "aaea02b6012e7b7f0a60f6d8b53bcc9ae3ea1ca17fd31636595fa74a66ebeffe",
+    "source_commit": "d064abeb5e2122bdabb89dc3d2b9c9f6c0aff62a",
+    "readback": "Actual JSON stdout; artifact ZIP digest reported by upload step, not independently downloaded."
+  },
+  "result": {
+    "status": "PAIRED_TISSUE_DESCRIPTIVE",
+    "study": "GSE37474",
+    "pairing_verified_by_public_titles_treatment_age_sex": true,
+    "pairs": 5,
+    "panel_sha256": "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606",
+    "matrix_sha256": "d348cb1add4a01ec1b17d82da75f4b2081de4d7c3ad2433a42261fdd9543c849",
+    "annotation_sha256": "d7cd44352127b1e34f3a720ebea86093ef255a38f1612a85a2962b71bde8f394",
+    "rank_universe": 27920,
+    "panels": {
+      "all241": {
+        "frozen": 241,
+        "mapped": 199,
+        "positive_pairs": 5,
+        "negative_pairs": 0,
+        "ties": 0,
+        "median_signed_percentile_shift": 0.0520710194957596,
+        "mean_signed_percentile_shift": 0.05265352550719212,
+        "pair_score_distribution_sorted": [
+          0.03203297108752933,
+          0.04864346805661545,
+          0.0520710194957596,
+          0.06425676916099121,
+          0.06626339973506501
+        ],
+        "leave_one_pair_out_mean_range": [
+          0.0492510569502239,
+          0.05780866411210782
+        ],
+        "positive_equal_pair_mean_genes": 165,
+        "all_five_positive_genes": 76,
+        "two_sided_exact_sign_p": 0.0625,
+        "holm_p": 0.125
+      },
+      "ECM16": {
+        "frozen": 16,
+        "mapped": 14,
+        "positive_pairs": 5,
+        "negative_pairs": 0,
+        "ties": 0,
+        "median_signed_percentile_shift": 0.08106196275071635,
+        "mean_signed_percentile_shift": 0.08953745395006141,
+        "pair_score_distribution_sorted": [
+          0.06964285714285713,
+          0.07513687065083914,
+          0.08106196275071635,
+          0.09509184404420794,
+          0.12675373516168645
+        ],
+        "leave_one_pair_out_mean_range": [
+          0.08023338364715514,
+          0.09451110315186247
+        ],
+        "positive_equal_pair_mean_genes": 10,
+        "all_five_positive_genes": 6,
+        "two_sided_exact_sign_p": 0.0625,
+        "holm_p": 0.125
+      }
+    },
+    "limitations": [
+      "Mixed TM/corneoscleral tissue, not purified TM or IOP prediction. Prior literature has reanalyzed this dataset; independence from original panel selection and donor cohorts not fully certified.",
+      "Five donor pairs are the analysis units. Rank shift estimates are not log2FC; gene counts are descriptive, not independent tests. No pooled donor or gene inference.",
+      "Fixed 75% overall, 70% directional coverage gates; no retuning. Two-sided exact sign tests with Holm over two panels; no pooling with other studies to force significance."
+    ]
+  }
+}
