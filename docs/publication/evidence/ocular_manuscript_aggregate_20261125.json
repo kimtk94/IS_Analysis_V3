@@ -1,0 +1,401 @@
+{
+  "schema": 1,
+  "readback_date": "2026-11-25",
+  "scope": "Aggregate JSON transcribed programmatically from completed Actions job stdout. No raw expression, donor IDs or new analysis. Artifact ZIP digests are reported by the original upload step; archives not downloaded here.",
+  "frozen_panel_sha256": "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606",
+  "sources": {
+    "seven_day": {
+      "run_id": 45383400882,
+      "job_id": 138415393740,
+      "artifact_id": 14916031829,
+      "artifact_zip_sha256_reported": "a3d324c1168e9a06a43725e1264ae306412d387042125f5a98a20ed76f9130d5",
+      "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45383400882",
+      "payload": {
+        "status": "FROZEN_PANEL_DIRECTIONAL_AUDIT_COMPLETE",
+        "frozen_panel_sha256": "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606",
+        "frozen_cpm_sha256": "717f4c9861de4d6b169439ef56a781f50d93ec918c456a9d0e61873e4a6e5f09",
+        "interpretation": "Frozen earlier 241-gene/16-ECM panel tested against published GSE301517 normalized CPM. Technical repeats averaged within each of three strains and strains weighted equally. This extends a previously inspected cohort, not a wholly unexamined holdout; strain donor independence not verified. Gene-level FDR and causal time/dose inference unavailable. Expression cutoffs are descriptive sensitivity strata, not selected thresholds. No gene-independence binomial p-value.",
+        "attempts": [],
+        "source_url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE301nnn/GSE301517/suppl/GSE301517_Control_vs_Dex_Gene_CPM_MSTR.tsv.gz",
+        "source_rows": 85298,
+        "groups": {
+          "all_241": {
+            "frozen_total": 241,
+            "mapped": 241,
+            "unavailable": 0,
+            "strata": [
+              {
+                "min_both_arm_mean_cpm": 0,
+                "evaluable": 241,
+                "aggregate_same_sign": 234,
+                "all_three_strains_same_sign": 204,
+                "all_three_strains_same_sign_abs_ge_025": 171,
+                "all_leave_one_strain_out_same_sign": 224
+              },
+              {
+                "min_both_arm_mean_cpm": 1,
+                "evaluable": 213,
+                "aggregate_same_sign": 207,
+                "all_three_strains_same_sign": 184,
+                "all_three_strains_same_sign_abs_ge_025": 159,
+                "all_leave_one_strain_out_same_sign": 197
+              },
+              {
+                "min_both_arm_mean_cpm": 5,
+                "evaluable": 161,
+                "aggregate_same_sign": 156,
+                "all_three_strains_same_sign": 143,
+                "all_three_strains_same_sign_abs_ge_025": 125,
+                "all_leave_one_strain_out_same_sign": 151
+              }
+            ]
+          },
+          "ECM_16": {
+            "frozen_total": 16,
+            "mapped": 16,
+            "unavailable": 0,
+            "strata": [
+              {
+                "min_both_arm_mean_cpm": 0,
+                "evaluable": 16,
+                "aggregate_same_sign": 16,
+                "all_three_strains_same_sign": 13,
+                "all_three_strains_same_sign_abs_ge_025": 11,
+                "all_leave_one_strain_out_same_sign": 14
+              },
+              {
+                "min_both_arm_mean_cpm": 1,
+                "evaluable": 16,
+                "aggregate_same_sign": 16,
+                "all_three_strains_same_sign": 13,
+                "all_three_strains_same_sign_abs_ge_025": 11,
+                "all_leave_one_strain_out_same_sign": 14
+              },
+              {
+                "min_both_arm_mean_cpm": 5,
+                "evaluable": 13,
+                "aggregate_same_sign": 13,
+                "all_three_strains_same_sign": 11,
+                "all_three_strains_same_sign_abs_ge_025": 10,
+                "all_leave_one_strain_out_same_sign": 12
+              }
+            ]
+          }
+        },
+        "ecm_gene_results": [
+          {
+            "symbol": "COL11A1",
+            "acute_log2fc": 3.0312186297552,
+            "min_arm_mean_cpm": 150.94433094725508,
+            "mean_7d_log2_cpm_ratio": 0.862936372828257,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 2
+          },
+          {
+            "symbol": "MMP11",
+            "acute_log2fc": -1.32629771393588,
+            "min_arm_mean_cpm": 1.834150074596011,
+            "mean_7d_log2_cpm_ratio": -0.5339847161930407,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 2
+          },
+          {
+            "symbol": "ASPN",
+            "acute_log2fc": -1.53889080237022,
+            "min_arm_mean_cpm": 2.21695906034495,
+            "mean_7d_log2_cpm_ratio": -0.1341281133236619,
+            "n_strains_same_sign": 2,
+            "n_strains_same_sign_abs_ge_025": 1
+          },
+          {
+            "symbol": "NID1",
+            "acute_log2fc": 1.59230333295998,
+            "min_arm_mean_cpm": 167.24396617842606,
+            "mean_7d_log2_cpm_ratio": 1.150366908251748,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          },
+          {
+            "symbol": "BMP2",
+            "acute_log2fc": -2.26294077010969,
+            "min_arm_mean_cpm": 5.623606495911332,
+            "mean_7d_log2_cpm_ratio": -1.9942892592852992,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          },
+          {
+            "symbol": "FBN2",
+            "acute_log2fc": 1.8375359642555,
+            "min_arm_mean_cpm": 75.1789495372353,
+            "mean_7d_log2_cpm_ratio": 2.8662796409826785,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          },
+          {
+            "symbol": "LUM",
+            "acute_log2fc": -2.5070090547193,
+            "min_arm_mean_cpm": 52.56860779072432,
+            "mean_7d_log2_cpm_ratio": -1.5495047405007178,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          },
+          {
+            "symbol": "ITGA10",
+            "acute_log2fc": 2.50756490467942,
+            "min_arm_mean_cpm": 3.985981979248754,
+            "mean_7d_log2_cpm_ratio": 2.236778977477814,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          },
+          {
+            "symbol": "COL8A1",
+            "acute_log2fc": 1.9489860775531,
+            "min_arm_mean_cpm": 332.8762789606551,
+            "mean_7d_log2_cpm_ratio": 1.7930020326446452,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          },
+          {
+            "symbol": "HAPLN1",
+            "acute_log2fc": -1.80096472565624,
+            "min_arm_mean_cpm": 85.98251789264482,
+            "mean_7d_log2_cpm_ratio": -0.1211136818919108,
+            "n_strains_same_sign": 1,
+            "n_strains_same_sign_abs_ge_025": 1
+          },
+          {
+            "symbol": "ACAN",
+            "acute_log2fc": -1.55277992089752,
+            "min_arm_mean_cpm": 47.8287468850773,
+            "mean_7d_log2_cpm_ratio": -1.4075322100124288,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          },
+          {
+            "symbol": "VCAM1",
+            "acute_log2fc": -1.68998383574075,
+            "min_arm_mean_cpm": 108.26987541713326,
+            "mean_7d_log2_cpm_ratio": -0.9290727611199686,
+            "n_strains_same_sign": 2,
+            "n_strains_same_sign_abs_ge_025": 2
+          },
+          {
+            "symbol": "COL8A2",
+            "acute_log2fc": 1.1491780994083,
+            "min_arm_mean_cpm": 343.7908394499069,
+            "mean_7d_log2_cpm_ratio": 0.8360105251010677,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          },
+          {
+            "symbol": "COL14A1",
+            "acute_log2fc": -2.46941643171387,
+            "min_arm_mean_cpm": 125.90294058923996,
+            "mean_7d_log2_cpm_ratio": -2.488123388726287,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          },
+          {
+            "symbol": "COL13A1",
+            "acute_log2fc": -1.91592894153619,
+            "min_arm_mean_cpm": 9.855247668763923,
+            "mean_7d_log2_cpm_ratio": -1.1519268885109653,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          },
+          {
+            "symbol": "DMD",
+            "acute_log2fc": 2.41755587169422,
+            "min_arm_mean_cpm": 55.374926717601475,
+            "mean_7d_log2_cpm_ratio": 1.553892630793139,
+            "n_strains_same_sign": 3,
+            "n_strains_same_sign_abs_ge_025": 3
+          }
+        ]
+      }
+    },
+    "paired": {
+      "run_id": 45386503377,
+      "job_id": 138418680217,
+      "artifact_id": 14915833786,
+      "artifact_zip_sha256_reported": "d2d18b93363578906744435b1b612c4cb35d301753acd550a37ddf2844845bda",
+      "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45386503377",
+      "payload": {
+        "all_241": {
+          "pairs": 5,
+          "positive": 5,
+          "negative": 0,
+          "ties": 0,
+          "median_signed_log2_difference": 0.8157962532214961,
+          "two_sided_p": 0.0625,
+          "holm_p": 0.125
+        },
+        "ECM_16": {
+          "pairs": 5,
+          "positive": 5,
+          "negative": 0,
+          "ties": 0,
+          "median_signed_log2_difference": 0.916263422378456,
+          "two_sided_p": 0.0625,
+          "holm_p": 0.125
+        }
+      }
+    },
+    "crossdrug": {
+      "run_id": 45530972572,
+      "job_id": 138925896995,
+      "artifact_id": 14984009885,
+      "artifact_zip_sha256_reported": "a37478fde424b33fe0920ba4415a989e31bc42b6dda8ad8cb8f1f17ac234b3a8",
+      "run_url": "https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45530972572",
+      "payload": {
+        "status": "DESCRIPTIVE_ANNOTATED_PROBE_SENSITIVITY",
+        "study": "GSE16643",
+        "panel_sha256": "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606",
+        "annotation_sha256": "aacec81b2d95f183f0827b43e769388a92917811b81920c13ecc8fe148c5a3ab",
+        "matrix_sha256": "a1209f31f7ae3ec35377533057832b95411de6a76867fab07dec93bddd806fa6",
+        "annotation_rows": 41108,
+        "matrix_rows": 41088,
+        "eligible_annotated_probes": 30679,
+        "complete_rank_universe": 30548,
+        "excluded_nonfinite_annotated_probes": 131,
+        "biological_strains": 2,
+        "arrays": 23,
+        "panels": {
+          "all241": {
+            "frozen": 241,
+            "mapped": 229,
+            "direction_coverage": {
+              "1": {
+                "frozen": 117,
+                "mapped": 109
+              },
+              "-1": {
+                "frozen": 124,
+                "mapped": 120
+              }
+            },
+            "status": "DESCRIPTIVE",
+            "scores": {
+              "86_Dex": {
+                "treated_arrays": 3,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.08707664879039244,
+                "positive_genes": 217,
+                "ties": 0
+              },
+              "86_FA": {
+                "treated_arrays": 3,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.08392800201424955,
+                "positive_genes": 222,
+                "ties": 0
+              },
+              "86_TA": {
+                "treated_arrays": 3,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.08667511639400535,
+                "positive_genes": 222,
+                "ties": 0
+              },
+              "93_Dex": {
+                "treated_arrays": 3,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.0732710198701297,
+                "positive_genes": 218,
+                "ties": 0
+              },
+              "93_FA": {
+                "treated_arrays": 3,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.06436672598105561,
+                "positive_genes": 204,
+                "ties": 0
+              },
+              "93_TA": {
+                "treated_arrays": 2,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.0760428763742898,
+                "positive_genes": 220,
+                "ties": 0
+              }
+            },
+            "positive_strain_drug_contrasts": 6
+          },
+          "ECM16": {
+            "frozen": 16,
+            "mapped": 16,
+            "direction_coverage": {
+              "1": {
+                "frozen": 7,
+                "mapped": 7
+              },
+              "-1": {
+                "frozen": 9,
+                "mapped": 9
+              }
+            },
+            "status": "DESCRIPTIVE",
+            "scores": {
+              "86_Dex": {
+                "treated_arrays": 3,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.08302609827157262,
+                "positive_genes": 16,
+                "ties": 0
+              },
+              "86_FA": {
+                "treated_arrays": 3,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.07455411701802626,
+                "positive_genes": 16,
+                "ties": 0
+              },
+              "86_TA": {
+                "treated_arrays": 3,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.07903852134345947,
+                "positive_genes": 15,
+                "ties": 0
+              },
+              "93_Dex": {
+                "treated_arrays": 3,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.0604008445724761,
+                "positive_genes": 15,
+                "ties": 0
+              },
+              "93_FA": {
+                "treated_arrays": 3,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.05177541628475406,
+                "positive_genes": 14,
+                "ties": 0
+              },
+              "93_TA": {
+                "treated_arrays": 2,
+                "vehicle_arrays": 3,
+                "mean_signed_percentile_shift": 0.06461910354196673,
+                "positive_genes": 15,
+                "ties": 0
+              }
+            },
+            "positive_strain_drug_contrasts": 6
+          }
+        },
+        "limitations": [
+          "No explicit CONTROL_TYPE field; rank universe is unique-Entrez Agilent probes, not all non-control probes as originally planned. Separate descriptive sensitivity, not an exact replay.",
+          "Two strains with culture/array repeats, not 23 independent donors. No inferential P value or independent confirmation claim.",
+          "Cross-drug and ECM responses already studied; no drug equivalence, clinical prediction or novelty claim. Prior study reuse not fully ruled out."
+        ]
+      }
+    }
+  },
+  "paired_declared_design": {
+    "pairs": 8,
+    "complete_pairs": 5,
+    "complete_responders": 4,
+    "complete_nonresponders": 1,
+    "incomplete_nonresponders": 3,
+    "source": "https://github.com/kimtk94/IS_Analysis_V3/pull/335"
+  }
+}
