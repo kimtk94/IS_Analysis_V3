@@ -1,0 +1,646 @@
+{
+  "run_id": 45612527929,
+  "job_id": 139199468685,
+  "head_sha": "8541ff3cb5c69cb3f61e49f0af3f9a6820cfce1b",
+  "source": "actual job stdout",
+  "aggregate": {
+    "status": "ORAL_LABEL_COLUMN_DIAGNOSTICS",
+    "records": [
+      {
+        "gsm": "GSM5844648",
+        "status": "ACTUAL_LABEL_COLUMN_DIAGNOSTICS",
+        "sources": {
+          "barcode": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5844nnn/GSM5844648/suppl/GSM5844648_barcodes.tsv.gz",
+            "bytes": 2280343,
+            "sha256": "ee0a960a955fbf426c2318030ed3d41436085e256907d2d3d43f855ff004dc50",
+            "content_range": null,
+            "etag": null
+          },
+          "label": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5844nnn/GSM5844648/suppl/GSM5844648_celltype_metadata-1.csv.gz",
+            "bytes": 22853,
+            "sha256": "f5b55ba9e585e7c5f61d1fe7900ce4147ced508655e5ffaf8ec0df8a5f02f206",
+            "content_range": null,
+            "etag": null
+          }
+        },
+        "rows": 3944,
+        "raw_barcode_columns": 737280,
+        "columns": [
+          {
+            "column": 1,
+            "unique_values": 3944,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "10x_barcode_like": 3943
+            },
+            "exact_barcode_matches": 3943,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 3943,
+            "recognized_cell_labels": {
+              "cell": 1
+            }
+          },
+          {
+            "column": 2,
+            "unique_values": 11,
+            "shape_counts": {
+              "other": 32,
+              "short_alphanumeric": 3912
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "celltype_classification": 1,
+              "Tumor": 1875,
+              "Fibroblasts": 733,
+              "Macrophages": 378,
+              "T-Cells": 3
+            }
+          },
+          {
+            "column": 3,
+            "unique_values": 2,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "integer_like": 3943
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {}
+          }
+        ]
+      },
+      {
+        "gsm": "GSM6553453",
+        "status": "ACTUAL_LABEL_COLUMN_DIAGNOSTICS",
+        "sources": {
+          "barcode": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553453/suppl/GSM6553453_2-barcodes.tsv.gz",
+            "bytes": 2550196,
+            "sha256": "aa7ac31cee023d0f65678e8c97cb7cf91d3d01a0b3291dfd70452fa677335734",
+            "content_range": null,
+            "etag": null
+          },
+          "label": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553453/suppl/GSM6553453_celltype_metadata-2.csv.gz",
+            "bytes": 14973,
+            "sha256": "d97ac261efd3077311bbaacc1b8c562e730eac20c92727cbc31131876668627f",
+            "content_range": null,
+            "etag": null
+          }
+        },
+        "rows": 2365,
+        "raw_barcode_columns": 737280,
+        "columns": [
+          {
+            "column": 1,
+            "unique_values": 2365,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "10x_barcode_like": 2364
+            },
+            "exact_barcode_matches": 2364,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 2364,
+            "recognized_cell_labels": {
+              "cell": 1
+            }
+          },
+          {
+            "column": 2,
+            "unique_values": 13,
+            "shape_counts": {
+              "other": 21,
+              "short_alphanumeric": 2344
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "celltype_classification": 1,
+              "T-Cells": 1338,
+              "B-Cells": 300,
+              "Tumor": 192,
+              "Macrophages": 69,
+              "Fibroblasts": 157
+            }
+          },
+          {
+            "column": 3,
+            "unique_values": 5,
+            "shape_counts": {
+              "short_alphanumeric": 355,
+              "other": 2010
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "Negative": 354
+            }
+          }
+        ]
+      },
+      {
+        "gsm": "GSM6553455",
+        "status": "ACTUAL_LABEL_COLUMN_DIAGNOSTICS",
+        "sources": {
+          "barcode": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553455/suppl/GSM6553455_3-barcodes.tsv.gz",
+            "bytes": 2550196,
+            "sha256": "97ba5d2f0b51df8fbc6a9eb43e377e7515485b856b0f9efe29d5e72f7ab73cfe",
+            "content_range": null,
+            "etag": null
+          },
+          "label": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553455/suppl/GSM6553455_celltype_metadata-3.csv.gz",
+            "bytes": 1354,
+            "sha256": "88630f2c96532fe7083ba1bbc1ffb672d51c5d46e49c794a6d9441c613c70f71",
+            "content_range": null,
+            "etag": null
+          }
+        },
+        "rows": 157,
+        "raw_barcode_columns": 737280,
+        "columns": [
+          {
+            "column": 1,
+            "unique_values": 157,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "10x_barcode_like": 156
+            },
+            "exact_barcode_matches": 156,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 156,
+            "recognized_cell_labels": {
+              "cell": 1
+            }
+          },
+          {
+            "column": 2,
+            "unique_values": 8,
+            "shape_counts": {
+              "other": 1,
+              "short_alphanumeric": 156
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "celltype_classification": 1,
+              "Fibroblasts": 19,
+              "T-Cells": 30,
+              "Tumor": 71,
+              "Macrophages": 21
+            }
+          },
+          {
+            "column": 3,
+            "unique_values": 2,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "integer_like": 156
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {}
+          }
+        ]
+      },
+      {
+        "gsm": "GSM6553456",
+        "status": "ACTUAL_LABEL_COLUMN_DIAGNOSTICS",
+        "sources": {
+          "barcode": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553456/suppl/GSM6553456_4-barcodes.tsv.gz",
+            "bytes": 2550196,
+            "sha256": "7d136f6d006051ba71e1c46b21de0836c262cb591ef0b76e078be0fd47b5b7ce",
+            "content_range": null,
+            "etag": null
+          },
+          "label": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553456/suppl/GSM6553456_celltype_metadata-4.csv.gz",
+            "bytes": 51986,
+            "sha256": "c430da1d8a3e505b62f86274671326c3c5b6a15b2efffa49d2dde22f98bb68d3",
+            "content_range": null,
+            "etag": null
+          }
+        },
+        "rows": 9079,
+        "raw_barcode_columns": 737280,
+        "columns": [
+          {
+            "column": 1,
+            "unique_values": 9079,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "10x_barcode_like": 9078
+            },
+            "exact_barcode_matches": 9078,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 9078,
+            "recognized_cell_labels": {
+              "cell": 1
+            }
+          },
+          {
+            "column": 2,
+            "unique_values": 12,
+            "shape_counts": {
+              "other": 1,
+              "short_alphanumeric": 9078
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "celltype_classification": 1,
+              "T-Cells": 5798,
+              "B-Cells": 2184,
+              "Macrophages": 182,
+              "Fibroblasts": 243,
+              "Tumor": 96
+            }
+          },
+          {
+            "column": 3,
+            "unique_values": 5,
+            "shape_counts": {
+              "short_alphanumeric": 1270,
+              "other": 7809
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "Negative": 1269
+            }
+          }
+        ]
+      },
+      {
+        "gsm": "GSM6553457",
+        "status": "ACTUAL_LABEL_COLUMN_DIAGNOSTICS",
+        "sources": {
+          "barcode": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553457/suppl/GSM6553457_5-barcodes.tsv.gz",
+            "bytes": 2550196,
+            "sha256": "d4175e9b3d7746b68af06897121fede1541eb898a564203470673a63bdfd2ffa",
+            "content_range": null,
+            "etag": null
+          },
+          "label": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553457/suppl/GSM6553457_celltype_metadata-5.csv.gz",
+            "bytes": 883,
+            "sha256": "75b6e247d565f8203beeed7952662146214e4c20f493f8a7825280a1e9f690e7",
+            "content_range": null,
+            "etag": null
+          }
+        },
+        "rows": 95,
+        "raw_barcode_columns": 737280,
+        "columns": [
+          {
+            "column": 1,
+            "unique_values": 95,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "10x_barcode_like": 94
+            },
+            "exact_barcode_matches": 94,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 94,
+            "recognized_cell_labels": {
+              "cell": 1
+            }
+          },
+          {
+            "column": 2,
+            "unique_values": 8,
+            "shape_counts": {
+              "other": 1,
+              "short_alphanumeric": 94
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "celltype_classification": 1,
+              "T-Cells": 61,
+              "Macrophages": 12,
+              "Tumor": 7,
+              "B-Cells": 4
+            }
+          },
+          {
+            "column": 3,
+            "unique_values": 2,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "integer_like": 94
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {}
+          }
+        ]
+      },
+      {
+        "gsm": "GSM6553458",
+        "status": "ACTUAL_LABEL_COLUMN_DIAGNOSTICS",
+        "sources": {
+          "barcode": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553458/suppl/GSM6553458_6a-barcodes.tsv.gz",
+            "bytes": 2550196,
+            "sha256": "b95857f5965a05d0911d4a2e58b7a3292b9642f20a8c977bf62beb9729335de2",
+            "content_range": null,
+            "etag": null
+          },
+          "label": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553458/suppl/GSM6553458_celltype_metadata-6a.csv.gz",
+            "bytes": 62996,
+            "sha256": "1a0663b8a99fd3f5ebf21cf753b997053aac005a20a4d4bd42594eb4bc99470f",
+            "content_range": null,
+            "etag": null
+          }
+        },
+        "rows": 11952,
+        "raw_barcode_columns": 737280,
+        "columns": [
+          {
+            "column": 1,
+            "unique_values": 11952,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "10x_barcode_like": 11951
+            },
+            "exact_barcode_matches": 11951,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 11951,
+            "recognized_cell_labels": {
+              "cell": 1
+            }
+          },
+          {
+            "column": 2,
+            "unique_values": 13,
+            "shape_counts": {
+              "other": 3,
+              "short_alphanumeric": 11949
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "celltype_classification": 1,
+              "T-Cells": 9545,
+              "B-Cells": 1864,
+              "Macrophages": 17,
+              "Tumor": 31,
+              "Fibroblasts": 71
+            }
+          },
+          {
+            "column": 3,
+            "unique_values": 5,
+            "shape_counts": {
+              "short_alphanumeric": 628,
+              "other": 11324
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "Negative": 627
+            }
+          }
+        ]
+      },
+      {
+        "gsm": "GSM6553459",
+        "status": "ACTUAL_LABEL_COLUMN_DIAGNOSTICS",
+        "sources": {
+          "barcode": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553459/suppl/GSM6553459_6b-barcodes.tsv.gz",
+            "bytes": 2550196,
+            "sha256": "5bf1d8572b4f037ba2ea884c2646468621c40b1e0dea2e794216185af1d59062",
+            "content_range": null,
+            "etag": null
+          },
+          "label": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553459/suppl/GSM6553459_celltype_metadata-6b.csv.gz",
+            "bytes": 38244,
+            "sha256": "ca68efbf1b07adec461e42e6bbf4696a15a8dae0504255a87662441a0793d432",
+            "content_range": null,
+            "etag": null
+          }
+        },
+        "rows": 6896,
+        "raw_barcode_columns": 737280,
+        "columns": [
+          {
+            "column": 1,
+            "unique_values": 6896,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "10x_barcode_like": 6895
+            },
+            "exact_barcode_matches": 6895,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 6895,
+            "recognized_cell_labels": {
+              "cell": 1
+            }
+          },
+          {
+            "column": 2,
+            "unique_values": 13,
+            "shape_counts": {
+              "other": 3,
+              "short_alphanumeric": 6893
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "celltype_classification": 1,
+              "T-Cells": 4839,
+              "B-Cells": 1527,
+              "Macrophages": 42,
+              "Fibroblasts": 103,
+              "Tumor": 39
+            }
+          },
+          {
+            "column": 3,
+            "unique_values": 5,
+            "shape_counts": {
+              "short_alphanumeric": 214,
+              "other": 6682
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "Negative": 213
+            }
+          }
+        ]
+      },
+      {
+        "gsm": "GSM6553461",
+        "status": "ACTUAL_LABEL_COLUMN_DIAGNOSTICS",
+        "sources": {
+          "barcode": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553461/suppl/GSM6553461_7a-barcodes.tsv.gz",
+            "bytes": 2550196,
+            "sha256": "6fbc3c3694a6921f8df00aa22dc8a1e2bce068130041c7ed2d42f7395de4effa",
+            "content_range": null,
+            "etag": null
+          },
+          "label": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553461/suppl/GSM6553461_celltype_metadata-7a.csv.gz",
+            "bytes": 22261,
+            "sha256": "a9a38dec0e17e4aa26a1286d2d15871ea4fad503eeed75da0716d6e20e0081b7",
+            "content_range": null,
+            "etag": null
+          }
+        },
+        "rows": 3652,
+        "raw_barcode_columns": 737280,
+        "columns": [
+          {
+            "column": 1,
+            "unique_values": 3652,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "10x_barcode_like": 3651
+            },
+            "exact_barcode_matches": 3651,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 3651,
+            "recognized_cell_labels": {
+              "cell": 1
+            }
+          },
+          {
+            "column": 2,
+            "unique_values": 12,
+            "shape_counts": {
+              "other": 1,
+              "short_alphanumeric": 3651
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "celltype_classification": 1,
+              "B-Cells": 353,
+              "Tumor": 251,
+              "T-Cells": 2556,
+              "Fibroblasts": 153,
+              "Macrophages": 140
+            }
+          },
+          {
+            "column": 3,
+            "unique_values": 5,
+            "shape_counts": {
+              "short_alphanumeric": 1032,
+              "other": 2620
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "Negative": 1031
+            }
+          }
+        ]
+      },
+      {
+        "gsm": "GSM6553462",
+        "status": "ACTUAL_LABEL_COLUMN_DIAGNOSTICS",
+        "sources": {
+          "barcode": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553462/suppl/GSM6553462_7b-barcodes.tsv.gz",
+            "bytes": 2550196,
+            "sha256": "46c505b33c4e45a959cc96663697b9aae2c137635cde61aff34fd76569e546f8",
+            "content_range": null,
+            "etag": null
+          },
+          "label": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553462/suppl/GSM6553462_celltype_metadata-7b.csv.gz",
+            "bytes": 19532,
+            "sha256": "93f16ebfc3bf7d8c533289ad9b84232bb4cebbdff25f2b6931ab094ae6775bdd",
+            "content_range": null,
+            "etag": null
+          }
+        },
+        "rows": 3153,
+        "raw_barcode_columns": 737280,
+        "columns": [
+          {
+            "column": 1,
+            "unique_values": 3153,
+            "shape_counts": {
+              "short_alphanumeric": 1,
+              "10x_barcode_like": 3152
+            },
+            "exact_barcode_matches": 3152,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 3152,
+            "recognized_cell_labels": {
+              "cell": 1
+            }
+          },
+          {
+            "column": 2,
+            "unique_values": 12,
+            "shape_counts": {
+              "other": 1,
+              "short_alphanumeric": 3152
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "celltype_classification": 1,
+              "B-Cells": 263,
+              "T-Cells": 2367,
+              "Macrophages": 101,
+              "Fibroblasts": 116,
+              "Tumor": 113
+            }
+          },
+          {
+            "column": 3,
+            "unique_values": 5,
+            "shape_counts": {
+              "short_alphanumeric": 1308,
+              "other": 1845
+            },
+            "exact_barcode_matches": 0,
+            "author_merge_suffix_matches": 0,
+            "unique_core_overlap_diagnostic_only": 0,
+            "recognized_cell_labels": {
+              "Negative": 1307
+            }
+          }
+        ]
+      }
+    ],
+    "limits": [
+      "No cell identifiers emitted. Core overlap is diagnostic only, not accepted matching; no transformation without author evidence. No HTO assignment or expression test; 3 patients maximum with both LN types."
+    ],
+    "mode": "oral_labels",
+    "scientific_status": "HOLD_NOVELTY_AND_CAUSAL_VALIDATION"
+  }
+}
