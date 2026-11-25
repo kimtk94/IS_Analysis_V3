@@ -1,0 +1,42 @@
+name: Ocular manuscript aggregate figures
+on:
+  push:
+    branches: [research/ocular-manuscript-figures-20261125]
+    paths: ['scripts/ocular_manuscript_figures.py','docs/publication/evidence/ocular_manuscript_aggregate_20261125.json','.github/workflows/ocular-manuscript-figures.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  figures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install plotting dependencies and generate draft figures
+        run: |
+          python -m pip install 'matplotlib==3.10.1' 'numpy==2.2.5'
+          python scripts/ocular_manuscript_figures.py
+          python - <<'PY'
+          from pathlib import Path
+          import matplotlib.image as mpimg
+          p=Path('outputs/ocular_figures')
+          for stem in ('fig2_signature_transportability','figS1_ecm16_direction'):
+              for ext in ('svg','pdf','png'):
+                  f=p/f'{stem}.{ext}'
+                  assert f.is_file() and f.stat().st_size>1000, f
+              a=mpimg.imread(p/f'{stem}.png')
+              assert a.shape[0]>1000 and a.shape[1]>1000 and a.std()>.01
+              print(stem, a.shape)
+          assert (p/'FIGURE_LEGENDS.md').stat().st_size>1000
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-manuscript-draft-figures
+          path: outputs/ocular_figures/
+          if-no-files-found: error
+          retention-days: 90
