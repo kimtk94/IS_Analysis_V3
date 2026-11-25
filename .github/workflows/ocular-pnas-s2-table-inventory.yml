@@ -1,0 +1,29 @@
+name: Ocular PNAS S2 exact table inventory
+on:
+  push:
+    branches: [research/ocular-exvivo-fixed-panel-20261125]
+    paths: ['scripts/ocular_pnas_s2_table_inventory.py','.github/workflows/ocular-pnas-s2-table-inventory.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  s2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pin S2 and inspect all five original table layouts
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+          python scripts/ocular_pnas_s2_table_inventory.py --evidence docs/publication/evidence/ocular_final_publication_inventory_20261125.json --out outputs/s2-inventory.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-pnas-s2-table-inventory
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
