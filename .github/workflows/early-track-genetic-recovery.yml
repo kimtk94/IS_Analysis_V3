@@ -1,152 +1,39 @@
-name: Early-track genetic source recovery
+name: Skin Chinese independent molecular QTL source qualification
 on:
   pull_request:
     branches: [main]
     paths:
-      - 'scripts/publication/early_track_genetic_recovery.py'
+      - 'scripts/publication/skin_chinese_qtl_sources.py'
       - '.github/workflows/early-track-genetic-recovery.yml'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  reference:
+  public-qtl:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with:
-          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
-          path: prior
-      - uses: actions/checkout@v4
-        with:
-          ref: 0587064640a1c91bfc7de1a6c3834305e6269e35
-          path: ckm
-      - uses: actions/checkout@v4
-        with:
-          ref: 040eee7a16e3a1079e4ab5e2bcbd74ac3bea9bc7
-          path: indexed
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install PyYAML==6.0.2
-      - run: python scripts/publication/early_track_genetic_recovery.py selftest
-      - run: python -u scripts/publication/early_track_genetic_recovery.py reference --out evidence/reference.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: genetic-reference
-          path: evidence/reference.json
-          if-no-files-found: error
-          retention-days: 30
-  outcomes:
-    needs: reference
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      max-parallel: 2
-      matrix:
-        mode: [LAA, CE, SVD]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with:
-          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
-          path: prior
-      - uses: actions/checkout@v4
-        with:
-          ref: 0587064640a1c91bfc7de1a6c3834305e6269e35
-          path: ckm
-      - uses: actions/checkout@v4
-        with:
-          ref: 040eee7a16e3a1079e4ab5e2bcbd74ac3bea9bc7
-          path: indexed
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install PyYAML==6.0.2
-      - run: python scripts/publication/early_track_genetic_recovery.py selftest
-      - uses: actions/download-artifact@v4
-        with:
-          name: genetic-reference
-          path: inputs
-      - env:
-          MODE: ${{ matrix.mode }}
-        run: python -u scripts/publication/early_track_genetic_recovery.py "$MODE" --root inputs --out "evidence/$MODE.json"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: genetic-outcome-${{ matrix.mode }}
-          path: evidence/${{ matrix.mode }}.json
-          if-no-files-found: error
-          retention-days: 30
-  combine:
-    needs: [reference, outcomes]
-    if: always() && needs.reference.result == 'success'
-    runs-on: ubuntu-latest
-    timeout-minutes: 8
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with:
-          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
-          path: prior
-      - uses: actions/checkout@v4
-        with:
-          ref: 0587064640a1c91bfc7de1a6c3834305e6269e35
-          path: ckm
-      - uses: actions/checkout@v4
-        with:
-          ref: 040eee7a16e3a1079e4ab5e2bcbd74ac3bea9bc7
-          path: indexed
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install PyYAML==6.0.2
-      - run: python scripts/publication/early_track_genetic_recovery.py selftest
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: genetic-*
-          merge-multiple: true
-          path: inputs
-      - run: python -u scripts/publication/early_track_genetic_recovery.py combine --root inputs --out evidence/combine.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: genetic-combine
-          path: evidence/combine.json
-          if-no-files-found: error
-          retention-days: 30
-  skin:
-    runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        mode: [GCST90094903]
+        mode: [eQTL, pQTL, inventory]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
           ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
           path: prior
-      - uses: actions/checkout@v4
-        with:
-          ref: 0587064640a1c91bfc7de1a6c3834305e6269e35
-          path: ckm
-      - uses: actions/checkout@v4
-        with:
-          ref: 040eee7a16e3a1079e4ab5e2bcbd74ac3bea9bc7
-          path: indexed
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: python -m pip install PyYAML==6.0.2
-      - run: python scripts/publication/early_track_genetic_recovery.py selftest
+      - run: python scripts/publication/skin_chinese_qtl_sources.py selftest
       - env:
           MODE: ${{ matrix.mode }}
-        run: python -u scripts/publication/early_track_genetic_recovery.py "$MODE" --out "evidence/$MODE.json"
+        run: python -u scripts/publication/skin_chinese_qtl_sources.py "$MODE" --out "evidence/$MODE.json"
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: skin-source-${{ matrix.mode }}
+          name: chinese-skin-${{ matrix.mode }}
           path: evidence/${{ matrix.mode }}.json
           if-no-files-found: error
           retention-days: 30
