@@ -1,0 +1,30 @@
+name: MASTER DEGREE eight row-level gates 2026-11-20
+on:
+  push:
+    branches: [research/daily-20261120-row-level-gates]
+  pull_request:
+    paths:
+      - scripts/master_daily_20261120.py
+      - .github/workflows/master_daily_20261120.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  row-level-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        research: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run one bounded research audit
+        run: python3 scripts/master_daily_20261120.py "${{ matrix.research }}"
+      - name: Upload evidence (no patient-level rows)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: master-row-gate-20261120-${{ matrix.research }}
+          path: results/${{ matrix.research }}.json
+          if-no-files-found: error
