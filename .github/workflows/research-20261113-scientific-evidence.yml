@@ -1,0 +1,77 @@
+name: MASTER DEGREE 2026-11-13 scientific evidence gates
+on:
+  push:
+    branches: [research/daily-20261113-scientific-evidence]
+  pull_request:
+    paths: ['.github/workflows/research-20261113-scientific-evidence.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evidence-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit one unresolved scientific prerequisite, fail closed
+        env:
+          TRACK: ${{ matrix.track }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import csv,hashlib,io,json,os,pathlib,re,urllib.request,urllib.error
+          track=os.environ['TRACK']
+          requirements={
+            'is':('22-chromosome EUR/EAS GWAS provenance coverage',r'(gwas|gigastroke|stroke|eas|eur)',('chrom','allele','build','checksum')),
+            'glaucoma':('Donor-paired raw count and DEX design completeness',r'(glaucoma|dex|trabecular|gse313736)',('donor','count','condition')),
+            'hcc':('330 proteome columns to official aliquot crosswalk',r'(hcc|pdc000198|pdc000199|aliquot)',('aliquot','case','sample')),
+            'radiomics':('Patient-level NIfTI/RNA/clinical crosswalk',r'(radiomics|nifti|ibsi|imaging)',('patient','image','rna')),
+            'ocular':('ENA run-to-timepoint and strain mapping',r'(ocular|prjna1243143|gse301517|ena)',('run','timepoint','strain')),
+            'muscle':('20 seed loci plus ancestry-matched LD evidence',r'(muscle|gtex|ld)',('variant','ancestry','ld')),
+            'oral':('GSE103322 donor-expression and endpoint mapping',r'(oral|gse103322|head.neck)',('donor','expression','endpoint')),
+            'skin':('Full perceived-age GWAS MR harmonization manifest',r'(skin|perceived.age|bristol|mr)',('effect_allele','other_allele','build'))
+          }
+          title,pattern,required=requirements[track]
+          base='https://api.github.com/repos/'
+          headers={'Accept':'application/vnd.github+json','User-Agent':'master-degree-evidence-ci','Authorization':'Bearer '+os.environ['GH_TOKEN']}
+          result={'date_kst':'2026-11-13','track':track,'task':title,'status':'HOLD','scientific_pass':False,'required_fields':required,'sources':{},'candidate_paths':[],'blockers':[]}
+          for repo in ('kimtk94/IS_Analysis_V3','kimtk94/Codex'):
+            try:
+              req=urllib.request.Request(base+repo+'/git/trees/main?recursive=1',headers=headers)
+              with urllib.request.urlopen(req,timeout=25) as response:
+                raw=response.read(12000000)
+              tree=json.loads(raw)
+              if tree.get('truncated'):
+                result['blockers'].append(repo+': tree truncated')
+              matches=[x['path'] for x in tree.get('tree',[]) if x.get('type')=='blob' and re.search(pattern,x['path'],re.I)]
+              result['sources'][repo]={'tree_sha':tree.get('sha'),'tree_truncated':tree.get('truncated',False),'matching_path_count':len(matches)}
+              result['candidate_paths'] += [{'repo':repo,'path':p} for p in matches[:40]]
+            except Exception as e:
+              result['blockers'].append(repo+': '+type(e).__name__+': '+str(e)[:180])
+          # Explicit scientific requirements: names/filenames are only discovery evidence,
+          # never proof of original integrity, patient-level joins, or statistical validity.
+          if track=='muscle':
+            p=pathlib.Path('config/muscle/stage1_seed_loci.tsv')
+            if p.exists():
+              raw=p.read_bytes()
+              rows=list(csv.DictReader(io.StringIO(raw.decode('utf-8-sig')),delimiter='\t'))
+              result['seed_loci']={'rows':len(rows),'columns':list(rows[0]) if rows else [],'sha256':hashlib.sha256(raw).hexdigest()}
+              if len(rows)!=20:
+                result['blockers'].append('Seed locus count differs from expected 20')
+            else: result['blockers'].append('Seed locus file absent')
+          if not result['blockers']:
+            result['blockers'].append('Official full-data integrity and scientific join/statistical evidence not certified; candidate path discovery cannot pass the gate')
+          out=pathlib.Path('evidence');out.mkdir(exist_ok=True)
+          (out/(track+'.json')).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps({'track':track,'status':result['status'],'sources':result['sources'],'blockers':result['blockers']},ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scientific-evidence-20261113-${{ matrix.track }}
+          path: evidence/${{ matrix.track }}.json
+          retention-days: 30
