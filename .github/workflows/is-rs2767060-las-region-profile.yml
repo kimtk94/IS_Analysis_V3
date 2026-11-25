@@ -1,0 +1,50 @@
+name: IS rs2767060 regional LAS profile
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/rs2767060_las_region_profile.py','.github/workflows/is-rs2767060-las-region-profile.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  las-region:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 81c9a0760c185f8c6f357a70e7c199f172df1015
+          path: indexed_helpers
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: is24-study-*LAS
+          path: inputs/prior
+          run-id: 45534891070
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: is-rs2767060-ld-proxy-audit
+          path: inputs/ld
+          run-id: 45549485788
+          github-token: ${{ github.token }}
+      - name: Read fixed region and compare exact signed effects without declaring new significance
+        run: |
+          python -m pip install 'PyYAML==6.0.2' 'pysam==0.23.3' 'pyliftover==0.4.1'
+          for study in EAS_LAS EUR_LAS; do
+            mv "inputs/prior/is24-study-$study" "inputs/prior/$study"
+          done
+          python -m scripts.is.rs2767060_las_region_profile --prior inputs/prior --proxy inputs/ld/rs2767060-ld-proxy-audit.json --out outputs/las-region.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-rs2767060-las-region
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
