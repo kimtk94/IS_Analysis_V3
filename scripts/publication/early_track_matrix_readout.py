@@ -209,7 +209,9 @@ def hcc_rna():
     for gene in HCC_GENES:
         v=pool[gene]
         if len(v)!=1:results[gene]={"status":"HOLD_MISSING_OR_NONUNIQUE_GENE","rows":len(v)};continue
-        z=old.sign_summary(v[0]);z["bonferroni_8"]=min(1,8*z["p_exact_sign"]);results[gene]=z
+        z=old.sign_summary(v[0]);z["bonferroni_8"]=min(1,8*z["p_exact_sign"])
+        for k in ("median_delta","mean_delta"):z[k+"_log2_fpkm_plus1"]=z.pop(k+"_log2_cpm_plus1")
+        results[gene]=z
     return {"status":"HCC_FIXED_LIPID_CONTEXT_RNA","feature_rows":seen,"results":results,**info,
             "limits":["Fixed eight cholesterol/lipid context genes including original paper SOAT1, not selected by this readout. Paired log2(FPKM+1) tumor-minus-nontumor, exact sign tests, family 8. FPKM not count-based DE; no protein linkage, no clinical outcome or novelty claim."]}
 def hcc_protein():
