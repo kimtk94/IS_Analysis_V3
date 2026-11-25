@@ -1,0 +1,81 @@
+name: MASTER DEGREE 2026-11-17 eight source-schema gates
+on:
+  push:
+    branches: [research/daily-20261117-source-schema-gates]
+  pull_request:
+    paths: ['.github/workflows/research-20261117-source-schema.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - name: Validate one distinct source-schema prerequisite without promoting scientific status
+        env:
+          TRACK: ${{ matrix.track }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request,urllib.parse,pathlib,hashlib,re,datetime
+          t=os.environ['TRACK']
+          # Public source probes only; no raw human-level data is exported.
+          specs={
+            'is':('https://www.ebi.ac.uk/gwas/rest/api/studies/GCST90104540','GCST90104540','GWAS accession identity'),
+            'glaucoma':('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gds&id=313736','313736','GEO accession crosswalk'),
+            'hcc':('https://pdc.cancer.gov/pdc/study/PDC000198','PDC000198','PDC study identity'),
+            'radiomics':('https://ibsi.readthedocs.io/en/latest/','IBSI','IBSI reference provenance'),
+            'ocular':('https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA1243143&result=read_run&fields=run_accession,experiment_accession,sample_accession,fastq_md5&format=tsv','run_accession','ENA run/experiment/sample schema'),
+            'muscle':('https://gtexportal.org/api/v2/reference/tissueInfo?limit=100','Muscle_Skeletal','GTEx tissue ontology'),
+            'oral':('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gds&id=103322','103322','GEO accession crosswalk'),
+            'skin':('https://www.ebi.ac.uk/gwas/rest/api/studies?size=1','studies','GWAS API response schema')
+          }
+          url,needle,task=specs[t]
+          out={'date_kst':'2026-11-17','track':t,'selected_task':task,
+               'source_url':url,'status':'HOLD','scientific_pass':False,
+               'source_schema_gate':'HOLD','checks':{},'blockers':[]}
+          try:
+            req=urllib.request.Request(url,headers={'User-Agent':'MASTER-DEGREE-CI/1.0','Accept':'application/json,text/tab-separated-values,text/html,*/*'})
+            with urllib.request.urlopen(req,timeout=45) as r:
+              data=r.read(2000001); status=r.status; ctype=r.headers.get('Content-Type','')
+            if len(data)>2000000: raise ValueError('response exceeds 2MB bounded audit')
+            s=data.decode('utf-8','replace')
+            out['checks']={'http_status':status,'content_type':ctype,'response_bytes':len(data),
+                           'response_sha256':hashlib.sha256(data).hexdigest(),
+                           'expected_marker_present':needle.lower() in s.lower()}
+            if t=='ocular':
+              lines=s.splitlines()
+              header=lines[0].split('\t') if lines else []
+              required={'run_accession','experiment_accession','sample_accession','fastq_md5'}
+              out['checks']['required_columns_present']=required.issubset(set(header))
+              if required.issubset(set(header)):
+                records=[dict(zip(header,line.split('\t'))) for line in lines[1:] if line.strip()]
+                ids=[r['run_accession'] for r in records]
+                out['checks']['run_count']=len(ids)
+                out['checks']['unique_run_count']=len(set(ids))
+                out['checks']['all_have_sample_and_experiment']=all(r.get('sample_accession') and r.get('experiment_accession') for r in records)
+                out['checks']['declared_fastq_md5_rows']=sum(bool(r.get('fastq_md5')) for r in records)
+                passed=(len(ids)==46 and len(set(ids))==46 and out['checks']['all_have_sample_and_experiment'] and out['checks']['declared_fastq_md5_rows']==46)
+              else: passed=False
+            else:
+              passed=bool(status==200 and needle.lower() in s.lower())
+            out['source_schema_gate']='PASS' if passed else 'HOLD'
+            if not passed: out['blockers'].append('Source response did not establish the required identity/schema invariant')
+          except Exception as e:
+            out['checks']['error_type']=type(e).__name__
+            out['blockers'].append('Public source inaccessible or unsupported: '+str(e)[:220])
+          out['blockers'].append('Original-data integrity, authoritative patient/aliquot mapping, and statistical validity not established by source schema')
+          pathlib.Path('gate').mkdir(exist_ok=True)
+          pathlib.Path('gate/'+t+'.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps({'track':t,'source_schema_gate':out['source_schema_gate'],'scientific_status':out['status'],'checks':out['checks']},ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: source-schema-20261117-${{ matrix.track }}
+          path: gate/${{ matrix.track }}.json
+          retention-days: 30
