@@ -1,0 +1,470 @@
+{
+  "source": "Actual job stdout, uploaded artifact digests not independently downloaded",
+  "source_heads": [
+    "f88a3cc3e67127ef915359e0d0ec874cd438aa7e",
+    "33f0c1adad8a9ce099755e3ffdb13326b7c4d640"
+  ],
+  "records": [
+    {
+      "run_id": 45607454164,
+      "job_id": 139182726431,
+      "aggregate": {
+        "status": "ORAL_EXPLORATORY_PAIRED_COMPARTMENT_CONTEXT",
+        "pairs_target": 10,
+        "complete_pairs": 10,
+        "failed_source_reasons": {},
+        "results": {
+          "2": {
+            "epithelial_pEMT": {
+              "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+              "pairs": 5,
+              "positive": 1,
+              "negative": 4,
+              "ties": 0,
+              "median_delta_log2_cpm_plus1": -0.3087344262818288,
+              "mean_delta_log2_cpm_plus1": -0.37093609146349654,
+              "loo_median_range": [
+                -0.5179124290390784,
+                -0.26058514368444374
+              ],
+              "p_exact_sign": 0.375,
+              "bonferroni_5": 1
+            },
+            "myeloid_SPP1": {
+              "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+              "pairs": 10,
+              "positive": 4,
+              "negative": 6,
+              "ties": 0,
+              "median_delta_log2_cpm_plus1": -0.6485939213800087,
+              "mean_delta_log2_cpm_plus1": -1.0870849218189793,
+              "loo_median_range": [
+                -0.9061062091830276,
+                -0.3910816335769898
+              ],
+              "p_exact_sign": 0.75390625,
+              "bonferroni_5": 1
+            },
+            "myeloid_CXCR4": {
+              "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+              "pairs": 10,
+              "positive": 9,
+              "negative": 1,
+              "ties": 0,
+              "median_delta_log2_cpm_plus1": 1.1875222580031362,
+              "mean_delta_log2_cpm_plus1": 1.0320754588450318,
+              "loo_median_range": [
+                1.1100831204990493,
+                1.264961395507223
+              ],
+              "p_exact_sign": 0.021484375,
+              "bonferroni_5": 0.107421875
+            },
+            "T_cell_CXCR4": {
+              "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+              "pairs": 10,
+              "positive": 6,
+              "negative": 4,
+              "ties": 0,
+              "median_delta_log2_cpm_plus1": 0.23975671061588066,
+              "mean_delta_log2_cpm_plus1": 0.2616476846590226,
+              "loo_median_range": [
+                0.10626722324454185,
+                0.3732461979872195
+              ],
+              "p_exact_sign": 0.75390625,
+              "bonferroni_5": 1
+            },
+            "B_cell_CXCR4": {
+              "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+              "pairs": 7,
+              "positive": 6,
+              "negative": 1,
+              "ties": 0,
+              "median_delta_log2_cpm_plus1": 1.3271886291241408,
+              "mean_delta_log2_cpm_plus1": 1.45215857443606,
+              "loo_median_range": [
+                1.1365538697163382,
+                1.6749067341770911
+              ],
+              "p_exact_sign": 0.125,
+              "bonferroni_5": 0.625
+            }
+          },
+          "3": {
+            "epithelial_pEMT": {
+              "status": "HOLD_FEWER_THAN_5_PAIRED_PATIENTS",
+              "pairs": 4
+            },
+            "myeloid_SPP1": {
+              "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+              "pairs": 9,
+              "positive": 5,
+              "negative": 4,
+              "ties": 0,
+              "median_delta_log2_cpm_plus1": 0.20370451122427546,
+              "mean_delta_log2_cpm_plus1": -0.1865717948231296,
+              "loo_median_range": [
+                -0.3261242112693781,
+                0.34813107378192054
+              ]
+            },
+            "myeloid_CXCR4": {
+              "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+              "pairs": 9,
+              "positive": 8,
+              "negative": 1,
+              "ties": 0,
+              "median_delta_log2_cpm_plus1": 1.2449697839530423,
+              "mean_delta_log2_cpm_plus1": 1.008661368147189,
+              "loo_median_range": [
+                1.059339245211949,
+                1.2786791221749039
+              ]
+            },
+            "T_cell_CXCR4": {
+              "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+              "pairs": 10,
+              "positive": 7,
+              "negative": 3,
+              "ties": 0,
+              "median_delta_log2_cpm_plus1": 0.3127765738935988,
+              "mean_delta_log2_cpm_plus1": 0.3620838285540174,
+              "loo_median_range": [
+                0.27210416155385175,
+                0.35344898623334586
+              ]
+            },
+            "B_cell_CXCR4": {
+              "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+              "pairs": 6,
+              "positive": 4,
+              "negative": 2,
+              "ties": 0,
+              "median_delta_log2_cpm_plus1": 0.5423298800873484,
+              "mean_delta_log2_cpm_plus1": 0.48056733670326146,
+              "loo_median_range": [
+                0.36748648027614195,
+                0.7171732798985548
+              ]
+            }
+          }
+        },
+        "qc_cells_by_site": {
+          "TC": 83301,
+          "mLN": 62699
+        },
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/",
+            "bytes": 603,
+            "sha256": "4667612422cf8b2170fd45d552a9494af8fda884b7f625c505e049879a226c1e",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/GSE198315_series_matrix.txt.gz",
+            "bytes": 3680,
+            "sha256": "0c1fc954d1abc4d942a2e1facb8dc0c32f8bfbc5268db377d0b51e6ce1086339",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "feature_source": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/suppl/GSE198315_features.tsv.gz",
+          "bytes": 243853,
+          "sha256": "45a4916fa87ab8dbc06499836f1b1a19f141c3e8877542018dde32706354801c",
+          "content_range": null,
+          "etag": null
+        },
+        "limits": [
+          "Primary two-marker gates; three-marker descriptive sensitivity, fixed five primary endpoints, >=50 cells per compartment per site and >=5 complete pairs. Author-coded pairs, not CNV malignant annotation; known context programs, original study already addressed immune/pEMT. Selection and composition confounding remain; no donor-level exports, no novel causal or independently validated association."
+        ],
+        "mode": "sc_full",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is d7ad9942ac7ed3564dcca110d3854bc6feff217bb9aefbab8a24aa7574333a34",
+        "Artifact matrix-readout-sc_full.zip successfully finalized. Artifact ID 15018044377"
+      ]
+    },
+    {
+      "run_id": 45608645293,
+      "job_id": 139186054952,
+      "aggregate": {
+        "status": "HCC_ORIGINAL_EFFECT_READOUT",
+        "source": {
+          "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41586-019-0987-8/MediaObjects/41586_2019_987_MOESM4_ESM.zip",
+          "bytes": 16291367,
+          "sha256": "71d411dd235baa050605ae208810042f55c417a16b4e79dc0922c779ec13b3f3",
+          "content_range": null,
+          "etag": "\"ef879f3d89104fefc162264baa73ec82\""
+        },
+        "table": 6,
+        "rows": 2008,
+        "glossary": {
+          "logfc": "log-fold change of protein expression levels in each pair of comparative groups (such as S-III vs. S-II samples) ",
+          "p-value": "P-values were calculated by moderated t-statistics"
+        },
+        "results": {
+          "SOAT1": {
+            "status": "PUBLISHED_TABLE_EFFECT_ONLY",
+            "published_logFC": 3.20227380862614,
+            "published_p_value": 1.4437064166094e-10
+          },
+          "HMGCR": {
+            "status": "HOLD_ABSENT_OR_NONUNIQUE_IN_SELECTED_TABLE",
+            "rows": 0
+          },
+          "SQLE": {
+            "status": "HOLD_ABSENT_OR_NONUNIQUE_IN_SELECTED_TABLE",
+            "rows": 0
+          },
+          "LDLR": {
+            "status": "PUBLISHED_TABLE_EFFECT_ONLY",
+            "published_logFC": 2.36391494661315,
+            "published_p_value": 1.48243024926898e-9
+          },
+          "FASN": {
+            "status": "HOLD_ABSENT_OR_NONUNIQUE_IN_SELECTED_TABLE",
+            "rows": 0
+          },
+          "ACACA": {
+            "status": "HOLD_ABSENT_OR_NONUNIQUE_IN_SELECTED_TABLE",
+            "rows": 0
+          },
+          "ACLY": {
+            "status": "HOLD_ABSENT_OR_NONUNIQUE_IN_SELECTED_TABLE",
+            "rows": 0
+          },
+          "SREBF2": {
+            "status": "HOLD_ABSENT_OR_NONUNIQUE_IN_SELECTED_TABLE",
+            "rows": 0
+          }
+        },
+        "limits": [
+          "Selected original published table, no independent protein validation. Published logFC and p-values exactly as stored, not re-estimated; no inference about numerator, denominator, paired sample identity, or missing candidates. Interpret only if source legend and article confirm direction/analyte. No clinical or patient-level values."
+        ],
+        "mode": "protein_effect_readout",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is c181cbe0c1a8c60a39f16b65c45268a35ffdb710c54e723fbced947ab1ef74be",
+        "Artifact early-external-protein_effect_readout.zip successfully finalized. Artifact ID 15018009691"
+      ]
+    },
+    {
+      "run_id": 45608645293,
+      "job_id": 139186055275,
+      "aggregate": {
+        "status": "HCC_SWISS_PAIRED_FIXED_PANEL",
+        "source": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE64nnn/GSE64041/matrix/GSE64041_series_matrix.txt.gz",
+          "bytes": 22614218,
+          "sha256": "3a2d938abf825bf399ece06ade82e21f4a9c39b7768c83027868d5612e7f8bbd",
+          "content_range": null,
+          "etag": null,
+          "remote_size": 22614218,
+          "uncompressed_bytes": 49892191,
+          "range_probe": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE64nnn/GSE64041/matrix/GSE64041_series_matrix.txt.gz",
+            "bytes": 1,
+            "sha256": "ffe679bb831c95b67dc17819c63c5090d221aac6f4c7bf530f594ab43d21fa1e",
+            "content_range": "bytes 0-0/22614218",
+            "etag": null
+          }
+        },
+        "directory": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE64nnn/GSE64041/matrix/",
+          "bytes": 590,
+          "sha256": "32e1b366247daaa405aa1eb68c564a5968670878936fb39b7ee7853b04a658bf",
+          "content_range": null,
+          "etag": null
+        },
+        "annotation": {
+          "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL6244&targ=self&form=text&view=full",
+          "bytes": 100752926,
+          "sha256": "0f24e967e81b908ecc3a6a8b2a84eff11eb020bad22b8e0ac50b67149058fc43",
+          "content_range": null,
+          "etag": null
+        },
+        "platform_rows": 33297,
+        "feature_rows": 33297,
+        "pairs": 60,
+        "healthy_withheld": 5,
+        "results": {
+          "SOAT1": {
+            "pairs": 60,
+            "positive": 35,
+            "negative": 25,
+            "ties": 0,
+            "median_delta": 0.06413171300000053,
+            "scale": "publisher log2 RMA tumor minus non-tumor",
+            "loo_median_range": [
+              0.049655325000000694,
+              0.07860810100000037
+            ],
+            "p_exact_sign": 0.2450608330229457,
+            "bonferroni_8": 1,
+            "status": "EXTERNAL_PAIRED_RNA_CONTEXT",
+            "probes": 1,
+            "probe_median_range": [
+              0.06413171300000053,
+              0.06413171300000053
+            ]
+          },
+          "HMGCR": {
+            "pairs": 60,
+            "positive": 40,
+            "negative": 20,
+            "ties": 0,
+            "median_delta": 0.3498523855000011,
+            "scale": "publisher log2 RMA tumor minus non-tumor",
+            "loo_median_range": [
+              0.33286112700000103,
+              0.36684364400000113
+            ],
+            "p_exact_sign": 0.01348929373119186,
+            "bonferroni_8": 0.10791434984953488,
+            "status": "EXTERNAL_PAIRED_RNA_CONTEXT",
+            "probes": 1,
+            "probe_median_range": [
+              0.3498523855000011,
+              0.3498523855000011
+            ]
+          },
+          "SQLE": {
+            "pairs": 60,
+            "positive": 54,
+            "negative": 6,
+            "ties": 0,
+            "median_delta": 1.4117358620000005,
+            "scale": "publisher log2 RMA tumor minus non-tumor",
+            "loo_median_range": [
+              1.411105858,
+              1.412365866000001
+            ],
+            "p_exact_sign": 9.722961671898567e-11,
+            "bonferroni_8": 7.778369337518853e-10,
+            "status": "EXTERNAL_PAIRED_RNA_CONTEXT",
+            "probes": 1,
+            "probe_median_range": [
+              1.4117358620000005,
+              1.4117358620000005
+            ]
+          },
+          "LDLR": {
+            "pairs": 60,
+            "positive": 48,
+            "negative": 12,
+            "ties": 0,
+            "median_delta": 0.37735636800000094,
+            "scale": "publisher log2 RMA tumor minus non-tumor",
+            "loo_median_range": [
+              0.3734257990000014,
+              0.3812869370000005
+            ],
+            "p_exact_sign": 0.000003183628737933597,
+            "bonferroni_8": 0.000025469029903468776,
+            "status": "EXTERNAL_PAIRED_RNA_CONTEXT",
+            "probes": 1,
+            "probe_median_range": [
+              0.37735636800000094,
+              0.37735636800000094
+            ]
+          },
+          "FASN": {
+            "pairs": 60,
+            "positive": 32,
+            "negative": 28,
+            "ties": 0,
+            "median_delta": 0.07119104800000109,
+            "scale": "publisher log2 RMA tumor minus non-tumor",
+            "loo_median_range": [
+              0.05321428300000086,
+              0.08916781300000132
+            ],
+            "p_exact_sign": 0.6988834276200058,
+            "bonferroni_8": 1,
+            "status": "EXTERNAL_PAIRED_RNA_CONTEXT",
+            "probes": 1,
+            "probe_median_range": [
+              0.07119104800000109,
+              0.07119104800000109
+            ]
+          },
+          "ACACA": {
+            "pairs": 60,
+            "positive": 44,
+            "negative": 16,
+            "ties": 0,
+            "median_delta": 0.42770938550000004,
+            "scale": "publisher log2 RMA tumor minus non-tumor",
+            "loo_median_range": [
+              0.42524817800000037,
+              0.4301705929999997
+            ],
+            "p_exact_sign": 0.00039404324272610154,
+            "bonferroni_8": 0.0031523459418088123,
+            "status": "EXTERNAL_PAIRED_RNA_CONTEXT",
+            "probes": 1,
+            "probe_median_range": [
+              0.42770938550000004,
+              0.42770938550000004
+            ]
+          },
+          "ACLY": {
+            "pairs": 60,
+            "positive": 52,
+            "negative": 8,
+            "ties": 0,
+            "median_delta": 0.5276970670000001,
+            "scale": "publisher log2 RMA tumor minus non-tumor",
+            "loo_median_range": [
+              0.5270049700000001,
+              0.528389164
+            ],
+            "p_exact_sign": 5.205691473372798e-9,
+            "bonferroni_8": 4.164553178698238e-8,
+            "status": "EXTERNAL_PAIRED_RNA_CONTEXT",
+            "probes": 1,
+            "probe_median_range": [
+              0.5276970670000001,
+              0.5276970670000001
+            ]
+          },
+          "SREBF2": {
+            "pairs": 60,
+            "positive": 38,
+            "negative": 22,
+            "ties": 0,
+            "median_delta": 0.14082617600000003,
+            "scale": "publisher log2 RMA tumor minus non-tumor",
+            "loo_median_range": [
+              0.1164946760000003,
+              0.16515767599999975
+            ],
+            "p_exact_sign": 0.051893895928921435,
+            "bonferroni_8": 0.4151511674313715,
+            "status": "EXTERNAL_PAIRED_RNA_CONTEXT",
+            "probes": 1,
+            "probe_median_range": [
+              0.14082617600000003,
+              0.14082617600000003
+            ]
+          }
+        },
+        "limits": [
+          "Independent geographic cohort relative to Jiang HBV cohort; different etiology/platform/stage composition. Fixed eight genes, no post-result selection. GPL6244 build35 publisher annotation; equal uniquely assigned probe mean. RMA and FPKM effects not directly comparable. No claims of novel mechanism or clinical utility."
+        ],
+        "mode": "swiss",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 075bb196d0bfdada8bf560567d0344adc271aedde774784eca0292c7dfb2deb5",
+        "Artifact early-external-swiss.zip successfully finalized. Artifact ID 15019396640"
+      ]
+    }
+  ]
+}
