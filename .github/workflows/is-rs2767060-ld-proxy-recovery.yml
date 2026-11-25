@@ -1,0 +1,30 @@
+name: IS rs2767060 LD proxy recovery
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/rs2767060_ld_proxy_recovery.py','.github/workflows/is-rs2767060-ld-proxy-recovery.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ld-proxy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Recover exact LD schema and audit prior proxy tokens
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+          curl -fLsS --connect-timeout 15 --max-time 75 --max-filesize 2000000 'https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-022-05165-3/MediaObjects/41586_2022_5165_MOESM4_ESM.xlsx' -o "$RUNNER_TEMP/supp.xlsx"
+          python -m scripts.is.rs2767060_ld_proxy_recovery --evidence docs/publication/evidence/is_rs2767060_reference_locus_20261125.json --workbook "$RUNNER_TEMP/supp.xlsx" --out outputs/rs2767060-ld-proxy-audit.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-rs2767060-ld-proxy-audit
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
