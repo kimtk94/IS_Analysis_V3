@@ -1,0 +1,117 @@
+name: Early-track quantitative matrix readout
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/publication/early_track_matrix_readout.py'
+      - '.github/workflows/early-track-matrix-readout.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  readout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        mode: [bulk, sc_headers, sc_pilot, hcc_rna, hcc_protein]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 8281675b81e7ef0184b4a1a1c1897918cf8b30df
+          path: schema_helpers
+      - uses: actions/checkout@v4
+        with:
+          ref: 3010014477b97dd9182f8eafded1897d51ceb0b4
+          path: paired_helpers
+      - uses: actions/checkout@v4
+        with:
+          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
+          path: prior_helpers
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6 scipy==1.15.3 openpyxl==3.1.5
+      - run: python scripts/publication/early_track_matrix_readout.py selftest
+      - name: Execute public readout
+        env:
+          MODE: ${{ matrix.mode }}
+          OMP_NUM_THREADS: '2'
+        run: python -u scripts/publication/early_track_matrix_readout.py "$MODE" --out "evidence/$MODE.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: matrix-readout-${{ matrix.mode }}
+          path: evidence/${{ matrix.mode }}.json
+          if-no-files-found: error
+          retention-days: 30
+  paired-full:
+    needs: readout
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: matrix-readout-sc_pilot
+          path: pilot
+      - uses: actions/download-artifact@v4
+        with:
+          name: matrix-readout-sc_headers
+          path: headers
+      - name: Gate full analysis on actual validated sources
+        id: gate
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+          a=json.loads(Path("pilot/sc_pilot.json").read_text())
+          b=json.loads(Path("headers/sc_headers.json").read_text())
+          print("eligible="+str(a.get("full_pair_pass") is True and b.get("verified")==20).lower())
+          PY
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.eligible == 'true'
+        with:
+          path: analysis
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.eligible == 'true'
+        with:
+          ref: 8281675b81e7ef0184b4a1a1c1897918cf8b30df
+          path: analysis/schema_helpers
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.eligible == 'true'
+        with:
+          ref: 3010014477b97dd9182f8eafded1897d51ceb0b4
+          path: analysis/paired_helpers
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.eligible == 'true'
+        with:
+          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
+          path: analysis/prior_helpers
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.eligible == 'true'
+        with:
+          python-version: '3.12'
+      - if: steps.gate.outputs.eligible == 'true'
+        run: python -m pip install numpy==2.2.6 scipy==1.15.3 openpyxl==3.1.5
+      - name: Analyze ten author-coded pairs only after all gates
+        if: steps.gate.outputs.eligible == 'true'
+        working-directory: analysis
+        env:
+          OMP_NUM_THREADS: '2'
+        run: python -u scripts/publication/early_track_matrix_readout.py sc_full --out ../evidence/sc_full.json
+      - name: Record explicit HOLD when source gate fails
+        if: steps.gate.outputs.eligible != 'true'
+        run: |
+          mkdir -p evidence
+          printf '%s\n' '{"status":"HOLD_PILOT_OR_HEADER_GATE","scientific_status":"HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"}' > evidence/sc_full.json
+          cat evidence/sc_full.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: matrix-readout-sc_full
+          path: evidence/sc_full.json
+          if-no-files-found: error
+          retention-days: 30
