@@ -1,0 +1,1587 @@
+{
+  "run_id": 45607454164,
+  "head_sha": "f88a3cc3e67127ef915359e0d0ec874cd438aa7e",
+  "source": "Actual job stdout, artifact digest reported by upload action; ZIP not independently downloaded",
+  "records": [
+    {
+      "job_id": 139181909540,
+      "name": "readout (hcc_rna)",
+      "aggregate": {
+        "status": "HCC_FIXED_LIPID_CONTEXT_RNA",
+        "feature_rows": 63652,
+        "results": {
+          "SOAT1": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 35,
+            "positive": 30,
+            "negative": 5,
+            "ties": 0,
+            "loo_median_range": [
+              0.990032436095943,
+              1.0901241340164125
+            ],
+            "p_exact_sign": 0.000022361520677804947,
+            "bonferroni_8": 0.00017889216542243958,
+            "median_delta_log2_fpkm_plus1": 1.0299591730149376,
+            "mean_delta_log2_fpkm_plus1": 0.972996705742135
+          },
+          "HMGCR": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 35,
+            "positive": 24,
+            "negative": 11,
+            "ties": 0,
+            "loo_median_range": [
+              0.6965700221016418,
+              0.8586497022463968
+            ],
+            "p_exact_sign": 0.040959591511636986,
+            "bonferroni_8": 0.3276767320930959,
+            "median_delta_log2_fpkm_plus1": 0.759846421984121,
+            "mean_delta_log2_fpkm_plus1": 0.6986303068019905
+          },
+          "SQLE": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 35,
+            "positive": 30,
+            "negative": 5,
+            "ties": 0,
+            "loo_median_range": [
+              2.212989093394844,
+              2.254879044336442
+            ],
+            "p_exact_sign": 0.000022361520677804947,
+            "bonferroni_8": 0.00017889216542243958,
+            "median_delta_log2_fpkm_plus1": 2.215482140029841,
+            "mean_delta_log2_fpkm_plus1": 1.739755977218089
+          },
+          "LDLR": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 35,
+            "positive": 18,
+            "negative": 17,
+            "ties": 0,
+            "loo_median_range": [
+              0.05093473942544868,
+              0.1777179001275686
+            ],
+            "p_exact_sign": 1,
+            "bonferroni_8": 1,
+            "median_delta_log2_fpkm_plus1": 0.11445820979622656,
+            "mean_delta_log2_fpkm_plus1": -0.26797905139374123
+          },
+          "FASN": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 35,
+            "positive": 21,
+            "negative": 14,
+            "ties": 0,
+            "loo_median_range": [
+              0.4359798124844678,
+              0.5735053698001877
+            ],
+            "p_exact_sign": 0.31050465907901537,
+            "bonferroni_8": 1,
+            "median_delta_log2_fpkm_plus1": 0.5169181190676513,
+            "mean_delta_log2_fpkm_plus1": 0.3839556328960707
+          },
+          "ACACA": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 35,
+            "positive": 27,
+            "negative": 8,
+            "ties": 0,
+            "loo_median_range": [
+              0.732801894037173,
+              0.742432946981394
+            ],
+            "p_exact_sign": 0.0018782254774123432,
+            "bonferroni_8": 0.015025803819298746,
+            "median_delta_log2_fpkm_plus1": 0.7363347039480463,
+            "mean_delta_log2_fpkm_plus1": 0.7510047174472966
+          },
+          "ACLY": {
+            "status": "HOLD_MISSING_OR_NONUNIQUE_GENE",
+            "rows": 2
+          },
+          "SREBF2": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 35,
+            "positive": 30,
+            "negative": 5,
+            "ties": 0,
+            "loo_median_range": [
+              0.927223284887666,
+              0.9721427960576956
+            ],
+            "p_exact_sign": 0.000022361520677804947,
+            "bonferroni_8": 0.00017889216542243958,
+            "median_delta_log2_fpkm_plus1": 0.9344517362896054,
+            "mean_delta_log2_fpkm_plus1": 0.8488191589406586
+          }
+        },
+        "source": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/suppl/GSE124535_HCC.RNA-seq.35.samples.fpkm.txt.gz",
+          "bytes": 7751197,
+          "sha256": "d89057532dc1e766b23f88d7a69575047bbe1e959e234fbe55a2e689eedf2b56",
+          "content_range": null,
+          "etag": null
+        },
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/matrix/",
+            "bytes": 603,
+            "sha256": "56ed7bcc81944b7edfa326a8b06e2755253c1dcb3c6440afac5924f29c48a1da",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/matrix/GSE124535_series_matrix.txt.gz",
+            "bytes": 5239,
+            "sha256": "b38f3760685f18c97dfe7571c33837ea5fe2661db822ca97c941d4878bb0352b",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "non_sample_header": [
+          "geneid",
+          "genesymbol",
+          "chr",
+          "biotype"
+        ],
+        "matched_samples": 70,
+        "pairs": 35,
+        "limits": [
+          "Fixed eight cholesterol/lipid context genes including original paper SOAT1, not selected by this readout. Paired log2(FPKM+1) tumor-minus-nontumor, exact sign tests, family 8. FPKM not count-based DE; no protein linkage, no clinical outcome or novelty claim."
+        ],
+        "mode": "hcc_rna",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 45625bcd66f9035e6303b18b420cd1c21cf4092a4f37f209a2ccff450f20dcab",
+        "Artifact matrix-readout-hcc_rna.zip successfully finalized. Artifact ID 15017783922"
+      ]
+    },
+    {
+      "job_id": 139181910042,
+      "name": "readout (hcc_protein)",
+      "aggregate": {
+        "status": "HCC_PROTEOME_TABLE_AND_LATEST_PRIDE_GATE",
+        "source": {
+          "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41586-019-0987-8/MediaObjects/41586_2019_987_MOESM4_ESM.zip",
+          "bytes": 16291367,
+          "sha256": "71d411dd235baa050605ae208810042f55c417a16b4e79dc0922c779ec13b3f3",
+          "content_range": null,
+          "etag": "\"ef879f3d89104fefc162264baa73ec82\""
+        },
+        "pride": {
+          "source": {
+            "url": "https://ftp.pride.ebi.ac.uk/pride/data/archive/2019/05/PXD006512/",
+            "bytes": 364205,
+            "sha256": "9ab8a7a76b21af38307e3ffda52531dec181414720c88a5adf0dd32e2326622e",
+            "content_range": null,
+            "etag": null
+          },
+          "raw_links": 1488,
+          "processed_candidates": [
+            "PXD006512_community_annotated.sdrf.tsv"
+          ]
+        },
+        "archive_inventory": [
+          {
+            "file": "2017-04-04932E-Supplementary Table 5.xlsx",
+            "bytes": 11632288,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  16458,
+                  74
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "symbol"
+                    ],
+                    "matches": {
+                      "title": 70,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  2,
+                  15
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 6.xlsx",
+            "bytes": 176394,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  2009,
+                  6
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "uniprotid",
+                      "genesymbol"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  7,
+                  2
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 7.xlsx",
+            "bytes": 181392,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  2758,
+                  8
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "uniprotid",
+                      "genesymbol"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  7,
+                  2
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 8.xlsx",
+            "bytes": 24375,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  25,
+                  8
+                ],
+                "header_profiles": []
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  26,
+                  7
+                ],
+                "header_profiles": []
+              },
+              {
+                "index": 3,
+                "dimensions": [
+                  13,
+                  7
+                ],
+                "header_profiles": []
+              },
+              {
+                "index": 4,
+                "dimensions": [
+                  2,
+                  16
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 9.xlsx",
+            "bytes": 83712,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  2689,
+                  8
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "uniprotid",
+                      "genesymbol"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  7,
+                  2
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 10.xlsx",
+            "bytes": 14372,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  39,
+                  13
+                ],
+                "header_profiles": []
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  4,
+                  2
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 11.xlsx",
+            "bytes": 459451,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  1271,
+                  24
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "symbol"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  12,
+                  2
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 12.xlsx",
+            "bytes": 138533,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  664,
+                  14
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "symbol"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  11,
+                  2
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 13.xlsx",
+            "bytes": 344815,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  192,
+                  122
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "geneid"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  33,
+                  122
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "geneid"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 3,
+                "dimensions": [
+                  20,
+                  2
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 14.xlsx",
+            "bytes": 260838,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  164,
+                  26
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "symbol"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  86,
+                  202
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "genesymbol"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 3,
+                "dimensions": [
+                  14,
+                  98
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 15.xlsx",
+            "bytes": 55479,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  261,
+                  10
+                ],
+                "header_profiles": []
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  5,
+                  11
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 16.pdf",
+            "bytes": 152202
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 17.xlsx",
+            "bytes": 16161,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  44,
+                  13
+                ],
+                "header_profiles": []
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  6,
+                  2
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 18.xlsx",
+            "bytes": 534779,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  37,
+                  260
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "genesymbol"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  18,
+                  260
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "genesymbol"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 3,
+                "dimensions": [
+                  9,
+                  3
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 1.pdf",
+            "bytes": 241618
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 2.pdf",
+            "bytes": 53848
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 3.xlsx",
+            "bytes": 2550689,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  20720,
+                  21
+                ],
+                "header_profiles": []
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  2,
+                  14
+                ],
+                "header_profiles": []
+              }
+            ]
+          },
+          {
+            "file": "2017-04-04932E-Supplementary Table 4.xlsx",
+            "bytes": 12528,
+            "sheets": [
+              {
+                "index": 1,
+                "dimensions": [
+                  54,
+                  8
+                ],
+                "header_profiles": [
+                  {
+                    "annotation_terms": [
+                      "gene"
+                    ],
+                    "matches": {
+                      "title": 0,
+                      "alias": 0
+                    }
+                  },
+                  {
+                    "annotation_terms": [],
+                    "matches": {
+                      "title": 1,
+                      "alias": 0
+                    }
+                  },
+                  {
+                    "annotation_terms": [],
+                    "matches": {
+                      "title": 1,
+                      "alias": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "dimensions": [
+                  3,
+                  18
+                ],
+                "header_profiles": []
+              }
+            ]
+          }
+        ],
+        "limits": [
+          "Publisher table labels and sample key counts only, not confirmed RNA/protein analyte types or biological aliquot mapping. PRIDE project revision 4: 2019/05; no raw-file reprocessing or restricted genetic data."
+        ],
+        "mode": "hcc_protein",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 0236e3c90a2bf4eac557c3d74ad9c10c831560caa4600aa1b11bca329a2e26f1",
+        "Artifact matrix-readout-hcc_protein.zip successfully finalized. Artifact ID 15017983462"
+      ]
+    },
+    {
+      "job_id": 139181910066,
+      "name": "readout (sc_pilot)",
+      "aggregate": {
+        "status": "ORAL_FIRST_PAIR_FULL_REPLAY",
+        "full_pair_pass": true,
+        "records": [
+          {
+            "site": "TC",
+            "status": "FULL_SOURCE_AND_MARKER_GATE",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944923/suppl/GSM5944923_P01-TC_UMI_count_matrix.txt.gz",
+              "bytes": 246350977,
+              "sha256": "a5d32a9bd2213703f9b4b1eccaf63a0c0fc833fb823e2e87b498ed3f8f1d71c8",
+              "content_range": null,
+              "etag": null
+            },
+            "orientation": "genes_by_cells",
+            "features": 33694,
+            "cells": 8894,
+            "qc_cells": 8894,
+            "thresholds": {
+              "2": {
+                "assigned": 7203,
+                "compartments": {
+                  "epithelial": {
+                    "cells": 4554,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "myeloid": {
+                    "cells": 803,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "T_cell": {
+                    "cells": 374,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "B_cell": {
+                    "cells": 74,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "fibroblast": {
+                    "cells": 1170,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "endothelial": {
+                    "cells": 228,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  }
+                }
+              },
+              "3": {
+                "assigned": 7158,
+                "compartments": {
+                  "epithelial": {
+                    "cells": 4578,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "myeloid": {
+                    "cells": 665,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "T_cell": {
+                    "cells": 435,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "B_cell": {
+                    "cells": 28,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "fibroblast": {
+                    "cells": 1199,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "endothelial": {
+                    "cells": 253,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "site": "mLN",
+            "status": "FULL_SOURCE_AND_MARKER_GATE",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944924/suppl/GSM5944924_P01-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 109959389,
+              "sha256": "254c5659d9f13d154889bb7504a431788e2210b861d3adc7784acadc43fce2d5",
+              "content_range": null,
+              "etag": null
+            },
+            "orientation": "genes_by_cells",
+            "features": 33694,
+            "cells": 4894,
+            "qc_cells": 4894,
+            "thresholds": {
+              "2": {
+                "assigned": 3874,
+                "compartments": {
+                  "epithelial": {
+                    "cells": 646,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "myeloid": {
+                    "cells": 302,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "T_cell": {
+                    "cells": 2067,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "B_cell": {
+                    "cells": 770,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "fibroblast": {
+                    "cells": 72,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "endothelial": {
+                    "cells": 17,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  }
+                }
+              },
+              "3": {
+                "assigned": 3857,
+                "compartments": {
+                  "epithelial": {
+                    "cells": 693,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "myeloid": {
+                    "cells": 278,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "T_cell": {
+                    "cells": 2135,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "B_cell": {
+                    "cells": 650,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "fibroblast": {
+                    "cells": 75,
+                    "status": "DESCRIPTIVE_MARKER_GATE"
+                  },
+                  "endothelial": {
+                    "cells": 26,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/",
+            "bytes": 603,
+            "sha256": "4667612422cf8b2170fd45d552a9494af8fda884b7f625c505e049879a226c1e",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/GSE198315_series_matrix.txt.gz",
+            "bytes": 3680,
+            "sha256": "0c1fc954d1abc4d942a2e1facb8dc0c32f8bfbc5268db377d0b51e6ce1086339",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "feature_source": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/suppl/GSE198315_features.tsv.gz",
+          "bytes": 243853,
+          "sha256": "45a4916fa87ab8dbc06499836f1b1a19f141c3e8877542018dde32706354801c",
+          "content_range": null,
+          "etag": null
+        },
+        "mode": "sc_pilot",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 6e4b898503a368f248d248b1781e003db58a57c5ba28d222b7fb25272f24e5b9",
+        "Artifact matrix-readout-sc_pilot.zip successfully finalized. Artifact ID 15018027556"
+      ]
+    },
+    {
+      "job_id": 139181910156,
+      "name": "readout (sc_headers)",
+      "aggregate": {
+        "status": "ORAL_HEADER_FULL_CONTRACT",
+        "feature_source": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/suppl/GSE198315_features.tsv.gz",
+          "bytes": 243853,
+          "sha256": "45a4916fa87ab8dbc06499836f1b1a19f141c3e8877542018dde32706354801c",
+          "content_range": null,
+          "etag": null
+        },
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/",
+            "bytes": 603,
+            "sha256": "4667612422cf8b2170fd45d552a9494af8fda884b7f625c505e049879a226c1e",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/GSE198315_series_matrix.txt.gz",
+            "bytes": 3680,
+            "sha256": "0c1fc954d1abc4d942a2e1facb8dc0c32f8bfbc5268db377d0b51e6ce1086339",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "records": [
+          {
+            "site": "TC",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 8895,
+            "first_row_width": 8895,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944923/suppl/GSM5944923_P01-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "1c44abc6c0a11a4dffca2e5b13f6b9c0127552d475ef8e88cdd317e0fd4c9159",
+              "content_range": "bytes 0-2097151/246350977",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 8894,
+            "orientation": "genes_by_cells",
+            "columns": 8894
+          },
+          {
+            "site": "mLN",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 4895,
+            "first_row_width": 4895,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944924/suppl/GSM5944924_P01-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "f7fb645399fd4791771643ca9490442bc7a638d9cdd22fbe366805c4aad8ac02",
+              "content_range": "bytes 0-2097151/109959389",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 4894,
+            "orientation": "genes_by_cells",
+            "columns": 4894
+          },
+          {
+            "site": "TC",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 8358,
+            "first_row_width": 8358,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944925/suppl/GSM5944925_P02-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "03747bd08424de8d3622139d02691900d3ef9896ff7dd6d975dd9f7bf8562b76",
+              "content_range": "bytes 0-2097151/163984579",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 8357,
+            "orientation": "genes_by_cells",
+            "columns": 8357
+          },
+          {
+            "site": "mLN",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 6144,
+            "first_row_width": 6144,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944927/suppl/GSM5944927_P02-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "456fb6d7356a719767e7e1507ccb0deb69141be527a549d0e3d816d42f802f92",
+              "content_range": "bytes 0-2097151/118369081",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 6143,
+            "orientation": "genes_by_cells",
+            "columns": 6143
+          },
+          {
+            "site": "TC",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 6882,
+            "first_row_width": 6882,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944928/suppl/GSM5944928_P03-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "6dcc3ef7d4910cdce0a5dbcde436393f9be58da4269a8318f32539acc47a1092",
+              "content_range": "bytes 0-2097151/141201307",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 6881,
+            "orientation": "genes_by_cells",
+            "columns": 6881
+          },
+          {
+            "site": "mLN",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 7033,
+            "first_row_width": 7033,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944930/suppl/GSM5944930_P03-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "43d30b0f67f206f4409ddd035e241dc2bc401194dc91dca5f1ede6449f8bd517",
+              "content_range": "bytes 0-2097151/127179375",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 7032,
+            "orientation": "genes_by_cells",
+            "columns": 7032
+          },
+          {
+            "site": "TC",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 8174,
+            "first_row_width": 8174,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944932/suppl/GSM5944932_P04-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "d4054fbc05d28a84995c75dd431f6a868bd0b5a3d8b20adf973dedce369668a8",
+              "content_range": "bytes 0-2097151/172139953",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 8173,
+            "orientation": "genes_by_cells",
+            "columns": 8173
+          },
+          {
+            "site": "mLN",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 10058,
+            "first_row_width": 10058,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944934/suppl/GSM5944934_P04-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "b69e5e08bfad35c81a43dc193dd9fe412b813dca43d4551f4e666dff0c30644a",
+              "content_range": "bytes 0-2097151/185577485",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 10057,
+            "orientation": "genes_by_cells",
+            "columns": 10057
+          },
+          {
+            "site": "TC",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 8799,
+            "first_row_width": 8799,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944935/suppl/GSM5944935_P05-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "bc9acf9bd723cf25ec9bab7780da9b1f43f0af7e6daa5585492234900ef50125",
+              "content_range": "bytes 0-2097151/187042369",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 8798,
+            "orientation": "genes_by_cells",
+            "columns": 8798
+          },
+          {
+            "site": "mLN",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 8646,
+            "first_row_width": 8646,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944937/suppl/GSM5944937_P05-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "aea7a49d591c1abd852a7926278eda08cfebb96e570ff13e467f4d951219857a",
+              "content_range": "bytes 0-2097151/157986852",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 8645,
+            "orientation": "genes_by_cells",
+            "columns": 8645
+          },
+          {
+            "site": "TC",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 8517,
+            "first_row_width": 8517,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944939/suppl/GSM5944939_P06-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "13949b810e9a796a6e8d51c780a38b9e02ddf60e9d9bf6a966bd20c5ce257680",
+              "content_range": "bytes 0-2097151/217517123",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 8516,
+            "orientation": "genes_by_cells",
+            "columns": 8516
+          },
+          {
+            "site": "mLN",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 6636,
+            "first_row_width": 6636,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944941/suppl/GSM5944941_P06-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "5d046df5cd71cd32932c9fb29f1e4ccf34909dfa43d336eba1ab266656d1c3ee",
+              "content_range": "bytes 0-2097151/127867379",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 6635,
+            "orientation": "genes_by_cells",
+            "columns": 6635
+          },
+          {
+            "site": "TC",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 7730,
+            "first_row_width": 7730,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944943/suppl/GSM5944943_P07-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "5911a93d20d456b777e31c2460f906391ad19c4d06e96341fffb5865fead8aec",
+              "content_range": "bytes 0-2097151/160420205",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 7729,
+            "orientation": "genes_by_cells",
+            "columns": 7729
+          },
+          {
+            "site": "mLN",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 4332,
+            "first_row_width": 4332,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944945/suppl/GSM5944945_P07-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "7bd05524267d4f60e7dfaca89d449e6fd4b2ffd5a8ea4aa37af9961b992e4457",
+              "content_range": "bytes 0-2097151/60838842",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 4331,
+            "orientation": "genes_by_cells",
+            "columns": 4331
+          },
+          {
+            "site": "TC",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 7277,
+            "first_row_width": 7277,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944947/suppl/GSM5944947_P08-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "9388a157b5839d00353498059f4187c2c1c948ecea255ff800ed9fb86bcdc536",
+              "content_range": "bytes 0-2097151/175704013",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 7276,
+            "orientation": "genes_by_cells",
+            "columns": 7276
+          },
+          {
+            "site": "mLN",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 5401,
+            "first_row_width": 5401,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944949/suppl/GSM5944949_P08-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "ea0d6ac212c03726a8f3fd1ac9cc529afcbed7b6c187ab3fb5291cd8512c5583",
+              "content_range": "bytes 0-2097151/96336566",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 5400,
+            "orientation": "genes_by_cells",
+            "columns": 5400
+          },
+          {
+            "site": "TC",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 12300,
+            "first_row_width": 12300,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944951/suppl/GSM5944951_P09-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "437c08f78d8b728f8df0d16c0f5c8c7833ac7ee31a09ddc16eada8d2605bb168",
+              "content_range": "bytes 0-2097151/231604033",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 12299,
+            "orientation": "genes_by_cells",
+            "columns": 12299
+          },
+          {
+            "site": "mLN",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 5047,
+            "first_row_width": 5047,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944953/suppl/GSM5944953_P09-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "a391b7928f32a053224b97f45c38ed5dabf32bfda640c963b64f44541d767df0",
+              "content_range": "bytes 0-2097151/83120818",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 5046,
+            "orientation": "genes_by_cells",
+            "columns": 5046
+          },
+          {
+            "site": "TC",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 6471,
+            "first_row_width": 6471,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944955/suppl/GSM5944955_P10-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "ee2f32f3fc09a8366518e766e26c6f515c0101231f84b96df2a5c80e3f046606",
+              "content_range": "bytes 0-2097151/138786360",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 6470,
+            "orientation": "genes_by_cells",
+            "columns": 6470
+          },
+          {
+            "site": "mLN",
+            "status": "DENSE_HEADER_VERIFIED",
+            "header_width": 4517,
+            "first_row_width": 4517,
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944957/suppl/GSM5944957_P10-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "0a31904bc81b61a5bc3a83bf72b7c0974e6ccb513b7a34982dc3191702b218e7",
+              "content_range": "bytes 0-2097151/78976061",
+              "etag": null
+            },
+            "first_header_shape": {
+              "empty": false,
+              "letters_only": true,
+              "feature_inventory": false
+            },
+            "barcode_columns": 4516,
+            "orientation": "genes_by_cells",
+            "columns": 4516
+          }
+        ],
+        "verified": 20,
+        "target": 20,
+        "mode": "sc_headers",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 426e322f1b7adda42c5ec58d011a6f911e72ac4b13e165d9e88e4176e5cac501",
+        "Artifact matrix-readout-sc_headers.zip successfully finalized. Artifact ID 15018117339"
+      ]
+    },
+    {
+      "job_id": 139181910201,
+      "name": "readout (bulk)",
+      "aggregate": {
+        "status": "ORAL_PAIRED_BULK_FIXED_PANEL",
+        "source": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE275nnn/GSE275870/suppl/GSE275870_counts.csv.gz",
+          "bytes": 6302152,
+          "sha256": "d60ee36d2a459d563a7ea820b5242b47e6d694d9c74d3afb06a82f69e44974ed",
+          "content_range": null,
+          "etag": null
+        },
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE275nnn/GSE275870/matrix/",
+            "bytes": 603,
+            "sha256": "276c0bd87ee4830f62cb304271876a924aa16fb49e601f175410bf13636ebc1f",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE275nnn/GSE275870/matrix/GSE275870_series_matrix.txt.gz",
+            "bytes": 7169,
+            "sha256": "7d8d63cf563f2b5aaa6be9fb4a8cd5dd143dec4e2702dba43f80f7079023530f",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "header_profiles": {
+          "','": {
+            "width": 113,
+            "exact_matches": {
+              "GSM": 0,
+              "description": 108,
+              "title": 0
+            },
+            "recognized_annotation_fields": [
+              "gene",
+              "geneid",
+              "chr",
+              "biotype",
+              "length"
+            ]
+          },
+          "'\\t'": {
+            "width": 1,
+            "exact_matches": {
+              "GSM": 0,
+              "description": 0,
+              "title": 0
+            },
+            "recognized_annotation_fields": []
+          },
+          "';'": {
+            "width": 1,
+            "exact_matches": {
+              "GSM": 0,
+              "description": 0,
+              "title": 0
+            },
+            "recognized_annotation_fields": []
+          }
+        },
+        "column_mapping": "description",
+        "annotation_columns": 5,
+        "feature_header": "geneid",
+        "delimiter": "','",
+        "gene_rows": 60624,
+        "samples": 108,
+        "patients": 72,
+        "paired_patients": 11,
+        "mapping": "Ensembl_GRCh38_release_100",
+        "annotation": {
+          "url": "https://ftp.ensembl.org/pub/release-100/gtf/homo_sapiens/Homo_sapiens.GRCh38.100.gtf.gz",
+          "bytes": 46973686,
+          "sha256": "6deab14681c08eb4e6cffad4e9ded842cadac76386addb3fcda204e97ed93a37",
+          "content_range": null,
+          "etag": "\"2ccc2f6-5a04394304e40\""
+        },
+        "results": {
+          "SPP1": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 11,
+            "positive": 5,
+            "negative": 6,
+            "ties": 0,
+            "median_delta_log2_cpm_plus1": -0.20414902364606657,
+            "mean_delta_log2_cpm_plus1": 0.6171308537526634,
+            "loo_median_range": [
+              -0.4598128519113107,
+              -0.012722268535373171
+            ],
+            "p_exact_sign": 1,
+            "bonferroni_6": 1,
+            "mapped": 1,
+            "required": 1
+          },
+          "CXCR4": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 11,
+            "positive": 10,
+            "negative": 1,
+            "ties": 0,
+            "median_delta_log2_cpm_plus1": 1.7822984836296447,
+            "mean_delta_log2_cpm_plus1": 1.8767160658314,
+            "loo_median_range": [
+              1.6459657119215936,
+              1.8730693943146375
+            ],
+            "p_exact_sign": 0.01171875,
+            "bonferroni_6": 0.0703125,
+            "mapped": 1,
+            "required": 1
+          },
+          "pEMT": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 11,
+            "positive": 5,
+            "negative": 6,
+            "ties": 0,
+            "median_delta_log2_cpm_plus1": -0.18204583011969255,
+            "mean_delta_log2_cpm_plus1": -0.36972949192356813,
+            "loo_median_range": [
+              -0.22953715629503169,
+              -0.08298506938977379
+            ],
+            "p_exact_sign": 1,
+            "bonferroni_6": 1,
+            "mapped": 15,
+            "required": 15
+          },
+          "epithelial": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 11,
+            "positive": 2,
+            "negative": 9,
+            "ties": 0,
+            "median_delta_log2_cpm_plus1": -1.0839172663262246,
+            "mean_delta_log2_cpm_plus1": -0.8078623693864484,
+            "loo_median_range": [
+              -1.1715031638748417,
+              -0.9418886981481727
+            ],
+            "p_exact_sign": 0.0654296875,
+            "bonferroni_6": 0.392578125,
+            "mapped": 4,
+            "required": 4
+          },
+          "T_cell": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 11,
+            "positive": 9,
+            "negative": 2,
+            "ties": 0,
+            "median_delta_log2_cpm_plus1": 1.1524611543146661,
+            "mean_delta_log2_cpm_plus1": 1.6194727671024538,
+            "loo_median_range": [
+              1.0975406438802848,
+              1.6370154806015724
+            ],
+            "p_exact_sign": 0.0654296875,
+            "bonferroni_6": 0.392578125,
+            "mapped": 3,
+            "required": 3
+          },
+          "B_cell": {
+            "status": "EXPLORATORY_PAIRED_WHOLE_TISSUE",
+            "pairs": 11,
+            "positive": 11,
+            "negative": 0,
+            "ties": 0,
+            "median_delta_log2_cpm_plus1": 1.668656127107849,
+            "mean_delta_log2_cpm_plus1": 2.1605246220262666,
+            "loo_median_range": [
+              1.5512544208681618,
+              1.8533974800632653
+            ],
+            "p_exact_sign": 0.0009765625,
+            "bonferroni_6": 0.005859375,
+            "mapped": 3,
+            "required": 3
+          }
+        },
+        "limits": [
+          "Same six frozen endpoints as #353; whole tissue and already published paired cohort; sample-average log2(CPM+1), equal patient weight, exact sign test, fixed family 6. No individual expression values or novel causal claim."
+        ],
+        "mode": "bulk",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 29b88d2d6c2813f4e82ac52e64af919a064f221d19892ad587fc734cf63cb2f5",
+        "Artifact matrix-readout-bulk.zip successfully finalized. Artifact ID 15019400054"
+      ]
+    }
+  ],
+  "unfinished": [
+    {
+      "job": 139182726431,
+      "name": "paired-full",
+      "status": "in_progress"
+    }
+  ]
+}
