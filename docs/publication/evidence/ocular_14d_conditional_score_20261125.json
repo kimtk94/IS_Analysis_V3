@@ -1,0 +1,129 @@
+{
+  "provenance": {
+    "run_id": 45563105992,
+    "job_id": 139031292206,
+    "artifact_id": 14998946580,
+    "reported_artifact_zip_sha256": "f22ec4992a49564ef95d475ec7526183f8e2ab4eeb025669c4d0593348259498",
+    "source_commit": "dbfdf9a3b47711bbe379da759beff2d487e30e01",
+    "readback": "Verified actual stdout, upload-reported ZIP SHA256; not independently downloaded."
+  },
+  "result": {
+    "status": "CONDITIONAL_DEPOSITOR_LABEL_DESCRIPTIVE",
+    "study": "GSE65240",
+    "primary_source_gate": "HOLD_SOURCE_NAME_CONFLICT",
+    "source_conflicts": 4,
+    "commercial_lots": 3,
+    "donor_independence_certified": false,
+    "panel_sha256": "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606",
+    "platforms": {
+      "GPL14550": {
+        "samples": [
+          "GSM1590607",
+          "GSM1590608"
+        ],
+        "rank_universe": 29831,
+        "mapped_candidates": 220,
+        "matrix_sha256": "e45a6f3ee81552d462be998f17dc4f61de0af01eb653ff940321974fc9875d8a",
+        "annotation_sha256": "7d9c55be92867b90e9d510fff18a851d7ac0d2f51a41e5379296733a784571d8"
+      },
+      "GPL17077": {
+        "samples": [
+          "GSM1590603",
+          "GSM1590604",
+          "GSM1590605",
+          "GSM1590606"
+        ],
+        "rank_universe": 29831,
+        "mapped_candidates": 220,
+        "matrix_sha256": "64fc6f88743edb8246a992ccbcb04428179ea80838815cecc9b7c86d40bfa19a",
+        "annotation_sha256": "b4714e80b7044823978f93cd4e305c54891446175790d4af1a7cdc100f3de34e"
+      }
+    },
+    "panels": {
+      "all241": {
+        "frozen": 241,
+        "mapped": 220,
+        "direction_coverage": {
+          "1": {
+            "frozen": 117,
+            "mapped": 106
+          },
+          "-1": {
+            "frozen": 124,
+            "mapped": 114
+          }
+        },
+        "all_three_lots": {
+          "2584": {
+            "platform": "GPL17077",
+            "signed_percentile_shift": 0.07860534800588771,
+            "positive_direction_genes": 192,
+            "source_name_conflict": true
+          },
+          "3423": {
+            "platform": "GPL17077",
+            "signed_percentile_shift": 0.07568038587070802,
+            "positive_direction_genes": 192,
+            "source_name_conflict": true
+          },
+          "4973": {
+            "platform": "GPL14550",
+            "signed_percentile_shift": 0.11106932690520234,
+            "positive_direction_genes": 191,
+            "source_name_conflict": false
+          }
+        },
+        "positive_lots": 3,
+        "median_conditional_shift": 0.07860534800588771,
+        "mean_conditional_shift": 0.08845168692726603,
+        "conflict_free_single_pair_shift": 0.11106932690520234,
+        "inferential_p": null
+      },
+      "ECM16": {
+        "frozen": 16,
+        "mapped": 16,
+        "direction_coverage": {
+          "1": {
+            "frozen": 7,
+            "mapped": 7
+          },
+          "-1": {
+            "frozen": 9,
+            "mapped": 9
+          }
+        },
+        "all_three_lots": {
+          "2584": {
+            "platform": "GPL17077",
+            "signed_percentile_shift": 0.09921254315980021,
+            "positive_direction_genes": 16,
+            "source_name_conflict": true
+          },
+          "3423": {
+            "platform": "GPL17077",
+            "signed_percentile_shift": 0.09425021370386513,
+            "positive_direction_genes": 16,
+            "source_name_conflict": true
+          },
+          "4973": {
+            "platform": "GPL14550",
+            "signed_percentile_shift": 0.11646860648318864,
+            "positive_direction_genes": 14,
+            "source_name_conflict": false
+          }
+        },
+        "positive_lots": 3,
+        "median_conditional_shift": 0.09921254315980021,
+        "mean_conditional_shift": 0.10331045444895133,
+        "conflict_free_single_pair_shift": 0.11646860648318864,
+        "inferential_p": null
+      }
+    },
+    "limits": [
+      "Title, explicit characteristics and original raw filenames corroborate all six intended sample labels; source_name conflicts in four. Conditional interpretation, not adjudicated chain of custody. No outcome-based label changes.",
+      "Use three fixed commercial lot pairs, each within a single platform, and conflict-free lot4973 separately. No cross-platform array pooling. Probe percentile ranks within each platform/sample; gene score median across mapped probes; common exact Entrez panel frozen before scoring.",
+      "No formal P values because independent biological units are not certified. Three commercial lots are not three independently verified donors. Conflict-free pair is one descriptive observation, not independent validation.",
+      "Same public study examined previously; no claim of blind validation, clinical prediction, drug equivalence, or pooled significance."
+    ]
+  }
+}

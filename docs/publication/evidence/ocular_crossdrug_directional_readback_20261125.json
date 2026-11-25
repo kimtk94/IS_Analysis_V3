@@ -1,0 +1,150 @@
+{
+  "provenance": {
+    "run_id": 45530972572,
+    "job_id": 138925896995,
+    "artifact_id": 14984009885,
+    "reported_artifact_zip_sha256": "a37478fde424b33fe0920ba4415a989e31bc42b6dda8ad8cb8f1f17ac234b3a8",
+    "readback": "Verified actual stdout, upload-reported ZIP SHA256; not independently downloaded."
+  },
+  "result": {
+    "status": "DESCRIPTIVE_ANNOTATED_PROBE_SENSITIVITY",
+    "study": "GSE16643",
+    "panel_sha256": "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606",
+    "annotation_sha256": "aacec81b2d95f183f0827b43e769388a92917811b81920c13ecc8fe148c5a3ab",
+    "matrix_sha256": "a1209f31f7ae3ec35377533057832b95411de6a76867fab07dec93bddd806fa6",
+    "annotation_rows": 41108,
+    "matrix_rows": 41088,
+    "eligible_annotated_probes": 30679,
+    "complete_rank_universe": 30548,
+    "excluded_nonfinite_annotated_probes": 131,
+    "biological_strains": 2,
+    "arrays": 23,
+    "panels": {
+      "all241": {
+        "frozen": 241,
+        "mapped": 229,
+        "direction_coverage": {
+          "1": {
+            "frozen": 117,
+            "mapped": 109
+          },
+          "-1": {
+            "frozen": 124,
+            "mapped": 120
+          }
+        },
+        "status": "DESCRIPTIVE",
+        "scores": {
+          "86_Dex": {
+            "treated_arrays": 3,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.08707664879039244,
+            "positive_genes": 217,
+            "ties": 0
+          },
+          "86_FA": {
+            "treated_arrays": 3,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.08392800201424955,
+            "positive_genes": 222,
+            "ties": 0
+          },
+          "86_TA": {
+            "treated_arrays": 3,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.08667511639400535,
+            "positive_genes": 222,
+            "ties": 0
+          },
+          "93_Dex": {
+            "treated_arrays": 3,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.0732710198701297,
+            "positive_genes": 218,
+            "ties": 0
+          },
+          "93_FA": {
+            "treated_arrays": 3,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.06436672598105561,
+            "positive_genes": 204,
+            "ties": 0
+          },
+          "93_TA": {
+            "treated_arrays": 2,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.0760428763742898,
+            "positive_genes": 220,
+            "ties": 0
+          }
+        },
+        "positive_strain_drug_contrasts": 6
+      },
+      "ECM16": {
+        "frozen": 16,
+        "mapped": 16,
+        "direction_coverage": {
+          "1": {
+            "frozen": 7,
+            "mapped": 7
+          },
+          "-1": {
+            "frozen": 9,
+            "mapped": 9
+          }
+        },
+        "status": "DESCRIPTIVE",
+        "scores": {
+          "86_Dex": {
+            "treated_arrays": 3,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.08302609827157262,
+            "positive_genes": 16,
+            "ties": 0
+          },
+          "86_FA": {
+            "treated_arrays": 3,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.07455411701802626,
+            "positive_genes": 16,
+            "ties": 0
+          },
+          "86_TA": {
+            "treated_arrays": 3,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.07903852134345947,
+            "positive_genes": 15,
+            "ties": 0
+          },
+          "93_Dex": {
+            "treated_arrays": 3,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.0604008445724761,
+            "positive_genes": 15,
+            "ties": 0
+          },
+          "93_FA": {
+            "treated_arrays": 3,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.05177541628475406,
+            "positive_genes": 14,
+            "ties": 0
+          },
+          "93_TA": {
+            "treated_arrays": 2,
+            "vehicle_arrays": 3,
+            "mean_signed_percentile_shift": 0.06461910354196673,
+            "positive_genes": 15,
+            "ties": 0
+          }
+        },
+        "positive_strain_drug_contrasts": 6
+      }
+    },
+    "limitations": [
+      "No explicit CONTROL_TYPE field; rank universe is unique-Entrez Agilent probes, not all non-control probes as originally planned. Separate descriptive sensitivity, not an exact replay.",
+      "Two strains with culture/array repeats, not 23 independent donors. No inferential P value or independent confirmation claim.",
+      "Cross-drug and ECM responses already studied; no drug equivalence, clinical prediction or novelty claim. Prior study reuse not fully ruled out."
+    ]
+  }
+}
