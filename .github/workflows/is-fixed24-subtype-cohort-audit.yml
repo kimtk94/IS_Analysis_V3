@@ -1,0 +1,30 @@
+name: IS fixed 24 subtype cohort audit
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/fixed24_subtype_cohort_audit.py','.github/workflows/is-fixed24-subtype-cohort-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cohort-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify original primary supplement and reconcile eight discovery totals
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+          curl -fLsS --connect-timeout 15 --max-time 75 --max-filesize 2000000 'https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-022-05165-3/MediaObjects/41586_2022_5165_MOESM4_ESM.xlsx' -o "$RUNNER_TEMP/supp.xlsx"
+          python scripts/is/fixed24_subtype_cohort_audit.py --workbook "$RUNNER_TEMP/supp.xlsx" --out outputs/subtype-cohort-audit.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-fixed24-subtype-cohort-audit
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
