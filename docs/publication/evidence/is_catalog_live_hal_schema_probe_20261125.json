@@ -1,0 +1,366 @@
+{
+  "provenance": {
+    "run_id": 45559096023,
+    "job_id": 139018195063,
+    "artifact_id": 14997511221,
+    "reported_artifact_zip_sha256": "5f9b8febe5643764f6482ef1546a4a406c126c4abc2d1d90659250b0f9d78605",
+    "source_commit": "56faecc508296cd9e490c21308853b67121fad3a",
+    "readback": "Actual stdout; upload-reported ZIP digest."
+  },
+  "result": {
+    "status": "BOUNDED_LIVE_SCHEMA_PROBE_NOT_NOVELTY",
+    "responses": {
+      "chr10_region": {
+        "status": "HTTP_RESPONSE",
+        "source": {
+          "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=10&bp_start=35333363&bp_end=36333363&page=0&size=2",
+          "sha256": "1eb6bf3402e56276c019cd37170bc0b1338a9e3481fd91f3a7a8aa8e51968036",
+          "bytes": 1938
+        },
+        "schema": {
+          "_embedded": "dict",
+          "_links": "dict",
+          "page": "dict"
+        },
+        "snapshot": {
+          "_embedded": {
+            "snps": [
+              {
+                "rs_id": "rs756644772",
+                "merged": 0,
+                "functional_class": "intergenic_variant",
+                "last_update_date": "2026-06-29T11:30:30.392+00:00",
+                "locations": [
+                  {
+                    "chromosome_name": "10",
+                    "chromosome_position": 36289518,
+                    "region": {
+                      "name": "10p11.21"
+                    }
+                  }
+                ],
+                "alleles": "G/A (forward)",
+                "most_severe_consequence": "intergenic_variant",
+                "mapped_genes": [
+                  "MTND5P17",
+                  "LINC02630"
+                ],
+                "_links": {
+                  "self": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs756644772"
+                  },
+                  "genomic_contexts": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs756644772/genomic-contexts{?sort,direction}",
+                    "templated": true
+                  }
+                }
+              },
+              {
+                "rs_id": "rs4934766",
+                "merged": 0,
+                "functional_class": "intron_variant",
+                "last_update_date": "2026-04-28T17:32:03.226+00:00",
+                "locations": [
+                  {
+                    "chromosome_name": "10",
+                    "chromosome_position": 35797274,
+                    "region": {
+                      "name": "10p11.21"
+                    }
+                  }
+                ],
+                "maf": 0.206044,
+                "minor_allele": "A",
+                "alleles": "G/A (forward)",
+                "most_severe_consequence": "intron_variant",
+                "mapped_genes": [
+                  "PCAT5"
+                ],
+                "_links": {
+                  "self": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs4934766"
+                  },
+                  "genomic_contexts": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs4934766/genomic-contexts{?sort,direction}",
+                    "templated": true
+                  }
+                }
+              }
+            ]
+          },
+          "_links": {
+            "first": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=10&bp_start=35333363&bp_end=36333363&page=0&size=2"
+            },
+            "self": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=10&bp_start=35333363&bp_end=36333363&page=0&size=2"
+            },
+            "next": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=10&bp_start=35333363&bp_end=36333363&page=1&size=2"
+            },
+            "last": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=10&bp_start=35333363&bp_end=36333363&page=25&size=2"
+            }
+          },
+          "page": {
+            "size": 2,
+            "totalElements": 51,
+            "totalPages": 26,
+            "number": 0
+          }
+        }
+      },
+      "chr16_region": {
+        "status": "HTTP_RESPONSE",
+        "source": {
+          "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=16&bp_start=81275211&bp_end=82275211&page=0&size=2",
+          "sha256": "2bf46a1dd168f290f904a9d0faa9e566c9aab4da2551043d7bf2826a9bc3753f",
+          "bytes": 1956
+        },
+        "schema": {
+          "_embedded": "dict",
+          "_links": "dict",
+          "page": "dict"
+        },
+        "snapshot": {
+          "_embedded": {
+            "snps": [
+              {
+                "rs_id": "rs6564996",
+                "merged": 0,
+                "functional_class": "intron_variant",
+                "last_update_date": "2026-10-09T15:18:37.117+00:00",
+                "locations": [
+                  {
+                    "chromosome_name": "16",
+                    "chromosome_position": 82173937,
+                    "region": {
+                      "name": "16q23.3"
+                    }
+                  }
+                ],
+                "maf": 0.130887,
+                "minor_allele": "T",
+                "alleles": "T/A/C/G (forward)",
+                "most_severe_consequence": "intron_variant",
+                "mapped_genes": [
+                  "MPHOSPH6-DT"
+                ],
+                "_links": {
+                  "self": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs6564996"
+                  },
+                  "genomic_contexts": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs6564996/genomic-contexts{?sort,direction}",
+                    "templated": true
+                  }
+                }
+              },
+              {
+                "rs_id": "rs35137323",
+                "merged": 0,
+                "functional_class": "intron_variant",
+                "last_update_date": "2026-10-07T16:02:16.105+00:00",
+                "locations": [
+                  {
+                    "chromosome_name": "16",
+                    "chromosome_position": 81512159,
+                    "region": {
+                      "name": "16q23.2"
+                    }
+                  }
+                ],
+                "maf": 0.270997,
+                "minor_allele": "T",
+                "alleles": "G/T (forward)",
+                "most_severe_consequence": "intron_variant",
+                "mapped_genes": [
+                  "CMIP"
+                ],
+                "_links": {
+                  "self": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs35137323"
+                  },
+                  "genomic_contexts": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs35137323/genomic-contexts{?sort,direction}",
+                    "templated": true
+                  }
+                }
+              }
+            ]
+          },
+          "_links": {
+            "first": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=16&bp_start=81275211&bp_end=82275211&page=0&size=2"
+            },
+            "self": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=16&bp_start=81275211&bp_end=82275211&page=0&size=2"
+            },
+            "next": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=16&bp_start=81275211&bp_end=82275211&page=1&size=2"
+            },
+            "last": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=16&bp_start=81275211&bp_end=82275211&page=170&size=2"
+            }
+          },
+          "page": {
+            "size": 2,
+            "totalElements": 342,
+            "totalPages": 171,
+            "number": 0
+          }
+        }
+      },
+      "rs2767060": {
+        "status": "HTTP_RESPONSE",
+        "source": {
+          "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations?rs_id=rs2767060&page=0&size=2",
+          "sha256": "775a57de00e41db4e6c890525db81194e655fa74de07eb4d77054743ca44564e",
+          "bytes": 174
+        },
+        "schema": {
+          "_links": "dict",
+          "page": "dict"
+        },
+        "snapshot": {
+          "_links": {
+            "self": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations?rs_id=rs2767060&page=0&size=2"
+            }
+          },
+          "page": {
+            "size": 2,
+            "totalElements": 0,
+            "totalPages": 0,
+            "number": 0
+          }
+        }
+      },
+      "rs7203740": {
+        "status": "HTTP_RESPONSE",
+        "source": {
+          "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations?rs_id=rs7203740&page=0&size=2",
+          "sha256": "0c062b7a988ab6b2a1b649202b70a0ad31aa6681e4598a9deb79169cbb383c53",
+          "bytes": 174
+        },
+        "schema": {
+          "_links": "dict",
+          "page": "dict"
+        },
+        "snapshot": {
+          "_links": {
+            "self": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations?rs_id=rs7203740&page=0&size=2"
+            }
+          },
+          "page": {
+            "size": 2,
+            "totalElements": 0,
+            "totalPages": 0,
+            "number": 0
+          }
+        }
+      },
+      "known_rs2129981": {
+        "status": "HTTP_RESPONSE",
+        "source": {
+          "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations?rs_id=rs2129981&page=0&size=2",
+          "sha256": "efd40f715b6797af24c69331018c8e74789b44fe5c769fa7603ae1786164701b",
+          "bytes": 1194
+        },
+        "schema": {
+          "_embedded": "dict",
+          "_links": "dict",
+          "page": "dict"
+        },
+        "snapshot": {
+          "_embedded": {
+            "associations": [
+              {
+                "association_id": 64718801,
+                "risk_frequency": "0.450122621",
+                "pvalue_description": "",
+                "pvalue_mantissa": 1,
+                "pvalue_exponent": -8,
+                "multi_snp_haplotype": false,
+                "snp_interaction": false,
+                "range": "[1.058978995-1.123857469]",
+                "or_per_copy_num": 1.0909361,
+                "or_value": "1.0909361",
+                "beta": "-",
+                "p_value": 1e-8,
+                "efo_traits": [
+                  {
+                    "efo_id": "MONDO_0005009",
+                    "efo_trait": "congestive heart failure"
+                  }
+                ],
+                "reported_trait": [
+                  "Congestive heart failure"
+                ],
+                "accession_id": "GCST90013686",
+                "locations": [
+                  "4:110783043"
+                ],
+                "mapped_genes": [
+                  "LINC01438",
+                  "PITX2"
+                ],
+                "bg_efo_traits": [],
+                "pubmed_id": "32514122",
+                "first_author": "Ishigaki K",
+                "ci_lower": 1.058979,
+                "ci_upper": 1.1238575,
+                "snp_effect_allele": [
+                  "rs2129981-T"
+                ],
+                "snp_allele": [
+                  {
+                    "rs_id": "rs2129981",
+                    "effect_allele": "T"
+                  }
+                ],
+                "_links": {
+                  "self": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations/64718801"
+                  },
+                  "loci": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations/64718801/loci"
+                  },
+                  "snp": {
+                    "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs2129981"
+                  }
+                }
+              }
+            ]
+          },
+          "_links": {
+            "self": {
+              "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations?rs_id=rs2129981&page=0&size=2"
+            }
+          },
+          "page": {
+            "size": 2,
+            "totalElements": 1,
+            "totalPages": 1,
+            "number": 0
+          }
+        }
+      }
+    },
+    "limits": [
+      "Probe uses small first pages only; no assertion of complete coverage, association absence or novelty. Positive control rs2129981 included to validate exact filter and schema."
+    ],
+    "metadata": {
+      "version": "2.0",
+      "data_release_date": "2026-11-17",
+      "gene_build": "GRCh38.p14",
+      "dbsnp_build": "-"
+    },
+    "metadata_source": {
+      "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/metadata",
+      "sha256": "cfa32d0d0114878d91e42c2754949e9aa14ea6021af9ab84e0cc9384d88cd4b1",
+      "bytes": 637
+    }
+  }
+}

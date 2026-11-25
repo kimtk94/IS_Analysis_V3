@@ -1,0 +1,33 @@
+{
+  "provenance": {
+    "run_id": 45559096023,
+    "job_id": 139018194771,
+    "artifact_id": 14997082345,
+    "reported_artifact_zip_sha256": "ee4df51aa89ca9ae7a74657286989ca8420e749af06b4dc98d592f8ef881e50a",
+    "source_commit": "56faecc508296cd9e490c21308853b67121fad3a",
+    "readback": "Actual stdout; upload-reported ZIP digest."
+  },
+  "result": {
+    "status": "COMPLETE_SAME_RELEASE_IDENTIFIER_AUDIT",
+    "expected_source_sha256": "e21efac4551ae7e3558699111481053dcf05deb6557f236fbecb9f330264c360",
+    "source": {
+      "url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/susie/QTS000025/QTD000434/QTD000434.credible_sets.tsv.gz",
+      "compressed_bytes": 12466333,
+      "sha256": "e21efac4551ae7e3558699111481053dcf05deb6557f236fbecb9f330264c360",
+      "complete_file_retrieved": true
+    },
+    "source_rows": 377180,
+    "identifier_counts": {
+      "gene_id_exact_ensembl": 377180,
+      "molecular_trait_id_exact_ensembl": 377180
+    },
+    "distinct_ensembl_gene_roots": 7083,
+    "target_exact_or_version_suffix_rows": 0,
+    "target_rows": [],
+    "exact_position_all_gene_rows": [],
+    "rs7203740_all_gene_rows": [],
+    "limits": [
+      "Same official hash-pinned release, not independent replication. Normalization strips only a numeric Ensembl version suffix; it does not infer aliases or map other identifier systems. No absent variant PIP assigned."
+    ]
+  }
+}

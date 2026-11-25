@@ -22,17 +22,29 @@ def fetch(endpoint,params=None):
         require(r.status==200 and urlparse(r.geturl()).hostname=="www.ebi.ac.uk","Catalog HTTP/host")
         raw=r.read(8000001);require(len(raw)<=8000000,"Catalog response cap")
     return json.loads(raw),{"url":u,"sha256":hashlib.sha256(raw).hexdigest(),"bytes":len(raw)}
+def parse_page(x,endpoint,i,size_limit):
+    # Actual v2 HAL response schema from verified run 45559096023.
+    require(isinstance(x,dict) and isinstance(x.get("page"),dict) and isinstance(x.get("_links"),dict),"Unexpected live HAL page")
+    p=x["page"]
+    n,size,tp,num=[p[k] for k in ("totalElements","size","totalPages","number")]
+    require(all(isinstance(v,int) and not isinstance(v,bool) for v in (n,size,tp,num)) and n>=0 and tp>=0 and 0<size<=size_limit and num==i,"Page identity")
+    require(tp==math.ceil(n/size),"Page count")
+    key={"single-nucleotide-polymorphisms":"snps","associations":"associations"}[endpoint]
+    if n==0:
+        require(i==0 and tp==0 and (x.get("_embedded") is None or x.get("_embedded")=={key:[]}),"Nonempty response with zero total")
+        content=[]
+    else:
+        require(isinstance(x.get("_embedded"),dict) and isinstance(x["_embedded"].get(key),list),"Missing HAL embedded resource")
+        content=x["_embedded"][key]
+        require(i<tp and len(content)==min(size,n-i*size),"Incomplete/oversized HAL page")
+    return content,n,size,tp
 def paged(endpoint,params):
-    out=[];pages=[];total=None;expected_pages=None
+    out=[];pages=[];total=None;expected_pages=None;page_size=None
     for i in range(MAX_PAGES):
         x,source=fetch(endpoint,{**params,"page":i,"size":PAGE})
-        require(isinstance(x,dict) and isinstance(x.get("content"),list) and isinstance(x.get("page"),dict),"Unexpected documented v2 page schema")
-        p=x["page"];content=x["content"]
-        n,size,tp,num=[p[k] for k in ("total_elements","size","total_pages","number")]
-        require(all(isinstance(v,int) and not isinstance(v,bool) for v in (n,size,tp,num)) and n>=0 and tp>=0 and 0<size<=PAGE and num==i,"Page identity")
-        require(len(content)<=size and tp==math.ceil(n/size),"Page count")
-        if total is None:total=n;expected_pages=tp
-        require(n==total and tp==expected_pages,"Live pagination changed")
+        content,n,size,tp=parse_page(x,endpoint,i,PAGE)
+        if total is None:total=n;expected_pages=tp;page_size=size
+        require(n==total and tp==expected_pages and size==page_size,"Live pagination changed")
         out.extend(content);pages.append(source)
         if i+1>=tp:break
     return out,{"total_elements":total,"returned_elements":len(out),"complete":len(out)==total and len(pages)==max(1,expected_pages),"pages":pages}
@@ -57,7 +69,8 @@ def audit(proxy_path):
     build=md.get("gene_build");require(isinstance(build,str) and build.startswith("GRCh38"),"Catalog build not GRCh38")
     out["catalog_metadata"]={k:md.get(k) for k in ("version","data_release_date","api_release_date","gene_build","dbsnp_build","ensembl_version")}
     out["catalog_metadata_source"]=src
-    exact=set(WINDOWS)
+    exact=set(WINDOWS)|{"rs2129981"}
+    require(md.get("version")=="2.0" and md.get("data_release_date")=="2026-11-17","Catalog release changed from schema probe; review before comparison")
     for rs,(ch,pos,win) in WINDOWS.items():
         try:
             rows,pages=paged("single-nucleotide-polymorphisms",{"chromosome":ch,"bp_start":pos-win,"bp_end":pos+win,"sort":"rs_id","direction":"asc"})
@@ -73,7 +86,8 @@ def audit(proxy_path):
         except (OSError,ValueError,KeyError,TypeError,IndexError) as e:out["regions"][rs]={"status":"HOLD_SOURCE_OR_SCHEMA","reason":str(e)[:240]}
     out["planned_exact_queries"]=sorted(exact)
     if len(exact)>MAX_EXACT:
-        out["exact_query_status"]="HOLD_EXACT_QUERY_BUDGET";return out
+        out["exact_query_status"]="HOLD_EXACT_PROXY_QUERY_BUDGET"
+        exact=set(WINDOWS)|{"rs2129981"}
     for rs in sorted(exact):
         try:
             rows,pages=paged("associations",{"rs_id":rs,"sort":"p_value","direction":"asc"})
@@ -86,8 +100,13 @@ def audit(proxy_path):
                 matches.append({k:a.get(k) for k in ("association_id","reported_trait","p_value","accession_id","pubmed_id","first_author","mapped_genes","snp_allele","multi_snp_haplotype","snp_interaction","beta_num","beta_unit","or_per_copy_num")})
             out["exact_associations"][rs]={"status":"COMPLETE_EXACT_CURATED_ASSOCIATIONS" if pages["complete"] else "HOLD_PAGE_CAP","pagination":pages,"rows":matches}
         except (OSError,ValueError,KeyError,TypeError,IndexError) as e:out["exact_associations"][rs]={"status":"HOLD_SOURCE_OR_SCHEMA","reason":str(e)[:240]}
+    control=out["exact_associations"].get("rs2129981",{})
+    out["positive_control_pass"]=control.get("status")=="COMPLETE_EXACT_CURATED_ASSOCIATIONS" and any(v.get("association_id")==64718801 and v.get("pubmed_id")=="32514122" for v in control.get("rows",[]))
+    if not out["positive_control_pass"]:out["status"]="HOLD_POSITIVE_CONTROL"
     return out
 def main():
+    assert parse_page({"_links":{},"page":{"totalElements":0,"size":2,"totalPages":0,"number":0}},"associations",0,2)[0]==[]
+    assert len(parse_page({"_links":{},"_embedded":{"snps":[{"rs_id":"rs1"}]},"page":{"totalElements":1,"size":2,"totalPages":1,"number":0}},"single-nucleotide-polymorphisms",0,2)[0])==1
     p=argparse.ArgumentParser();p.add_argument("--proxy",type=Path,required=True);p.add_argument("--out",type=Path,required=True);a=p.parse_args()
     try:x=audit(a.proxy)
     except (OSError,ValueError,KeyError,TypeError,IndexError) as e:x={"status":"HOLD_SOURCE_OR_SCHEMA","reason":str(e)[:240]}
