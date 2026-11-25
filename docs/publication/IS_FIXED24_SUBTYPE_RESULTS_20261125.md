@@ -23,3 +23,12 @@ At rs7203740, the exact C/T (not C/A) T allele showed nominal PLCG2 association 
 - [Exact identifier audit](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45559096023)
 - [Lead diagnostic](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45559352081)
 - [Complete curated Catalog regional audit](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45559287128)
+
+## Regional association coverage and figure readback
+
+A separate nominal-only descriptive regional analysis preserved the failed permutation/nominal equivalence gate and reproduced both nominal anchor rows. In the fixed chr16:81,275,211–82,275,211 interval, 5,771 PLCG2 rows collapsed to 5,363 unique valid variants (408 identical aliases); 3,555 strict nonpalindromic SNPs were eligible. Of these, EAS CES matched 2,230 (62.7%), EAS SVS 2,398 (67.5%), EUR CES 2,963 (83.3%), and EUR SVS 2,612 (73.5%). The four-study intersection contained 1,966 variants (55.3%). rs7203740 C/T matched the two EAS subtypes only; rs11640696 T/G matched all four. The strongest matched EAS CES signal was rs7203740 (P 9.198e-7) whereas the strongest nominal PLCG2 eQTL was rs11640696 (P 1.04157e-10; EAS CES P 0.2334). None of the matched variants in any of the four comparisons had GWAS P < 5e-8. This does not exclude shared causal signal; power, incomplete coverage, distinct ancestry/LD and multiple signals may contribute. The shared 1,966-variant subset excludes the original candidate, so it cannot alone assess that variant. The nominal source has AN=1120 across observed unique variants, not certified regression N or sdY. The fixed interval captures only part of the reported 11,248 permutation-tested cis variants; counts from different files must not be treated as identical testing universes. Formal colocalization remains HOLD.
+
+The two manuscript figures and full 192-row supplement were successfully generated from the fixed family (heatmap PNG 3783 x 4310; forest PNG 4065 x 1615; each also SVG/PDF). Technical generation and parity checks passed; visual QA and independent ZIP digest verification remain pending.
+
+- [Regional readback](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45560562264/artifacts/14997647839), committed aggregate evidence `evidence/is_plcg2_region_coverage_20261125.json`.
+- [Fixed-family figure bundle](https://github.com/kimtk94/IS_Analysis_V3/actions/runs/45560663167/artifacts/14998000760), committed aggregate evidence `evidence/is_fixed24_manuscript_figures_20261125.json`.
