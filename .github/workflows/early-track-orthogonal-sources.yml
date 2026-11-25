@@ -1,0 +1,41 @@
+name: Early-track orthogonal source qualification
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/publication/early_track_orthogonal_sources.py'
+      - '.github/workflows/early-track-orthogonal-sources.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        mode: [hcc, oral, oral_pilot]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
+          path: prior
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6 scipy==1.15.3 openpyxl==3.1.5
+      - run: python scripts/publication/early_track_orthogonal_sources.py selftest
+      - name: Execute public source qualification
+        env:
+          MODE: ${{ matrix.mode }}
+        run: python -u scripts/publication/early_track_orthogonal_sources.py "$MODE" --out "evidence/$MODE.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: orthogonal-${{ matrix.mode }}
+          path: evidence/${{ matrix.mode }}.json
+          if-no-files-found: error
+          retention-days: 30
