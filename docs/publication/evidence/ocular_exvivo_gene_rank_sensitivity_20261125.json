@@ -1,0 +1,79 @@
+{
+  "provenance": {
+    "run_id": 45536989022,
+    "job_id": 138945888331,
+    "artifact_id": 14987287930,
+    "reported_artifact_zip_sha256": "e866f5aae3861d2b0874b5d13dcd1deef24e3491634f9bb712e84c24435347ed",
+    "source_commit": "3de50fcb21152047043b7d3069d95d2ab6eadebe",
+    "readback": "Actual JSON stdout; reported upload ZIP digest not independently downloaded."
+  },
+  "result": {
+    "status": "POST_READOUT_GENE_UNIVERSE_SENSITIVITY",
+    "study": "GSE37474",
+    "pairs": 5,
+    "panel_sha256": "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606",
+    "matrix_sha256": "d348cb1add4a01ec1b17d82da75f4b2081de4d7c3ad2433a42261fdd9543c849",
+    "annotation_sha256": "d7cd44352127b1e34f3a720ebea86093ef255a38f1612a85a2962b71bde8f394",
+    "primary_run": 45535697612,
+    "eligible_probes": 27920,
+    "unique_entrez_genes": 17686,
+    "probe_multiplicity": {
+      "one_probe": 11239,
+      "multiple_probes": 6447,
+      "max_probes": 14
+    },
+    "panels": {
+      "all241": {
+        "mapped": 199,
+        "positive_pairs": 5,
+        "negative_pairs": 0,
+        "ties": 0,
+        "median_signed_percentile_shift": 0.054864535273904294,
+        "mean_signed_percentile_shift": 0.05759349160139724,
+        "pair_scores_sorted": [
+          0.03493252193342604,
+          0.05302976490504087,
+          0.054864535273904294,
+          0.07132078463105986,
+          0.07381985126355514
+        ],
+        "leave_one_pair_out_mean_range": [
+          0.053536901685857764,
+          0.06325873401839004
+        ],
+        "positive_equal_pair_mean_genes": 165,
+        "all_five_positive_genes": 77,
+        "primary_positive_pairs": 5,
+        "primary_median_shift": 0.0520710194957596
+      },
+      "ECM16": {
+        "mapped": 14,
+        "positive_pairs": 5,
+        "negative_pairs": 0,
+        "ties": 0,
+        "median_signed_percentile_shift": 0.08265213809146862,
+        "mean_signed_percentile_shift": 0.09555338362869743,
+        "pair_scores_sorted": [
+          0.07831052810132308,
+          0.08104877142534048,
+          0.08265213809146862,
+          0.1052123552123552,
+          0.1305431253129998
+        ],
+        "leave_one_pair_out_mean_range": [
+          0.08680594820762184,
+          0.09986409751054103
+        ],
+        "positive_equal_pair_mean_genes": 9,
+        "all_five_positive_genes": 6,
+        "primary_positive_pairs": 5,
+        "primary_median_shift": 0.08106196275071635
+      }
+    },
+    "limits": [
+      "Same 5 donor pairs and normalized array signals; not independent replication or an alternative confirmatory test.",
+      "Median within gene across strict eligible probe sets then average-rank across unique Entrez genes. Platform-specific probe affinity remains; no expression fold-change interpretation.",
+      "Preserve primary probe-rank score; this sensitivity was designed after primary result readout. Do not select method by effect magnitude or P. No additional inferential claim."
+    ]
+  }
+}
