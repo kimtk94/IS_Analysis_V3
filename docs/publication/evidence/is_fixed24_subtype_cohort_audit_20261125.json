@@ -1,0 +1,855 @@
+{
+  "provenance": {
+    "run_id": 45539476273,
+    "job_id": 138954165418,
+    "artifact_id": 14988637341,
+    "reported_artifact_zip_sha256": "54e50809172d5876195b9b8f39a03a6f4822d07617d97826bd845fd051eae799",
+    "source_commit": "8dc7e5aa1a357f6dd5ee8aee7d291aadcdbc7a7d",
+    "readback": "Verified actual stdout; upload-reported ZIP digest, not independently downloaded."
+  },
+  "result": {
+    "status": "PUBLISHED_DISCOVERY_TOTALS_RECONCILED_NOT_MODEL_N",
+    "workbook_sha256": "7c688f864c73ec2e9624bde9f53ac48a9880a6a08e59f5e1266690e243618ba4",
+    "sheet": "Suppl.Table1",
+    "header_first_four_rows": {
+      "1": [
+        "Supplementary Table 1: Description of the study samples contributing to GIGASTROKE ",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "2": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "3": [
+        "",
+        "",
+        "Incident only",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Incident & prevalent combined",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Follow-up",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "4": [
+        "Ancestry",
+        "Study",
+        "AS",
+        "AIS",
+        "CES",
+        "SVS",
+        "LAS",
+        "ICH",
+        "Controls",
+        "AS",
+        "AIS",
+        "CES",
+        "SVS",
+        "LAS",
+        "ICH",
+        "Controls",
+        "AS",
+        "AIS",
+        "Controls",
+        "POPULATION TYPE",
+        "Women, %†",
+        "Mean age baseline ± SD (years)",
+        "Mean age at stroke ± SD (years)",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "ancestries": {
+      "EUR": {
+        "total_row": 49,
+        "cohort_count": 44,
+        "published_controls": 1234808,
+        "control_row_sum_reconciles": true,
+        "traits": {
+          "AIS": {
+            "published_cases": 62100,
+            "sum_cases": 62100,
+            "sum_reconciles": true,
+            "nominal_gwas_total": 1296908,
+            "published_cases_plus_shared_controls_matches_nominal": true,
+            "case_contributing_cohorts": 38,
+            "case_contributors": [
+              {
+                "study": "ARIC_EA*",
+                "row": 5,
+                "cases": 523
+              },
+              {
+                "study": "CHS_EA*",
+                "row": 6,
+                "cases": 520
+              },
+              {
+                "study": "FHS_EA*",
+                "row": 7,
+                "cases": 214
+              },
+              {
+                "study": "RS1_EA*",
+                "row": 9,
+                "cases": 603
+              },
+              {
+                "study": "RS2_EA*",
+                "row": 10,
+                "cases": 123
+              },
+              {
+                "study": "RS3_EA**",
+                "row": 11,
+                "cases": 48
+              },
+              {
+                "study": "threeCities_EA*",
+                "row": 12,
+                "cases": 218
+              },
+              {
+                "study": "WGHS_EA*",
+                "row": 13,
+                "cases": 587
+              },
+              {
+                "study": "UKBiobank",
+                "row": 15,
+                "cases": 2211
+              },
+              {
+                "study": "SHIP*",
+                "row": 16,
+                "cases": 41
+              },
+              {
+                "study": "MESA*",
+                "row": 17,
+                "cases": 75
+              },
+              {
+                "study": "EPICCVD*",
+                "row": 18,
+                "cases": 2535
+              },
+              {
+                "study": "HABC*",
+                "row": 19,
+                "cases": 144
+              },
+              {
+                "study": "HUNT**",
+                "row": 21,
+                "cases": 3804
+              },
+              {
+                "study": "EstBB**",
+                "row": 22,
+                "cases": 1375
+              },
+              {
+                "study": "AGES",
+                "row": 23,
+                "cases": 99
+              },
+              {
+                "study": "CCHS (DK)**",
+                "row": 25,
+                "cases": 961
+              },
+              {
+                "study": "FINRISK**",
+                "row": 27,
+                "cases": 629
+              },
+              {
+                "study": "SMART*",
+                "row": 28,
+                "cases": 174
+              },
+              {
+                "study": "ASPREE**",
+                "row": 29,
+                "cases": 191
+              },
+              {
+                "study": "METASTROKE",
+                "row": 30,
+                "cases": 10307
+              },
+              {
+                "study": "SIGN",
+                "row": 31,
+                "cases": 7743
+              },
+              {
+                "study": "DECODE",
+                "row": 32,
+                "cases": 4483
+              },
+              {
+                "study": "Young Lacunar DNA",
+                "row": 33,
+                "cases": 1268
+              },
+              {
+                "study": "SIFAP",
+                "row": 34,
+                "cases": 981
+              },
+              {
+                "study": "INTERSTROKE EUR",
+                "row": 35,
+                "cases": 826
+              },
+              {
+                "study": "HVH1",
+                "row": 36,
+                "cases": 577
+              },
+              {
+                "study": "HVH2",
+                "row": 37,
+                "cases": 103
+              },
+              {
+                "study": "Glasgow",
+                "row": 38,
+                "cases": 599
+              },
+              {
+                "study": "CADISP",
+                "row": 39,
+                "cases": 555
+              },
+              {
+                "study": "SAHLSIS",
+                "row": 40,
+                "cases": 298
+              },
+              {
+                "study": "MDC",
+                "row": 41,
+                "cases": 202
+              },
+              {
+                "study": "Generacion**",
+                "row": 43,
+                "cases": 3279
+              },
+              {
+                "study": "German_Ber_Mun_Wur**",
+                "row": 44,
+                "cases": 4443
+              },
+              {
+                "study": "NL_EA(Future&PSI&Odyssey§)**",
+                "row": 45,
+                "cases": 2170
+              },
+              {
+                "study": "FINNGEN_HOSPITAL**",
+                "row": 46,
+                "cases": 8097
+              },
+              {
+                "study": "FINNGEN_Population**",
+                "row": 47,
+                "cases": 754
+              },
+              {
+                "study": "UTARTU-EstBB**",
+                "row": 48,
+                "cases": 340
+              }
+            ],
+            "BBJ_cases": 0,
+            "BBJ_case_fraction": 0
+          },
+          "CES": {
+            "published_cases": 10804,
+            "sum_cases": 10804,
+            "sum_reconciles": true,
+            "nominal_gwas_total": 1245612,
+            "published_cases_plus_shared_controls_matches_nominal": true,
+            "case_contributing_cohorts": 25,
+            "case_contributors": [
+              {
+                "study": "ARIC_EA*",
+                "row": 5,
+                "cases": 172
+              },
+              {
+                "study": "CHS_EA*",
+                "row": 6,
+                "cases": 192
+              },
+              {
+                "study": "FHS_EA*",
+                "row": 7,
+                "cases": 79
+              },
+              {
+                "study": "RS1_EA*",
+                "row": 9,
+                "cases": 146
+              },
+              {
+                "study": "RS2_EA*",
+                "row": 10,
+                "cases": 24
+              },
+              {
+                "study": "threeCities_EA*",
+                "row": 12,
+                "cases": 60
+              },
+              {
+                "study": "HABC*",
+                "row": 19,
+                "cases": 45
+              },
+              {
+                "study": "HUNT**",
+                "row": 21,
+                "cases": 1165
+              },
+              {
+                "study": "EstBB**",
+                "row": 22,
+                "cases": 252
+              },
+              {
+                "study": "CCHS (DK)**",
+                "row": 25,
+                "cases": 224
+              },
+              {
+                "study": "ASPREE**",
+                "row": 29,
+                "cases": 40
+              },
+              {
+                "study": "METASTROKE",
+                "row": 30,
+                "cases": 1859
+              },
+              {
+                "study": "SIGN",
+                "row": 31,
+                "cases": 2135
+              },
+              {
+                "study": "DECODE",
+                "row": 32,
+                "cases": 1346
+              },
+              {
+                "study": "SIFAP",
+                "row": 34,
+                "cases": 170
+              },
+              {
+                "study": "INTERSTROKE EUR",
+                "row": 35,
+                "cases": 208
+              },
+              {
+                "study": "HVH1",
+                "row": 36,
+                "cases": 92
+              },
+              {
+                "study": "HVH2",
+                "row": 37,
+                "cases": 28
+              },
+              {
+                "study": "Glasgow",
+                "row": 38,
+                "cases": 105
+              },
+              {
+                "study": "CADISP",
+                "row": 39,
+                "cases": 211
+              },
+              {
+                "study": "SAHLSIS",
+                "row": 40,
+                "cases": 35
+              },
+              {
+                "study": "Generacion**",
+                "row": 43,
+                "cases": 1444
+              },
+              {
+                "study": "German_Ber_Mun_Wur**",
+                "row": 44,
+                "cases": 663
+              },
+              {
+                "study": "NL_EA(Future&PSI&Odyssey§)**",
+                "row": 45,
+                "cases": 32
+              },
+              {
+                "study": "UTARTU-EstBB**",
+                "row": 48,
+                "cases": 77
+              }
+            ],
+            "BBJ_cases": 0,
+            "BBJ_case_fraction": 0
+          },
+          "SVS": {
+            "published_cases": 6811,
+            "sum_cases": 6811,
+            "sum_reconciles": true,
+            "nominal_gwas_total": 1241619,
+            "published_cases_plus_shared_controls_matches_nominal": true,
+            "case_contributing_cohorts": 22,
+            "case_contributors": [
+              {
+                "study": "ARIC_EA*",
+                "row": 5,
+                "cases": 117
+              },
+              {
+                "study": "CHS_EA*",
+                "row": 6,
+                "cases": 79
+              },
+              {
+                "study": "FHS_EA*",
+                "row": 7,
+                "cases": 27
+              },
+              {
+                "study": "RS1_EA*",
+                "row": 9,
+                "cases": 48
+              },
+              {
+                "study": "threeCities_EA*",
+                "row": 12,
+                "cases": 31
+              },
+              {
+                "study": "EstBB**",
+                "row": 22,
+                "cases": 488
+              },
+              {
+                "study": "ASPREE**",
+                "row": 29,
+                "cases": 45
+              },
+              {
+                "study": "METASTROKE",
+                "row": 30,
+                "cases": 1349
+              },
+              {
+                "study": "SIGN",
+                "row": 31,
+                "cases": 1534
+              },
+              {
+                "study": "DECODE",
+                "row": 32,
+                "cases": 615
+              },
+              {
+                "study": "Young Lacunar DNA",
+                "row": 33,
+                "cases": 1012
+              },
+              {
+                "study": "SIFAP",
+                "row": 34,
+                "cases": 104
+              },
+              {
+                "study": "INTERSTROKE EUR",
+                "row": 35,
+                "cases": 243
+              },
+              {
+                "study": "HVH1",
+                "row": 36,
+                "cases": 175
+              },
+              {
+                "study": "HVH2",
+                "row": 37,
+                "cases": 39
+              },
+              {
+                "study": "Glasgow",
+                "row": 38,
+                "cases": 137
+              },
+              {
+                "study": "CADISP",
+                "row": 39,
+                "cases": 31
+              },
+              {
+                "study": "SAHLSIS",
+                "row": 40,
+                "cases": 85
+              },
+              {
+                "study": "Generacion**",
+                "row": 43,
+                "cases": 216
+              },
+              {
+                "study": "German_Ber_Mun_Wur**",
+                "row": 44,
+                "cases": 330
+              },
+              {
+                "study": "NL_EA(Future&PSI&Odyssey§)**",
+                "row": 45,
+                "cases": 67
+              },
+              {
+                "study": "UTARTU-EstBB**",
+                "row": 48,
+                "cases": 39
+              }
+            ],
+            "BBJ_cases": 0,
+            "BBJ_case_fraction": 0
+          },
+          "LAS": {
+            "published_cases": 6399,
+            "sum_cases": 6399,
+            "sum_reconciles": true,
+            "nominal_gwas_total": 1241207,
+            "published_cases_plus_shared_controls_matches_nominal": true,
+            "case_contributing_cohorts": 19,
+            "case_contributors": [
+              {
+                "study": "ARIC_EA*",
+                "row": 5,
+                "cases": 41
+              },
+              {
+                "study": "CHS_EA*",
+                "row": 6,
+                "cases": 40
+              },
+              {
+                "study": "FHS_EA*",
+                "row": 7,
+                "cases": 124
+              },
+              {
+                "study": "RS1_EA*",
+                "row": 9,
+                "cases": 64
+              },
+              {
+                "study": "HABC*",
+                "row": 19,
+                "cases": 76
+              },
+              {
+                "study": "EstBB**",
+                "row": 22,
+                "cases": 29
+              },
+              {
+                "study": "ASPREE**",
+                "row": 29,
+                "cases": 52
+              },
+              {
+                "study": "METASTROKE",
+                "row": 30,
+                "cases": 1817
+              },
+              {
+                "study": "SIGN",
+                "row": 31,
+                "cases": 1253
+              },
+              {
+                "study": "DECODE",
+                "row": 32,
+                "cases": 512
+              },
+              {
+                "study": "SIFAP",
+                "row": 34,
+                "cases": 184
+              },
+              {
+                "study": "INTERSTROKE EUR",
+                "row": 35,
+                "cases": 188
+              },
+              {
+                "study": "HVH1",
+                "row": 36,
+                "cases": 62
+              },
+              {
+                "study": "Glasgow",
+                "row": 38,
+                "cases": 72
+              },
+              {
+                "study": "CADISP",
+                "row": 39,
+                "cases": 67
+              },
+              {
+                "study": "Generacion**",
+                "row": 43,
+                "cases": 1370
+              },
+              {
+                "study": "German_Ber_Mun_Wur**",
+                "row": 44,
+                "cases": 329
+              },
+              {
+                "study": "NL_EA(Future&PSI&Odyssey§)**",
+                "row": 45,
+                "cases": 44
+              },
+              {
+                "study": "UTARTU-EstBB**",
+                "row": 48,
+                "cases": 75
+              }
+            ],
+            "BBJ_cases": 0,
+            "BBJ_case_fraction": 0
+          }
+        }
+      },
+      "EAS": {
+        "total_row": 65,
+        "cohort_count": 14,
+        "published_controls": 237242,
+        "control_row_sum_reconciles": true,
+        "traits": {
+          "AIS": {
+            "published_cases": 19032,
+            "sum_cases": 19032,
+            "sum_reconciles": true,
+            "nominal_gwas_total": 256274,
+            "published_cases_plus_shared_controls_matches_nominal": true,
+            "case_contributing_cohorts": 4,
+            "case_contributors": [
+              {
+                "study": "KCPS2_ASN**",
+                "row": 61,
+                "cases": 46
+              },
+              {
+                "study": "BIOBANK_JAPAN*",
+                "row": 62,
+                "cases": 17651
+              },
+              {
+                "study": "HISAYAMA_FSR",
+                "row": 63,
+                "cases": 1113
+              },
+              {
+                "study": "INTERSTROKE_ASN",
+                "row": 64,
+                "cases": 222
+              }
+            ],
+            "BBJ_cases": 17651,
+            "BBJ_case_fraction": 0.9274379991593107
+          },
+          "CES": {
+            "published_cases": 926,
+            "sum_cases": 926,
+            "sum_reconciles": true,
+            "nominal_gwas_total": 238168,
+            "published_cases_plus_shared_controls_matches_nominal": true,
+            "case_contributing_cohorts": 3,
+            "case_contributors": [
+              {
+                "study": "BIOBANK_JAPAN*",
+                "row": 62,
+                "cases": 758
+              },
+              {
+                "study": "HISAYAMA_FSR",
+                "row": 63,
+                "cases": 137
+              },
+              {
+                "study": "INTERSTROKE_ASN",
+                "row": 64,
+                "cases": 31
+              }
+            ],
+            "BBJ_cases": 758,
+            "BBJ_case_fraction": 0.8185745140388769
+          },
+          "SVS": {
+            "published_cases": 5532,
+            "sum_cases": 5532,
+            "sum_reconciles": true,
+            "nominal_gwas_total": 242774,
+            "published_cases_plus_shared_controls_matches_nominal": true,
+            "case_contributing_cohorts": 3,
+            "case_contributors": [
+              {
+                "study": "BIOBANK_JAPAN*",
+                "row": 62,
+                "cases": 4915
+              },
+              {
+                "study": "HISAYAMA_FSR",
+                "row": 63,
+                "cases": 483
+              },
+              {
+                "study": "INTERSTROKE_ASN",
+                "row": 64,
+                "cases": 134
+              }
+            ],
+            "BBJ_cases": 4915,
+            "BBJ_case_fraction": 0.8884671005061461
+          },
+          "LAS": {
+            "published_cases": 1735,
+            "sum_cases": 1735,
+            "sum_reconciles": true,
+            "nominal_gwas_total": 238977,
+            "published_cases_plus_shared_controls_matches_nominal": true,
+            "case_contributing_cohorts": 3,
+            "case_contributors": [
+              {
+                "study": "BIOBANK_JAPAN*",
+                "row": 62,
+                "cases": 1331
+              },
+              {
+                "study": "HISAYAMA_FSR",
+                "row": 63,
+                "cases": 370
+              },
+              {
+                "study": "INTERSTROKE_ASN",
+                "row": 64,
+                "cases": 34
+              }
+            ],
+            "BBJ_cases": 1331,
+            "BBJ_case_fraction": 0.7671469740634006
+          }
+        }
+      }
+    },
+    "limits": [
+      "Only original primary discovery block through Total ALL discovery; no PGS or replication sections.",
+      "Control totals are shared published discovery controls, not necessarily subtype-specific controls or unique persons. Do not derive a missing per-SNP N or infer non-overlap.",
+      "Match against eight previously verified summary-statistic nominal totals; even exact reconciliation is not certification of log-odds scale, phenotype ascertainment or comparable regression models."
+    ],
+    "trait_columns": {
+      "AIS": "K",
+      "CES": "L",
+      "SVS": "M",
+      "LAS": "N"
+    }
+  }
+}
