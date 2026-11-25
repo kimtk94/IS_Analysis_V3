@@ -1,9 +1,9 @@
-name: Early HCC exact tumor-biopsy concordance
+name: Early HCC historical gene-model sensitivity
 on:
   pull_request:
     branches: [main]
     paths:
-      - 'scripts/publication/hcc_tumor_biopsy_concordance.py'
+      - 'scripts/publication/hcc_historical_gene_model.py'
       - '.github/workflows/early-track-external-validation.yml'
   workflow_dispatch:
 permissions:
@@ -26,12 +26,12 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install numpy==2.2.6 scipy==1.15.3 openpyxl==3.1.5
-      - run: python scripts/publication/hcc_tumor_biopsy_concordance.py selftest
-      - run: python -u scripts/publication/hcc_tumor_biopsy_concordance.py analyze --out evidence/hcc_tumor.json
+      - run: python scripts/publication/hcc_historical_gene_model.py selftest
+      - run: python -u scripts/publication/hcc_historical_gene_model.py analyze --out evidence/hcc_tumor.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: hcc-tumor-concordance
+          name: hcc-historical-model
           path: evidence/hcc_tumor.json
           if-no-files-found: error
           retention-days: 30
