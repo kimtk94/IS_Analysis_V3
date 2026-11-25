@@ -33,8 +33,13 @@ def read_ld(v,pop):
         if other==RS:continue
         item={"rsid":other,"r2":r2,"d_prime":d}
         if "chr" in row or "start" in row or "end" in row:
-            require(str(row.get("chr"))=="10" and isinstance(row.get("start"),int) and isinstance(row.get("end"),int) and row["start"]<=row["end"] and abs(row["start"]-35833363)<=500000,"Proxy coordinate identity")
-            item.update(chr=str(row["chr"]),start=row["start"],end=row["end"])
+            # API JSON may encode integer coordinate fields as decimal strings.
+            # Validate syntax before conversion; never round or infer coordinates.
+            start,end=row.get("start"),row.get("end")
+            require(re.fullmatch(r"[0-9]+",str(start)) is not None and re.fullmatch(r"[0-9]+",str(end)) is not None,"Proxy coordinate format: "+str(type(start).__name__)+"/"+str(type(end).__name__))
+            start,end=int(start),int(end)
+            require(str(row.get("chr")).removeprefix("chr")=="10" and 0<start<=end and abs(start-35833363)<=500000,"Proxy coordinate identity: "+str([row.get("chr"),start,end]))
+            item.update(chr="10",start=start,end=end)
         require(other not in proxies or proxies[other]==item,"Duplicate LD conflict")
         proxies[other]=item
     return {"status":"REFERENCE_LD_PARSED" if proxies else "HOLD_NO_PARSED_PROXIES","returned_rows":len(v),"schemas":dict(schemas),"proxies":sorted(proxies.values(),key=lambda x:(-x["r2"],x["rsid"]))}
@@ -44,7 +49,10 @@ def audit(evidence,workbook):
     out={"status":"POST_READOUT_LD_PROXY_PUBLICATION_AUDIT","rsid":RS,"populations":{},"publication_matches":[],"limits":["Single-ID Ensembl 1000 Genomes Phase 3 LD context, not GWAS-matched individual-level LD. Exact variant C/T identity verified in prior reference run. Empty or unparsed responses remain HOLD.","Exact rsID tokens in the pinned one-workbook audit do not prove phenotype association or novelty. LD proxy evidence does not identify a causal gene or causal variant."]}
     for pop in m.POPULATIONS:
         v,source=m.request("/ld/human/"+RS+"/"+pop,{"window_size":500,"r2":.8,"attribs":1})
-        try:d=read_ld(v,pop)
+        expected_sha={"1000GENOMES:phase_3:CHB":"c5a134d1e802955b41a8f28dfa6e262758e11ab2ba096a53f1ef3ae09c3e3835","1000GENOMES:phase_3:JPT":"8d711ef0f479b4c46545bb10092fa9cb9f25972fbcb6ef33d501e4d99787c528","1000GENOMES:phase_3:CEU":"c642d54161a64e4146ccb43276c1fdfcb7eed3b0ea63ae5a001226d0b18a0007"}
+        try:
+            require(source.get("sha256")==expected_sha[pop],"LD response changed from initial verified raw response digest")
+            d=read_ld(v,pop)
         except (ValueError,KeyError,TypeError) as e:d={"status":"HOLD_SCHEMA","returned_rows":len(v) if isinstance(v,list) else None,"observed_keys":sorted(v[0]) if isinstance(v,list) and v and isinstance(v[0],dict) else [],"reason":str(e)[:180],"proxies":[]}
         d["source"]=source;out["populations"][pop]=d
     sets={k:{v["rsid"] for v in d["proxies"]} for k,d in out["populations"].items() if d["status"]=="REFERENCE_LD_PARSED"}
