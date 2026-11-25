@@ -1,9 +1,9 @@
-name: Skin Chinese independent molecular QTL source qualification
+name: Skin Chinese published summary statistics readback
 on:
   pull_request:
     branches: [main]
     paths:
-      - 'scripts/publication/skin_chinese_qtl_sources.py'
+      - 'scripts/publication/skin_chinese_summary_readback.py'
       - '.github/workflows/early-track-genetic-recovery.yml'
   workflow_dispatch:
 permissions:
@@ -11,11 +11,11 @@ permissions:
 jobs:
   public-qtl:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        mode: [eQTL, pQTL, inventory]
+        mode: [eQTL, pQTL]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -26,14 +26,14 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install PyYAML==6.0.2
-      - run: python scripts/publication/skin_chinese_qtl_sources.py selftest
+      - run: python scripts/publication/skin_chinese_summary_readback.py selftest
       - env:
           MODE: ${{ matrix.mode }}
-        run: python -u scripts/publication/skin_chinese_qtl_sources.py "$MODE" --out "evidence/$MODE.json"
+        run: python -u scripts/publication/skin_chinese_summary_readback.py "$MODE" --out "evidence/$MODE.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: chinese-skin-${{ matrix.mode }}
+          name: chinese-summary-${{ matrix.mode }}
           path: evidence/${{ matrix.mode }}.json
           if-no-files-found: error
           retention-days: 30
