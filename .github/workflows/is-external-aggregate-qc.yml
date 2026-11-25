@@ -1,0 +1,30 @@
+name: IS external aggregate response QC
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/external_validation_qc.py','tests/test_is_external_validation_qc.py','.github/workflows/is-external-aggregate-qc.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-qc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Synthetic test suite only and original blank request template
+        run: |
+          python -m unittest discover -s tests -p test_is_external_validation_qc.py -v
+          packet=docs/publication/external_validation_20261125
+          python scripts/is/external_validation_qc.py --packet "$packet" --response "$packet/aggregate_response_template.tsv" --out outputs/blank-template-qc.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-external-blank-template-qc
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
