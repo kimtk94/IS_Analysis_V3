@@ -1,0 +1,268 @@
+{
+  "provenance": {
+    "run_id": 45549485788,
+    "job_id": 138986952388,
+    "artifact_id": 14991854959,
+    "reported_artifact_zip_sha256": "759e20eb172509bf65d96b4a358078277858aa0cd1502ab2e639f7dde80a980a",
+    "source_commit": "ca4121a492248b1aaf6b365191cde65fbdfb23b8",
+    "readback": "Actual verified JSON stdout; upload-reported ZIP SHA256 not independently downloaded. Full LD artifact contains all proxy rows."
+  },
+  "result": {
+    "status": "POST_READOUT_LD_PROXY_PUBLICATION_AUDIT",
+    "rsid": "rs2767060",
+    "populations": {
+      "1000GENOMES:phase_3:CHB": {
+        "status": "REFERENCE_LD_PARSED",
+        "returned_rows": 24,
+        "schemas": {
+          "chr,clinical_significance,consequence_type,d_prime,end,population_name,r2,start,strand,variation": 24
+        },
+        "canonical_response_sha256": "8d2fabe2e52c56ecf73510292e34d758441053c69a5515d25d4009be42b0af6e",
+        "two_current_reads_identical_after_canonicalization": true,
+        "source": {
+          "url": "https://rest.ensembl.org/ld/human/rs2767060/1000GENOMES:phase_3:CHB?window_size=500&r2=0.8&attribs=1",
+          "http_status": 200,
+          "sha256": "db1397ae6a33a52d90cbc8d3147d073e14002384e777e7b46c0ef37791a2fa59",
+          "bytes": 5471
+        },
+        "second_source": {
+          "url": "https://rest.ensembl.org/ld/human/rs2767060/1000GENOMES:phase_3:CHB?window_size=500&r2=0.8&attribs=1",
+          "http_status": 200,
+          "sha256": "db1397ae6a33a52d90cbc8d3147d073e14002384e777e7b46c0ef37791a2fa59",
+          "bytes": 5471
+        },
+        "prior_raw_response_sha256": "c5a134d1e802955b41a8f28dfa6e262758e11ab2ba096a53f1ef3ae09c3e3835",
+        "prior_raw_sha_match": false,
+        "proxy_count": 24,
+        "coordinate_classes": {
+          "POINT": 22,
+          "INSERTION": 1,
+          "SPAN": 1
+        },
+        "first_5": [
+          {
+            "rsid": "rs2845915",
+            "r2": 1,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35833340,
+            "end": 35833340,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs2845914",
+            "r2": 0.932592,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35833433,
+            "end": 35833433,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs1475385",
+            "r2": 0.86839,
+            "d_prime": 0.931874,
+            "chr": "10",
+            "start": 35843632,
+            "end": 35843632,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs1475386",
+            "r2": 0.86839,
+            "d_prime": 0.931874,
+            "chr": "10",
+            "start": 35845181,
+            "end": 35845181,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs2767051",
+            "r2": 0.86839,
+            "d_prime": 0.931874,
+            "chr": "10",
+            "start": 35844900,
+            "end": 35844900,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          }
+        ]
+      },
+      "1000GENOMES:phase_3:JPT": {
+        "status": "REFERENCE_LD_PARSED",
+        "returned_rows": 34,
+        "schemas": {
+          "chr,clinical_significance,consequence_type,d_prime,end,population_name,r2,start,strand,variation": 34
+        },
+        "canonical_response_sha256": "046da641c91430154ca9017545c9a397433711042735215ce12f78f3884a98c7",
+        "two_current_reads_identical_after_canonicalization": true,
+        "source": {
+          "url": "https://rest.ensembl.org/ld/human/rs2767060/1000GENOMES:phase_3:JPT?window_size=500&r2=0.8&attribs=1",
+          "http_status": 200,
+          "sha256": "882919e04099cc7b2e6a35ea0f89e0e932ad174730b90b8074e4ad934b1dc557",
+          "bytes": 7750
+        },
+        "second_source": {
+          "url": "https://rest.ensembl.org/ld/human/rs2767060/1000GENOMES:phase_3:JPT?window_size=500&r2=0.8&attribs=1",
+          "http_status": 200,
+          "sha256": "882919e04099cc7b2e6a35ea0f89e0e932ad174730b90b8074e4ad934b1dc557",
+          "bytes": 7750
+        },
+        "prior_raw_response_sha256": "8d711ef0f479b4c46545bb10092fa9cb9f25972fbcb6ef33d501e4d99787c528",
+        "prior_raw_sha_match": false,
+        "proxy_count": 34,
+        "coordinate_classes": {
+          "POINT": 32,
+          "SPAN": 1,
+          "INSERTION": 1
+        },
+        "first_5": [
+          {
+            "rsid": "rs2767061",
+            "r2": 1,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35832984,
+            "end": 35832984,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs2767062",
+            "r2": 1,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35832683,
+            "end": 35832683,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs2767063",
+            "r2": 1,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35832618,
+            "end": 35832618,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs2767064",
+            "r2": 1,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35829655,
+            "end": 35829655,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs2784760",
+            "r2": 1,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35832633,
+            "end": 35832633,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          }
+        ]
+      },
+      "1000GENOMES:phase_3:CEU": {
+        "status": "REFERENCE_LD_PARSED",
+        "returned_rows": 59,
+        "schemas": {
+          "chr,clinical_significance,consequence_type,d_prime,end,population_name,r2,start,strand,variation": 59
+        },
+        "canonical_response_sha256": "5edf01f55cf45abd1032b924328ba9b1754061d1ae9dd8e152e78ef6be76105d",
+        "two_current_reads_identical_after_canonicalization": true,
+        "source": {
+          "url": "https://rest.ensembl.org/ld/human/rs2767060/1000GENOMES:phase_3:CEU?window_size=500&r2=0.8&attribs=1",
+          "http_status": 200,
+          "sha256": "138cf5adafc6facb075e361b0e91e8681f2a9d95cbd8b087ce1d7d4d5d977826",
+          "bytes": 13499
+        },
+        "second_source": {
+          "url": "https://rest.ensembl.org/ld/human/rs2767060/1000GENOMES:phase_3:CEU?window_size=500&r2=0.8&attribs=1",
+          "http_status": 200,
+          "sha256": "138cf5adafc6facb075e361b0e91e8681f2a9d95cbd8b087ce1d7d4d5d977826",
+          "bytes": 13499
+        },
+        "prior_raw_response_sha256": "c642d54161a64e4146ccb43276c1fdfcb7eed3b0ea63ae5a001226d0b18a0007",
+        "prior_raw_sha_match": false,
+        "proxy_count": 59,
+        "coordinate_classes": {
+          "POINT": 56,
+          "SPAN": 2,
+          "INSERTION": 1
+        },
+        "first_5": [
+          {
+            "rsid": "rs2845914",
+            "r2": 1,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35833433,
+            "end": 35833433,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs2845915",
+            "r2": 1,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35833340,
+            "end": 35833340,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs2767059",
+            "r2": 0.963855,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35833581,
+            "end": 35833581,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs2767061",
+            "r2": 0.929836,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35832984,
+            "end": 35832984,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          },
+          {
+            "rsid": "rs2767062",
+            "r2": 0.929836,
+            "d_prime": 1,
+            "chr": "10",
+            "start": 35832683,
+            "end": 35832683,
+            "coordinate_class": "POINT",
+            "consequence_type": "intergenic_variant"
+          }
+        ]
+      }
+    },
+    "publication_matches": [],
+    "limits": [
+      "Single-ID Ensembl 1000 Genomes Phase 3 LD context, not GWAS-matched individual-level LD. Exact variant C/T identity verified in prior reference run. Live API raw responses changed on 2026-11-25; compare two new canonical full JSON row sets and retain both source hashes. No assertion of identity to historical raw responses. Empty, drifting or unparsed responses remain HOLD.",
+      "Exact rsID tokens in the pinned one-workbook audit do not prove phenotype association or novelty. LD proxy evidence does not identify a causal gene or causal variant."
+    ],
+    "reference_populations_parsed": 3,
+    "proxy_union": 78,
+    "proxy_shared_all_three": 15,
+    "workbook_sha256": "7c688f864c73ec2e9624bde9f53ac48a9880a6a08e59f5e1266690e243618ba4"
+  }
+}
