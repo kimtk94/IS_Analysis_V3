@@ -69,9 +69,21 @@ def read_qtl(root):
     require(TARGET in records and LEAD in records,"Missing fixed target or official eGene lead")
     a=records[TARGET];l=records[LEAD]
     require("rs7203740" in a["rsids"] and math.isclose(a["beta_ALT"],.279006,rel_tol=1e-7) and math.isclose(a["se"],.068636,rel_tol=1e-7) and math.isclose(a["p"],.0000551034,rel_tol=1e-7),"Target nominal parity")
-    require(math.isclose(l["p"],7.86674e-11,rel_tol=1e-6) and math.isclose(l["beta_ALT"],-.246995,rel_tol=1e-6),"Official eGene lead parity")
+    # Verified diagnostic demonstrates same exact locus but different estimates
+    # in the two publisher files. Preserve the failed cross-file parity gate.
+    # A separate descriptive nominal-only coverage analysis can proceed if
+    # the nominal source independently reproduces BOTH anchored nominal rows.
+    diag=json.loads((root/"is_plcg2_nominal_permutation_lead_diagnostic_20261125.json").read_text())
+    d=diag["result"]
+    require(diag["provenance"]["run_id"]==45559352081 and d["status"]=="NOMINAL_PERMUTATION_LEAD_DIAGNOSTIC" and d["exact_lead_rows"]==1 and d["permutation_lead"]==p["PLCG2"],"Pinned diagnostic identity")
+    require(all(d["nominal_provenance"][k]==info[k] for k in ("index_sha256","header_range_sha256","source_total_bytes")),"Diagnostic nominal source changed")
+    v=d["target_gene_position_rows"][0]
+    require(v["variant"]==LEAD and v["rsid"]=="rs11640696" and v["ref"]=="T" and v["alt"]=="G","Diagnostic exact lead identity")
+    require(v["rsid"] in l["rsids"] and l["beta_ALT"]==v["beta"] and l["se"]==v["se"] and l["p"]==v["pvalue"] and l["an"]==v["an"] and math.isclose(l["alt_eaf"],v["ac"]/v["an"],rel_tol=1e-12),"Nominal lead parity")
+    require(not d["parity"]["original_gate_beta_pass"] and not d["parity"]["original_gate_p_pass"],"Cross-file mismatch not reproduced")
+    crossfile={"status":"HOLD_ESTIMATE_EQUIVALENCE","permutation":p["PLCG2"],"nominal":v,"verified_diagnostic_run":45559352081,"reason":"Exact variant matches but nominal and permutation beta/p differ; cause unresolved. Separate nominal-only descriptive coverage, no merged model or formal coloc."}
     eligible={v:d for v,d in records.items() if d["type"]=="SNP" and pair(d["ref"],d["alt"])}
-    return {"status":"REGION_QTL_READ","source":url,**info,"ranges":ranges,"counts":dict(c),"unique_valid_variants_in_window":len(records),"official_cis_tested_variants":EXPECTED,"strict_nonpal_snp_count":len(eligible),"target":a,"official_lead":l,"records":eligible}
+    return {"status":"REGION_QTL_READ","source":url,**info,"ranges":ranges,"counts":dict(c),"unique_valid_variants_in_window":len(records),"official_cis_tested_variants":EXPECTED,"strict_nonpal_snp_count":len(eligible),"target":a,"official_lead":l,"crossfile_lead_parity":crossfile,"nominal_best_in_fixed_window":min(records.items(),key=lambda item:item[1]["p"])[0],"nominal_AN_range":[min(d["an"] for d in records.values()),max(d["an"] for d in records.values())],"records":eligible}
 def read_gwas(study,oldroot):
     old=json.loads((oldroot/study/(study+".json")).read_text())
     require(old["study"]==study and old["status"]=="INDEXED_FIXED_PANEL_READBACK","Prior GWAS artifact identity")
@@ -115,10 +127,11 @@ def compare(q,g):
         sign=1 if a["ea"]==d["alt"] else -1
         matched.append({"variant":v,"rsid":a["rsid"],"pos":d["pos"],"ref":d["ref"],"alt":d["alt"],"qtl_beta_ALT":d["beta_ALT"],"qtl_se":d["se"],"qtl_p":d["p"],"qtl_alt_eaf":d["alt_eaf"],"gwas_beta_ALT":sign*a["beta"],"gwas_se":a["se"],"gwas_p":a["p"],"gwas_alt_eaf":a["eaf"] if sign==1 else 1-a["eaf"]})
     n=len(matched)
+    require(q["strict_nonpal_snp_count"]>0,"No eligible QTL variants")
     return {"status":"DESCRIPTIVE_ALLELE_MATCHED_REGION","matched":n,"qtl_denominator":q["strict_nonpal_snp_count"],"qtl_coverage":n/q["strict_nonpal_snp_count"],"exclusion_counts":dict(c),"target":[d for d in matched if d["variant"]==TARGET],"official_lead":[d for d in matched if d["variant"]==LEAD],"matched_gwas_p_lt_5e_8":sum(d["gwas_p"]<5e-8 for d in matched),"top_matched_gwas":min(matched,key=lambda d:d["gwas_p"]) if matched else None,"top_matched_qtl":min(matched,key=lambda d:d["qtl_p"]) if matched else None,"matched_rows":matched}
 def main():
     p=argparse.ArgumentParser();p.add_argument("--evidence",type=Path,required=True);p.add_argument("--prior",type=Path,required=True);p.add_argument("--out",type=Path,required=True);a=p.parse_args()
-    x={"status":"POST_READOUT_REGION_COVERAGE_GATE","GRCh38_region":f"16:{START}-{END}","gene":GENE,"target":TARGET,"official_eGene_lead":LEAD,"comparisons":{},"limits":["Fixed index +/-500 kb post-readout descriptive window; not a certified complete cis universe. All strict nonpalindromic SNPs retained, not P-selected.","Exact coordinate and allele pair plus corroborating rsID; no proxy or ambiguous strand substitution. Region rows and index/header bytes only; no independent full-file checksum or FASTA certificate.","ROSMAP molecular ancestry not matched to EAS; nominal N/AN not model N or sdY. No approved cohort LD, effect-scale equivalence, formal coloc, MR, fine mapping or independent replication. Coverage alone is not a pass for formal coloc."]}
+    x={"status":"POST_READOUT_REGION_COVERAGE_GATE","GRCh38_region":f"16:{START}-{END}","gene":GENE,"target":TARGET,"official_eGene_lead":LEAD,"comparisons":{},"limits":["Fixed index +/-500 kb post-readout descriptive window; not a certified complete cis universe. All strict nonpalindromic SNPs retained, not P-selected.","Original cross-file lead estimate parity remains HOLD. Use only separately verified nominal QTL values for descriptive coverage; permutation data retained solely as separate eGene evidence. No inference of model equivalence.","Exact coordinate and allele pair plus corroborating rsID; no proxy or ambiguous strand substitution. Region rows and index/header bytes only; no independent full-file checksum or FASTA certificate.","ROSMAP molecular ancestry not matched to EAS; nominal N/AN not model N or sdY. No approved cohort LD, effect-scale equivalence, formal coloc, MR, fine mapping or independent replication. Coverage alone is not a pass for formal coloc."]}
     try:
         q=read_qtl(a.evidence);x["qtl"]=q
     except (OSError,ValueError,TypeError,KeyError,IndexError) as e:
@@ -132,6 +145,15 @@ def main():
             except (OSError,ValueError,TypeError,KeyError,IndexError) as e:x["comparisons"][study]={"status":"HOLD_SOURCE_OR_SCHEMA","reason":str(e)[:300]}
     else:
         for study in STUDIES:x["comparisons"][study]={"status":"HOLD_QTL_SOURCE"}
+    successful={k:v for k,v in x["comparisons"].items() if v["status"]=="DESCRIPTIVE_ALLELE_MATCHED_REGION"}
+    x["comparisons_completed"]=len(successful)
+    if len(successful)==len(STUDIES):
+        shared=set.intersection(*[{d["variant"] for d in v["matched_rows"]} for v in successful.values()])
+        x["all_four_common_variants"]=len(shared)
+        x["all_four_common_qtl_coverage"]=len(shared)/x["qtl"]["strict_nonpal_snp_count"]
+        x["target_in_all_four"]=TARGET in shared
+        x["lead_in_all_four"]=LEAD in shared
+    x["formal_coloc_status"]="HOLD"
     a.out.parent.mkdir(parents=True,exist_ok=True)
     a.out.write_text(json.dumps(x,indent=2,allow_nan=False)+"\n")
     brief={**x,"qtl":{k:v for k,v in x["qtl"].items() if k!="records"},"comparisons":{k:{a:b for a,b in v.items() if a!="matched_rows"} for k,v in x["comparisons"].items()}}

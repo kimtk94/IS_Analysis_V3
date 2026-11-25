@@ -1,0 +1,170 @@
+{
+  "provenance": {
+    "run_id": 45559287128,
+    "job_id": 139018813911,
+    "artifact_id": 14996553746,
+    "reported_artifact_zip_sha256": "9062ce55eace5505f488ee81901986779194d1269f554fbc44467467ff5ea906",
+    "source_commit": "67048e3f47c19e9e645e7b38bcefa13bfa485de7",
+    "readback": "Actual JSON stdout; upload-reported ZIP hash. Full artifact may include additional records."
+  },
+  "result": {
+    "status": "POST_READOUT_CURATED_CATALOG_REGIONAL_AUDIT",
+    "documentation": "https://www.ebi.ac.uk/gwas/docs/programmatic-access/rest-api/",
+    "documented_openapi_git_blob": "52640a5408d477853fd1d09ededd86470ec28e89",
+    "regions": {
+      "rs2767060": {
+        "status": "COMPLETE_CURATED_REGION",
+        "chr": "10",
+        "start": 35333363,
+        "end": 36333363,
+        "pagination": {
+          "total_elements": 51,
+          "returned_elements": 51,
+          "complete": true,
+          "pages": [
+            {
+              "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=10&bp_start=35333363&bp_end=36333363&sort=rs_id&direction=asc&page=0&size=100",
+              "sha256": "609d7aa535cb0d26cadb94dd876dcfb7625c008d7e09db34df21813493e9c233",
+              "bytes": 32978
+            }
+          ]
+        },
+        "exact_index_or_proxy_hits": []
+      },
+      "rs7203740": {
+        "status": "COMPLETE_CURATED_REGION",
+        "chr": "16",
+        "start": 81275211,
+        "end": 82275211,
+        "pagination": {
+          "total_elements": 342,
+          "returned_elements": 342,
+          "complete": true,
+          "pages": [
+            {
+              "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=16&bp_start=81275211&bp_end=82275211&sort=rs_id&direction=asc&page=0&size=100",
+              "sha256": "32525ab588170e731cda2e8ab06aefbf7319c27ffbb334110181215dc2b28bd3",
+              "bytes": 62975
+            },
+            {
+              "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=16&bp_start=81275211&bp_end=82275211&sort=rs_id&direction=asc&page=1&size=100",
+              "sha256": "922fe50ad93430b353c38e943d7a3defd2897015221e4e4ba797e8bafed38b11",
+              "bytes": 63122
+            },
+            {
+              "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=16&bp_start=81275211&bp_end=82275211&sort=rs_id&direction=asc&page=2&size=100",
+              "sha256": "5d46e0737e14cc999a85f4b85c3f5e7fd9af6f25a95b6f92149a2a891cfdac02",
+              "bytes": 63572
+            },
+            {
+              "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms?chromosome=16&bp_start=81275211&bp_end=82275211&sort=rs_id&direction=asc&page=3&size=100",
+              "sha256": "8081fe516f95d1f32226ea6f66921e3d50fc7856e7fc543e429adbcca5276e06",
+              "bytes": 26997
+            }
+          ]
+        },
+        "exact_index_or_proxy_hits": []
+      }
+    },
+    "exact_associations": {
+      "rs2129981": {
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "pagination": {
+          "total_elements": 1,
+          "returned_elements": 1,
+          "complete": true,
+          "pages": [
+            {
+              "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations?rs_id=rs2129981&sort=p_value&direction=asc&page=0&size=100",
+              "sha256": "f96b7ab14557caa2d9ce619133b8ff5fa51026751899d0af66d6af6b95600bbc",
+              "bytes": 1225
+            }
+          ]
+        },
+        "rows": [
+          {
+            "association_id": 64718801,
+            "reported_trait": [
+              "Congestive heart failure"
+            ],
+            "p_value": 1e-8,
+            "accession_id": "GCST90013686",
+            "pubmed_id": "32514122",
+            "first_author": "Ishigaki K",
+            "mapped_genes": [
+              "LINC01438",
+              "PITX2"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs2129981",
+                "effect_allele": "T"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": 1.0909361
+          }
+        ]
+      },
+      "rs2767060": {
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "pagination": {
+          "total_elements": 0,
+          "returned_elements": 0,
+          "complete": true,
+          "pages": [
+            {
+              "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations?rs_id=rs2767060&sort=p_value&direction=asc&page=0&size=100",
+              "sha256": "6b9e80ae74266f6403af7e5d891251e31f1f35e7c5393220f5bcbd3e1a6d68f5",
+              "bytes": 205
+            }
+          ]
+        },
+        "rows": []
+      },
+      "rs7203740": {
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "pagination": {
+          "total_elements": 0,
+          "returned_elements": 0,
+          "complete": true,
+          "pages": [
+            {
+              "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/associations?rs_id=rs7203740&sort=p_value&direction=asc&page=0&size=100",
+              "sha256": "44fe311ab2d4cab46b64f6b478dccc98e53d41ba6a964c034ba4efab8847f885",
+              "bytes": 205
+            }
+          ]
+        },
+        "rows": []
+      }
+    },
+    "limits": [
+      "Catalog v2 literature-curated associations, not complete GWAS summary statistics. Regional variant membership is not evidence of stroke association; absent entries do not establish novelty.",
+      "GRCh38 +/-500 kb windows fixed before Catalog read. Exact index/proxy matches only; no proxy set for multiallelic rs7203740 (earlier LD API empty). Reference LD not GWAS matched.",
+      "Bounded pagination and exact lookup cap; incomplete retrieval stays HOLD. No unreturned variant is interpreted as absent. No independent replication or causal gene inference."
+    ],
+    "catalog_metadata": {
+      "version": "2.0",
+      "data_release_date": "2026-11-17",
+      "api_release_date": "2025-08-01",
+      "gene_build": "GRCh38.p14",
+      "dbsnp_build": "-",
+      "ensembl_version": "-"
+    },
+    "catalog_metadata_source": {
+      "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/metadata",
+      "sha256": "cfa32d0d0114878d91e42c2754949e9aa14ea6021af9ab84e0cc9384d88cd4b1",
+      "bytes": 637
+    },
+    "planned_exact_queries": [
+      "rs2129981",
+      "rs2767060",
+      "rs7203740"
+    ],
+    "positive_control_pass": true
+  }
+}

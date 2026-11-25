@@ -1,0 +1,79 @@
+{
+  "provenance": {
+    "run_id": 45559352081,
+    "job_id": 139019029106,
+    "artifact_id": 14997606015,
+    "reported_artifact_zip_sha256": "662687e2c682dbad334456036d2e8c1bd25458047edc4bc3da838b52461fde83",
+    "source_commit": "cee8819741395f5b80c92cc23edfca20e88f6105",
+    "readback": "Actual JSON stdout; upload-reported ZIP hash. Full artifact may include additional records."
+  },
+  "result": {
+    "status": "NOMINAL_PERMUTATION_LEAD_DIAGNOSTIC",
+    "source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000025/QTD000434/QTD000434.all.tsv.gz",
+    "nominal_provenance": {
+      "header_origin": "ORIGINAL_HEADER",
+      "index_sha256": "6cbf12826e19a61594662972a1205ba38cdd3071984e51c24261bff8ace9806a",
+      "header_range_sha256": "fb014e2e796411100d85552eea8f15e66b76a228ae4174a111ad968a7fd15452",
+      "source_total_bytes": 4039836192,
+      "original_full_file_downloaded": false
+    },
+    "range": {
+      "region": [
+        81878856,
+        81878856
+      ],
+      "range": "bytes 1502043910-1502193576/4039836192",
+      "sha256": "79b1e9d978fad5891a8693bf2149dabcc9d3304fffdc7d4a9d049f24af82dd0c",
+      "decoded_rows": 5833,
+      "in_region_rows": 21,
+      "compressed_bytes": 149667
+    },
+    "permutation_lead": {
+      "molecular_trait_id": "ENSG00000197943",
+      "n_variants": "11248",
+      "variant": "chr16_81878856_T_G",
+      "chromosome": "16",
+      "position": "81878856",
+      "pvalue": "7.86674e-11",
+      "p_beta": "9.57778e-07",
+      "p_perm": "0.000999001",
+      "beta": "-0.246995",
+      "BH_across_complete_source_genes": 0.000004532749205906481,
+      "passes_BH_0.05": true
+    },
+    "permutation_source_sha256": "adf13cbe9f784cd56a832700b710ffd6abe76a962a38918667a1d80c51413091",
+    "target_gene_position_rows": [
+      {
+        "gene_id": "ENSG00000197943",
+        "molecular_trait_id": "ENSG00000197943",
+        "variant": "chr16_81878856_T_G",
+        "rsid": "rs11640696",
+        "type": "SNP",
+        "ref": "T",
+        "alt": "G",
+        "beta": -0.249511,
+        "se": 0.0378643,
+        "pvalue": 1.04157e-10,
+        "maf": 0.49375,
+        "ac": 567,
+        "an": 1120
+      }
+    ],
+    "exact_lead_rows": 1,
+    "parity": {
+      "beta_exact": false,
+      "p_exact": false,
+      "beta_abs_difference": 0.0025160000000000182,
+      "p_abs_difference": 2.548960000000001e-11,
+      "beta_sign_equal": true,
+      "nominal_p_over_permutation_p": 1.3240173184826245,
+      "nominal_wald_z": -6.589610794336619,
+      "nominal_two_sided_wald_p": 4.4098105015331443e-11,
+      "original_gate_beta_pass": false,
+      "original_gate_p_pass": false
+    },
+    "limits": [
+      "Same QTL dataset, not independent evidence. Report raw nominal and permutation beta/p; no assumption that models, scaling, sample sets or precision are identical. Do not relax the previous gate or perform formal coloc from this diagnostic."
+    ]
+  }
+}
