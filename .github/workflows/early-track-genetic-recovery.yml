@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [eQTL, pQTL]
+        mode: [pQTL]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4

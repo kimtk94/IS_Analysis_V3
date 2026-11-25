@@ -27,7 +27,7 @@ def header(raw,mode):
             h=[v.strip() for v in line]
             if len(h)!=len(set(h)):continue
             try:
-                cols={"variant":field(h,("variant_id","variant")),"trait":field(h,("gene_id",) if mode=="eQTL" else ("protein_id","pro_id")),
+                cols={"variant":field(h,("variant_id","variant")),"trait":field(h,("gene_id",) if mode=="eQTL" else ("protein_id","pro_id","gene_id")),
                       "beta":field(h,("slope","beta")),"se":field(h,("slope_se","se","standard_error")),"p":field(h,("pval_nominal","pvalue","p_value")),"maf":field(h,("maf","MAF"))}
             except ValueError:continue
             choices.append((delim,i,h,cols))
@@ -51,6 +51,22 @@ def scan(mode):
     rr=csv.DictReader(stream,delimiter=delim)
     require(rr.fieldnames==h,"trimmed header not exact")
     traits=set();nrows=0;valid=0;bad=0;target_count=0;reg_count=0;target=[];regional=[];exact=[];duplicates=0;seen=set()
+    # The official pQTL file labels its trait column gene_id; establish its semantics
+    # from the exact pinned significant protein table before interpreting the field.
+    known_proteins={}
+    if mode=="pQTL":
+        fn,sha,_,_=prior.FILES["pQTL"]
+        aux,auxsrc=base.get(f"https://raw.githubusercontent.com/zzwang1030/skin_pQTL/{prior.REF}/data/{fn}",1_000_000)
+        require(prior.git_blob(aux)==sha,"author protein mapping drift")
+        m=collections.defaultdict(set)
+        for row in csv.DictReader(io.StringIO(aux.decode("utf-8-sig"))):m[row["protein_id"]].add(row["gene_name"])
+        require(len(m)==36,"author protein denominator")
+        known_proteins={k:next(iter(v)) for k,v in m.items() if len(v)==1}
+        out["protein_mapping_source"]=auxsrc
+    prior2=json.loads((ROOT/"docs/publication/evidence/skin_chinese_second_readback_20261125.json").read_text())
+    require(prior2["run_id"]==45614624939 and len(prior2["records"])==2,"second readback identity")
+    old=next(v["aggregate"] for v in prior2["records"] if v["aggregate"]["mode"]==mode)
+    require(src["sha256"]==old["source"]["sha256"],"prior exact source SHA drift")
     for row in rr:
         if not any(row.values()):continue
         nrows+=1
@@ -62,7 +78,7 @@ def scan(mode):
         m=re.fullmatch(r"(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y):(\d+):([ACGT]+):([ACGT]+)",variant)
         if not m:bad+=1;continue
         ch,p,a,b=m.groups();pos=int(p);vid=f"{ch}:{p}:{a}:{b}"
-        g=row.get("gene_name")
+        g=row.get("gene_name") or known_proteins.get(trait)
         is_target=trait==GENE or g=="GCC2"
         is_region=ch=="2" and LOW<=pos<=HIGH
         if is_target:target_count+=1
@@ -84,6 +100,11 @@ def scan(mode):
         if is_region:regional.append(z)
         if vid==LEAD:exact.append(z)
     require(nrows>=1000,"implausibly small source")
+    if mode=="pQTL":
+        out["protein_trait_identity"]={"header":cols["trait"],"exact_author_protein_keys":len(traits&set(known_proteins)),"total_source_traits":len(traits),"all_traits_exact_author_protein_keys":traits<=set(known_proteins)}
+        if not traits<=set(known_proteins):
+            out.update(status="HOLD_PROTEIN_TRAIT_IDENTITY",rows=nrows,molecular_traits=len(traits),valid_statistic_rows=valid,invalid_rows=bad,reason="Not all source traits have exact author protein keys; no inferred protein names")
+            return out
     out.update(status="CHINESE_SKIN_PUBLISHED_SUMMARY_READBACK",header=h,delimiter=repr(delim),rows=nrows,molecular_traits=len(traits),valid_statistic_rows=valid,invalid_rows=bad,
                GCC2_rows=target_count,GCC2_valid_rows=len(target),GCC2_region_rows=sum(v["variant"].startswith("2:") and LOW<=int(v["variant"].split(":")[1])<=HIGH for v in target),
                region_rows=reg_count,regional_valid_rows=len(regional),regional_traits=len({v["trait"] for v in regional}),duplicate_target_or_region_keys=duplicates,
@@ -94,9 +115,7 @@ def selftest():
     archive()
     raw=b"gene_id\tvariant_id\tslope\tslope_se\tpval_nominal\tmaf\nENSG1\t2:108872562:C:T\t.1\t.02\t.1\t.2\n"
     d,i,h,c=header(raw,"eQTL");assert d=="\t" and c["se"]=="slope_se"
-    try:header(raw,"pQTL")
-    except ValueError:pass
-    else:raise AssertionError("wrong assay accepted")
+    assert header(raw,"pQTL")[3]["trait"]=="gene_id"  # source label alone does not certify protein identity
     print("Published file identity, prior denominators, and explicit summary schema checks passed.")
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("mode",choices=["eQTL","pQTL","selftest"]);ap.add_argument("--out",type=Path);a=ap.parse_args()

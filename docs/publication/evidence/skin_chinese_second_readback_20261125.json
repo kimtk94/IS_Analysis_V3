@@ -1,0 +1,84 @@
+{
+  "run_id": 45614624939,
+  "head_sha": "8de6a3a74403db986b64fbad790b3d0aa547458c",
+  "source": "Actual stdout; upload artifact not independently downloaded",
+  "records": [
+    {
+      "job_id": 139206700766,
+      "aggregate": {
+        "status": "HOLD_SUMMARY_HEADER",
+        "source": {
+          "url": "https://zenodo.org/records/19638349/files/skin%20pQTL%20summary%20statistics.txt?download=1",
+          "bytes": 8085897,
+          "sha256": "03084fb65d91708fbc3588076a4a25b94b19adff36079e87aa72344f11ee8b6a",
+          "content_range": null,
+          "etag": null
+        },
+        "md5": "5ed66ce34705c8aeff36b68162c73b64",
+        "assay": "pQTL",
+        "reason": "unique explicit tab/comma summary header not established",
+        "known_header_terms": [
+          "gene_id",
+          "maf",
+          "pval_nominal",
+          "slope",
+          "slope_se",
+          "variant_id"
+        ],
+        "mode": "pQTL",
+        "scientific_status": "HOLD_FULL_REGIONAL_AND_ANCESTRY_VALIDATION"
+      },
+      "artifact_log": [
+        "Artifact chinese-summary-pQTL.zip successfully finalized. Artifact ID 15022345152"
+      ]
+    },
+    {
+      "job_id": 139206701615,
+      "aggregate": {
+        "status": "CHINESE_SKIN_PUBLISHED_SUMMARY_READBACK",
+        "source": {
+          "url": "https://zenodo.org/records/19638349/files/skin%20eQTL%20summary%20statistics.txt?download=1",
+          "bytes": 70906052,
+          "sha256": "165264e5ef824098f70249261836eb40f08c9e0d99cecde3c257902ee60ca28c",
+          "content_range": null,
+          "etag": null
+        },
+        "md5": "caca80b5a56f3fd9ceeb3b03b9b4cc07",
+        "assay": "eQTL",
+        "header": [
+          "gene_id",
+          "variant_id",
+          "tss_distance",
+          "ma_samples",
+          "ma_count",
+          "maf",
+          "pval_nominal",
+          "slope",
+          "slope_se"
+        ],
+        "delimiter": "'\\t'",
+        "rows": 870843,
+        "molecular_traits": 282,
+        "valid_statistic_rows": 870843,
+        "invalid_rows": 0,
+        "GCC2_rows": 0,
+        "GCC2_valid_rows": 0,
+        "GCC2_region_rows": 0,
+        "region_rows": 0,
+        "regional_valid_rows": 0,
+        "regional_traits": 0,
+        "duplicate_target_or_region_keys": 0,
+        "exact_rs4584990_rows": [],
+        "GCC2_best_nominal": [],
+        "limits": [
+          "Exact published Zenodo file MD5 verified, but may be selected/filtered summary statistics rather than all cis pairs; full assay universe not established by file size. No negative association claim from absent rows. Report slopes without assigning effect allele until methods confirmed. No causal inference or LD-aware regional colocalization. Chinese donors do not constitute independent Korean wrinkle outcome replication."
+        ],
+        "mode": "eQTL",
+        "scientific_status": "HOLD_FULL_REGIONAL_AND_ANCESTRY_VALIDATION"
+      },
+      "artifact_log": [
+        "Artifact chinese-summary-eQTL.zip successfully finalized. Artifact ID 15022305313"
+      ]
+    }
+  ]
+}
