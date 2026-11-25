@@ -22,7 +22,7 @@ We focus on a narrower question: what patterns of differences in reported beta e
 ## Materials and methods
 
 ### Source population and phenotypes
-Use eight harmonized GWAS Catalog GIGASTROKE summary releases GCST90104540–GCST90104548 excluding GCST90104544 (EUR AIS/CES/LAS/SVS 40–43; EAS AIS/CES/LAS/SVS 45–48; check exact accession/trait mapping against retained metadata). The publisher Supplementary Table 1 was independently audited against the nominal source totals. No participants are pooled or counted as independent across the four phenotypes. Published discovery counts are shown below; controls are nominal ancestry-level shared totals, not the per-marker regression sample size.
+Use eight harmonized GWAS Catalog GIGASTROKE summary releases GCST90104540–GCST90104548 excluding GCST90104544 (EUR AIS/CES/LAS/SVS 40–43; EAS AIS/CES/LAS/SVS 45–48; mapping rechecked against pinned extraction code). The publisher Supplementary Table 1 was independently audited against the nominal source totals. No participants are pooled or counted as independent across the four phenotypes. Published discovery counts are shown below; controls are nominal ancestry-level shared totals, not the per-marker regression sample size.
 
 | Ancestry | AIS cases | CES cases | LAS cases | SVS cases | Published controls |
 |---|---:|---:|---:|---:|---:|
@@ -91,12 +91,12 @@ The main limitations are retrospective EAS selection, same-release reuse, unknow
 1. Mishra A, Malik R, et al. Stroke genetics informs drug discovery and risk prediction across ancestries. Nature. 2022;611:115–123. https://doi.org/10.1038/s41586-022-05165-3
 2. Seo Y, Bae H, Lee C. Bayesian colocalization of GWAS and eQTL signals reveals cell type-specific genes and regulatory variants for susceptibility to subtypes of ischemic stroke. Comput Biol Chem. 2024;110:108086. https://doi.org/10.1016/j.compbiolchem.2024.108086
 3. He Y, et al. Integration of Genome-Wide Association Studies With Single-Cell and Bulk Expression Quantitative Trait Locus to Identify Stroke Susceptibility Genes. J Am Heart Assoc. 2026;15:e046208. https://doi.org/10.1161/JAHA.125.046208
-4. Ng B, et al. ROSMAP xQTL resource. Nat Neurosci. 2017. https://doi.org/10.1038/nn.4632
+4. Ng B, White CC, Klein HU, et al. An xQTL map integrates the genetic architecture of the human brain's transcriptome and epigenome. Nat Neurosci. 2017;20:1418–1426. https://doi.org/10.1038/nn.4632
 5. eQTL Catalogue, https://www.ebi.ac.uk/eqtl/ (exact dataset/version references in evidence).
 6. Korean registry: https://doi.org/10.3346/jkms.2024.39.e278
 7. GENESIS-K cohort abstract (not full report): https://doi.org/10.1093/esj/aakag023.789
 
-Complete author lists, exact source accession mappings, method citations, references for LD/harmonization and metadata release, and source-specific phenotype/model definitions require final review.
+Complete author lists, method citations, references for LD/harmonization and metadata release, and source-specific phenotype/model definitions require final review. The eight accession mappings, fixed-family counts, published cohort totals and BBJ contributions were rechecked against archived evidence; references 2–4 were checked against PubMed PMIDs 38744227, 42003665 and 28869584. No independent external data or phenotype/model equivalence is certified.
 
 ## Data availability and submission gate
 Public original summary statistics and aggregate evidence, including the 192-row supplement and two figure bundles, are referenced in [Results](IS_FIXED24_SUBTYPE_RESULTS_20261125.md), [external request packet](external_validation_20261125/README.md), and the evidence directory. No individual-level records requested. Final ethics/data-reuse and author requirements, figure visual QA, independent replication and formal model comparability remain HOLD. Main is unchanged. No claim of causal genes, first-ever subtype integration, independent replication or clinical use.
