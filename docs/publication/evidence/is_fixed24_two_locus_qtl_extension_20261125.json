@@ -1,0 +1,381 @@
+{
+  "provenance": {
+    "run_id": 45549445784,
+    "job_id": 138986828632,
+    "artifact_id": 14992394396,
+    "reported_artifact_zip_sha256": "6d7bf189da26b5d6a573ad4bfc6c0b980c8e34ea531faf5f14ae1c1481e682ae",
+    "source_commit": "3871a3253f1d9eb75d8fdf209c0deeb003d3d9c0",
+    "readback": "Verified actual aggregate JSON stdout, upload-reported ZIP digest not independently downloaded."
+  },
+  "result": {
+    "status": "POST_READOUT_EXACT_TWO_LOCUS_QTL_EXTENSION",
+    "plan": {
+      "QTD000131": [
+        "rs7203740",
+        "rs2767060"
+      ],
+      "QTD000171": [
+        "rs7203740"
+      ],
+      "QTD000434": [
+        "rs7203740"
+      ],
+      "QTD000356": [
+        "rs2767060"
+      ]
+    },
+    "chr10_genes": {
+      "ENSG00000294862": "lncRNA ENSG00000294862",
+      "ENSG00000280719": "PCAT5",
+      "ENSG00000309863": "lncRNA ENSG00000309863",
+      "ENSG00000227313": "LINC02630",
+      "ENSG00000301879": "lncRNA ENSG00000301879",
+      "ENSG00000299958": "lncRNA ENSG00000299958",
+      "ENSG00000299999": "lncRNA ENSG00000299999",
+      "ENSG00000226646": "RPL7P37",
+      "ENSG00000287528": "lncRNA ENSG00000287528",
+      "ENSG00000288893": "lncRNA ENSG00000288893",
+      "ENSG00000177283": "FZD8",
+      "ENSG00000284265": "MIR4683",
+      "ENSG00000177291": "GJD4",
+      "ENSG00000273312": "GJD4-AS1",
+      "ENSG00000227475": "lncRNA ENSG00000227475"
+    },
+    "chr16_genes": {
+      "ENSG00000197943": "PLCG2",
+      "ENSG00000153815": "CMIP",
+      "ENSG00000184860": "SDR42E1",
+      "ENSG00000086696": "HSD17B2"
+    },
+    "prior_rs7203740_read_sources": 2,
+    "datasets": {
+      "QTD000131": {
+        "source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000131/QTD000131.all.tsv.gz",
+        "study": "GTEx",
+        "sample_group": "artery_aorta",
+        "nominal_dataset_n": 387,
+        "pmid": "32913098",
+        "loci": {
+          "rs7203740": {
+            "position_rows": 15,
+            "allele_pair_row_counts": {
+              "C/T": 15
+            },
+            "position_stream_sha256": "9d2cbb3528fcbd65895f143bcab3b36a32dcbf737bac70893c69e543d01f6e3c",
+            "candidate_rows": [
+              {
+                "gene": "CMIP",
+                "gene_id": "ENSG00000153815",
+                "molecular_trait_id": "ENSG00000153815",
+                "ref": "C",
+                "alt": "T",
+                "variant": "chr16_81775211_C_T",
+                "beta_ALT": -0.0811108,
+                "se": 0.0547831,
+                "p": 0.139565,
+                "maf": 0.191214,
+                "ac": 626,
+                "an": 774,
+                "alt_frequency": 0.8087855297157622,
+                "genotyped_alleles_half_not_model_N": 387
+              },
+              {
+                "gene": "SDR42E1",
+                "gene_id": "ENSG00000184860",
+                "molecular_trait_id": "ENSG00000184860",
+                "ref": "C",
+                "alt": "T",
+                "variant": "chr16_81775211_C_T",
+                "beta_ALT": 0.00407239,
+                "se": 0.0767988,
+                "p": 0.957739,
+                "maf": 0.191214,
+                "ac": 626,
+                "an": 774,
+                "alt_frequency": 0.8087855297157622,
+                "genotyped_alleles_half_not_model_N": 387
+              },
+              {
+                "gene": "PLCG2",
+                "gene_id": "ENSG00000197943",
+                "molecular_trait_id": "ENSG00000197943",
+                "ref": "C",
+                "alt": "T",
+                "variant": "chr16_81775211_C_T",
+                "beta_ALT": -0.0321273,
+                "se": 0.0479794,
+                "p": 0.503525,
+                "maf": 0.191214,
+                "ac": 626,
+                "an": 774,
+                "alt_frequency": 0.8087855297157622,
+                "genotyped_alleles_half_not_model_N": 387
+              }
+            ],
+            "status": "EXACT_POSITION_READ_HTTP_RANGE",
+            "position": "16:81775211",
+            "rsid": "rs7203740",
+            "source_range": "bytes 1275688373-1275810111/3473236781",
+            "source_range_sha256": "7778eda68d9aaea272041066895ff53f1afffdb60c3f7f1e77e1a1d64801ac91",
+            "decoded_rows": 4712
+          },
+          "rs2767060": {
+            "position_rows": 10,
+            "allele_pair_row_counts": {
+              "C/T": 10
+            },
+            "position_stream_sha256": "768c8c1e35a1c3a949b0459e1321e4b5b85886226b0bf399bd398f6569d2f3a9",
+            "all_CT_gene_ids": [
+              "ENSG00000095794",
+              "ENSG00000108094",
+              "ENSG00000108100",
+              "ENSG00000177283",
+              "ENSG00000227475",
+              "ENSG00000233200",
+              "ENSG00000269952",
+              "ENSG00000271335",
+              "ENSG00000287528",
+              "ENSG00000288893"
+            ],
+            "candidate_rows": [
+              {
+                "gene": "FZD8",
+                "gene_id": "ENSG00000177283",
+                "molecular_trait_id": "ENSG00000177283",
+                "ref": "C",
+                "alt": "T",
+                "beta_ALT": 0.0993244,
+                "se": 0.068981,
+                "p": 0.150742,
+                "maf": 0.156331,
+                "ac": 121,
+                "an": 774,
+                "alt_frequency": 0.15633074935400518,
+                "genotyped_alleles_half_not_model_N": 387
+              },
+              {
+                "gene": "lncRNA ENSG00000227475",
+                "gene_id": "ENSG00000227475",
+                "molecular_trait_id": "ENSG00000227475",
+                "ref": "C",
+                "alt": "T",
+                "beta_ALT": 0.0501378,
+                "se": 0.0642278,
+                "p": 0.43552,
+                "maf": 0.156331,
+                "ac": 121,
+                "an": 774,
+                "alt_frequency": 0.15633074935400518,
+                "genotyped_alleles_half_not_model_N": 387
+              },
+              {
+                "gene": "lncRNA ENSG00000287528",
+                "gene_id": "ENSG00000287528",
+                "molecular_trait_id": "ENSG00000287528",
+                "ref": "C",
+                "alt": "T",
+                "beta_ALT": 0.0335172,
+                "se": 0.0758011,
+                "p": 0.658621,
+                "maf": 0.156331,
+                "ac": 121,
+                "an": 774,
+                "alt_frequency": 0.15633074935400518,
+                "genotyped_alleles_half_not_model_N": 387
+              },
+              {
+                "gene": "lncRNA ENSG00000288893",
+                "gene_id": "ENSG00000288893",
+                "molecular_trait_id": "ENSG00000288893",
+                "ref": "C",
+                "alt": "T",
+                "beta_ALT": 0.0238926,
+                "se": 0.0854191,
+                "p": 0.779856,
+                "maf": 0.156331,
+                "ac": 121,
+                "an": 774,
+                "alt_frequency": 0.15633074935400518,
+                "genotyped_alleles_half_not_model_N": 387
+              }
+            ],
+            "status": "EXACT_POSITION_READ_HTTP_RANGE",
+            "position": "10:35833363",
+            "rsid": "rs2767060",
+            "source_range": "bytes 349975775-350058514/3473236781",
+            "source_range_sha256": "8920bfcf8ad3943a501b49e219a5537bc790fcab1f1da68e91218d8c120553c6",
+            "decoded_rows": 3560
+          }
+        },
+        "header_origin": "ORIGINAL_HEADER",
+        "index_sha256": "7cc0d7e4707f4b7864b82de230778439c58574bdfbf367158098ad9a2c105013",
+        "header_range_sha256": "ff173ba397da35d5906f01493adfd1f34d1039576391a03b0b010d4b052df995",
+        "source_total_bytes": 3473236781,
+        "original_full_file_downloaded": false
+      },
+      "QTD000171": {
+        "source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000171/QTD000171.all.tsv.gz",
+        "study": "GTEx",
+        "sample_group": "brain_cortex",
+        "nominal_dataset_n": 205,
+        "pmid": "32913098",
+        "loci": {
+          "rs7203740": {
+            "position_rows": 21,
+            "allele_pair_row_counts": {
+              "C/T": 21
+            },
+            "position_stream_sha256": "697324de6f9173d2923f4f8e0bac0eed54007e2ed39ecbfe935a8282d0de399f",
+            "candidate_rows": [
+              {
+                "gene": "CMIP",
+                "gene_id": "ENSG00000153815",
+                "molecular_trait_id": "ENSG00000153815",
+                "ref": "C",
+                "alt": "T",
+                "variant": "chr16_81775211_C_T",
+                "beta_ALT": -0.0254932,
+                "se": 0.0688894,
+                "p": 0.711751,
+                "maf": 0.187805,
+                "ac": 333,
+                "an": 410,
+                "alt_frequency": 0.8121951219512196,
+                "genotyped_alleles_half_not_model_N": 205
+              },
+              {
+                "gene": "PLCG2",
+                "gene_id": "ENSG00000197943",
+                "molecular_trait_id": "ENSG00000197943",
+                "ref": "C",
+                "alt": "T",
+                "variant": "chr16_81775211_C_T",
+                "beta_ALT": 0.00568474,
+                "se": 0.0910851,
+                "p": 0.950301,
+                "maf": 0.187805,
+                "ac": 333,
+                "an": 410,
+                "alt_frequency": 0.8121951219512196,
+                "genotyped_alleles_half_not_model_N": 205
+              }
+            ],
+            "status": "EXACT_POSITION_READ_HTTP_RANGE",
+            "position": "16:81775211",
+            "rsid": "rs7203740",
+            "source_range": "bytes 1261111597-1261248006/3496087269",
+            "source_range_sha256": "8b8946201dc2c66f70f04566b1bb9a134b42baa606daf67c6b782f30bad2148c",
+            "decoded_rows": 5505
+          }
+        },
+        "header_origin": "ORIGINAL_HEADER",
+        "index_sha256": "51033716008ef1460b68698ec84aecb70b9eb7ebd157ebc96d6f11b44f3ad6bd",
+        "header_range_sha256": "6db6a2de6a71738cdffdad7e3577922143223ae4d89285c0884d15d636cc4644",
+        "source_total_bytes": 3496087269,
+        "original_full_file_downloaded": false
+      },
+      "QTD000434": {
+        "source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000025/QTD000434/QTD000434.all.tsv.gz",
+        "study": "ROSMAP",
+        "sample_group": "brain_naive",
+        "nominal_dataset_n": 560,
+        "pmid": "28869584",
+        "loci": {
+          "rs7203740": {
+            "position_rows": 22,
+            "allele_pair_row_counts": {
+              "C/T": 22
+            },
+            "position_stream_sha256": "2e2a24ecfc83d3a3896c09cd23edd36a7931c3e19d9508637c633af314764acf",
+            "candidate_rows": [
+              {
+                "gene": "CMIP",
+                "gene_id": "ENSG00000153815",
+                "molecular_trait_id": "ENSG00000153815",
+                "ref": "C",
+                "alt": "T",
+                "variant": "chr16_81775211_C_T",
+                "beta_ALT": 0.0759809,
+                "se": 0.0731259,
+                "p": 0.299245,
+                "maf": 0.172321,
+                "ac": 938,
+                "an": 1120,
+                "alt_frequency": 0.8375,
+                "genotyped_alleles_half_not_model_N": 560
+              },
+              {
+                "gene": "PLCG2",
+                "gene_id": "ENSG00000197943",
+                "molecular_trait_id": "ENSG00000197943",
+                "ref": "C",
+                "alt": "T",
+                "variant": "chr16_81775211_C_T",
+                "beta_ALT": 0.279006,
+                "se": 0.068636,
+                "p": 0.0000551034,
+                "maf": 0.172321,
+                "ac": 938,
+                "an": 1120,
+                "alt_frequency": 0.8375,
+                "genotyped_alleles_half_not_model_N": 560
+              }
+            ],
+            "status": "EXACT_POSITION_READ_HTTP_RANGE",
+            "position": "16:81775211",
+            "rsid": "rs7203740",
+            "source_range": "bytes 1501586044-1501743902/4039836192",
+            "source_range_sha256": "49acf6d425ecc5eebe25a8f2a09995835b59ff896466284b0aa204d70de74303",
+            "decoded_rows": 6255
+          }
+        },
+        "header_origin": "ORIGINAL_HEADER",
+        "index_sha256": "6cbf12826e19a61594662972a1205ba38cdd3071984e51c24261bff8ace9806a",
+        "header_range_sha256": "fb014e2e796411100d85552eea8f15e66b76a228ae4174a111ad968a7fd15452",
+        "source_total_bytes": 4039836192,
+        "original_full_file_downloaded": false
+      },
+      "QTD000356": {
+        "source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000356/QTD000356.all.tsv.gz",
+        "study": "GTEx",
+        "sample_group": "blood",
+        "nominal_dataset_n": 670,
+        "pmid": "32913098",
+        "loci": {
+          "rs2767060": {
+            "position_rows": 5,
+            "allele_pair_row_counts": {
+              "C/T": 5
+            },
+            "position_stream_sha256": "1ddbd834e58343b0a1dc9e12c7043d9fe9a1f7edc09aa84a65160e0c587be922",
+            "all_CT_gene_ids": [
+              "ENSG00000095794",
+              "ENSG00000108094",
+              "ENSG00000108100",
+              "ENSG00000269952",
+              "ENSG00000271335"
+            ],
+            "candidate_rows": [],
+            "status": "EXACT_POSITION_READ_HTTP_RANGE",
+            "position": "10:35833363",
+            "rsid": "rs2767060",
+            "source_range": "bytes 285581080-285655915/2797518844",
+            "source_range_sha256": "b6bad0e2a8eba431a99795b24c975e7ac633fa8cce46f50eee109ec558bf0cab",
+            "decoded_rows": 2772
+          }
+        },
+        "header_origin": "ORIGINAL_HEADER",
+        "index_sha256": "949e27667e2d8c7478e4af15934893df6452280faefbe10dbe610d23acf4fff9",
+        "header_range_sha256": "2e8085280871130724c5a42c7ec48a366fe0ede3b9b00cdfe6e514952296aba2",
+        "source_total_bytes": 2797518844,
+        "original_full_file_downloaded": false
+      }
+    },
+    "limits": [
+      "Prior 2/5 rs7203740 sources are not independently repeated; this extension attempts remaining 3 and two rs2767060 tissues. Candidate groups fixed from verified reference annotation before these effect readouts.",
+      "Exact C/T single-position gene expression associations; C/A retained separately only for rs7203740. No proxy substitution. Nominal P values descriptive, no confirmatory significance claim. No EAS ancestry-matched molecular analysis, cis-region completeness, model N/sdY, MR or coloc. Missing source/gene is not negative evidence."
+    ],
+    "read_source_locus_pairs": 5,
+    "attempted_source_locus_pairs": 5
+  }
+}
