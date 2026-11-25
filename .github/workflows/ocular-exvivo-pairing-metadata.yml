@@ -1,0 +1,56 @@
+name: Ocular exact GEO pairing metadata readback
+on:
+  push:
+    branches: [research/ocular-exvivo-fixed-panel-20261125]
+    paths: ['.github/workflows/ocular-exvivo-pairing-metadata.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  metadata-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read exact public source titles and treatment labels, without expression
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 20000000 'https://ftp.ncbi.nlm.nih.gov/geo/series/GSE37nnn/GSE37474/matrix/GSE37474_series_matrix.txt.gz' -o "$RUNNER_TEMP/matrix.gz"
+          python - <<'PY'
+          import csv,gzip,hashlib,json,os,re
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"matrix.gz"
+          assert hashlib.sha256(p.read_bytes()).hexdigest()=="d348cb1add4a01ec1b17d82da75f4b2081de4d7c3ad2433a42261fdd9543c849"
+          fields={}
+          with gzip.open(p,"rt",encoding="utf-8-sig") as f:
+              for line in f:
+                  if line.strip().lower()=="!series_matrix_table_begin":break
+                  row=next(csv.reader([line.rstrip("\r\n")],delimiter="\t"))
+                  if row and row[0] in {"!Sample_title","!Sample_geo_accession","!Sample_characteristics_ch1"}:
+                      fields.setdefault(row[0],[]).append(row[1:])
+          ids=fields["!Sample_geo_accession"][0];titles=fields["!Sample_title"][0]
+          assert len(ids)==len(titles)==10 and set(ids)=={f"GSM{i}" for i in range(920734,920744)}
+          tr=[r for r in fields["!Sample_characteristics_ch1"] if all(v.lower().startswith("treatment:") for v in r)]
+          assert len(tr)==1 and len(tr[0])==10
+          def safe(s):
+              # Only study arm/ordinal metadata; reject other tokens rather than print potential identifying fields.
+              if not re.fullmatch(r"[A-Za-z0-9\s.,():;_#%/+\[\]-]{1,100}",s):return "[REDACTED_FORMAT]"
+              words=re.findall(r"[a-z]+",s.lower())
+              if not set(words)<={"control","donor","dex","dexamethasone","treatment","treated","untreated","vehicle","no","none","nm","um","days","day","with","without","human","tm","sample","ethanol","etoh","c","d","h","m","of","n","u"}:
+                  return "[REDACTED_UNEXPECTED_WORDS]"
+              return s
+          x={"status":"EXACT_PUBLIC_TITLE_AND_TREATMENT_READBACK_ONLY","rows":[{"gsm":a,"title":safe(t),"treatment":safe(v)} for a,t,v in zip(ids,titles,tr[0])],"limits":"No expression, age/sex values, names or inferred pairing."}
+          print(json.dumps(x,indent=2))
+          out=Path("outputs/pairing-metadata.json");out.parent.mkdir(exist_ok=True);out.write_text(json.dumps(x,indent=2)+"\n")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-exvivo-pairing-metadata
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
