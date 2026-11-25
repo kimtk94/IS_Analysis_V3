@@ -1,0 +1,27 @@
+name: Master eight-track 2026-11-08 bounded gates
+on:
+  pull_request:
+    paths:
+      - 'scripts/research/daily_20261108_source_gate.py'
+      - '.github/workflows/master-eight-20261108.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify one bounded official source
+        run: python3 scripts/research/daily_20261108_source_gate.py --track "${{ matrix.track }}" --output "results/${{ matrix.track }}.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: master-20261108-${{ matrix.track }}
+          path: results/
+          if-no-files-found: warn
