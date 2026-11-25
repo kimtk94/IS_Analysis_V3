@@ -1,0 +1,2300 @@
+{
+  "source": "Actual GitHub Actions stdout, HCC workbook header profiles condensed to dimensions; no raw matrices",
+  "pinned_prior_head": "9703492179f0a29ecb7a332a24d474c49a7c10f7",
+  "records": [
+    {
+      "job_id": 139149611159,
+      "run_id": 45598152083,
+      "aggregate": {
+        "status": "HCC_FULL_PUBLIC_SUPPLEMENT_SCHEMA_AUDIT",
+        "workbooks": [
+          {
+            "file": "41467_2022_29960_MOESM4_ESM.xlsx",
+            "caption": "Supplementary Data 1",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM4_ESM.xlsx",
+              "bytes": 46914,
+              "sha256": "edf1d2afd3baaedd56edee8536c16f10e4a62cb6cdac929863a062671ee73d25",
+              "content_range": null,
+              "etag": "\"85e49d0d973f0a3075828ea46fe947d1\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  142,
+                  48
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  21,
+                  10
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM5_ESM.xlsx",
+            "caption": "Supplementary Data 2",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM5_ESM.xlsx",
+              "bytes": 145150,
+              "sha256": "cedb811a9c755828b5b970a07887a0f4cc29a49b2c02c5b15e542bc422bcb741",
+              "content_range": null,
+              "etag": "\"354371ef3e9ce99cbd60766205ff4926\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  172,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  40,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 3,
+                "dimensions": [
+                  230,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 4,
+                "dimensions": [
+                  17,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 5,
+                "dimensions": [
+                  19,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 6,
+                "dimensions": [
+                  49,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 7,
+                "dimensions": [
+                  18,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 8,
+                "dimensions": [
+                  4,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 9,
+                "dimensions": [
+                  65,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 10,
+                "dimensions": [
+                  90,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 11,
+                "dimensions": [
+                  62,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 12,
+                "dimensions": [
+                  41,
+                  9
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM6_ESM.xlsx",
+            "caption": "Supplementary Datat 3",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM6_ESM.xlsx",
+              "bytes": 378845,
+              "sha256": "fde49e944781a66cf1ce457e2e987863f7f9233f090eebd42c5aab93aaa9c764",
+              "content_range": null,
+              "etag": "\"045bb4c1b0968294d6bc60640d50dc5a\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  29,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  84,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 3,
+                "dimensions": [
+                  364,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 4,
+                "dimensions": [
+                  322,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 5,
+                "dimensions": [
+                  525,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 6,
+                "dimensions": [
+                  636,
+                  11
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM7_ESM.xlsx",
+            "caption": "Supplementary Data 4",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM7_ESM.xlsx",
+              "bytes": 148185,
+              "sha256": "2729b617652e8fc466f92e4afb8fd78a53d306e21097bbb006bd231637ac5677",
+              "content_range": null,
+              "etag": "\"a4afc3aae5a3d7a2dcd279b3ff2de3e2\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  331,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  47,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 3,
+                "dimensions": [
+                  36,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 4,
+                "dimensions": [
+                  50,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 5,
+                "dimensions": [
+                  39,
+                  131
+                ]
+              },
+              {
+                "sheet_index": 6,
+                "dimensions": [
+                  6,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 7,
+                "dimensions": [
+                  1,
+                  8
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM8_ESM.xlsx",
+            "caption": "Supplementary Data 5",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM8_ESM.xlsx",
+              "bytes": 30337,
+              "sha256": "2d64e91ae53d78056690bf6ac24728afff74154c6912f759d7aa709e50448bbf",
+              "content_range": null,
+              "etag": "\"1cbd7551772f9dd49ecb09362281ade1\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  137,
+                  21
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM9_ESM.xlsx",
+            "caption": "Supplementary Data 6",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM9_ESM.xlsx",
+              "bytes": 302806,
+              "sha256": "544eeab33dcaf07b35eaaec1c1b096153d1e5f6d96f67e8d9b227fd9981ad71d",
+              "content_range": null,
+              "etag": "\"0184e5f89227e47120c698eb4ef4f11b\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  1341,
+                  14
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  658,
+                  14
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM10_ESM.xlsx",
+            "caption": "Supplementary Data 7",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM10_ESM.xlsx",
+              "bytes": 737950,
+              "sha256": "5bf2122f2d04a26386ef32bca254232a6269b0f04382a09562a3ff95dfbf159c",
+              "content_range": null,
+              "etag": "\"b85fa5c4dc5be11430f0b8eba3a64272\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  57,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  48,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 3,
+                "dimensions": [
+                  250,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 4,
+                "dimensions": [
+                  218,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 5,
+                "dimensions": [
+                  1466,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 6,
+                "dimensions": [
+                  1215,
+                  11
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM11_ESM.xlsx",
+            "caption": "Supplementary Data 8",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM11_ESM.xlsx",
+              "bytes": 19549,
+              "sha256": "7af522ba66b6171de8f301f605e0e919ffbc39a78a74fdba3dc3e7ede4b6a748",
+              "content_range": null,
+              "etag": "\"a6851e773a641d63b4bf3bb1135883c6\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  20,
+                  7
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  52,
+                  5
+                ]
+              },
+              {
+                "sheet_index": 3,
+                "dimensions": [
+                  14,
+                  5
+                ]
+              },
+              {
+                "sheet_index": 4,
+                "dimensions": [
+                  11,
+                  7
+                ]
+              },
+              {
+                "sheet_index": 5,
+                "dimensions": [
+                  45,
+                  5
+                ]
+              },
+              {
+                "sheet_index": 6,
+                "dimensions": [
+                  8,
+                  5
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM12_ESM.xlsx",
+            "caption": "Supplementary Data 9",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM12_ESM.xlsx",
+              "bytes": 4513437,
+              "sha256": "67e899dd80187623f871a7e3e0b0cf7153807ee7b23a534e8c8ee1dcfb3a9fe0",
+              "content_range": null,
+              "etag": "\"8cdb1b07f1b4df9b7c9787c6aab859f8\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM13_ESM.xlsx",
+            "caption": "Supplementary Data 10",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM13_ESM.xlsx",
+              "bytes": 24715,
+              "sha256": "9fb539a4117e5beaf9f68126bb6499f59aae93e1cd85fa40b1e05d8a5433fc1c",
+              "content_range": null,
+              "etag": "\"a13a0561ee4c44ecbb7d42879ec78a4f\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  352,
+                  6
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM14_ESM.xlsx",
+            "caption": "Supplementary Data 11",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM14_ESM.xlsx",
+              "bytes": 104190,
+              "sha256": "a807b85ff3f4bdfc56904e27321f2621408f51c69b0de926265caa6b8e546985",
+              "content_range": null,
+              "etag": "\"dc43647e33b70eeb800c9a6aa1c82516\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  25,
+                  19
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  401,
+                  19
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM15_ESM.xlsx",
+            "caption": "Supplementary Data 12",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM15_ESM.xlsx",
+              "bytes": 12397,
+              "sha256": "d54b46120d0e84456fa1541d844be047ad7ca4f67c084c840e84d8782f882a75",
+              "content_range": null,
+              "etag": "\"78390fcff30380bec7417abd75d1bcb1\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  8,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  12,
+                  9
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM16_ESM.xlsx",
+            "caption": "Supplementary Data 13",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM16_ESM.xlsx",
+              "bytes": 282915,
+              "sha256": "573511cdfd78666bb53507990e5a18aadbaf374ce51cfed51788b2defdd271c7",
+              "content_range": null,
+              "etag": "\"e6ca219b6dfb1415c5e89a1ad17063ab\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  323,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  500,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 3,
+                "dimensions": [
+                  291,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 4,
+                "dimensions": [
+                  142,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 5,
+                "dimensions": [
+                  226,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 6,
+                "dimensions": [
+                  16,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 7,
+                "dimensions": [
+                  137,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 8,
+                "dimensions": [
+                  3,
+                  7
+                ]
+              },
+              {
+                "sheet_index": 9,
+                "dimensions": [
+                  2,
+                  7
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM17_ESM.xlsx",
+            "caption": "Supplementary Data 14",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM17_ESM.xlsx",
+              "bytes": 122099,
+              "sha256": "a3dc6f4f981616f586c4d568a78d5044d1a872a09dcfcac699588ac209ed88a6",
+              "content_range": null,
+              "etag": "\"bf450eeb992ed7c4def314b9ccaa20de\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  110,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  64,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 3,
+                "dimensions": [
+                  234,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 4,
+                "dimensions": [
+                  28,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 5,
+                "dimensions": [
+                  107,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 6,
+                "dimensions": [
+                  188,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 7,
+                "dimensions": [
+                  39,
+                  9
+                ]
+              },
+              {
+                "sheet_index": 8,
+                "dimensions": [
+                  5,
+                  7
+                ]
+              }
+            ]
+          },
+          {
+            "file": "41467_2022_29960_MOESM19_ESM.xlsx",
+            "caption": "Source Data",
+            "status": "PUBLIC_WORKBOOK_MD5_AND_SCHEMA_READ",
+            "source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/41467_2022_29960_MOESM19_ESM.xlsx",
+              "bytes": 4446471,
+              "sha256": "16376438aa16a09a13db417a4ae1f4cc16b87ec2c47630aeae651004501be420",
+              "content_range": null,
+              "etag": "\"89a009d02b250c680c53c0021eead109\""
+            },
+            "sheets": [
+              {
+                "sheet_index": 1,
+                "dimensions": [
+                  138,
+                  3
+                ]
+              },
+              {
+                "sheet_index": 2,
+                "dimensions": [
+                  63,
+                  3
+                ]
+              },
+              {
+                "sheet_index": 3,
+                "dimensions": [
+                  62,
+                  3
+                ]
+              },
+              {
+                "sheet_index": 4,
+                "dimensions": [
+                  3015,
+                  27
+                ]
+              },
+              {
+                "sheet_index": 5,
+                "dimensions": [
+                  123,
+                  11
+                ]
+              },
+              {
+                "sheet_index": 6,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "sheet_index": 7,
+                "dimensions": [
+                  15273,
+                  4
+                ]
+              },
+              {
+                "sheet_index": 8,
+                "dimensions": [
+                  5482,
+                  4
+                ]
+              },
+              {
+                "sheet_index": 9,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "sheet_index": 10,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "sheet_index": 11,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "sheet_index": 12,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "sheet_index": 13,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "sheet_index": 14,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "sheet_index": 15,
+                "dimensions": [
+                  5407,
+                  8
+                ]
+              },
+              {
+                "sheet_index": 16,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "sheet_index": 17,
+                "dimensions": [
+                  127,
+                  15
+                ]
+              },
+              {
+                "sheet_index": 18,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "sheet_index": 19,
+                "dimensions": [
+                  5407,
+                  8
+                ]
+              },
+              {
+                "sheet_index": 20,
+                "dimensions": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "sheet_index": 21,
+                "dimensions": [
+                  127,
+                  15
+                ]
+              },
+              {
+                "sheet_index": 22,
+                "dimensions": [
+                  52,
+                  4
+                ]
+              },
+              {
+                "sheet_index": 23,
+                "dimensions": [
+                  52,
+                  4
+                ]
+              },
+              {
+                "sheet_index": 24,
+                "dimensions": [
+                  52,
+                  4
+                ]
+              },
+              {
+                "sheet_index": 25,
+                "dimensions": [
+                  15,
+                  6
+                ]
+              },
+              {
+                "sheet_index": 26,
+                "dimensions": [
+                  14,
+                  13
+                ]
+              },
+              {
+                "sheet_index": 27,
+                "dimensions": [
+                  123,
+                  4
+                ]
+              },
+              {
+                "sheet_index": 28,
+                "dimensions": [
+                  118,
+                  4
+                ]
+              },
+              {
+                "sheet_index": 29,
+                "dimensions": [
+                  123,
+                  4
+                ]
+              }
+            ]
+          }
+        ],
+        "verified": 15,
+        "limits": [
+          "Header concepts and dimensions only; no clinical values, no personal identifiers, no raw EGA access, no expression/patient join. Next gate: exact Data 2 gene-level matched mRNA/protein effect schema and genuinely independent comparison, or approved RNA matrix access. Ng et al. already performed discordance/clinical clustering."
+        ],
+        "scientific_status": "HOLD_NO_INDEPENDENT_INFERENCE"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 04a9ebb5d453b180e6f09b01f664c8b90c2d0179878fff7089f6dc84d6d93e1a",
+        "Artifact early-followup-hcc.zip successfully finalized. Artifact ID 15013698189"
+      ]
+    },
+    {
+      "job_id": 139149611274,
+      "run_id": 45598152083,
+      "aggregate": {
+        "status": "ORAL_DESCRIPTIVE_WHOLE_SPECIMEN_CONTEXT",
+        "group": "PT",
+        "records": [
+          {
+            "specimen": "PT1",
+            "group": "PT",
+            "status": "FULL_MATRIX_QC_AND_SPECIMEN_PSEUDOBULK",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9555nnn/GSM9555766/suppl/GSM9555766_PT1_matrix.mtx.gz",
+              "bytes": 68944553,
+              "sha256": "da40cd299ff05c5a9b3612df4eac798e1d2316cec8b5bbd2be836bde42daa8e8",
+              "content_range": null,
+              "etag": null
+            },
+            "genes": 36601,
+            "cells": 9073,
+            "declared_nonzero": 21940684,
+            "qc_cells": 8898,
+            "qc_umis": 79414264,
+            "mitochondrial_features": 13,
+            "panel": {
+              "known_metastasis_context": {
+                "SPP1": {
+                  "counts": 87236,
+                  "cpm": 1098.4928349899458,
+                  "log2_cpm_plus1": 10.102622487346869
+                },
+                "CXCR4": {
+                  "counts": 49052,
+                  "cpm": 617.6724120996702,
+                  "log2_cpm_plus1": 9.273031892363118
+                }
+              },
+              "epithelial": {
+                "EPCAM": {
+                  "counts": 145,
+                  "cpm": 1.8258684611117217,
+                  "log2_cpm_plus1": 1.498694312480605
+                },
+                "KRT5": {
+                  "counts": 213904,
+                  "cpm": 2693.521153832012,
+                  "log2_cpm_plus1": 11.395813197575956
+                },
+                "KRT14": {
+                  "counts": 309490,
+                  "cpm": 3897.1588277894257,
+                  "log2_cpm_plus1": 11.928577158068567
+                },
+                "KRT19": {
+                  "counts": 152,
+                  "cpm": 1.9140138350964255,
+                  "log2_cpm_plus1": 1.5430077270172577
+                }
+              },
+              "myeloid": {
+                "LST1": {
+                  "counts": 903,
+                  "cpm": 11.37075324402679,
+                  "log2_cpm_plus1": 3.628861442278219
+                },
+                "TYROBP": {
+                  "counts": 15039,
+                  "cpm": 189.37403990799436,
+                  "log2_cpm_plus1": 7.572692950723836
+                },
+                "FCER1G": {
+                  "counts": 5799,
+                  "cpm": 73.02214624818534,
+                  "log2_cpm_plus1": 6.209885061607957
+                },
+                "CD68": {
+                  "counts": 18468,
+                  "cpm": 232.5526809642157,
+                  "log2_cpm_plus1": 7.867604195784504
+                }
+              },
+              "T_cell": {
+                "CD3D": {
+                  "counts": 1088,
+                  "cpm": 13.700309556479677,
+                  "log2_cpm_plus1": 3.877774630282057
+                },
+                "CD3E": {
+                  "counts": 1478,
+                  "cpm": 18.611266107056032,
+                  "log2_cpm_plus1": 4.293610774089361
+                },
+                "TRAC": {
+                  "counts": 3006,
+                  "cpm": 37.85214202828852,
+                  "log2_cpm_plus1": 5.279922235564091
+                }
+              },
+              "B_cell": {
+                "MS4A1": {
+                  "counts": 1513,
+                  "cpm": 19.05199297697955,
+                  "log2_cpm_plus1": 4.325673728830084
+                },
+                "CD79A": {
+                  "counts": 670,
+                  "cpm": 8.436771509964506,
+                  "log2_cpm_plus1": 3.2382933719579716
+                },
+                "CD74": {
+                  "counts": 513402,
+                  "cpm": 6464.858756356415,
+                  "log2_cpm_plus1": 12.658626277475639
+                }
+              },
+              "fibroblast": {
+                "COL1A1": {
+                  "counts": 394647,
+                  "cpm": 4969.472486705915,
+                  "log2_cpm_plus1": 12.279167283698722
+                },
+                "COL1A2": {
+                  "counts": 94353,
+                  "cpm": 1188.1114959398226,
+                  "log2_cpm_plus1": 10.215668279054345
+                },
+                "DCN": {
+                  "counts": 51504,
+                  "cpm": 648.5484773868835,
+                  "log2_cpm_plus1": 9.343293391315106
+                }
+              }
+            }
+          },
+          {
+            "specimen": "PT2",
+            "group": "PT",
+            "status": "FULL_MATRIX_QC_AND_SPECIMEN_PSEUDOBULK",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9555nnn/GSM9555767/suppl/GSM9555767_PT2_matrix.mtx.gz",
+              "bytes": 56387919,
+              "sha256": "35e8628528d6c617a6de9f165ee5724879b6a120d9c3992ec21af71fcb51770b",
+              "content_range": null,
+              "etag": null
+            },
+            "genes": 36601,
+            "cells": 7287,
+            "declared_nonzero": 18065190,
+            "qc_cells": 6941,
+            "qc_umis": 73177560,
+            "mitochondrial_features": 13,
+            "panel": {
+              "known_metastasis_context": {
+                "SPP1": {
+                  "counts": 38158,
+                  "cpm": 521.4440055120723,
+                  "log2_cpm_plus1": 9.029132610128105
+                },
+                "CXCR4": {
+                  "counts": 24776,
+                  "cpm": 338.5737376321375,
+                  "log2_cpm_plus1": 8.407581076071518
+                }
+              },
+              "epithelial": {
+                "EPCAM": {
+                  "counts": 674,
+                  "cpm": 9.210473811917206,
+                  "log2_cpm_plus1": 3.3519779101963922
+                },
+                "KRT5": {
+                  "counts": 358148,
+                  "cpm": 4894.23260354677,
+                  "log2_cpm_plus1": 12.257161697710796
+                },
+                "KRT14": {
+                  "counts": 392414,
+                  "cpm": 5362.490905682015,
+                  "log2_cpm_plus1": 12.388956590005876
+                },
+                "KRT19": {
+                  "counts": 1804,
+                  "cpm": 24.652366107861482,
+                  "log2_cpm_plus1": 4.681019997313984
+                }
+              },
+              "myeloid": {
+                "LST1": {
+                  "counts": 388,
+                  "cpm": 5.302171867987946,
+                  "log2_cpm_plus1": 2.6558490989623826
+                },
+                "TYROBP": {
+                  "counts": 7947,
+                  "cpm": 108.59886555386652,
+                  "log2_cpm_plus1": 6.776089054968407
+                },
+                "FCER1G": {
+                  "counts": 2245,
+                  "cpm": 30.67880372070345,
+                  "log2_cpm_plus1": 4.985445951176255
+                },
+                "CD68": {
+                  "counts": 10039,
+                  "cpm": 137.18686438848192,
+                  "log2_cpm_plus1": 7.110476673936034
+                }
+              },
+              "T_cell": {
+                "CD3D": {
+                  "counts": 1548,
+                  "cpm": 21.154025906302422,
+                  "log2_cpm_plus1": 4.469496989030482
+                },
+                "CD3E": {
+                  "counts": 1922,
+                  "cpm": 26.26488229451761,
+                  "log2_cpm_plus1": 4.768972022085525
+                },
+                "TRAC": {
+                  "counts": 4905,
+                  "cpm": 67.02874487752803,
+                  "log2_cpm_plus1": 6.0880725666861695
+                }
+              },
+              "B_cell": {
+                "MS4A1": {
+                  "counts": 997,
+                  "cpm": 13.624395238103046,
+                  "log2_cpm_plus1": 3.8703050611198586
+                },
+                "CD79A": {
+                  "counts": 1295,
+                  "cpm": 17.696681878980385,
+                  "log2_cpm_plus1": 4.224710351016568
+                },
+                "CD74": {
+                  "counts": 284597,
+                  "cpm": 3889.129399777746,
+                  "log2_cpm_plus1": 11.925602429928237
+                }
+              },
+              "fibroblast": {
+                "COL1A1": {
+                  "counts": 311669,
+                  "cpm": 4259.078876092616,
+                  "log2_cpm_plus1": 12.056664427107144
+                },
+                "COL1A2": {
+                  "counts": 84621,
+                  "cpm": 1156.379086703629,
+                  "log2_cpm_plus1": 10.176645765296795
+                },
+                "DCN": {
+                  "counts": 60503,
+                  "cpm": 826.7971766208111,
+                  "log2_cpm_plus1": 9.693133517731548
+                }
+              }
+            }
+          },
+          {
+            "specimen": "PT3",
+            "group": "PT",
+            "status": "FULL_MATRIX_QC_AND_SPECIMEN_PSEUDOBULK",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9555nnn/GSM9555768/suppl/GSM9555768_PT3_matrix.mtx.gz",
+              "bytes": 85916913,
+              "sha256": "8c030febd3d1ba641a49e29f97370207f9b342fec4800c485b2c619e6be6a17d",
+              "content_range": null,
+              "etag": null
+            },
+            "genes": 36601,
+            "cells": 12394,
+            "declared_nonzero": 27493080,
+            "qc_cells": 9788,
+            "qc_umis": 91791259,
+            "mitochondrial_features": 13,
+            "panel": {
+              "known_metastasis_context": {
+                "SPP1": {
+                  "counts": 28221,
+                  "cpm": 307.44757515527704,
+                  "log2_cpm_plus1": 8.268881494414996
+                },
+                "CXCR4": {
+                  "counts": 29688,
+                  "cpm": 323.4294890758607,
+                  "log2_cpm_plus1": 8.341761149311216
+                }
+              },
+              "epithelial": {
+                "EPCAM": {
+                  "counts": 570,
+                  "cpm": 6.209741605134755,
+                  "log2_cpm_plus1": 2.8499475546573807
+                },
+                "KRT5": {
+                  "counts": 299034,
+                  "cpm": 3257.761177455906,
+                  "log2_cpm_plus1": 11.670107910833368
+                },
+                "KRT14": {
+                  "counts": 301036,
+                  "cpm": 3279.5715330585017,
+                  "log2_cpm_plus1": 11.679731464163886
+                },
+                "KRT19": {
+                  "counts": 719,
+                  "cpm": 7.832989849284015,
+                  "log2_cpm_plus1": 3.142901853573808
+                }
+              },
+              "myeloid": {
+                "LST1": {
+                  "counts": 1120,
+                  "cpm": 12.201597539913903,
+                  "log2_cpm_plus1": 3.722640617157063
+                },
+                "TYROBP": {
+                  "counts": 16999,
+                  "cpm": 185.19192551874684,
+                  "log2_cpm_plus1": 7.5406466994778425
+                },
+                "FCER1G": {
+                  "counts": 7354,
+                  "cpm": 80.11656098975611,
+                  "log2_cpm_plus1": 6.3419245841591465
+                },
+                "CD68": {
+                  "counts": 24339,
+                  "cpm": 265.15596653925405,
+                  "log2_cpm_plus1": 8.056128097950987
+                }
+              },
+              "T_cell": {
+                "CD3D": {
+                  "counts": 1159,
+                  "cpm": 12.626474597107334,
+                  "log2_cpm_plus1": 3.7683404553326185
+                },
+                "CD3E": {
+                  "counts": 1778,
+                  "cpm": 19.370036094613322,
+                  "log2_cpm_plus1": 4.348376631571797
+                },
+                "TRAC": {
+                  "counts": 5296,
+                  "cpm": 57.696125510164315,
+                  "log2_cpm_plus1": 5.875193370083777
+                }
+              },
+              "B_cell": {
+                "MS4A1": {
+                  "counts": 158,
+                  "cpm": 1.7212967958092829,
+                  "log2_cpm_plus1": 1.4442943114172524
+                },
+                "CD79A": {
+                  "counts": 367,
+                  "cpm": 3.9982020510253595,
+                  "log2_cpm_plus1": 2.3214092231773873
+                },
+                "CD74": {
+                  "counts": 571614,
+                  "cpm": 6227.324978732452,
+                  "log2_cpm_plus1": 12.604628507334318
+                }
+              },
+              "fibroblast": {
+                "COL1A1": {
+                  "counts": 515624,
+                  "cpm": 5617.3540445719345,
+                  "log2_cpm_plus1": 12.455931824444006
+                },
+                "COL1A2": {
+                  "counts": 147093,
+                  "cpm": 1602.4728454808535,
+                  "log2_cpm_plus1": 10.646984206872064
+                },
+                "DCN": {
+                  "counts": 38135,
+                  "cpm": 415.4535019505507,
+                  "log2_cpm_plus1": 8.702011613936556
+                }
+              }
+            }
+          },
+          {
+            "specimen": "PT4",
+            "group": "PT",
+            "status": "FULL_MATRIX_QC_AND_SPECIMEN_PSEUDOBULK",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9555nnn/GSM9555769/suppl/GSM9555769_PT4_matrix.mtx.gz",
+              "bytes": 63875798,
+              "sha256": "f2383452dd0f40325095cf771011ac8182b2fd7887fe92218235499606b88490",
+              "content_range": null,
+              "etag": null
+            },
+            "genes": 36601,
+            "cells": 6632,
+            "declared_nonzero": 20602166,
+            "qc_cells": 6376,
+            "qc_umis": 77297087,
+            "mitochondrial_features": 13,
+            "panel": {
+              "known_metastasis_context": {
+                "SPP1": {
+                  "counts": 8516,
+                  "cpm": 110.17232771009857,
+                  "log2_cpm_plus1": 6.79665391629258
+                },
+                "CXCR4": {
+                  "counts": 33760,
+                  "cpm": 436.7564330076242,
+                  "log2_cpm_plus1": 8.773984569575772
+                }
+              },
+              "epithelial": {
+                "EPCAM": {
+                  "counts": 3357,
+                  "cpm": 43.42983843621429,
+                  "log2_cpm_plus1": 5.473456990057106
+                },
+                "KRT5": {
+                  "counts": 521212,
+                  "cpm": 6742.9707926768315,
+                  "log2_cpm_plus1": 12.719382572817596
+                },
+                "KRT14": {
+                  "counts": 698074,
+                  "cpm": 9031.051842872164,
+                  "log2_cpm_plus1": 13.140838051689732
+                },
+                "KRT19": {
+                  "counts": 3334,
+                  "cpm": 43.13228517912971,
+                  "log2_cpm_plus1": 5.463762547192006
+                }
+              },
+              "myeloid": {
+                "LST1": {
+                  "counts": 226,
+                  "cpm": 2.9237841783093326,
+                  "log2_cpm_plus1": 1.9722456905261228
+                },
+                "TYROBP": {
+                  "counts": 3314,
+                  "cpm": 42.87354321644747,
+                  "log2_cpm_plus1": 5.455279317642476
+                },
+                "FCER1G": {
+                  "counts": 1438,
+                  "cpm": 18.60354711685319,
+                  "log2_cpm_plus1": 4.293042817844533
+                },
+                "CD68": {
+                  "counts": 4192,
+                  "cpm": 54.23231537819789,
+                  "log2_cpm_plus1": 5.7874407023728764
+                }
+              },
+              "T_cell": {
+                "CD3D": {
+                  "counts": 1025,
+                  "cpm": 13.260525587464894,
+                  "log2_cpm_plus1": 3.8339552497726475
+                },
+                "CD3E": {
+                  "counts": 1645,
+                  "cpm": 21.28152643061439,
+                  "log2_cpm_plus1": 4.4777761650179215
+                },
+                "TRAC": {
+                  "counts": 4574,
+                  "cpm": 59.174286865428705,
+                  "log2_cpm_plus1": 5.911075234091398
+                }
+              },
+              "B_cell": {
+                "MS4A1": {
+                  "counts": 945,
+                  "cpm": 12.225557736735926,
+                  "log2_cpm_plus1": 3.725256658591989
+                },
+                "CD79A": {
+                  "counts": 363,
+                  "cpm": 4.696166622682689,
+                  "log2_cpm_plus1": 2.509991348235865
+                },
+                "CD74": {
+                  "counts": 201650,
+                  "cpm": 2608.765838743703,
+                  "log2_cpm_plus1": 11.349704651442545
+                }
+              },
+              "fibroblast": {
+                "COL1A1": {
+                  "counts": 41696,
+                  "cpm": 539.4252437999378,
+                  "log2_cpm_plus1": 9.07795125573067
+                },
+                "COL1A2": {
+                  "counts": 14018,
+                  "cpm": 181.3522416439833,
+                  "log2_cpm_plus1": 7.510584124511982
+                },
+                "DCN": {
+                  "counts": 11670,
+                  "cpm": 150.9759352250881,
+                  "log2_cpm_plus1": 7.24769908660136
+                }
+              }
+            }
+          },
+          {
+            "specimen": "PT5",
+            "group": "PT",
+            "status": "FULL_MATRIX_QC_AND_SPECIMEN_PSEUDOBULK",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9555nnn/GSM9555770/suppl/GSM9555770_PT5_matrix.mtx.gz",
+              "bytes": 43271382,
+              "sha256": "d7c2b0902c23998e5cf0c79c4187de2d150286c5584eb975ae6fdc8b36451590",
+              "content_range": null,
+              "etag": null
+            },
+            "genes": 36601,
+            "cells": 6095,
+            "declared_nonzero": 13844425,
+            "qc_cells": 5274,
+            "qc_umis": 51144517,
+            "mitochondrial_features": 13,
+            "panel": {
+              "known_metastasis_context": {
+                "SPP1": {
+                  "counts": 165134,
+                  "cpm": 3228.772304174854,
+                  "log2_cpm_plus1": 11.657216744560603
+                },
+                "CXCR4": {
+                  "counts": 18950,
+                  "cpm": 370.5187009586971,
+                  "log2_cpm_plus1": 8.537291022614845
+                }
+              },
+              "epithelial": {
+                "EPCAM": {
+                  "counts": 2519,
+                  "cpm": 49.25259143614554,
+                  "log2_cpm_plus1": 5.651126090296869
+                },
+                "KRT5": {
+                  "counts": 162896,
+                  "cpm": 3185.013947829442,
+                  "log2_cpm_plus1": 11.637536867413672
+                },
+                "KRT14": {
+                  "counts": 183213,
+                  "cpm": 3582.260831596083,
+                  "log2_cpm_plus1": 11.807057348236992
+                },
+                "KRT19": {
+                  "counts": 138,
+                  "cpm": 2.6982364502533085,
+                  "log2_cpm_plus1": 1.886837467766051
+                }
+              },
+              "myeloid": {
+                "LST1": {
+                  "counts": 568,
+                  "cpm": 11.105784809738257,
+                  "log2_cpm_plus1": 3.597624706187485
+                },
+                "TYROBP": {
+                  "counts": 12830,
+                  "cpm": 250.85778012137646,
+                  "log2_cpm_plus1": 7.976465487652541
+                },
+                "FCER1G": {
+                  "counts": 3538,
+                  "cpm": 69.17652580432033,
+                  "log2_cpm_plus1": 6.132916621582351
+                },
+                "CD68": {
+                  "counts": 12042,
+                  "cpm": 235.45045894166915,
+                  "log2_cpm_plus1": 7.885394131791324
+                }
+              },
+              "T_cell": {
+                "CD3D": {
+                  "counts": 1197,
+                  "cpm": 23.404268340240655,
+                  "log2_cpm_plus1": 4.609061594099821
+                },
+                "CD3E": {
+                  "counts": 1501,
+                  "cpm": 29.34820950601606,
+                  "log2_cpm_plus1": 4.923539497266499
+                },
+                "TRAC": {
+                  "counts": 6259,
+                  "cpm": 122.37870972561927,
+                  "log2_cpm_plus1": 6.946949653765753
+                }
+              },
+              "B_cell": {
+                "MS4A1": {
+                  "counts": 339,
+                  "cpm": 6.628276497361389,
+                  "log2_cpm_plus1": 2.9313571370621325
+                },
+                "CD79A": {
+                  "counts": 528,
+                  "cpm": 10.323687287925702,
+                  "log2_cpm_plus1": 3.501271908693664
+                },
+                "CD74": {
+                  "counts": 160222,
+                  "cpm": 3132.7307284962726,
+                  "log2_cpm_plus1": 11.613665503606951
+                }
+              },
+              "fibroblast": {
+                "COL1A1": {
+                  "counts": 164531,
+                  "cpm": 3216.98218403353,
+                  "log2_cpm_plus1": 11.651940623440156
+                },
+                "COL1A2": {
+                  "counts": 44163,
+                  "cpm": 863.4943213951947,
+                  "log2_cpm_plus1": 9.755712677040895
+                },
+                "DCN": {
+                  "counts": 22072,
+                  "cpm": 431.56141253616687,
+                  "log2_cpm_plus1": 8.75676116245855
+                }
+              }
+            }
+          }
+        ],
+        "qc": {
+          "min_detected_genes": 200,
+          "min_UMI": 500,
+          "max_mito_fraction": 0.2
+        },
+        "panel": {
+          "known_metastasis_context": [
+            "SPP1",
+            "CXCR4"
+          ],
+          "epithelial": [
+            "EPCAM",
+            "KRT5",
+            "KRT14",
+            "KRT19"
+          ],
+          "myeloid": [
+            "LST1",
+            "TYROBP",
+            "FCER1G",
+            "CD68"
+          ],
+          "T_cell": [
+            "CD3D",
+            "CD3E",
+            "TRAC"
+          ],
+          "B_cell": [
+            "MS4A1",
+            "CD79A",
+            "CD74"
+          ],
+          "fibroblast": [
+            "COL1A1",
+            "COL1A2",
+            "DCN"
+          ]
+        },
+        "limits": [
+          "Specimens, not known independent/pair-matched donors. No cell-level output, no tests, no malignant-cell attribution, no cell type deconvolution or clinical prediction. Whole-specimen CPM is confounded by tissue composition, tumor purity and lymph node background. No doublet/ambient RNA correction; simple QC only. Full file SHA recorded, prefix parity is not publisher full checksum. Known SPP1/CXCR4 axis (DOI 10.1002/advs.202400524) is context, not novel."
+        ],
+        "scientific_status": "HOLD_NO_INDEPENDENT_INFERENCE"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 7d9850aff6649e8070811cb6b637463d78fe868f589fbb75d68d77feceddd985",
+        "Artifact early-followup-PT.zip successfully finalized. Artifact ID 15014232454"
+      ]
+    },
+    {
+      "job_id": 139149612465,
+      "run_id": 45598152083,
+      "aggregate": {
+        "status": "ORAL_DESCRIPTIVE_WHOLE_SPECIMEN_CONTEXT",
+        "group": "MET",
+        "records": [
+          {
+            "specimen": "MET1",
+            "group": "MET",
+            "status": "FULL_MATRIX_QC_AND_SPECIMEN_PSEUDOBULK",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9555nnn/GSM9555771/suppl/GSM9555771_MET1_matrix.mtx.gz",
+              "bytes": 68019198,
+              "sha256": "a4b3a76fe9e96e3f3394e4965eac33e3ab1d48f90030fd666d5f24fcd147f9cf",
+              "content_range": null,
+              "etag": null
+            },
+            "genes": 36601,
+            "cells": 10802,
+            "declared_nonzero": 21470161,
+            "qc_cells": 10770,
+            "qc_umis": 54944843,
+            "mitochondrial_features": 13,
+            "panel": {
+              "known_metastasis_context": {
+                "SPP1": {
+                  "counts": 469,
+                  "cpm": 8.535832926121929,
+                  "log2_cpm_plus1": 3.2533589590837466
+                },
+                "CXCR4": {
+                  "counts": 100914,
+                  "cpm": 1836.6418846624058,
+                  "log2_cpm_plus1": 10.8436399296567
+                }
+              },
+              "epithelial": {
+                "EPCAM": {
+                  "counts": 9,
+                  "cpm": 0.1638006318445573,
+                  "log2_cpm_plus1": 0.21884393446253864
+                },
+                "KRT5": {
+                  "counts": 169,
+                  "cpm": 3.0758118646366865,
+                  "log2_cpm_plus1": 2.0270874596931643
+                },
+                "KRT14": {
+                  "counts": 15,
+                  "cpm": 0.27300105307426215,
+                  "log2_cpm_plus1": 0.348233612691264
+                },
+                "KRT19": {
+                  "counts": 0,
+                  "cpm": 0,
+                  "log2_cpm_plus1": 0
+                }
+              },
+              "myeloid": {
+                "LST1": {
+                  "counts": 274,
+                  "cpm": 4.986819236156522,
+                  "log2_cpm_plus1": 2.581789710688757
+                },
+                "TYROBP": {
+                  "counts": 1158,
+                  "cpm": 21.075681297333038,
+                  "log2_cpm_plus1": 4.464386057749391
+                },
+                "FCER1G": {
+                  "counts": 299,
+                  "cpm": 5.4418209912802915,
+                  "log2_cpm_plus1": 2.6874685709069386
+                },
+                "CD68": {
+                  "counts": 1035,
+                  "cpm": 18.837072662124086,
+                  "log2_cpm_plus1": 4.310127239189158
+                }
+              },
+              "T_cell": {
+                "CD3D": {
+                  "counts": 4537,
+                  "cpm": 82.57371851986181,
+                  "log2_cpm_plus1": 6.384977423291638
+                },
+                "CD3E": {
+                  "counts": 7039,
+                  "cpm": 128.11029417264874,
+                  "log2_cpm_plus1": 7.012460223415595
+                },
+                "TRAC": {
+                  "counts": 11388,
+                  "cpm": 207.2623994939798,
+                  "log2_cpm_plus1": 7.702258582873046
+                }
+              },
+              "B_cell": {
+                "MS4A1": {
+                  "counts": 24014,
+                  "cpm": 437.05648590168875,
+                  "log2_cpm_plus1": 8.774973102240367
+                },
+                "CD79A": {
+                  "counts": 10868,
+                  "cpm": 197.7983629874054,
+                  "log2_cpm_plus1": 7.635162066797278
+                },
+                "CD74": {
+                  "counts": 322687,
+                  "cpm": 5872.926054224961,
+                  "log2_cpm_plus1": 12.520109388616572
+                }
+              },
+              "fibroblast": {
+                "COL1A1": {
+                  "counts": 652,
+                  "cpm": 11.866445773627927,
+                  "log2_cpm_plus1": 3.6855416734709254
+                },
+                "COL1A2": {
+                  "counts": 123,
+                  "cpm": 2.2386086352089496,
+                  "log2_cpm_plus1": 1.6953741383531729
+                },
+                "DCN": {
+                  "counts": 532,
+                  "cpm": 9.68243734903383,
+                  "log2_cpm_plus1": 3.4171689507312637
+                }
+              }
+            }
+          },
+          {
+            "specimen": "MET2",
+            "group": "MET",
+            "status": "FULL_MATRIX_QC_AND_SPECIMEN_PSEUDOBULK",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9555nnn/GSM9555772/suppl/GSM9555772_MET2_matrix.mtx.gz",
+              "bytes": 64081442,
+              "sha256": "99ffbb9fd42821bae73983330bf285e84cb21b2eb422172dac3cb6d234e38294",
+              "content_range": null,
+              "etag": null
+            },
+            "genes": 36601,
+            "cells": 11553,
+            "declared_nonzero": 20436359,
+            "qc_cells": 11405,
+            "qc_umis": 57755144,
+            "mitochondrial_features": 13,
+            "panel": {
+              "known_metastasis_context": {
+                "SPP1": {
+                  "counts": 12579,
+                  "cpm": 217.79878169812892,
+                  "log2_cpm_plus1": 7.773460894802081
+                },
+                "CXCR4": {
+                  "counts": 91429,
+                  "cpm": 1583.0451396675594,
+                  "log2_cpm_plus1": 10.62939773235653
+                }
+              },
+              "epithelial": {
+                "EPCAM": {
+                  "counts": 100,
+                  "cpm": 1.7314475053512117,
+                  "log2_cpm_plus1": 1.449665696696085
+                },
+                "KRT5": {
+                  "counts": 18294,
+                  "cpm": 316.7510066289507,
+                  "log2_cpm_plus1": 8.311752885441765
+                },
+                "KRT14": {
+                  "counts": 30109,
+                  "cpm": 521.3215293861963,
+                  "log2_cpm_plus1": 9.028794360646598
+                },
+                "KRT19": {
+                  "counts": 1006,
+                  "cpm": 17.41836190383319,
+                  "log2_cpm_plus1": 4.203072851305434
+                }
+              },
+              "myeloid": {
+                "LST1": {
+                  "counts": 305,
+                  "cpm": 5.280914891321196,
+                  "log2_cpm_plus1": 2.650974720428526
+                },
+                "TYROBP": {
+                  "counts": 3568,
+                  "cpm": 61.77804699093123,
+                  "log2_cpm_plus1": 5.972188242629862
+                },
+                "FCER1G": {
+                  "counts": 624,
+                  "cpm": 10.804232433391562,
+                  "log2_cpm_plus1": 3.561232328699425
+                },
+                "CD68": {
+                  "counts": 3331,
+                  "cpm": 57.67451640324886,
+                  "log2_cpm_plus1": 5.87466214095818
+                }
+              },
+              "T_cell": {
+                "CD3D": {
+                  "counts": 4521,
+                  "cpm": 78.27874171692828,
+                  "log2_cpm_plus1": 6.308862159667647
+                },
+                "CD3E": {
+                  "counts": 6583,
+                  "cpm": 113.98118927727026,
+                  "log2_cpm_plus1": 6.845254047847396
+                },
+                "TRAC": {
+                  "counts": 16612,
+                  "cpm": 287.6280595889433,
+                  "log2_cpm_plus1": 8.173067751079962
+                }
+              },
+              "B_cell": {
+                "MS4A1": {
+                  "counts": 13007,
+                  "cpm": 225.2093770210321,
+                  "log2_cpm_plus1": 7.821514924148199
+                },
+                "CD79A": {
+                  "counts": 6926,
+                  "cpm": 119.92005422062492,
+                  "log2_cpm_plus1": 6.91790972075845
+                },
+                "CD74": {
+                  "counts": 219178,
+                  "cpm": 3794.952013278679,
+                  "log2_cpm_plus1": 11.890246039233315
+                }
+              },
+              "fibroblast": {
+                "COL1A1": {
+                  "counts": 119425,
+                  "cpm": 2067.7811832656844,
+                  "log2_cpm_plus1": 11.014565342855635
+                },
+                "COL1A2": {
+                  "counts": 30921,
+                  "cpm": 535.3808831296482,
+                  "log2_cpm_plus1": 9.067114009594428
+                },
+                "DCN": {
+                  "counts": 15228,
+                  "cpm": 263.6648261148825,
+                  "log2_cpm_plus1": 8.048022663559719
+                }
+              }
+            }
+          },
+          {
+            "specimen": "MET3",
+            "group": "MET",
+            "status": "FULL_MATRIX_QC_AND_SPECIMEN_PSEUDOBULK",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9555nnn/GSM9555773/suppl/GSM9555773_MET3_matrix.mtx.gz",
+              "bytes": 61734849,
+              "sha256": "07076c6b881493338563517e648c585b0cb899a586e5baf9bb525652fae031ec",
+              "content_range": null,
+              "etag": null
+            },
+            "genes": 36601,
+            "cells": 8272,
+            "declared_nonzero": 19598059,
+            "qc_cells": 8147,
+            "qc_umis": 81882545,
+            "mitochondrial_features": 13,
+            "panel": {
+              "known_metastasis_context": {
+                "SPP1": {
+                  "counts": 955,
+                  "cpm": 11.663047356429871,
+                  "log2_cpm_plus1": 3.662552725322671
+                },
+                "CXCR4": {
+                  "counts": 20927,
+                  "cpm": 255.57339479372558,
+                  "log2_cpm_plus1": 8.003227768662393
+                }
+              },
+              "epithelial": {
+                "EPCAM": {
+                  "counts": 19,
+                  "cpm": 0.23203968562530636,
+                  "log2_cpm_plus1": 0.3010487278937694
+                },
+                "KRT5": {
+                  "counts": 1318,
+                  "cpm": 16.096226613376516,
+                  "log2_cpm_plus1": 4.095606031291343
+                },
+                "KRT14": {
+                  "counts": 988,
+                  "cpm": 12.06606365251593,
+                  "log2_cpm_plus1": 3.707752667976115
+                },
+                "KRT19": {
+                  "counts": 84,
+                  "cpm": 1.0258596627645122,
+                  "log2_cpm_plus1": 1.0185342378872446
+                }
+              },
+              "myeloid": {
+                "LST1": {
+                  "counts": 954,
+                  "cpm": 11.650834741396961,
+                  "log2_cpm_plus1": 3.6611606764505815
+                },
+                "TYROBP": {
+                  "counts": 12519,
+                  "cpm": 152.88972759701107,
+                  "log2_cpm_plus1": 7.265753122289012
+                },
+                "FCER1G": {
+                  "counts": 4809,
+                  "cpm": 58.73046569326833,
+                  "log2_cpm_plus1": 5.90039506479601
+                },
+                "CD68": {
+                  "counts": 12000,
+                  "cpm": 146.55138039493033,
+                  "log2_cpm_plus1": 7.205073607526041
+                }
+              },
+              "T_cell": {
+                "CD3D": {
+                  "counts": 443,
+                  "cpm": 5.410188459579511,
+                  "log2_cpm_plus1": 2.6803667727104674
+                },
+                "CD3E": {
+                  "counts": 832,
+                  "cpm": 10.160895707381835,
+                  "log2_cpm_plus1": 3.480380908859392
+                },
+                "TRAC": {
+                  "counts": 2773,
+                  "cpm": 33.86558148626182,
+                  "log2_cpm_plus1": 5.123731637901737
+                }
+              },
+              "B_cell": {
+                "MS4A1": {
+                  "counts": 218,
+                  "cpm": 2.6623500771745676,
+                  "log2_cpm_plus1": 1.8727697022396457
+                },
+                "CD79A": {
+                  "counts": 147,
+                  "cpm": 1.7952544098378964,
+                  "log2_cpm_plus1": 1.4829795958083987
+                },
+                "CD74": {
+                  "counts": 157650,
+                  "cpm": 1925.318759938397,
+                  "log2_cpm_plus1": 10.911630739313452
+                }
+              },
+              "fibroblast": {
+                "COL1A1": {
+                  "counts": 2041500,
+                  "cpm": 24932.053589687523,
+                  "log2_cpm_plus1": 14.605771962295433
+                },
+                "COL1A2": {
+                  "counts": 535030,
+                  "cpm": 6534.115421058297,
+                  "log2_cpm_plus1": 12.673997001312928
+                },
+                "DCN": {
+                  "counts": 236138,
+                  "cpm": 2883.8624886415046,
+                  "log2_cpm_plus1": 11.494286836918253
+                }
+              }
+            }
+          },
+          {
+            "specimen": "MET4",
+            "group": "MET",
+            "status": "FULL_MATRIX_QC_AND_SPECIMEN_PSEUDOBULK",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9555nnn/GSM9555774/suppl/GSM9555774_MET4_matrix.mtx.gz",
+              "bytes": 72094695,
+              "sha256": "cf01275f761e8b5463c4a362125f02a682f6e864c6674af724f0a2c7c87850b3",
+              "content_range": null,
+              "etag": null
+            },
+            "genes": 36601,
+            "cells": 11466,
+            "declared_nonzero": 22902901,
+            "qc_cells": 11383,
+            "qc_umis": 60185572,
+            "mitochondrial_features": 13,
+            "panel": {
+              "known_metastasis_context": {
+                "SPP1": {
+                  "counts": 1562,
+                  "cpm": 25.953063966892266,
+                  "log2_cpm_plus1": 4.752377379686378
+                },
+                "CXCR4": {
+                  "counts": 146559,
+                  "cpm": 2435.1185031522173,
+                  "log2_cpm_plus1": 11.250368598428402
+                }
+              },
+              "epithelial": {
+                "EPCAM": {
+                  "counts": 107,
+                  "cpm": 1.7778347275656032,
+                  "log2_cpm_plus1": 1.4739607660527445
+                },
+                "KRT5": {
+                  "counts": 10322,
+                  "cpm": 171.5028977376837,
+                  "log2_cpm_plus1": 7.430476786544795
+                },
+                "KRT14": {
+                  "counts": 13560,
+                  "cpm": 225.30316734382785,
+                  "log2_cpm_plus1": 7.822112966510575
+                },
+                "KRT19": {
+                  "counts": 177,
+                  "cpm": 2.9409041755057177,
+                  "log2_cpm_plus1": 1.9785266702564044
+                }
+              },
+              "myeloid": {
+                "LST1": {
+                  "counts": 291,
+                  "cpm": 4.835045847865333,
+                  "log2_cpm_plus1": 2.5447439917043613
+                },
+                "TYROBP": {
+                  "counts": 1527,
+                  "cpm": 25.371529242922207,
+                  "log2_cpm_plus1": 4.720909328100114
+                },
+                "FCER1G": {
+                  "counts": 456,
+                  "cpm": 7.576566689438459,
+                  "log2_cpm_plus1": 3.100400233807835
+                },
+                "CD68": {
+                  "counts": 2066,
+                  "cpm": 34.32716399206109,
+                  "log2_cpm_plus1": 5.142706031525656
+                }
+              },
+              "T_cell": {
+                "CD3D": {
+                  "counts": 3981,
+                  "cpm": 66.14542103213707,
+                  "log2_cpm_plus1": 6.0692171136097395
+                },
+                "CD3E": {
+                  "counts": 7488,
+                  "cpm": 124.4152003739368,
+                  "log2_cpm_plus1": 6.970568403744917
+                },
+                "TRAC": {
+                  "counts": 18321,
+                  "cpm": 304.4085050815833,
+                  "log2_cpm_plus1": 8.25459642894999
+                }
+              },
+              "B_cell": {
+                "MS4A1": {
+                  "counts": 17430,
+                  "cpm": 289.60429253708844,
+                  "log2_cpm_plus1": 8.182912203055984
+                },
+                "CD79A": {
+                  "counts": 4694,
+                  "cpm": 77.99211412329852,
+                  "log2_cpm_plus1": 6.303636729403978
+                },
+                "CD74": {
+                  "counts": 207979,
+                  "cpm": 3455.628867330529,
+                  "log2_cpm_plus1": 11.755149996736531
+                }
+              },
+              "fibroblast": {
+                "COL1A1": {
+                  "counts": 130831,
+                  "cpm": 2173.793413477901,
+                  "log2_cpm_plus1": 11.086662648609122
+                },
+                "COL1A2": {
+                  "counts": 33696,
+                  "cpm": 559.8684016827156,
+                  "log2_cpm_plus1": 9.131518496239314
+                },
+                "DCN": {
+                  "counts": 28692,
+                  "cpm": 476.7255514328251,
+                  "log2_cpm_plus1": 8.900038232042537
+                }
+              }
+            }
+          },
+          {
+            "specimen": "MET5",
+            "group": "MET",
+            "status": "FULL_MATRIX_QC_AND_SPECIMEN_PSEUDOBULK",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9555nnn/GSM9555775/suppl/GSM9555775_MET5_matrix.mtx.gz",
+              "bytes": 52034832,
+              "sha256": "fe6c1bd2bfe806b0d0719377bed332865ffc98b8429bef083cd34601baa1b675",
+              "content_range": null,
+              "etag": null
+            },
+            "genes": 36601,
+            "cells": 6599,
+            "declared_nonzero": 16667487,
+            "qc_cells": 6573,
+            "qc_umis": 50192155,
+            "mitochondrial_features": 13,
+            "panel": {
+              "known_metastasis_context": {
+                "SPP1": {
+                  "counts": 756,
+                  "cpm": 15.062114786663374,
+                  "log2_cpm_plus1": 4.005589949845425
+                },
+                "CXCR4": {
+                  "counts": 118827,
+                  "cpm": 2367.441684860911,
+                  "log2_cpm_plus1": 11.209722435366409
+                }
+              },
+              "epithelial": {
+                "EPCAM": {
+                  "counts": 9,
+                  "cpm": 0.17931089031742112,
+                  "log2_cpm_plus1": 0.23794409218919835
+                },
+                "KRT5": {
+                  "counts": 253,
+                  "cpm": 5.0406283611452825,
+                  "log2_cpm_plus1": 2.594698630072973
+                },
+                "KRT14": {
+                  "counts": 1,
+                  "cpm": 0.019923432257491235,
+                  "log2_cpm_plus1": 0.02846085018825968
+                },
+                "KRT19": {
+                  "counts": 1,
+                  "cpm": 0.019923432257491235,
+                  "log2_cpm_plus1": 0.02846085018825968
+                }
+              },
+              "myeloid": {
+                "LST1": {
+                  "counts": 363,
+                  "cpm": 7.232205909469318,
+                  "log2_cpm_plus1": 3.04127906834158
+                },
+                "TYROBP": {
+                  "counts": 1136,
+                  "cpm": 22.633019044510043,
+                  "log2_cpm_plus1": 4.562732035766045
+                },
+                "FCER1G": {
+                  "counts": 388,
+                  "cpm": 7.730291715906599,
+                  "log2_cpm_plus1": 3.126029861192678
+                },
+                "CD68": {
+                  "counts": 995,
+                  "cpm": 19.82381509620378,
+                  "log2_cpm_plus1": 4.380162501476265
+                }
+              },
+              "T_cell": {
+                "CD3D": {
+                  "counts": 4572,
+                  "cpm": 91.08993228124993,
+                  "log2_cpm_plus1": 6.524971537394664
+                },
+                "CD3E": {
+                  "counts": 6600,
+                  "cpm": 131.49465289944214,
+                  "log2_cpm_plus1": 7.049790327630803
+                },
+                "TRAC": {
+                  "counts": 22287,
+                  "cpm": 444.03353472270715,
+                  "log2_cpm_plus1": 8.79777024170835
+                }
+              },
+              "B_cell": {
+                "MS4A1": {
+                  "counts": 30134,
+                  "cpm": 600.3727076472409,
+                  "log2_cpm_plus1": 9.232115584731133
+                },
+                "CD79A": {
+                  "counts": 12171,
+                  "cpm": 242.48809400592583,
+                  "log2_cpm_plus1": 7.927707419418887
+                },
+                "CD74": {
+                  "counts": 267629,
+                  "cpm": 5332.088251640122,
+                  "log2_cpm_plus1": 12.380755486515753
+                }
+              },
+              "fibroblast": {
+                "COL1A1": {
+                  "counts": 9600,
+                  "cpm": 191.26494967191587,
+                  "log2_cpm_plus1": 7.586951969907237
+                },
+                "COL1A2": {
+                  "counts": 2568,
+                  "cpm": 51.163374037237496,
+                  "log2_cpm_plus1": 5.704965284037644
+                },
+                "DCN": {
+                  "counts": 3425,
+                  "cpm": 68.23775548190748,
+                  "log2_cpm_plus1": 6.113487051717748
+                }
+              }
+            }
+          }
+        ],
+        "qc": {
+          "min_detected_genes": 200,
+          "min_UMI": 500,
+          "max_mito_fraction": 0.2
+        },
+        "panel": {
+          "known_metastasis_context": [
+            "SPP1",
+            "CXCR4"
+          ],
+          "epithelial": [
+            "EPCAM",
+            "KRT5",
+            "KRT14",
+            "KRT19"
+          ],
+          "myeloid": [
+            "LST1",
+            "TYROBP",
+            "FCER1G",
+            "CD68"
+          ],
+          "T_cell": [
+            "CD3D",
+            "CD3E",
+            "TRAC"
+          ],
+          "B_cell": [
+            "MS4A1",
+            "CD79A",
+            "CD74"
+          ],
+          "fibroblast": [
+            "COL1A1",
+            "COL1A2",
+            "DCN"
+          ]
+        },
+        "limits": [
+          "Specimens, not known independent/pair-matched donors. No cell-level output, no tests, no malignant-cell attribution, no cell type deconvolution or clinical prediction. Whole-specimen CPM is confounded by tissue composition, tumor purity and lymph node background. No doublet/ambient RNA correction; simple QC only. Full file SHA recorded, prefix parity is not publisher full checksum. Known SPP1/CXCR4 axis (DOI 10.1002/advs.202400524) is context, not novel."
+        ],
+        "scientific_status": "HOLD_NO_INDEPENDENT_INFERENCE"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 67476676b709def338113159f24f7564bcbc98e5395d18bf3cbbc5403b865478",
+        "Artifact early-followup-MET.zip successfully finalized. Artifact ID 15014531136"
+      ]
+    },
+    {
+      "job_id": 139148220693,
+      "run_id": 45597748445,
+      "aggregate": {
+        "status": "SKIN_INDEXED_RECOVERY_GATE",
+        "studies": {
+          "GCST90094903": {
+            "status": "HOLD_SOURCE",
+            "reason": "one harmonised file not established"
+          },
+          "GCST90094904": {
+            "status": "HOLD_SOURCE",
+            "reason": "one harmonised file not established"
+          }
+        },
+        "limits": [
+          "Different route from failed full original TSV transfer; index magic/header only, not full-file integrity or effect extraction. No MR or novelty claim. Keep phenotypes separate."
+        ],
+        "track": "skin",
+        "scientific_status": "HOLD_NOT_INDEPENDENTLY_VALIDATED"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 5b09f3b5bce5a76ea6c4431b4639959d8a67cee987c52cccafeaeb59e6c416d2",
+        "Artifact early-track-skin.zip successfully finalized. Artifact ID 15013293983"
+      ]
+    }
+  ]
+}
