@@ -229,7 +229,7 @@ def selftest():
     m,p=labels(raw,b,1);assert m and p["mapping"]=="author_merge_index_suffix" and p["Macro_cells"]==1
     bad=gzip.compress(b'barcode,celltype\nAAAAAAAAAAAAAAAA-1_2,Macro\nCCCCCCCCCCCCCCCC-1_2,T\n')
     assert labels(bad,b,1)[0] is None
-    assert sum(any(x=="LN_FREE" for x in c.values()) for c in SITE_CODES.values())==3
+    assert sum(any(x=="LN_FREE" for x in c.values()) for c in SITE_CODES.values())==4  # four libraries, three patients
     assert canonical_tissue("Non-tumor liver")=="non_tumor"
     a=json.loads((ROOT/"docs/publication/evidence/early_track_orthogonal_first_readback_20261125.json").read_text())
     assert a["run_id"]==45611128274 and len(a["records"])==3
