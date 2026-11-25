@@ -1,0 +1,40 @@
+{
+  "provenance": {
+    "run_id": 45558976290,
+    "job_id": 139017799562,
+    "artifact_id": 14996553473,
+    "reported_artifact_zip_sha256": "5375c759c1d3fbe44a872f57a70ebe36fed49335fa84d34feb15e4fe3403bc22",
+    "source_commit": "2874e2308cb363ed080382ffa22517c482cc1e58",
+    "readback": "Actual stdout; technical success, scientific HOLD."
+  },
+  "result": {
+    "status": "POST_READOUT_REGION_COVERAGE_GATE",
+    "GRCh38_region": "16:81275211-82275211",
+    "gene": "ENSG00000197943",
+    "target": "chr16_81775211_C_T",
+    "official_eGene_lead": "chr16_81878856_T_G",
+    "comparisons": {
+      "EAS_CES": {
+        "status": "HOLD_QTL_SOURCE"
+      },
+      "EAS_SVS": {
+        "status": "HOLD_QTL_SOURCE"
+      },
+      "EUR_CES": {
+        "status": "HOLD_QTL_SOURCE"
+      },
+      "EUR_SVS": {
+        "status": "HOLD_QTL_SOURCE"
+      }
+    },
+    "limits": [
+      "Fixed index +/-500 kb post-readout descriptive window; not a certified complete cis universe. All strict nonpalindromic SNPs retained, not P-selected.",
+      "Exact coordinate and allele pair plus corroborating rsID; no proxy or ambiguous strand substitution. Region rows and index/header bytes only; no independent full-file checksum or FASTA certificate.",
+      "ROSMAP molecular ancestry not matched to EAS; nominal N/AN not model N or sdY. No approved cohort LD, effect-scale equivalence, formal coloc, MR, fine mapping or independent replication. Coverage alone is not a pass for formal coloc."
+    ],
+    "qtl": {
+      "status": "HOLD_SOURCE_OR_SCHEMA",
+      "reason": "Official eGene lead parity"
+    }
+  }
+}

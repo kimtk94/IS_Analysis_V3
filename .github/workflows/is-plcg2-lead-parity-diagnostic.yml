@@ -1,0 +1,34 @@
+name: IS PLCG2 permutation nominal lead parity
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/plcg2_lead_parity_diagnostic.py','.github/workflows/is-plcg2-lead-parity-diagnostic.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lead-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 81c9a0760c185f8c6f357a70e7c199f172df1015
+          path: indexed_helpers
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspect exact official lead row and report discrepancies
+        run: |
+          python -m pip install 'PyYAML==6.0.2' 'pysam==0.23.3' 'pyliftover==0.4.1'
+          python -m scripts.is.plcg2_lead_parity_diagnostic --evidence docs/publication/evidence --out outputs/lead-parity.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-plcg2-lead-parity
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
