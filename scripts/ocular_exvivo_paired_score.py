@@ -9,15 +9,12 @@ MATRIX="d348cb1add4a01ec1b17d82da75f4b2081de4d7c3ad2433a42261fdd9543c849"
 ANNOT="d7cd44352127b1e34f3a720ebea86093ef255a38f1612a85a2962b71bde8f394"
 
 def title_pair(title):
-    # Match exact source-title structure, not GSM order or numerical proximity.
-    s=title.strip().lower()
-    m=re.fullmatch(r"(control|dex|dexamethasone)[\s,_-]+donor[\s:_#-]*(\d+)",s)
-    if not m:
-        m=re.fullmatch(r"donor[\s:_#-]*(\d+)[\s,_-]+(control|dex|dexamethasone)",s)
-        require(m is not None,"Unrecognized donor/arm title")
-        n,arm=m.groups()
-    else:arm,n=m.groups()
-    return int(n),"control" if arm=="control" else "dex"
+    # Exact original title grammar independently read from the pinned GEO matrix
+    # in Actions run 45535645739; no outcome data accessed in that readback.
+    m=re.fullmatch(r"(Control|Dex treatment), donor ([1-5])",title.strip())
+    require(m is not None,"Unrecognized donor/arm title")
+    arm,n=m.groups()
+    return int(n),"control" if arm=="Control" else "dex"
 
 def pair_design(meta,ids):
     require(metadata(meta,"!Series_geo_accession")==[["GSE37474"]],"Wrong series")
@@ -39,11 +36,11 @@ def pair_design(meta,ids):
         d,a=title_pair(title)
         require(a not in pairs[d],"Repeated donor arm")
         tr=chars["treatment"][i]
-        controls={"control","untreated","vehicle","no dex","no dexamethasone","no treatment","none"}
-        treated={"dex","dexamethasone","dex treated","dexamethasone treated","100 nm dex","100 nm dexamethasone","dex (100 nm)","dexamethasone (100 nm)"}
-        require(tr in (controls if a=="control" else treated),"Treatment field does not corroborate title")
+        expected="none" if a=="control" else "100 nm dexamethasone"
+        require(tr==expected,"Treatment field does not corroborate title")
         pairs[d][a]=i
-    require(len(pairs)==5 and all(set(v)=={"control","dex"} for v in pairs.values()),"Expected five exact title-defined donor pairs")
+    require(set(pairs)==set(range(1,6)) and all(set(v)=={"control","dex"} for v in pairs.values()),"Expected five exact title-defined donor pairs")
+    require(all(ids[v["control"]]==f"GSM{920734+2*(k-1)}" and ids[v["dex"]]==f"GSM{920735+2*(k-1)}" for k,v in pairs.items()),"Source GSM and donor/arm mapping drift")
     for v in pairs.values():
         for k in ("age","sex"):
             require(chars[k][v["control"]]==chars[k][v["dex"]] and chars[k][v["control"]] not in {"","na","n/a","unknown"},"Donor demographics inconsistent or missing")
@@ -97,8 +94,8 @@ def score(root):
 def main():
     p=argparse.ArgumentParser();p.add_argument("--root",type=Path);p.add_argument("--out",type=Path);p.add_argument("--selftest",action="store_true");a=p.parse_args()
     if a.selftest:
-        assert title_pair("Control donor 1")== (1,"control")
-        assert title_pair("DEX donor 2")== (2,"dex")
+        assert title_pair("Control, donor 1")== (1,"control")
+        assert title_pair("Dex treatment, donor 2")== (2,"dex")
         assert sign_p([1]*5)==.0625
         assert holm({"a":.0625,"b":.0625})=={"a":.125,"b":.125}
         assert percentile([4,4,1,9])==[.5,.5,.125,.875]
