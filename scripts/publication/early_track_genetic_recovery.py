@@ -9,7 +9,7 @@ for folder in ("prior","ckm","indexed"):
 import early_track_acceleration as base
 import publication_common_instrument_pilot as old
 import fixed_subtype_indexed as idx
-base.HOSTS.add("api.platform.opentargets.org")
+base.HOSTS.update({"api.platform.opentargets.org","api.ncbi.nlm.nih.gov"})
 REQUIRED_IDS=("rs646776","rs1367117","rs9875338","rs6818397","rs12916","rs1564348","rs2073547","rs2980875","rs579459","rs2419604","rs174583","rs1169288","rs4942486","rs8017377","rs2000999","rs6504872","rs7412","rs6065311","rs5763662")
 OUTCOMES={"LAA":("EUR_LAS","Large artery stroke"),"CE":("EUR_CES","Cardioembolic stroke"),"SVD":("EUR_SVS","Small vessel stroke")}
 SKIN=("GCST90094903","GCST90094904")
@@ -76,25 +76,75 @@ def reference_build(host,ids):
             if v is not None:obs[k]=v;provenance.append(src)
             else:failures[k]=err
     return obs,{"host":host,"received":len(obs),"batch_or_individual_sources":provenance,"transport_failures":failures}
+def refsnp_placement(obj,r,build):
+    # RefSNP SPDI position is 0-based; input and output genomic positions are 1-based.
+    require(str(obj.get("refsnp_id"))==r["rsid"][2:],"exact dbSNP identity")
+    snap=obj.get("primary_snapshot_data",{})
+    require(snap.get("variant_type")=="snv","no primary SNV snapshot")
+    chrom_prefix="NC_%06d."%int(r["chrom"])
+    found=[]
+    for p in snap.get("placements_with_allele",[]):
+        ann=p.get("placement_annot",{});seq=p.get("seq_id","")
+        if not seq.startswith(chrom_prefix) or ann.get("seq_type")!="refseq_chromosome" or ann.get("mol_type")!="genomic":continue
+        traits=[a for a in ann.get("seq_id_traits_by_assembly",[]) if
+            re.fullmatch(build+r"(?:\.p\d+)?",a.get("assembly_name","")) and
+            re.fullmatch(r"GCF_000001405\.\d+",a.get("assembly_accession","")) and
+            a.get("is_top_level") is True and a.get("is_chromosome") is True and
+            a.get("is_alt") is False and a.get("is_patch") is False]
+        if not traits:continue
+        alleles=[a.get("allele",{}).get("spdi",{}) for a in p.get("alleles",[])]
+        require(len(alleles)==2,"multiallelic or incomplete placement")
+        require(all(v.get("seq_id")==seq and isinstance(v.get("position"),int) and
+            re.fullmatch("[ACGT]",v.get("deleted_sequence","")) and
+            re.fullmatch("[ACGT]",v.get("inserted_sequence","")) for v in alleles),"noncanonical SPDI allele")
+        pos={v["position"] for v in alleles};ref={v["deleted_sequence"] for v in alleles};alt={v["inserted_sequence"] for v in alleles}
+        require(len(pos)==len(ref)==1 and len(alt)==2 and ref<=alt,"SPDI site/reference mismatch")
+        p0=next(iter(pos));a=next(iter(ref));b=next(iter(alt-ref))
+        require(p0>=0 and {a,b} not in ({"A","T"},{"C","G"}),"palindromic or invalid reference")
+        found.append((p0+1,[a,b],seq,sorted({t["assembly_name"] for t in traits})))
+    require(len(found)==1,"no unique primary chromosome placement "+build)
+    return found[0]
+def resolve_dbsnp(obj,r):
+    p37,a37,s37,b37=refsnp_placement(obj,r,"GRCh37")
+    p38,a38,s38,b38=refsnp_placement(obj,r,"GRCh38")
+    require(p37==r["pos"],"source GRCh37 coordinate differs")
+    require(set(a37)==set(a38),"two-build allele sets differ")
+    ref,alt=a38;orient=old.orientation(r["ea"],r["oa"],alt,ref)
+    require(orient is not None,"exposure alleles differ")
+    return {"status":"MATCHED_REFERENCE","chr":str(r["chrom"]),"pos":p38,"ref":ref,"alt":alt,"exposure_sign":orient[0],
+            "grch37_position":p37,"grch37_alleles":a37,"grch37_refseq":s37,"grch38_refseq":s38,"assembly_labels":[b37,b38],
+            "reference_order_changed":a37!=a38}
+def dbsnp_one(r):
+    rs=r["rsid"];url="https://api.ncbi.nlm.nih.gov/variation/v0/refsnp/"+rs[2:]
+    error=None;source=None
+    for attempt in range(2):
+        try:
+            raw,source=base.get(url,16_000_000)
+            break
+        except OSError as e:
+            error=str(e)[:150]
+            if attempt==0:time.sleep(2)
+    if source is None:return rs,{"status":"HOLD_REFERENCE","reason":"dbSNP transport: "+str(error)},None
+    try:result=resolve_dbsnp(json.loads(raw),r)
+    except (ValueError,KeyError,TypeError,IndexError) as e:result={"status":"HOLD_REFERENCE","reason":str(e)[:150]}
+    return rs,result,source
+
 def reference():
     with tempfile.TemporaryDirectory() as td:
-        p=Path(td)/"ldl.gz";src=old.download(old.LDL_URL,p,60_000_000,180,retry=1)
-        require(src["sha256"]=="ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce","frozen exposure hash")
+        p=Path(td)/"ldl.gz";exposure_source=old.download(old.LDL_URL,p,60_000_000,180,retry=1)
+        require(exposure_source["sha256"]=="ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce","frozen exposure hash")
         panel,selection=old.load_ldl(p)
     require(tuple(r["rsid"] for r in panel)==REQUIRED_IDS and selection["source_rows"]==2437751 and selection["eligible_genomewide_significant_rows"]==2511,"frozen panel drift")
-    refs={}
-    for assembly,host in (("GRCh37","grch37.rest.ensembl.org"),("GRCh38","rest.ensembl.org")):
-        refs[assembly]=reference_build(host,list(REQUIRED_IDS))
-    res={}
-    for r in panel:
-        k=r["rsid"]
-        try:
-            require(k in refs["GRCh37"][0] and k in refs["GRCh38"][0],"reference transport/identity unavailable")
-            res[k]=resolve(r,refs["GRCh37"][0].get(k),refs["GRCh38"][0].get(k))
-        except (ValueError,KeyError,TypeError,IndexError) as e:res[k]={"status":"HOLD_REFERENCE","reason":str(e)[:150]}
-    return {"status":"FROZEN_LDL_REFERENCE_RECOVERY","panel":panel,"selection":selection,"exposure_source":src,"reference_sources":{k:v[1] for k,v in refs.items()},"reference":res,
+    res={};sources={}
+    # Independent official source, not repeated requests to the failing Ensembl GRCh37 server.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+        for rs,z,src in pool.map(dbsnp_one,panel):
+            res[rs]=z
+            if src:sources[rs]=src
+    return {"status":"FROZEN_LDL_REFERENCE_RECOVERY","panel":panel,"selection":selection,"exposure_source":exposure_source,"reference_sources":{"dbSNP_RefSNP":sources},"reference":res,
             "matched":sum(v["status"]=="MATCHED_REFERENCE" for v in res.values()),
-            "limits":["Same 19 frozen exposure SNPs; no replacements, proxy or multiallelic rescue. GRCh37 exact source position and both unique primary assemblies required. Reference allele ordering may legitimately change between assemblies; set and effect alignment must still agree. No LD certification."]}
+            "limits":["Same frozen 19 SNPs. Independent official RefSNP exact primary chromosome SPDI on both builds; original GRCh37 position and nonpalindromic biallelic allele set must match. No proxy, merged IDs, multiallelic rescue or LD certification. If <10 reference matches, stop outcome queries."]}
+
 def read_reference(root):
     x=json.loads((root/"reference.json").read_text())
     require(x.get("status")=="FROZEN_LDL_REFERENCE_RECOVERY" and tuple(v["rsid"] for v in x["panel"])==REQUIRED_IDS and set(x["reference"])==set(REQUIRED_IDS),"reference artifact contract")
@@ -166,11 +216,18 @@ def skin_source_contract(acc,catalog,leads):
         for line in checks.decode("ascii").splitlines():
             m=re.fullmatch(r"([a-fA-F0-9]{32})\s+\*?(?:\./)?(.+)",line.strip())
             if m and m[2]==name:found.append(m[1].lower())
-        require(len(found)==1,"unique published MD5 absent")
-        expected=found[0]
-        if md.get("data_file_md5sum"):
-            require(str(md["data_file_md5sum"]).lower()==expected,"published checksums differ")
-        out.update(expected_md5=expected,checksum_source=cs)
+        require(len(found)<=1,"duplicate exact named manifest MD5")
+        md5_from_yaml=str(md.get("data_file_md5sum","")).lower()
+        require(re.fullmatch("[a-f0-9]{32}",md5_from_yaml),"canonical filename-bound YAML MD5 absent")
+        if found:
+            require(found[0]==md5_from_yaml,"published checksums differ")
+            checksum_basis="exact_manifest_and_exact_yaml"
+        else:
+            # YAML itself is official and names this exact accession/file. No inferred checksum
+            # from a neighboring phenotype or another file. Retain manifest digest and absence.
+            checksum_basis="exact_filename_bound_yaml_only_manifest_entry_absent"
+        expected=md5_from_yaml
+        out.update(expected_md5=expected,checksum_source=cs,checksum_basis=checksum_basis,manifest_exact_matches=len(found))
         stage="size"
         _,probe=base.get(url,1,(0,0))
         m=re.fullmatch(r"bytes 0-0/(\d+)",probe.get("content_range",""))
@@ -274,6 +331,17 @@ def selftest():
         try:resolve(r,a,b)
         except ValueError:pass
         else:raise AssertionError("invalid mapping accepted")
+    def placement(build,pos,ref,alt):
+        return {"seq_id":"NC_000001.11" if build=="GRCh38" else "NC_000001.10",
+                "placement_annot":{"seq_type":"refseq_chromosome","mol_type":"genomic","seq_id_traits_by_assembly":[{"assembly_name":build+".p13","assembly_accession":"GCF_000001405.25" if build=="GRCh37" else "GCF_000001405.39","is_top_level":True,"is_chromosome":True,"is_alt":False,"is_patch":False}]},
+                "alleles":[{"allele":{"spdi":{"seq_id":"NC_000001.11" if build=="GRCh38" else "NC_000001.10","position":pos-1,"deleted_sequence":ref,"inserted_sequence":v}}} for v in (ref,alt)]}
+    ob={"refsnp_id":"123","primary_snapshot_data":{"variant_type":"snv","placements_with_allele":[placement("GRCh37",10,"A","C"),placement("GRCh38",20,"C","A")]}}
+    q=resolve_dbsnp(ob,r)
+    assert q["pos"]==20 and q["grch37_position"]==10 and q["exposure_sign"]==1
+    ob["primary_snapshot_data"]["placements_with_allele"][0]["alleles"][1]["allele"]["spdi"]["position"]=10
+    try:resolve_dbsnp(ob,r)
+    except ValueError:pass
+    else:raise AssertionError("different SPDI positions accepted")
     assert len(REQUIRED_IDS)==19 and len(set(REQUIRED_IDS))==19 and len(OUTCOMES)==3 and len(SKIN)==2
     print("Reference-order flip, exact coordinate, multiallelic rejection, and fixed panel checks passed.")
 def main():

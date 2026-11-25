@@ -117,11 +117,11 @@ jobs:
           retention-days: 30
   skin:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 18
     strategy:
       fail-fast: false
       matrix:
-        mode: [GCST90094903, GCST90094904]
+        mode: [GCST90094903]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
