@@ -1,0 +1,356 @@
+{
+  "provenance": {
+    "run_id": 45561758636,
+    "job_id": 139026877133,
+    "artifact_id": 14998202102,
+    "reported_artifact_zip_sha256": "6553d594e883a5edc57a8533ff8e6b37432b3df8d6227e7838d22afd90874226",
+    "source_commit": "c1ad53575f532b08bc7ba352ec7de160779039bc",
+    "readback": "Actual aggregate stdout. Full 1099 records in artifact; ZIP digest not independently downloaded."
+  },
+  "result": {
+    "status": "DESCRIPTIVE_POST_READOUT_LAS_REGION",
+    "region": "10:35333363-36333363",
+    "sources": {
+      "EAS_LAS": {
+        "source": {
+          "source": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104547/harmonised/GCST90104547.h.tsv.gz",
+          "metadata_sha256": "82b79efd302b59c3b814de73f53fd2f50f4d2b5a8b68de3330a2d9a83618d380",
+          "index_sha256": "317f1548ea0c2e3fcd1954a714058733131a87bfee4437ee408da6cf88fc26d6",
+          "header_range_sha256": "221e8a7fb88e74c142af21d0dfe95bf531faaae227649f5872914118eafe40bd",
+          "publisher_full_file_md5": "6ca1a35d2bced781e701446d127bd4f5",
+          "trait_description": [
+            "Large artery stroke"
+          ],
+          "samples": [
+            {
+              "sample_ancestry_category": [
+                "East Asian"
+              ],
+              "sample_size": 238977
+            }
+          ],
+          "source_total_bytes": 259096305,
+          "fields": {
+            "chr": "chromosome",
+            "pos": "base_pair_location",
+            "ea": "effect_allele",
+            "oa": "other_allele",
+            "beta": "beta",
+            "se": "standard_error",
+            "p": "p_value",
+            "eaf": "effect_allele_frequency",
+            "code": "hm_code",
+            "rsid": "rsid"
+          }
+        },
+        "range": {
+          "region": [
+            35333363,
+            36333363
+          ],
+          "range": "bytes 158507659-158642268/259096305",
+          "sha256": "84297232078826819c2fac631c93723a03c26059d9adf87a88f79aea2936f89e",
+          "decoded_rows": 2565,
+          "in_region_rows": 1924,
+          "compressed_bytes": 134610
+        },
+        "strict_pairs": 1643,
+        "exclusions": {
+          "excluded_non_strict_allele": 281
+        },
+        "anchor": {
+          "rsid": "rs2767060",
+          "pos": 35833363,
+          "ea": "T",
+          "oa": "C",
+          "beta": 0.3582,
+          "se": 0.068,
+          "p": 1.38e-7,
+          "eaf": 0.0596
+        }
+      },
+      "EUR_LAS": {
+        "source": {
+          "source": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104542/harmonised/GCST90104542.h.tsv.gz",
+          "metadata_sha256": "4a789c86efb1b79313994adf5e9bd9d3fed070968f36438136d10df302944ee7",
+          "index_sha256": "39f45689a89fa68dcdd21962e114ecf5eea2d5b4d4aeefeeca595ce66febd16b",
+          "header_range_sha256": "7fdcb149294ce39e6a0ff95cdcc7d21b2f4354eb872dd15e656b846636dfd03b",
+          "publisher_full_file_md5": "dadc58fe55bfa9cc0e2af1e0f0d7059f",
+          "trait_description": [
+            "Large artery stroke"
+          ],
+          "samples": [
+            {
+              "sample_ancestry_category": [
+                "European"
+              ],
+              "sample_size": 1241207
+            }
+          ],
+          "source_total_bytes": 265003265,
+          "fields": {
+            "chr": "chromosome",
+            "pos": "base_pair_location",
+            "ea": "effect_allele",
+            "oa": "other_allele",
+            "beta": "beta",
+            "se": "standard_error",
+            "p": "p_value",
+            "eaf": "effect_allele_frequency",
+            "code": "hm_code",
+            "rsid": "rsid"
+          }
+        },
+        "range": {
+          "region": [
+            35333363,
+            36333363
+          ],
+          "range": "bytes 161743696-161905574/265003265",
+          "sha256": "01dbb605f52c9566e0b07484470f7f80c3efddf6f367fa001e3b7321ae9a153e",
+          "decoded_rows": 2781,
+          "in_region_rows": 1992,
+          "compressed_bytes": 161879
+        },
+        "strict_pairs": 1683,
+        "exclusions": {
+          "excluded_non_strict_allele": 309
+        },
+        "anchor": {
+          "rsid": "rs2767060",
+          "pos": 35833363,
+          "ea": "T",
+          "oa": "C",
+          "beta": -0.009,
+          "se": 0.0297,
+          "p": 0.7604,
+          "eaf": 0.1603
+        }
+      }
+    },
+    "exact_matched": 1099,
+    "rsid_conflicts": 0,
+    "EAS_matched_fraction": 0.6688983566646378,
+    "EUR_matched_fraction": 0.6530005941770648,
+    "summary_all": {
+      "n": 1099,
+      "EAS_p_lt_5e_8": 0,
+      "EUR_p_lt_5e_8": 0,
+      "same_sign_count": 546,
+      "zero_count": 0,
+      "top_EAS": {
+        "rsid": "rs2767060",
+        "pos": 35833363,
+        "effect_allele": "T",
+        "other_allele": "C",
+        "EAS_beta": 0.3582,
+        "EAS_se": 0.068,
+        "EAS_p": 1.38e-7,
+        "EAS_eaf": 0.0596,
+        "EUR_beta": -0.009,
+        "EUR_se": 0.0297,
+        "EUR_p": 0.7604,
+        "EUR_eaf": 0.1603,
+        "delta": 0.3672,
+        "p_max_variance": 0.0001709731448835349,
+        "ci95_max_variance": [
+          0.1757115172,
+          0.5586884828
+        ],
+        "reference_proxy_populations": {}
+      },
+      "top_EUR": {
+        "rsid": "rs994544",
+        "pos": 36110736,
+        "effect_allele": "G",
+        "other_allele": "A",
+        "EAS_beta": 0.0082,
+        "EAS_se": 0.0363,
+        "EAS_p": 0.8206,
+        "EAS_eaf": 0.5164,
+        "EUR_beta": -0.0731,
+        "EUR_se": 0.0252,
+        "EUR_p": 0.003692,
+        "EUR_eaf": 0.7458,
+        "delta": 0.0813,
+        "p_max_variance": 0.18618439500886674,
+        "ci95_max_variance": [
+          -0.039237786,
+          0.201837786
+        ],
+        "reference_proxy_populations": {}
+      },
+      "top_conditional_max_variance": {
+        "rsid": "rs2767060",
+        "pos": 35833363,
+        "effect_allele": "T",
+        "other_allele": "C",
+        "EAS_beta": 0.3582,
+        "EAS_se": 0.068,
+        "EAS_p": 1.38e-7,
+        "EAS_eaf": 0.0596,
+        "EUR_beta": -0.009,
+        "EUR_se": 0.0297,
+        "EUR_p": 0.7604,
+        "EUR_eaf": 0.1603,
+        "delta": 0.3672,
+        "p_max_variance": 0.0001709731448835349,
+        "ci95_max_variance": [
+          0.1757115172,
+          0.5586884828
+        ],
+        "reference_proxy_populations": {}
+      },
+      "nominal_max_variance_p_lt_0_05": 66
+    },
+    "reference_proxy_union": 78,
+    "matched_proxy_rsids": 55,
+    "missing_proxy_rsids": [
+      "rs11010320",
+      "rs12569879",
+      "rs12572225",
+      "rs1326952",
+      "rs1952233",
+      "rs1977422",
+      "rs2767048",
+      "rs2767057",
+      "rs2767064",
+      "rs2784756",
+      "rs2784760",
+      "rs2845915",
+      "rs2845916",
+      "rs2845921",
+      "rs34885743",
+      "rs35207486",
+      "rs36015094",
+      "rs568533608",
+      "rs623716",
+      "rs641528",
+      "rs641539",
+      "rs679178",
+      "rs72094935"
+    ],
+    "summary_reference_proxies": {
+      "n": 55,
+      "EAS_p_lt_5e_8": 0,
+      "EUR_p_lt_5e_8": 0,
+      "same_sign_count": 54,
+      "zero_count": 0,
+      "top_EAS": {
+        "rsid": "rs2845914",
+        "pos": 35833433,
+        "effect_allele": "G",
+        "other_allele": "A",
+        "EAS_beta": -0.3475,
+        "EAS_se": 0.0688,
+        "EAS_p": 4.341e-7,
+        "EAS_eaf": 0.9409,
+        "EUR_beta": -0.0107,
+        "EUR_se": 0.0303,
+        "EUR_p": 0.7245,
+        "EUR_eaf": 0.8451,
+        "delta": -0.3368,
+        "p_max_variance": 0.0006773484525301849,
+        "ci95_max_variance": [
+          -0.5310324324,
+          -0.1425675676
+        ],
+        "reference_proxy_populations": {
+          "1000GENOMES:phase_3:CHB": 0.932592,
+          "1000GENOMES:phase_3:JPT": 1,
+          "1000GENOMES:phase_3:CEU": 1
+        }
+      },
+      "top_EUR": {
+        "rsid": "rs1475385",
+        "pos": 35843632,
+        "effect_allele": "T",
+        "other_allele": "C",
+        "EAS_beta": 0.3211,
+        "EAS_se": 0.067,
+        "EAS_p": 0.000001627,
+        "EAS_eaf": 0.0639,
+        "EUR_beta": 0.0291,
+        "EUR_se": 0.0302,
+        "EUR_p": 0.3359,
+        "EUR_eaf": 0.1499,
+        "delta": 0.292,
+        "p_max_variance": 0.0026635442841383733,
+        "ci95_max_variance": [
+          0.10149149919999997,
+          0.48250850079999996
+        ],
+        "reference_proxy_populations": {
+          "1000GENOMES:phase_3:CHB": 0.86839,
+          "1000GENOMES:phase_3:JPT": 0.868545
+        }
+      },
+      "top_conditional_max_variance": {
+        "rsid": "rs582921",
+        "pos": 35832218,
+        "effect_allele": "G",
+        "other_allele": "A",
+        "EAS_beta": 0.3293,
+        "EAS_se": 0.0657,
+        "EAS_p": 5.342e-7,
+        "EAS_eaf": 0.06599999999999995,
+        "EUR_beta": 0.0006,
+        "EUR_se": 0.0285,
+        "EUR_p": 0.9835,
+        "EUR_eaf": 0.17800000000000005,
+        "delta": 0.3287,
+        "p_max_variance": 0.00048413460747055535,
+        "ci95_max_variance": [
+          0.1440713912,
+          0.5133286088
+        ],
+        "reference_proxy_populations": {
+          "1000GENOMES:phase_3:CHB": 0.86839,
+          "1000GENOMES:phase_3:JPT": 1,
+          "1000GENOMES:phase_3:CEU": 0.811667
+        }
+      },
+      "nominal_max_variance_p_lt_0_05": 54
+    },
+    "anchor": {
+      "rsid": "rs2767060",
+      "pos": 35833363,
+      "effect_allele": "T",
+      "other_allele": "C",
+      "EAS_beta": 0.3582,
+      "EAS_se": 0.068,
+      "EAS_p": 1.38e-7,
+      "EAS_eaf": 0.0596,
+      "EUR_beta": -0.009,
+      "EUR_se": 0.0297,
+      "EUR_p": 0.7604,
+      "EUR_eaf": 0.1603,
+      "delta": 0.3672,
+      "p_max_variance": 0.0001709731448835349,
+      "ci95_max_variance": [
+        0.1757115172,
+        0.5586884828
+      ],
+      "reference_proxy_populations": {}
+    },
+    "anchor_ranks": {
+      "EAS_p": [
+        1,
+        1
+      ],
+      "EUR_p": [
+        880,
+        880
+      ],
+      "p_max_variance": [
+        1,
+        1
+      ]
+    },
+    "limits": [
+      "Post-readout fixed 1 Mb region, same GIGASTROKE release; not independent confirmation or a new multiplicity family for significance claims.",
+      "No effect-based filtering; conditional max variance difference assumes comparable reported scales. Nominal counts and rank only; no newly declared significant locus.",
+      "Reference proxy membership does not certify allele-specific LD phase or GWAS-matched LD; sign across different variants not interpreted as phased support. No causal gene, fine mapping, MR or coloc."
+    ]
+  }
+}
