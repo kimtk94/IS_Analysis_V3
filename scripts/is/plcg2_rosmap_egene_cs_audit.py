@@ -50,7 +50,7 @@ def read_cs(path):
     with gzip.open(path,"rt",encoding="utf8",newline="") as f:
         t=csv.DictReader(f,delimiter="\t")
         need={"molecular_trait_id","variant","chromosome","position","ref","alt","cs_id","cs_index","cs_size","pip","z","cs_min_r2","cs_avg_r2","finemapped_region","cs_log10bf"}
-        require(need<=set(t.fieldnames or []),"Official credible-set schema")
+        require(need<=set(t.fieldnames or []),"Official credible-set schema; observed="+repr(t.fieldnames)+"; missing="+repr(sorted(need-set(t.fieldnames or []))))
         for row in t:
             total+=1;require(total<=2500000 and None not in row,"CS row bound/width")
             if row["molecular_trait_id"]!=GENE:continue
