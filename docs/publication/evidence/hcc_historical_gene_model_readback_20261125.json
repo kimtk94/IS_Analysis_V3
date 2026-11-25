@@ -1,0 +1,126 @@
+{
+  "run_id": 45613882235,
+  "job_id": 139204153727,
+  "head_sha": "afba9d1edb987a4f78746a9adad3849f294976e5",
+  "source": "Actual stdout",
+  "aggregate": {
+    "status": "HCC_HISTORICAL_GENE_MODEL_SENSITIVITY",
+    "historical_annotation": {
+      "url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.annotation.gtf.gz",
+      "bytes": 37991892,
+      "sha256": "9909e8123a40eca090c3f8e501633f7cc65cd6c4adb83b95009745eca3564d70",
+      "content_range": null,
+      "etag": "\"243b5d4-52cfcca4d5640\"",
+      "gene_rows": 57820,
+      "header": [
+        "##description: evidence-based annotation of the human genome (GRCh37), version 19 (Ensembl 74)",
+        "##provider: GENCODE",
+        "##contact: gencode@sanger.ac.uk",
+        "##format: gtf",
+        "##date: 2013-12-05"
+      ]
+    },
+    "historical_fixed_panel": {
+      "SOAT1": [
+        {
+          "gene_id": "ENSG00000057252.8",
+          "gene_type": "protein_coding",
+          "chrom": "chr1",
+          "strand": "+",
+          "start": 179262925,
+          "end": 179327815
+        }
+      ],
+      "HMGCR": [
+        {
+          "gene_id": "ENSG00000113161.11",
+          "gene_type": "protein_coding",
+          "chrom": "chr5",
+          "strand": "+",
+          "start": 74632154,
+          "end": 74657929
+        }
+      ],
+      "SQLE": [
+        {
+          "gene_id": "ENSG00000104549.7",
+          "gene_type": "protein_coding",
+          "chrom": "chr8",
+          "strand": "+",
+          "start": 126010739,
+          "end": 126034525
+        }
+      ],
+      "LDLR": [
+        {
+          "gene_id": "ENSG00000130164.7",
+          "gene_type": "protein_coding",
+          "chrom": "chr19",
+          "strand": "+",
+          "start": 11200038,
+          "end": 11244492
+        }
+      ],
+      "FASN": [
+        {
+          "gene_id": "ENSG00000169710.6",
+          "gene_type": "protein_coding",
+          "chrom": "chr17",
+          "strand": "-",
+          "start": 80036214,
+          "end": 80056208
+        }
+      ],
+      "ACACA": [
+        {
+          "gene_id": "ENSG00000132142.15",
+          "gene_type": "protein_coding",
+          "chrom": "chr17",
+          "strand": "-",
+          "start": 35441923,
+          "end": 35766909
+        }
+      ],
+      "ACLY": [
+        {
+          "gene_id": "ENSG00000131473.12",
+          "gene_type": "protein_coding",
+          "chrom": "chr17",
+          "strand": "-",
+          "start": 40023161,
+          "end": 40086795
+        }
+      ],
+      "SREBF2": [
+        {
+          "gene_id": "ENSG00000198911.7",
+          "gene_type": "protein_coding",
+          "chrom": "chr22",
+          "strand": "+",
+          "start": 42229109,
+          "end": 42303312
+        }
+      ]
+    },
+    "current_ID_ACACA_status": "HOLD_MISSING_OR_NONUNIQUE_FEATURE",
+    "unchanged_other_genes": 7,
+    "matched_tumor_biopsies": 22,
+    "patients": 9,
+    "historical_ACACA_result": {
+      "RNA_rows": 1,
+      "protein_rows": 1,
+      "status": "DESCRIPTIVE_TUMOR_PATIENT_MEDIAN_CONCORDANCE",
+      "complete_biopsies": 22,
+      "patients": 9,
+      "spearman_rho": 0.5666666666666667,
+      "loo_rho_range": [
+        0.4761904761904762,
+        0.6428571428571429
+      ]
+    },
+    "limits": [
+      "Historical GRCh37 symbol-level gene annotation sensitivity, not proven exact original release or one-to-one gene-model equivalence. Keep current-ID primary missing result. Same nine patients, no p-value, independent validation, tumor-normal protein contrast or new mechanistic claim."
+    ],
+    "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+  }
+}
