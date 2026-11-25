@@ -1,0 +1,37 @@
+name: IS vascular published candidate audit
+on:
+  push:
+    branches: [research/is-vascular-prior-evidence-20261125]
+    paths: ['scripts/is/vascular_published_candidate_audit.py','.github/workflows/is-vascular-prior-evidence.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  published-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install bounded workbook reader and run focused checks
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+          python -m py_compile scripts/is/vascular_published_candidate_audit.py
+          python scripts/is/vascular_published_candidate_audit.py --selftest
+      - name: Retrieve official publisher Supplementary Data 1-26
+        run: |
+          curl -fLsS --connect-timeout 20 --max-time 180 --max-filesize 150000000 'https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-026-69273-8/MediaObjects/41467_2026_69273_MOESM3_ESM.xlsx' -o "$RUNNER_TEMP/vascular.xlsx"
+          sha256sum "$RUNNER_TEMP/vascular.xlsx"
+      - name: Inspect fixed candidate evidence across selected published tables
+        run: |
+          python scripts/is/vascular_published_candidate_audit.py --input "$RUNNER_TEMP/vascular.xlsx" --out outputs/published-candidate-audit.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-vascular-published-candidate-audit
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
