@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "data_status": "synthetic",
+  "title": "Illustrative multi-omics study design and results",
+  "width_mm": 180,
+  "height_mm": 205,
+  "columns": 2,
+  "panels": [
+    {
+      "type": "schematic",
+      "title": "Disease hypothesis and workflow",
+      "reference": "Synthetic demonstration; not biological evidence",
+      "nodes": [
+        {
+          "id": "v",
+          "label": "Vascular\nrisk",
+          "x": 0.18,
+          "y": 0.75
+        },
+        {
+          "id": "i",
+          "label": "Ischemic\nstroke",
+          "x": 0.78,
+          "y": 0.75
+        },
+        {
+          "id": "g",
+          "label": "GWAS / QTL",
+          "x": 0.18,
+          "y": 0.28
+        },
+        {
+          "id": "m",
+          "label": "MR / coloc",
+          "x": 0.78,
+          "y": 0.28
+        }
+      ],
+      "edges": [
+        {
+          "from": "v",
+          "to": "i",
+          "kind": "hypothesis"
+        },
+        {
+          "from": "g",
+          "to": "m",
+          "kind": "workflow"
+        }
+      ]
+    },
+    {
+      "type": "forest",
+      "title": "Example odds ratios",
+      "source": "forest.tsv",
+      "reference": "Synthetic example; no observed estimate",
+      "scale": "ratio",
+      "effect_label": "Odds ratio (illustrative interval)"
+    },
+    {
+      "type": "volcano",
+      "title": "Example expression changes",
+      "source": "volcano.tsv",
+      "reference": "Synthetic example; no observed expression",
+      "p_label": "Adjusted P value",
+      "p_threshold": 0.05,
+      "fc_threshold": 1
+    },
+    {
+      "type": "heatmap",
+      "title": "Example expression profile",
+      "source": "heatmap.tsv",
+      "reference": "Synthetic example; no observed expression",
+      "units": "Illustrative z-score"
+    },
+    {
+      "type": "locuscompare",
+      "title": "Example GWAS-QTL comparison",
+      "source": "locuscompare.tsv",
+      "reference": "Synthetic example; no colocalization result"
+    }
+  ]
+}
