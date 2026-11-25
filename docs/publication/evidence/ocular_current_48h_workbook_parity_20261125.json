@@ -1,0 +1,166 @@
+{
+  "provenance": {
+    "run_id": 45594940382,
+    "job_id": 139138410157,
+    "artifact_id": 15012727333,
+    "reported_artifact_zip_sha256": "ea2491c7fb5bcb12f6f7167d22c59d12e3c6c246a941d8be16b0c44f0730daa1",
+    "source_commit": "3f5c2441f2c6c435a6303012d668a9265e3f7a15",
+    "readback": "Verified actual aggregate stdout; full target rows in artifact; artifact ZIP digest upload-reported."
+  },
+  "result": {
+    "status": "CURRENT_SOURCE_COMPARISON_NOT_HISTORICAL_EQUIVALENCE",
+    "source": {
+      "zip_sha256": "cb30416909ee16bd9dcf60abc4f3deab433523269ef3431f9d38a6f5e21af695",
+      "historical_zip_sha256": "308ffad592cbe1eb5262c5bec1df467257f8859b4905198ad3db9d5513b1c818",
+      "same_historical_zip": false,
+      "workbook_sha256": "3c30e93461812d05f42a1978b8e446235709f2283e11f620c212beb26478698d",
+      "official_cloud": {
+        "listing": {
+          "url": "https://pmc-oa-opendata.s3.amazonaws.com/?list-type=2&prefix=PMC12882097.&delimiter=%2F&max-keys=20",
+          "bytes": 344,
+          "sha256": "846e427f4e8b4de9a356ecd6147e867c4676865febd98dffc32c5763c3caa386"
+        },
+        "versions": [
+          {
+            "status": "PUBLIC_WORKBOOK_VERIFIED",
+            "prefix": "PMC12882097.1/",
+            "metadata": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/metadata/PMC12882097.1.json",
+              "bytes": 1955,
+              "sha256": "1754373e1aaba7f6da6c3200ec0ea7f40ae1a202673d3e6e036e32cf93556241"
+            },
+            "license": "CC BY-NC-ND",
+            "workbook": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC12882097.1/iovs-67-2-13_s003.xlsx",
+              "bytes": 16686303,
+              "sha256": "3c30e93461812d05f42a1978b8e446235709f2283e11f620c212beb26478698d",
+              "key": "PMC12882097.1/iovs-67-2-13_s003.xlsx",
+              "published_md5": "0e6f4f050b71f87d22338ffa5c69f440"
+            }
+          }
+        ]
+      },
+      "matching_current_cloud_versions": [
+        "PMC12882097.1/"
+      ]
+    },
+    "historical_byte_identity_status": "HOLD_CHANGED_ZIP",
+    "limits": [
+      "Compare exact current official workbook member and archived selected rows; prior full workbook byte identity not established. Current-source parity cannot establish unchanged historical values for unarchived genes.",
+      "All 67 targets retained with original model coverage and current selection-stage values; no new panel refit, independent validation, enrichment or causal claims. Donor/pool share cohort."
+    ],
+    "current_counts": {
+      "shared": 12251,
+      "external_fdr_available": 12168,
+      "strong": 241,
+      "discordant": 64,
+      "high_confidence_table": 857
+    },
+    "archived_row_parity": {
+      "strong241": {
+        "keys_match": true,
+        "rows": 241,
+        "changed_values": 0,
+        "first_differences": []
+      },
+      "discordant64": {
+        "keys_match": true,
+        "rows": 64,
+        "changed_values": 0,
+        "first_differences": []
+      }
+    },
+    "current_source_status": "CURRENT_OFFICIAL_WORKBOOK_AND_ARCHIVED_ROWS_RECONCILED",
+    "target_counts": {
+      "current_48h_tested": 42,
+      "current_48h_fdr05": 2,
+      "internal_strong_4": 4,
+      "statuses": {
+        "NOT_INTERNAL_STRONG": 63,
+        "CURRENT_48H_NOT_TESTED": 1,
+        "CURRENT_48H_FDR_NOT_SIGNIFICANT": 3
+      }
+    },
+    "internal_strong_details": [
+      {
+        "gene_id": "ENSG00000104537",
+        "donor": {
+          "symbol": "ANXA13",
+          "log2fc": 1.6638692932259,
+          "fdr": 4.77090816692786e-19
+        },
+        "pool": {
+          "symbol": "ANXA13",
+          "log2fc": 1.58007231308191,
+          "fdr": 2.14392407613448e-7
+        },
+        "current_48h": null,
+        "in_current_high_confidence_table": false,
+        "status": "CURRENT_48H_NOT_TESTED"
+      },
+      {
+        "gene_id": "ENSG00000119699",
+        "donor": {
+          "symbol": "TGFB3",
+          "log2fc": -1.15555083193841,
+          "fdr": 5.66233947717345e-25
+        },
+        "pool": {
+          "symbol": "TGFB3",
+          "log2fc": -1.301141133098,
+          "fdr": 7.38254273447365e-9
+        },
+        "current_48h": {
+          "gene_id": "ENSG00000119699",
+          "symbol": "TGFB3",
+          "log2fc": -0.0238519269777781,
+          "fdr": 0.989594375727294
+        },
+        "in_current_high_confidence_table": false,
+        "status": "CURRENT_48H_FDR_NOT_SIGNIFICANT"
+      },
+      {
+        "gene_id": "ENSG00000144749",
+        "donor": {
+          "symbol": "LRIG1",
+          "log2fc": -1.05003341867173,
+          "fdr": 1.82456459521035e-29
+        },
+        "pool": {
+          "symbol": "LRIG1",
+          "log2fc": -1.13917647987598,
+          "fdr": 1.44830861588875e-8
+        },
+        "current_48h": {
+          "gene_id": "ENSG00000144749",
+          "symbol": "LRIG1",
+          "log2fc": -0.277917308208936,
+          "fdr": 0.119502011389482
+        },
+        "in_current_high_confidence_table": false,
+        "status": "CURRENT_48H_FDR_NOT_SIGNIFICANT"
+      },
+      {
+        "gene_id": "ENSG00000159713",
+        "donor": {
+          "symbol": "TPPP3",
+          "log2fc": -1.0905761679782,
+          "fdr": 2.52528613702821e-9
+        },
+        "pool": {
+          "symbol": "TPPP3",
+          "log2fc": -1.07001173959181,
+          "fdr": 0.000100492653451551
+        },
+        "current_48h": {
+          "gene_id": "ENSG00000159713",
+          "symbol": "TPPP3",
+          "log2fc": -0.569239976372636,
+          "fdr": 0.702852418846193
+        },
+        "in_current_high_confidence_table": false,
+        "status": "CURRENT_48H_FDR_NOT_SIGNIFICANT"
+      }
+    ]
+  }
+}
