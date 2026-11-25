@@ -1,0 +1,35 @@
+name: MASTER DEGREE eight-track bounded scientific prerequisites 2026-11-07
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/research-eight-track-20261107.yml'
+      - 'scripts/research/daily_20261107_gates.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research-gate:
+    name: "Scientific prerequisite — ${{ matrix.track }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run one bounded source prerequisite in CI only
+        run: python scripts/research/daily_20261107_gates.py --track "${{ matrix.track }}"
+      - name: Upload bounded evidence and HOLD status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-20261107-${{ matrix.track }}
+          path: results/research_operations/20261107/${{ matrix.track }}.json
+          if-no-files-found: error
+          retention-days: 30
