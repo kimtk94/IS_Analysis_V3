@@ -1,0 +1,33 @@
+{
+  "run_id": 45608268371,
+  "head_sha": "e279eadf04b4625176bc3d6961681cdef5bd4b05",
+  "source": "Actual job stdout; artifact digest reported by upload action, ZIP not independently downloaded",
+  "records": [
+    {
+      "job_id": 139184728613,
+      "aggregate": {
+        "status": "HOLD_SOURCE_OR_CONTRACT",
+        "reason": "source too large: 8742583981 bytes exceeds 180000000",
+        "mode": "swiss",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 4a15e193a45c6ddbdb9654c7a77d12695bb3637da51c39ff20170e694a9e7cd9",
+        "Artifact early-external-swiss.zip successfully finalized. Artifact ID 15017719986"
+      ]
+    },
+    {
+      "job_id": 139184729193,
+      "aggregate": {
+        "status": "HOLD_SOURCE_OR_CONTRACT",
+        "reason": "exact source effect header mismatch",
+        "mode": "protein_effect_readout",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 2f1fb5440bcec6b05ae63d09641dd67f9f165ec69755ec4c044cb3114c1df580",
+        "Artifact early-external-protein_effect_readout.zip successfully finalized. Artifact ID 15019111802"
+      ]
+    }
+  ]
+}
