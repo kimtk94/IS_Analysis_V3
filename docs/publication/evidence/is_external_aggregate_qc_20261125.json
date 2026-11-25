@@ -1,0 +1,39 @@
+{
+  "provenance": {
+    "run_id": 45577548544,
+    "job_id": 139079111759,
+    "artifact_id": 15004004522,
+    "source_commit": "acf53daf0c4b604d18b1fa6b3ee5c1ec3f05a44a",
+    "reported_artifact_zip_sha256": "948bf1d79bc90e8f7d7586357a2225d465034a3ece78dc7b725687bf80e09f4a",
+    "readback": "Verified actual blank-template stdout and synthetic test log; no external data."
+  },
+  "result": {
+    "status": "AGGREGATE_STRUCTURE_QC_ONLY",
+    "expected_rows": 96,
+    "received_rows": 96,
+    "counts": {
+      "NOT_RETURNED": 96
+    },
+    "independent_validation_status": "HOLD"
+  },
+  "synthetic_tests_passed": [
+    "test_blank_template (test_is_external_validation_qc.TestExternalAggregateQC.test_blank_template) ... ok",
+    "test_coordinate (test_is_external_validation_qc.TestExternalAggregateQC.test_coordinate) ... ok",
+    "test_direct_without_policy (test_is_external_validation_qc.TestExternalAggregateQC.test_direct_without_policy) ... ok",
+    "test_duplicate (test_is_external_validation_qc.TestExternalAggregateQC.test_duplicate) ... ok",
+    "test_invalid_n (test_is_external_validation_qc.TestExternalAggregateQC.test_invalid_n) ... ok",
+    "test_invalid_se (test_is_external_validation_qc.TestExternalAggregateQC.test_invalid_se) ... ok",
+    "test_low_quality (test_is_external_validation_qc.TestExternalAggregateQC.test_low_quality) ... ok",
+    "test_missing (test_is_external_validation_qc.TestExternalAggregateQC.test_missing) ... ok",
+    "test_missing_policy_model (test_is_external_validation_qc.TestExternalAggregateQC.test_missing_policy_model) ... ok",
+    "test_multiallelic_wrong (test_is_external_validation_qc.TestExternalAggregateQC.test_multiallelic_wrong) ... ok",
+    "test_no_implicit_quality_threshold (test_is_external_validation_qc.TestExternalAggregateQC.test_no_implicit_quality_threshold) ... ok",
+    "test_nonfinite (test_is_external_validation_qc.TestExternalAggregateQC.test_nonfinite) ... ok",
+    "test_request_changed (test_is_external_validation_qc.TestExternalAggregateQC.test_request_changed) ... ok",
+    "test_reversed_exact_pair (test_is_external_validation_qc.TestExternalAggregateQC.test_reversed_exact_pair) ... ok",
+    "test_unavailable (test_is_external_validation_qc.TestExternalAggregateQC.test_unavailable) ... ok",
+    "test_unavailable_no_reason (test_is_external_validation_qc.TestExternalAggregateQC.test_unavailable_no_reason) ... ok",
+    "test_unreturned_data (test_is_external_validation_qc.TestExternalAggregateQC.test_unreturned_data) ... ok",
+    "test_zero_p (test_is_external_validation_qc.TestExternalAggregateQC.test_zero_p) ... ok"
+  ]
+}
