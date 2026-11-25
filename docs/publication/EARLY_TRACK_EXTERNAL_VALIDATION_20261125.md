@@ -1,0 +1,11 @@
+# External validation follow-up — 2026-11-25
+
+#356 run 45607454164: HCC seven eligible of eight prespecified genes, four Bonferroni-positive (SOAT1, SQLE, SREBF2, ACACA); ACLY duplicate symbol HOLD. Oral bulk 11 paired patients from 72 total (108 samples), six panels all evaluated, B-cell only corrected significant; CXCR4 nominal p=.01171875, adjusted .0703125. Whole tissue composition and prior biology unresolved. scRNA 20/20 exact headers, first P01 pair both matrices complete with 8894 TC/4894 mLN cells and epithelial eligibility 4554/646 at two-marker threshold. Full ten-pair analysis running in #356; no duplicated full job here.
+
+Four parallel HCC tasks:
+1. GSE64041 (University of Basel, PMID 27499918) exact 60 paired tumor/non-tumor biopsies, five healthy references withheld. Official GPL6244 gene_assignment, exact unambiguous gene symbols, mean all mapped probes (no selection by observed effect). Freeze all eight genes and Bonferroni eight, sign test, leave-one-patient-out median, probe consistency; no reinterpretation of RMA as FPKM. Independent cohort but case-mix and assay differences; report failed source contracts, not results fabricated from metadata.
+2. GSE36376 (Samsung Medical Center) 433 samples, tissue/metadata coverage; no paired patient identity inferred from chip names, no tests on potentially overlapping individuals.
+3. Jiang Nature 2019 DOI 10.1038/s41586-019-0987-8 exact published Extended Data Fig9 source workbook MOESM17; original paper already shows cholesterol-related protein/mRNA upregulation and independent SOAT1 IHC, so source is benchmark, not novelty. No inferred patient pairing.
+4. Original Supplementary Tables 6/7/9 exact ZIP SHA and explicit gene/statistic header inspection; no assuming Table5 is proteome (16,457 rows and 70 RNA columns indicate likely RNA; analyte identity remains to be verified). PRIDE PXD006512 latest 2019/05 directory actual 1488 raw links and SDRF, no processed abundance confirmed. No raw protein reprocessing.
+
+No individual identifiers or expression exported, no Radiomics/harness, no new causal claim, no automatic publication status or main merge. Full regression not yet run; focused checks in Actions. Keep negative and missing results.
