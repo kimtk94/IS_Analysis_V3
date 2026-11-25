@@ -38,8 +38,10 @@ def read_ld(v,pop):
             start,end=row.get("start"),row.get("end")
             require(re.fullmatch(r"[0-9]+",str(start)) is not None and re.fullmatch(r"[0-9]+",str(end)) is not None,"Proxy coordinate format: "+str(type(start).__name__)+"/"+str(type(end).__name__))
             start,end=int(start),int(end)
-            require(str(row.get("chr")).removeprefix("chr")=="10" and 0<start<=end and abs(start-35833363)<=500000,"Proxy coordinate identity: "+str([row.get("chr"),start,end]))
-            item.update(chr="10",start=start,end=end)
+            # Ensembl insertion convention: start = end + 1, not an invalid interval.
+            # https://www.ensembl.org/info/genome/variation/prediction/classification.html
+            require(str(row.get("chr")).removeprefix("chr")=="10" and end>0 and 0<start<=end+1 and max(abs(start-35833363),abs(end-35833363))<=500000,"Proxy coordinate identity: "+str([row.get("chr"),start,end]))
+            item.update(chr="10",start=start,end=end,coordinate_class=("INSERTION" if start==end+1 else "POINT" if start==end else "SPAN"),consequence_type=row.get("consequence_type"))
         require(other not in proxies or proxies[other]==item,"Duplicate LD conflict")
         proxies[other]=item
     return {"status":"REFERENCE_LD_PARSED" if proxies else "HOLD_NO_PARSED_PROXIES","returned_rows":len(v),"schemas":dict(schemas),"proxies":sorted(proxies.values(),key=lambda x:(-x["r2"],x["rsid"]))}
@@ -76,8 +78,14 @@ def audit(evidence,workbook):
     out["workbook_sha256"]=PIN
     return out
 def main():
+    # Focused checks of documented insertion coordinates and strict invalid interval rejection.
+    pop="1000GENOMES:phase_3:CHB";base={"variation":"rs123","population_name":pop,"r2":"0.9","d_prime":"1","chr":"10","start":"35832725","end":"35832724"}
+    assert read_ld([base],pop)["proxies"][0]["coordinate_class"]=="INSERTION"
+    try:read_ld([{**base,"end":"35832723"}],pop)
+    except ValueError:pass
+    else:raise AssertionError("Invalid reversed interval accepted")
     p=argparse.ArgumentParser();p.add_argument("--evidence",type=Path,required=True);p.add_argument("--workbook",type=Path,required=True);p.add_argument("--out",type=Path,required=True);a=p.parse_args()
     x=audit(a.evidence,a.workbook);a.out.parent.mkdir(parents=True,exist_ok=True);a.out.write_text(json.dumps(x,indent=2,allow_nan=False)+"\n")
-    short={**x,"populations":{k:{**{a:b for a,b in v.items() if a!="proxies"},"proxy_count":len(v["proxies"]),"first_5":v["proxies"][:5]} for k,v in x["populations"].items()}}
+    short={**x,"populations":{k:{**{a:b for a,b in v.items() if a!="proxies"},"proxy_count":len(v["proxies"]),"coordinate_classes":dict(collections.Counter(z.get("coordinate_class","UNSPECIFIED") for z in v["proxies"])),"first_5":v["proxies"][:5]} for k,v in x["populations"].items()}}
     print(json.dumps(short,indent=2,allow_nan=False))
 if __name__=="__main__":main()
