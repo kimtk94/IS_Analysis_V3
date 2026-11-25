@@ -1,0 +1,29 @@
+name: Ocular tissue manuscript figure
+on:
+  push:
+    branches: [research/ocular-exvivo-fixed-panel-20261125]
+    paths: ['scripts/ocular_exvivo_manuscript_figure.py','.github/workflows/ocular-exvivo-manuscript-figure.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  figure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate and technically validate manuscript files
+        run: |
+          python -m pip install 'matplotlib==3.10.1' 'numpy==2.2.4'
+          python scripts/ocular_exvivo_manuscript_figure.py --out outputs/figure3
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-exvivo-manuscript-figure3
+          path: outputs/figure3/
+          if-no-files-found: error
+          retention-days: 90
