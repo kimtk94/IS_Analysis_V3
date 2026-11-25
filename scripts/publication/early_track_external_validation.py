@@ -33,9 +33,36 @@ def decode_table(raw,begin,end):
             yield row
         raise ValueError("table end absent")
     return header,rows()
+def sized_gzip(url,limit):
+    # Exact remote size from a one-byte Range, then bounded complete transfer.
+    # Full gzip reads in decode_table validate the end marker and CRC; no arbitrary cap escalation.
+    import urllib.error
+    error=None
+    for attempt in range(2):
+        try:
+            raw,first=base.get(url,1,(0,0))
+            m=re.fullmatch(r"bytes 0-0/(\d+)",first["content_range"] or "")
+            require(m is not None,"missing exact remote size")
+            n=int(m[1]);require(0<n<=limit,f"source too large: {n} bytes exceeds {limit}")
+            raw,src=base.get(url,n)
+            require(len(raw)==n and raw[:2]==b"\x1f\x8b","size/gzip identity mismatch")
+            if first.get("etag") and src.get("etag"):
+                require(first["etag"]==src["etag"],"remote entity changed during transfer")
+            # Exhaust gzip in bounded chunks to verify CRC without expanding in memory.
+            total=0
+            with gzip.GzipFile(fileobj=io.BytesIO(raw)) as f:
+                for chunk in iter(lambda:f.read(1_048_576),b""):
+                    total+=len(chunk);require(total<=2_000_000_000,"gzip expansion cap")
+            src.update(remote_size=n,uncompressed_bytes=total,range_probe=first)
+            return raw,src
+        except (OSError,EOFError) as e:
+            error=e
+            if attempt==0:time.sleep(3)
+    raise error
+
 def platform():
     url="https://ftp.ncbi.nlm.nih.gov/geo/platforms/GPL6nnn/GPL6244/soft/GPL6244_family.soft.gz"
-    raw,src=base.get(url,40_000_000)
+    raw,src=sized_gzip(url,180_000_000)
     h,rows=decode_table(raw,"!platform_table_begin","!platform_table_end")
     require("ID" in h and "gene_assignment" in h,"official GPL6244 annotation schema")
     i=h.index("ID");j=h.index("gene_assignment");m=collections.defaultdict(list);seen=set()
@@ -62,15 +89,15 @@ def swiss():
     raw,listing=base.get(folder,2_000_000)
     files=[v for v in base.links(raw) if re.fullmatch(r"GSE64041(?:-GPL6244)?_series_matrix\.txt\.gz",v)]
     require(len(files)==1,"exact series matrix unavailable")
-    raw,src=base.get(folder+files[0],100_000_000)
+    raw,src=sized_gzip(folder+files[0],180_000_000)
     # Metadata prefix is parsed from the verified full gzip, not a separate request.
     with gzip.GzipFile(fileobj=io.BytesIO(raw)) as f:
-        lines=[]
+        lines=[];metadata_bytes=0
         for line in f:
             t=line.decode("utf-8-sig")
             if t.startswith("!series_matrix_table_begin"):break
-            lines.append(t)
-            require(sum(map(len,lines))<8_000_000,"metadata cap")
+            lines.append(t);metadata_bytes+=len(line)
+            require(metadata_bytes<8_000_000,"metadata cap")
         else:raise ValueError("series matrix table missing")
     meta=base.meta_rows("".join(lines));ids=one_field(meta,"!Sample_geo_accession",125)
     titles=one_field(meta,"!Sample_title",125);tissue=characteristic(meta,"tissue",125)
@@ -85,7 +112,7 @@ def swiss():
             key=(m[1],group);require(key not in pairs,"duplicate pair site");pairs[key]=ids[i]
         else:
             # Five healthy references are explicitly withheld, never treated as adjacent tissue.
-            require("normal" in title.lower() or "healthy" in title.lower(),"unresolved specimen title");normal+=1
+            require(re.fullmatch(r"normal[1-5]",title.strip(),re.I) and t.lower()=="liver" and d.lower()=="normal","unresolved healthy specimen");normal+=1
     patients=sorted({p for p,g in pairs});require(len(patients)==60 and len(pairs)==120 and normal==5 and all((p,g) in pairs for p in patients for g in ("tumor","non-tumor")),"60 pair/5 healthy denominator drift")
     probes,ann,platform_n=platform()
     h,rows=decode_table(raw,"!series_matrix_table_begin","!series_matrix_table_end")
@@ -175,9 +202,55 @@ def selftest():
     assert prior("hcc_rna")["pairs"]==35 and prior("sc_headers")["verified"]==20
     assert prior("sc_pilot")["full_pair_pass"] is True
     print("Focused frozen-family, exact sign, and source archive assertions passed.")
+def protein_effect_readout():
+    """Original selected gene list only; direction and analyte identity must be explicitly documented."""
+    import openpyxl
+    arch=json.loads((ROOT/"docs/publication/evidence/early_track_external_first_readback_20261125.json").read_text())
+    require(arch["run_id"]==45607898177,"first external run mismatch")
+    p=next(x["aggregate"] for x in arch["records"] if x["aggregate"].get("mode")=="supplement_effects")["source"]
+    raw,src=base.get(p["url"],p["bytes"]);require(src["sha256"]==p["sha256"],"publisher ZIP drift")
+    result={}
+    with zipfile.ZipFile(io.BytesIO(raw)) as z:
+        members=[f for f in z.infolist() if Path(f.filename).name=="2017-04-04932E-Supplementary Table 6.xlsx"]
+        require(len(members)==1,"exact Table 6 missing")
+        wb=openpyxl.load_workbook(io.BytesIO(z.read(members[0])),read_only=True,data_only=True)
+        require(len(wb.worksheets)==2 and wb.worksheets[0].max_row==2009,"Table 6 shape drift")
+        # Second sheet is a small glossary; emit only source-authored definition fields
+        # that explicitly refer to the known columns, not other records or clinical data.
+        glossary={}
+        for rr in wb.worksheets[1].iter_rows(values_only=True):
+            if len(rr)<2 or not isinstance(rr[0],str) or not isinstance(rr[1],str):continue
+            key=rr[0].strip().lower()
+            if key in {"uniprot id","gene symbol","logfc","p-value","p value","fdr","adjusted p-value","regulation","direction"}:
+                glossary[key]=rr[1][:200]
+        ws=wb.worksheets[0];it=ws.iter_rows(values_only=True);h=[str(x).strip() for x in next(it)]
+        require(h[:4]==["UniProt ID","Gene symbol","logFC","P-value"] or [x.lower() for x in h[:4]]==["uniprot id","gene symbol","logfc","p-value"],"exact source effect header mismatch")
+        rows=collections.defaultdict(list);n=0
+        for rr in it:
+            n+=1;g=rr[1]
+            if g not in PANEL:continue
+            a,b=rr[2:4]
+            require(isinstance(a,(int,float)) and isinstance(b,(int,float)) and math.isfinite(a) and math.isfinite(b) and 0<=b<=1,"invalid published gene effect")
+            rows[g].append({"published_logFC":float(a),"published_p_value":float(b)})
+        require(n==2008,"table row count drift")
+        for g in PANEL:
+            q=rows[g]
+            result[g]={"status":"PUBLISHED_TABLE_EFFECT_ONLY",**q[0]} if len(q)==1 else {"status":"HOLD_ABSENT_OR_NONUNIQUE_IN_SELECTED_TABLE","rows":len(q)}
+        wb.close()
+    return {"status":"HCC_ORIGINAL_EFFECT_READOUT","source":src,"table":6,"rows":n,"glossary":glossary,"results":result,
+            "limits":["Selected original published table, no independent protein validation. Published logFC and p-values exactly as stored, not re-estimated; no inference about numerator, denominator, paired sample identity, or missing candidates. Interpret only if source legend and article confirm direction/analyte. No clinical or patient-level values."]}
+def source_repair_selftest():
+    selftest()
+    import tempfile
+    a=json.loads((ROOT/"docs/publication/evidence/early_track_external_first_readback_20261125.json").read_text())
+    require(a["run_id"]==45607898177 and len(a["records"])==4,"archived first external run")
+    # Explicit complete-pair validation and two-sided test consistency.
+    require(sign_summary([1]*8,"test")["bonferroni_8"]==0.0625,"sign test correction")
+    print("First external readback provenance and paired correction checks passed.")
+
 def main():
-    p=argparse.ArgumentParser();p.add_argument("mode",choices=["swiss","korea","protein_source","supplement_effects","selftest"]);p.add_argument("--out",type=Path);a=p.parse_args()
-    if a.mode=="selftest":selftest();return
+    p=argparse.ArgumentParser();p.add_argument("mode",choices=["swiss","korea","protein_source","supplement_effects","protein_effect_readout","selftest"]);p.add_argument("--out",type=Path);a=p.parse_args()
+    if a.mode=="selftest":source_repair_selftest();return
     try:z=globals()[a.mode]()
     except (OSError,EOFError,ValueError,KeyError,TypeError,IndexError,UnicodeError,StopIteration,zipfile.BadZipFile) as e:z={"status":"HOLD_SOURCE_OR_CONTRACT","reason":str(e)[:220]}
     z.update(mode=a.mode,scientific_status="HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION")
