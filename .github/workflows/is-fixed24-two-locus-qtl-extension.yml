@@ -1,0 +1,35 @@
+name: IS two locus exact allele QTL extension
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/fixed24_two_locus_qtl_extension.py','.github/workflows/is-fixed24-two-locus-qtl-extension.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qtl-extension:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 81c9a0760c185f8c6f357a70e7c199f172df1015
+          path: indexed_helpers
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read exact positions from remaining pinned QTL sources
+        run: |
+          python -m pip install 'PyYAML==6.0.2' 'pysam==0.23.3'
+          python -m py_compile scripts/is/fixed24_two_locus_qtl_extension.py
+          python -m scripts.is.fixed24_two_locus_qtl_extension --evidence-root docs/publication/evidence --out outputs/two-locus-qtl-extension.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-fixed24-two-locus-qtl-extension
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
