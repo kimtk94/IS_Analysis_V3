@@ -48,15 +48,31 @@ def read_ld(v,pop):
 def audit(evidence,workbook):
     p=json.loads(evidence.read_text());x=p["result"]
     require(p["provenance"]["run_id"]==45539259361 and x["identity_verified"] and x["rsid"]==RS and x["ensembl_allele_string"]=="C/T" and x["GRCh38_pos"]==35833363,"Prior allele identity")
-    out={"status":"POST_READOUT_LD_PROXY_PUBLICATION_AUDIT","rsid":RS,"populations":{},"publication_matches":[],"limits":["Single-ID Ensembl 1000 Genomes Phase 3 LD context, not GWAS-matched individual-level LD. Exact variant C/T identity verified in prior reference run. Empty or unparsed responses remain HOLD.","Exact rsID tokens in the pinned one-workbook audit do not prove phenotype association or novelty. LD proxy evidence does not identify a causal gene or causal variant."]}
+    out={"status":"POST_READOUT_LD_PROXY_PUBLICATION_AUDIT","rsid":RS,"populations":{},"publication_matches":[],"limits":["Single-ID Ensembl 1000 Genomes Phase 3 LD context, not GWAS-matched individual-level LD. Exact variant C/T identity verified in prior reference run. Live API raw responses changed on 2026-11-25; compare two new canonical full JSON row sets and retain both source hashes. No assertion of identity to historical raw responses. Empty, drifting or unparsed responses remain HOLD.","Exact rsID tokens in the pinned one-workbook audit do not prove phenotype association or novelty. LD proxy evidence does not identify a causal gene or causal variant."]}
     for pop in m.POPULATIONS:
         v,source=m.request("/ld/human/"+RS+"/"+pop,{"window_size":500,"r2":.8,"attribs":1})
+        # Live REST responses are not immutable releases. Prior raw digests
+        # are retained, but new reads are evaluated as new evidence, not recovery
+        # of the previous bytes. Compare canonical full JSON rows over two reads.
         expected_sha={"1000GENOMES:phase_3:CHB":"c5a134d1e802955b41a8f28dfa6e262758e11ab2ba096a53f1ef3ae09c3e3835","1000GENOMES:phase_3:JPT":"8d711ef0f479b4c46545bb10092fa9cb9f25972fbcb6ef33d501e4d99787c528","1000GENOMES:phase_3:CEU":"c642d54161a64e4146ccb43276c1fdfcb7eed3b0ea63ae5a001226d0b18a0007"}
+        other=None;source2=None
+        def canon(rows):
+            require(isinstance(rows,list) and all(isinstance(row,dict) for row in rows),"Not an LD row array")
+            return hashlib.sha256(json.dumps(sorted(json.dumps(row,sort_keys=True,separators=(",",":"),allow_nan=False) for row in rows),separators=(",",":")).encode()).hexdigest()
         try:
-            require(source.get("sha256")==expected_sha[pop],"LD response changed from initial verified raw response digest")
-            d=read_ld(v,pop)
-        except (ValueError,KeyError,TypeError) as e:d={"status":"HOLD_SCHEMA","returned_rows":len(v) if isinstance(v,list) else None,"observed_keys":sorted(v[0]) if isinstance(v,list) and v and isinstance(v[0],dict) else [],"reason":str(e)[:180],"proxies":[]}
-        d["source"]=source;out["populations"][pop]=d
+            first=read_ld(v,pop)
+            require(first["status"]=="REFERENCE_LD_PARSED","First current response not parsed")
+            import time
+            time.sleep(4)
+            other,source2=m.request("/ld/human/"+RS+"/"+pop,{"window_size":500,"r2":.8,"attribs":1})
+            second=read_ld(other,pop)
+            h1,h2=canon(v),canon(other)
+            require(h1==h2 and first==second,"Two live response semantic snapshots differ")
+            d={**first,"canonical_response_sha256":h1,"two_current_reads_identical_after_canonicalization":True}
+        except (ValueError,KeyError,TypeError) as e:
+            d={"status":"HOLD_SCHEMA_OR_LIVE_SOURCE_DRIFT","returned_rows":len(v) if isinstance(v,list) else None,"observed_keys":sorted(v[0]) if isinstance(v,list) and v and isinstance(v[0],dict) else [],"reason":str(e)[:180],"proxies":[]}
+        d["source"]=source;d["second_source"]=source2;d["prior_raw_response_sha256"]=expected_sha[pop];d["prior_raw_sha_match"]=source.get("sha256")==expected_sha[pop]
+        out["populations"][pop]=d
     sets={k:{v["rsid"] for v in d["proxies"]} for k,d in out["populations"].items() if d["status"]=="REFERENCE_LD_PARSED"}
     out["reference_populations_parsed"]=len(sets)
     out["proxy_union"]=len(set().union(*sets.values())) if sets else 0
