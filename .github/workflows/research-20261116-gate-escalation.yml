@@ -1,0 +1,78 @@
+name: MASTER DEGREE 2026-11-16 prior-source scientific disposition
+on:
+  push:
+    branches: [research/daily-20261116-gate-escalation]
+  pull_request:
+    paths: ['.github/workflows/research-20261116-gate-escalation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  scientific-gate-disposition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - name: Independently audit one previous source artifact and determine next scientific gate
+        env:
+          TRACK: ${{ matrix.track }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request,io,zipfile,pathlib,hashlib
+          track=os.environ['TRACK']
+          ids={"is":14137150590,"glaucoma":14136184938,"hcc":14137200826,"radiomics":14137080894,"ocular":14136776826,"muscle":14136731985,"oral":14136548911,"skin":14137275482}
+          tasks={
+            'is':'Verify previous official-source result and prioritize real EUR/EAS allele/build harmonization',
+            'glaucoma':'Verify previous GEO source result and prioritize donor-paired integer count design',
+            'hcc':'Verify previous PDC source result and prioritize 330-channel authoritative aliquot mapping',
+            'radiomics':'Verify previous IBSI result and prioritize original NIfTI patient matching',
+            'ocular':'Verify previous ENA result and prioritize original FASTQ MD5 and 46-run metadata crosswalk',
+            'muscle':'Verify previous GTEx result and prioritize ancestry-matched 20-locus LD',
+            'oral':'Verify previous GEO result and prioritize 18-donor clinical crosswalk',
+            'skin':'Verify previous GWAS result and prioritize full target-specific effect-allele summary QC'
+          }
+          out={'date_kst':'2026-11-16','track':track,'selected_task':tasks[track],
+               'previous_run':'https://github.com/kimtk94/IS_Analysis_V3/actions/runs/43653063702',
+               'previous_artifact_id':ids[track],'status':'HOLD','scientific_pass':False,
+               'source_gate':'UNKNOWN','checks':{},'blockers':[]}
+          try:
+            url=f'https://api.github.com/repos/kimtk94/IS_Analysis_V3/actions/artifacts/{ids[track]}/zip'
+            req=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+              'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'master-research-ci'})
+            with urllib.request.urlopen(req,timeout=60) as r: raw=r.read(5_000_001)
+            if len(raw)>5_000_000: raise ValueError('artifact exceeds 5MB safety bound')
+            with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              names=[n for n in z.namelist() if n.endswith('.json') and not n.startswith('__MACOSX')]
+              if len(names)!=1: raise ValueError('expected exactly one JSON source evidence')
+              data=z.read(names[0])
+            source=json.loads(data)
+            if source.get('track')!=track or source.get('date_kst')!='2026-11-15':
+              raise ValueError('source track/date provenance mismatch')
+            if source.get('scientific_pass') is not False or source.get('status')!='HOLD':
+              raise ValueError('previous scientific HOLD contract violated')
+            out['checks']={'source_json_sha256':hashlib.sha256(data).hexdigest(),
+              'source_url':source.get('source_url'),'source_checks':source.get('checks',{}),
+              'source_blockers':source.get('blockers',[])}
+            checks=source.get('checks',{})
+            out['source_gate']='METADATA_PASS' if checks.get('bounded_source_metadata_pass') is True else 'SOURCE_HOLD'
+            if out['source_gate']=='SOURCE_HOLD':
+              out['blockers'].append('Previous official-source metadata check failed or could not be established')
+            out['blockers'].append('Scientific raw-data integrity, mapping and statistical validity not established by metadata check')
+          except Exception as exc:
+            out['source_gate']='SOURCE_UNAVAILABLE'
+            out['blockers'].append('CI artifact retrieval/contract error: '+type(exc).__name__+': '+str(exc)[:300])
+          pathlib.Path('gate').mkdir(exist_ok=True)
+          pathlib.Path('gate/'+track+'.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps({'track':track,'source_gate':out['source_gate'],'scientific_status':out['status'],'blockers':out['blockers']},ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scientific-disposition-20261116-${{ matrix.track }}
+          path: gate/${{ matrix.track }}.json
+          retention-days: 30
