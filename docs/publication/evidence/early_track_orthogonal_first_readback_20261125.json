@@ -1,0 +1,337 @@
+{
+  "run_id": 45611128274,
+  "head_sha": "31426ee098c6e6f9b482a1dd4cf90e63fb51e6d8",
+  "source": "Actual stdout; upload digest not independent ZIP readback",
+  "records": [
+    {
+      "job_id": 139194624086,
+      "name": "sources (hcc)",
+      "aggregate": {
+        "status": "HCC_ZENODO_MATCHED_SOURCE_GATE",
+        "sources": {
+          "Transcriptomics_Tums_NTL_Normals.xlsx": {
+            "url": "https://zenodo.org/records/16992982/files/Transcriptomics_Tums_NTL_Normals.xlsx?download=1",
+            "bytes": 59825342,
+            "sha256": "ebf7abcde8e5a053032b458fb4fd75a0b0675fed753f38210c942b3ae7c249d6",
+            "content_range": null,
+            "etag": null,
+            "published_md5": "9012a374588a273bcb930b83643bf1b0"
+          },
+          "Proteomics_Tums_NTL_Normals.xlsx": {
+            "url": "https://zenodo.org/records/16992982/files/Proteomics_Tums_NTL_Normals.xlsx?download=1",
+            "bytes": 6751340,
+            "sha256": "2687a8ac7497f20802a4991cd0cf3ab2939a03aebccc5a5bcf367ecd2bb448c0",
+            "content_range": null,
+            "etag": null,
+            "published_md5": "aee43ad590214e713b395c4f60d827a1"
+          }
+        },
+        "RNA_workbook": [
+          {
+            "sheet": 1,
+            "dimensions": [
+              3,
+              2
+            ],
+            "header_candidates": []
+          },
+          {
+            "sheet": 2,
+            "dimensions": [
+              16484,
+              140
+            ],
+            "header_candidates": []
+          },
+          {
+            "sheet": 3,
+            "dimensions": [
+              23415,
+              108
+            ],
+            "header_candidates": []
+          }
+        ],
+        "protein_workbook": [
+          {
+            "sheet": 1,
+            "dimensions": [
+              3,
+              2
+            ],
+            "header_candidates": []
+          },
+          {
+            "sheet": 2,
+            "dimensions": [
+              5194,
+              50
+            ],
+            "header_candidates": []
+          },
+          {
+            "sheet": 3,
+            "dimensions": [
+              5194,
+              44
+            ],
+            "header_candidates": []
+          }
+        ],
+        "documented_RNA_specimens": 231,
+        "documented_protein_specimens": 87,
+        "candidate_overlap_sizes": [],
+        "matched_specimen_labels": 0,
+        "hold_reason": "No unique complete 231 RNA / 87 protein exact-column join. No row-order or guessed identifier matching.",
+        "mode": "hcc",
+        "scientific_status": "HOLD_PATIENT_LEVEL_INDEPENDENCE_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 45523e2cb3098ec570eddb459f0db64910ee197eda293afcb10c7c4eddeae4b1",
+        "Artifact orthogonal-hcc.zip successfully finalized. Artifact ID 15019023756"
+      ]
+    },
+    {
+      "job_id": 139194624751,
+      "name": "sources (oral)",
+      "aggregate": {
+        "status": "ORAL_GERMAN_PUBLIC_SOURCE_INVENTORY",
+        "GSE": "GSE195655",
+        "libraries": 9,
+        "inventory": [
+          {
+            "gsm": "GSM5844648",
+            "status": "PUBLIC_FILE_INVENTORY",
+            "files": [
+              "GSM5844648_barcodes.tsv.gz",
+              "GSM5844648_celltype_metadata-1.csv.gz",
+              "GSM5844648_features.tsv.gz",
+              "GSM5844648_matrix.mtx.gz"
+            ],
+            "kinds": {
+              "barcodes": 1,
+              "features": 1,
+              "matrix": 1,
+              "author_labels": 1
+            },
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5844nnn/GSM5844648/suppl/",
+              "bytes": 942,
+              "sha256": "1cd1ad318cbe3766fb636dcf2f06fd0a066123944113b20298e61703a366e805",
+              "content_range": null,
+              "etag": null
+            }
+          },
+          {
+            "gsm": "GSM6553453",
+            "status": "PUBLIC_FILE_INVENTORY",
+            "files": [
+              "GSM6553453_2-barcodes.tsv.gz",
+              "GSM6553453_2-features.tsv.gz",
+              "GSM6553453_2-matrix.mtx.gz",
+              "GSM6553453_celltype_metadata-2.csv.gz"
+            ],
+            "kinds": {
+              "barcodes": 1,
+              "features": 1,
+              "matrix": 1,
+              "author_labels": 1
+            },
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553453/suppl/",
+              "bytes": 948,
+              "sha256": "ec083d3123020c08444b4b89504b79152376c6a67ac7a79d7220a08eb0452c39",
+              "content_range": null,
+              "etag": null
+            }
+          },
+          {
+            "gsm": "GSM6553455",
+            "status": "PUBLIC_FILE_INVENTORY",
+            "files": [
+              "GSM6553455_3-barcodes.tsv.gz",
+              "GSM6553455_3-features.tsv.gz",
+              "GSM6553455_3-matrix.mtx.gz",
+              "GSM6553455_celltype_metadata-3.csv.gz"
+            ],
+            "kinds": {
+              "barcodes": 1,
+              "features": 1,
+              "matrix": 1,
+              "author_labels": 1
+            },
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553455/suppl/",
+              "bytes": 948,
+              "sha256": "a36fc5c67027e866e0fb6805cacdc1365b624db77b1e1b640cab4107d8b66eec",
+              "content_range": null,
+              "etag": null
+            }
+          },
+          {
+            "gsm": "GSM6553456",
+            "status": "PUBLIC_FILE_INVENTORY",
+            "files": [
+              "GSM6553456_4-barcodes.tsv.gz",
+              "GSM6553456_4-features.tsv.gz",
+              "GSM6553456_4-matrix.mtx.gz",
+              "GSM6553456_celltype_metadata-4.csv.gz"
+            ],
+            "kinds": {
+              "barcodes": 1,
+              "features": 1,
+              "matrix": 1,
+              "author_labels": 1
+            },
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553456/suppl/",
+              "bytes": 948,
+              "sha256": "f5d45e2d93e39f45961fcbd4ebcab3106118639622c022daf402f9b9cfb33213",
+              "content_range": null,
+              "etag": null
+            }
+          },
+          {
+            "gsm": "GSM6553457",
+            "status": "PUBLIC_FILE_INVENTORY",
+            "files": [
+              "GSM6553457_5-barcodes.tsv.gz",
+              "GSM6553457_5-features.tsv.gz",
+              "GSM6553457_5-matrix.mtx.gz",
+              "GSM6553457_celltype_metadata-5.csv.gz"
+            ],
+            "kinds": {
+              "barcodes": 1,
+              "features": 1,
+              "matrix": 1,
+              "author_labels": 1
+            },
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553457/suppl/",
+              "bytes": 948,
+              "sha256": "bef77bb4056caa78aa78c653fca90d024f6cd2b7517e8e2ad08a79c1dd224f09",
+              "content_range": null,
+              "etag": null
+            }
+          },
+          {
+            "gsm": "GSM6553458",
+            "status": "PUBLIC_FILE_INVENTORY",
+            "files": [
+              "GSM6553458_6a-barcodes.tsv.gz",
+              "GSM6553458_6a-features.tsv.gz",
+              "GSM6553458_6a-matrix.mtx.gz",
+              "GSM6553458_celltype_metadata-6a.csv.gz"
+            ],
+            "kinds": {
+              "barcodes": 1,
+              "features": 1,
+              "matrix": 1,
+              "author_labels": 1
+            },
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553458/suppl/",
+              "bytes": 958,
+              "sha256": "11c4179dbf1632c461005c95fce07832cb83b2dd58c1996ab15936e1e7897840",
+              "content_range": null,
+              "etag": null
+            }
+          },
+          {
+            "gsm": "GSM6553459",
+            "status": "PUBLIC_FILE_INVENTORY",
+            "files": [
+              "GSM6553459_6b-barcodes.tsv.gz",
+              "GSM6553459_6b-features.tsv.gz",
+              "GSM6553459_6b-matrix.mtx.gz",
+              "GSM6553459_celltype_metadata-6b.csv.gz"
+            ],
+            "kinds": {
+              "barcodes": 1,
+              "features": 1,
+              "matrix": 1,
+              "author_labels": 1
+            },
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553459/suppl/",
+              "bytes": 958,
+              "sha256": "9a8a0fd53ccf0eaa2fa552d288c6f506467d97a44eb8c1a327d83638f9450e46",
+              "content_range": null,
+              "etag": null
+            }
+          },
+          {
+            "gsm": "GSM6553461",
+            "status": "PUBLIC_FILE_INVENTORY",
+            "files": [
+              "GSM6553461_7a-barcodes.tsv.gz",
+              "GSM6553461_7a-features.tsv.gz",
+              "GSM6553461_7a-matrix.mtx.gz",
+              "GSM6553461_celltype_metadata-7a.csv.gz"
+            ],
+            "kinds": {
+              "barcodes": 1,
+              "features": 1,
+              "matrix": 1,
+              "author_labels": 1
+            },
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553461/suppl/",
+              "bytes": 958,
+              "sha256": "4fd69b4ad364abe2215e7e4173157edd51879867a0178094178c280bae1444bb",
+              "content_range": null,
+              "etag": null
+            }
+          },
+          {
+            "gsm": "GSM6553462",
+            "status": "PUBLIC_FILE_INVENTORY",
+            "files": [
+              "GSM6553462_7b-barcodes.tsv.gz",
+              "GSM6553462_7b-features.tsv.gz",
+              "GSM6553462_7b-matrix.mtx.gz",
+              "GSM6553462_celltype_metadata-7b.csv.gz"
+            ],
+            "kinds": {
+              "barcodes": 1,
+              "features": 1,
+              "matrix": 1,
+              "author_labels": 1
+            },
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6553nnn/GSM6553462/suppl/",
+              "bytes": 958,
+              "sha256": "67b16d14a1f3f2a2338f7ecbdded80e3cb7e3195ef50a56836305b59adb2c4c7",
+              "content_range": null,
+              "etag": null
+            }
+          }
+        ],
+        "complete_library_file_sets": 9,
+        "limits": [
+          "Nine scRNA libraries, not nine individual patients; multi-region pooled HTO samples require author-verified demultiplexing. Reported 5 primary tumors, 9 metastatic and 5 tumor-free nodes. No raw FASTQ access or guessed specimen assignments."
+        ],
+        "mode": "oral",
+        "scientific_status": "HOLD_PATIENT_LEVEL_INDEPENDENCE_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 3b65790f437e7e8f6f3e65eeb6d76a169215a9ec4ffb92bdbaab0338985ba97b",
+        "Artifact orthogonal-oral.zip successfully finalized. Artifact ID 15019678712"
+      ]
+    },
+    {
+      "job_id": 139194624763,
+      "name": "sources (oral_pilot)",
+      "aggregate": {
+        "status": "HOLD_SOURCE_OR_CONTRACT",
+        "reason": "two-column author metadata contract",
+        "mode": "oral_pilot",
+        "scientific_status": "HOLD_PATIENT_LEVEL_INDEPENDENCE_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is b98c558e99d7d199e9f8e19bc7addd5763ce8c2658bc98fca18d7b18c6f06697",
+        "Artifact orthogonal-oral_pilot.zip successfully finalized. Artifact ID 15019354707"
+      ]
+    }
+  ]
+}
