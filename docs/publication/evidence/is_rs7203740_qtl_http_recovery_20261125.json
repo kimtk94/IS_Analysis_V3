@@ -1,0 +1,137 @@
+{
+  "provenance": {
+    "run_id": 45539303695,
+    "job_id": 138953597478,
+    "artifact_id": 14988956117,
+    "reported_artifact_zip_sha256": "be423e446d5220bcac2cc066a41e8349ee2ec5b1f73096ae2ad6fedb403c3ac2",
+    "source_commit": "d78e4644495358d60d8b102d2fd218ad1317393c",
+    "readback": "Verified actual stdout; upload-reported ZIP digest, not independently downloaded."
+  },
+  "result": {
+    "status": "EXACT_ALLELE_HTTP_RECOVERY",
+    "GRCh38_position": "16:81775211",
+    "rsid": "rs7203740",
+    "target": "C/T",
+    "other_allele": "C/A (separate descriptive control)",
+    "datasets": {
+      "QTD000021": {
+        "source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000002/QTD000021/QTD000021.all.tsv.gz",
+        "study": "BLUEPRINT",
+        "sample_group": "monocyte",
+        "nominal_dataset_n": 191,
+        "pmid": "27863251",
+        "position_rows": 12,
+        "allele_pair_row_counts": {
+          "C/T": 12
+        },
+        "position_stream_sha256": "7b07f7b03c217c07816333d6e76a9f4c7d4a2f8ac9e942ed9938b18425927824",
+        "candidate_rows": [
+          {
+            "gene": "CMIP",
+            "gene_id": "ENSG00000153815",
+            "molecular_trait_id": "ENSG00000153815",
+            "ref": "C",
+            "alt": "T",
+            "variant": "chr16_81775211_C_T",
+            "beta_ALT": 0.0816535,
+            "se": 0.0872111,
+            "p": 0.350415,
+            "maf": 0.157068,
+            "ac": 322,
+            "an": 382,
+            "alt_frequency": 0.8429319371727748,
+            "genotyped_alleles_half_not_model_N": 191
+          },
+          {
+            "gene": "PLCG2",
+            "gene_id": "ENSG00000197943",
+            "molecular_trait_id": "ENSG00000197943",
+            "ref": "C",
+            "alt": "T",
+            "variant": "chr16_81775211_C_T",
+            "beta_ALT": -0.0444754,
+            "se": 0.131668,
+            "p": 0.735929,
+            "maf": 0.157068,
+            "ac": 322,
+            "an": 382,
+            "alt_frequency": 0.8429319371727748,
+            "genotyped_alleles_half_not_model_N": 191
+          }
+        ],
+        "status": "EXACT_POSITION_READ_HTTP_RANGE",
+        "header_origin": "ORIGINAL_HEADER",
+        "index_sha256": "9e1da70c6e0c2a51459bcde4284a71f8a0cef040a3ec739ddcabeeece145cfcd",
+        "header_range_sha256": "9072a4e3c32a36f7deeabf676ad4cb59a19d449ebae066cc2b55b3c9bb3354e2",
+        "source_range_sha256": "5cba4920ca7694d64e6eca50d2cb3c34db3aa7023e4daba7c48772c81647e4f0",
+        "source_range": "bytes 1120822861-1120936357/2991536954",
+        "source_total_bytes": 2991536954,
+        "decoded_rows": 4465,
+        "original_full_file_downloaded": false
+      },
+      "QTD000356": {
+        "source": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000356/QTD000356.all.tsv.gz",
+        "study": "GTEx",
+        "sample_group": "blood",
+        "nominal_dataset_n": 670,
+        "pmid": "32913098",
+        "position_rows": 9,
+        "allele_pair_row_counts": {
+          "C/T": 9
+        },
+        "position_stream_sha256": "9abdc0154c9a91d02235e5eae24797fcdd810050b4045f58fe02076df06ccad1",
+        "candidate_rows": [
+          {
+            "gene": "CMIP",
+            "gene_id": "ENSG00000153815",
+            "molecular_trait_id": "ENSG00000153815",
+            "ref": "C",
+            "alt": "T",
+            "variant": "chr16_81775211_C_T",
+            "beta_ALT": 0.0150415,
+            "se": 0.049746,
+            "p": 0.762469,
+            "maf": 0.194776,
+            "ac": 1079,
+            "an": 1340,
+            "alt_frequency": 0.8052238805970149,
+            "genotyped_alleles_half_not_model_N": 670
+          },
+          {
+            "gene": "PLCG2",
+            "gene_id": "ENSG00000197943",
+            "molecular_trait_id": "ENSG00000197943",
+            "ref": "C",
+            "alt": "T",
+            "variant": "chr16_81775211_C_T",
+            "beta_ALT": -0.0620288,
+            "se": 0.0481996,
+            "p": 0.198578,
+            "maf": 0.194776,
+            "ac": 1079,
+            "an": 1340,
+            "alt_frequency": 0.8052238805970149,
+            "genotyped_alleles_half_not_model_N": 670
+          }
+        ],
+        "status": "EXACT_POSITION_READ_HTTP_RANGE",
+        "header_origin": "ORIGINAL_HEADER",
+        "index_sha256": "949e27667e2d8c7478e4af15934893df6452280faefbe10dbe610d23acf4fff9",
+        "header_range_sha256": "2e8085280871130724c5a42c7ec48a366fe0ede3b9b00cdfe6e514952296aba2",
+        "source_range_sha256": "34df290f82f8ca8fae440d855aba334d1e2a3569ce0191bc55468fdeaeee13be",
+        "source_range": "bytes 1033180871-1033285533/2797518844",
+        "source_total_bytes": 2797518844,
+        "decoded_rows": 3691,
+        "original_full_file_downloaded": false
+      }
+    },
+    "limits": [
+      "Recovery of two of the five previously failed preselected sources, prioritized for monocyte and blood; not five-source coverage.",
+      "Index/header plus one exact indexed range per source; source range integrity only, not publisher full-file checksum.",
+      "Same single-position post-readout QTL screen, not regional colocalization or MR. Nominal N and AN/2 are not certified regression N/sdY. No EAS ancestry-matched inference. Zero returned rows from a failed source is HOLD."
+    ],
+    "sources_read": 2,
+    "exact_CT_candidate_rows": 4,
+    "exact_CA_candidate_rows": 0
+  }
+}
