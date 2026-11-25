@@ -1,0 +1,77 @@
+name: MASTER DEGREE 2026-11-14 evidence-to-gate triage
+on:
+  push:
+    branches: [research/daily-20261114-evidence-triage]
+  pull_request:
+    paths: ['.github/workflows/research-20261114-evidence-triage.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  scientific-gate-triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        track: [is, glaucoma, hcc, radiomics, ocular, muscle, oral, skin]
+    steps:
+      - name: Validate previous CI evidence and select exactly one unpassed scientific gate
+        env:
+          TRACK: ${{ matrix.track }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import hashlib,io,json,os,pathlib,urllib.request,zipfile
+          track=os.environ['TRACK']
+          run_id=43326032178
+          repo='kimtk94/IS_Analysis_V3'
+          tasks={
+            'is':('EUR/EAS allele/build and chromosome completeness','independent 22-chromosome summary-statistics manifest with published checksums and harmonization'),
+            'glaucoma':('DEX donor-paired raw integer count design','raw count matrix plus donor/pool/condition design and replicate audit'),
+            'hcc':('official PDC aliquot-to-330-column uniqueness','PDC aliquot/case identifiers and exact TMT channel crosswalk'),
+            'radiomics':('patient-level imaging/RNA/clinical eligibility join','NIfTI spacing and patient join table with eligibility audit'),
+            'ocular':('ENA run-timepoint-strain relationship','official sample/run metadata with FASTQ checksum validation'),
+            'muscle':('20 seed loci ancestry-matched LD coverage','20 loci and ancestry-specific reference LD plus eQTL availability'),
+            'oral':('GSE103322 donor-expression-endpoint crosswalk','donor-level raw expression and clinical endpoint keys'),
+            'skin':('full GWAS allele/build/effect harmonization','complete summary statistics and MR instrument QC')
+          }
+          task,required=tasks[track]
+          headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','User-Agent':'master-degree-ci-triage'}
+          url=f'https://api.github.com/repos/{repo}/actions/runs/{run_id}/artifacts?per_page=100'
+          result={'date_kst':'2026-11-14','track':track,'selected_task':task,'status':'HOLD','scientific_pass':False,'prior_run':f'https://github.com/{repo}/actions/runs/{run_id}','required_next_evidence':required,'blockers':[]}
+          try:
+            with urllib.request.urlopen(urllib.request.Request(url,headers=headers),timeout=30) as f: listing=json.load(f)
+            name='scientific-evidence-20261113-'+track
+            matches=[a for a in listing.get('artifacts',[]) if a['name']==name and not a.get('expired')]
+            if len(matches)!=1: raise ValueError('Expected one nonexpired artifact, found '+str(len(matches)))
+            artifact=matches[0]
+            with urllib.request.urlopen(urllib.request.Request(artifact['archive_download_url'],headers=headers),timeout=60) as f: payload=f.read(15000000)
+            result['prior_artifact_url']=f'https://github.com/{repo}/actions/runs/{run_id}/artifacts/{artifact["id"]}'
+            result['prior_archive_sha256']=hashlib.sha256(payload).hexdigest()
+            with zipfile.ZipFile(io.BytesIO(payload)) as z:
+              names=[n for n in z.namelist() if n.endswith('.json')]
+              if len(names)!=1: raise ValueError('Expected exactly one JSON in artifact')
+              prior=json.loads(z.read(names[0]))
+            if prior.get('track')!=track: raise ValueError('Track mismatch in prior evidence')
+            if prior.get('scientific_pass') is not False: raise ValueError('Previous evidence claims unsupported scientific PASS')
+            if prior.get('status')!='HOLD': raise ValueError('Previous scientific gate not HOLD: manual review required')
+            result['prior_evidence_status']=prior['status']
+            result['prior_sources']=prior.get('sources',{})
+            result['prior_blockers']=prior.get('blockers',[])
+            result['prior_candidate_count']=len(prior.get('candidate_paths',[]))
+            result['blockers'].append('Prior artifact is a provenance inventory, not validated original scientific input')
+            result['blockers'].append('Required: '+required)
+          except Exception as exc:
+            result['blockers'].append('SOURCE_UNAVAILABLE: '+type(exc).__name__+': '+str(exc)[:300])
+          path=pathlib.Path('gate');path.mkdir(exist_ok=True)
+          (path/(track+'.json')).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps({'track':track,'status':result['status'],'blockers':result['blockers']},ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scientific-gate-triage-20261114-${{ matrix.track }}
+          path: gate/${{ matrix.track }}.json
+          retention-days: 30
