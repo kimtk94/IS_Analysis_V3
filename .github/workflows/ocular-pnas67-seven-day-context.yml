@@ -1,0 +1,41 @@
+name: Ocular PNAS 67 seven-day expression context
+on:
+  push:
+    branches: [research/ocular-exvivo-fixed-panel-20261125]
+    paths: ['scripts/ocular_pnas67_seven_day_context.py','.github/workflows/ocular-pnas67-seven-day-context.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  seven-day:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: frozen
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-pnas67-selection-lineage
+          path: inputs
+          run-id: 45578473621
+          github-token: ${{ github.token }}
+      - name: Read fixed targets from hash-verified public CPM
+        run: |
+          export PYTHONPATH="$PWD/frozen/scripts"
+          python scripts/ocular_pnas67_seven_day_context.py --lineage inputs/selection-lineage.json --evidence docs/publication/evidence/ocular_pnas67_selection_lineage_20261125.json --cpm "$RUNNER_TEMP/cpm.gz" --out outputs/seven-day-context.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-pnas67-seven-day-context
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
