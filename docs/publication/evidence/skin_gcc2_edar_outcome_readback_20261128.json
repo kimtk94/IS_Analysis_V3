@@ -1,0 +1,270 @@
+{
+  "source_run": 46131737131,
+  "job_ids": [
+    140938179110,
+    140938179259
+  ],
+  "source_commit": "450132fabf48373ba41990e3bb6dff6887a83c84",
+  "artifacts": [
+    {
+      "id": 15258406864,
+      "name": "skin-fixed-outcome-GCST90094903",
+      "digest": "sha256:434b5a79e4ecebcefc0ddbf538921871d8b87076d8d5eff03b9b9de2df0c6e51"
+    },
+    {
+      "id": 15257479952,
+      "name": "skin-fixed-outcome-GCST90094904",
+      "digest": "sha256:8b8e1bc5244440e1e754217dd93369915e06453ea07f7fc8371b7afe22edd9d7"
+    }
+  ],
+  "readback": "Actual aggregate stdout; reported artifact digest not independently downloaded.",
+  "results": [
+    {
+      "status": "DESCRIPTIVE_OUTCOME_AUDIT_COMPLETE",
+      "scientific_validation": false,
+      "study": "GCST90094903",
+      "ancestry": "Korean",
+      "sample_size_reported": 11079,
+      "variants": {
+        "rs115957039": {
+          "position_grch38": 108947058,
+          "reference": "T",
+          "alternate": "C",
+          "mapping_sha256": "1309e5582de1bc8e8984181137ce415dc2d7361a5cc2e9a7b313cc1e4be05e7f",
+          "status": "EXACT_OUTCOME_ROW",
+          "rows_at_position": 1,
+          "beta_alt": -1.767,
+          "se": 0.3357,
+          "p": 1.438e-7,
+          "eaf_alt": 0.05799,
+          "z_alt": -5.263628239499553,
+          "hm_code": 10,
+          "reference_frequency_differences": {
+            "CHB": 0.05313563106796117,
+            "JPT": 0.014720769230769232,
+            "CEU": 0.05293949494949495
+          }
+        },
+        "rs144918519": {
+          "position_grch38": 108901888,
+          "reference": "G",
+          "alternate": "A",
+          "mapping_sha256": "62f9fcbebc0753c0d9169ff200b867ef5e25a06c20a6e99839e79b9896eb1e82",
+          "status": "EXACT_OUTCOME_ROW",
+          "rows_at_position": 1,
+          "beta_alt": -1.839,
+          "se": 0.3395,
+          "p": 6.139e-8,
+          "eaf_alt": 0.05664,
+          "z_alt": -5.416789396170839,
+          "hm_code": 10,
+          "reference_frequency_differences": {
+            "CHB": 0.037222524271844665,
+            "JPT": 0.027793846153846155,
+            "CEU": 0.051589494949494955
+          }
+        },
+        "rs260643": {
+          "position_grch38": 108923197,
+          "reference": "A",
+          "alternate": "G",
+          "mapping_sha256": "96844ac331ed953368e69ad1347c9bbfce2f965767bcc4b0cb75326ce2dd46f7",
+          "status": "EXACT_OUTCOME_ROW",
+          "rows_at_position": 1,
+          "beta_alt": -1.473,
+          "se": 0.268,
+          "p": 3.943e-8,
+          "eaf_alt": 0.09528,
+          "z_alt": -5.496268656716418,
+          "hm_code": 10,
+          "reference_frequency_differences": {
+            "CHB": 0.06129941747572816,
+            "JPT": -0.07298923076923078,
+            "CEU": -0.8239119191919192
+          }
+        },
+        "rs3827760": {
+          "position_grch38": 108897145,
+          "reference": "A",
+          "alternate": "G",
+          "mapping_sha256": "0f53a6ebde893d78053972dcaa1f052e2757b52497ad69d2a9677b0d5831ad85",
+          "status": "EXACT_OUTCOME_ROW",
+          "rows_at_position": 1,
+          "beta_alt": 1.432,
+          "se": 0.2545,
+          "p": 1.871e-8,
+          "eaf_alt": 0.8928,
+          "z_alt": 5.626719056974459,
+          "hm_code": 11,
+          "reference_frequency_differences": {
+            "CHB": -0.044093203883495136,
+            "JPT": 0.08991538461538462,
+            "CEU": 0.8928
+          }
+        },
+        "rs4584990": {
+          "position_grch38": 108872562,
+          "reference": "C",
+          "alternate": "T",
+          "mapping_sha256": "0926a10e93435cc1c930ab1820d35f2840938804f865501d2d7f00e536b213a5",
+          "status": "EXACT_OUTCOME_ROW",
+          "rows_at_position": 1,
+          "beta_alt": 1.709,
+          "se": 0.2923,
+          "p": 5.095e-9,
+          "eaf_alt": 0.92097,
+          "z_alt": 5.846732808758126,
+          "hm_code": 11,
+          "reference_frequency_differences": {
+            "CHB": -0.04990378640776705,
+            "JPT": 0.050777692307692246,
+            "CEU": 0.052283131313131226
+          }
+        },
+        "rs6542772": {
+          "position_grch38": 108558159,
+          "reference": "C",
+          "alternate": "T",
+          "mapping_sha256": "1df227d75118e2e7fa9d2cb512e66fc66356df3246b98306560eb0650cc89627",
+          "status": "HOLD_MISSING_OR_AMBIGUOUS",
+          "rows_at_position": 0,
+          "exact_rows": 0
+        }
+      },
+      "note": "Fixed post-readout six-variant descriptive audit. Same participants potentially shared between wrinkle sites; no independent replication or conditional beta. Reference LD is not Korean study LD.",
+      "source": {
+        "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094903/harmonised/35421404-GCST90094903-EFO_0008006.h.tsv.gz",
+        "bytes": 166633054,
+        "sha256": "0c2e1c6cb4411f8dca4d69fa65671e9c68711d1ac6fcc660625371af316f99af",
+        "md5": "b523f5b80f14531206f4d0b42a283662"
+      },
+      "rows_scanned": 4950621,
+      "verified_rows": 5,
+      "conditional_analysis": "HOLD_STUDY_MATCHED_LD_AND_MODEL_SCALE"
+    },
+    {
+      "status": "DESCRIPTIVE_OUTCOME_AUDIT_COMPLETE",
+      "scientific_validation": false,
+      "study": "GCST90094904",
+      "ancestry": "Korean",
+      "sample_size_reported": 11079,
+      "variants": {
+        "rs115957039": {
+          "position_grch38": 108947058,
+          "reference": "T",
+          "alternate": "C",
+          "mapping_sha256": "1309e5582de1bc8e8984181137ce415dc2d7361a5cc2e9a7b313cc1e4be05e7f",
+          "status": "EXACT_OUTCOME_ROW",
+          "rows_at_position": 1,
+          "beta_alt": -0.3715,
+          "se": 0.2766,
+          "p": 0.1792,
+          "eaf_alt": 0.05799,
+          "z_alt": -1.3430947216196674,
+          "hm_code": 10,
+          "reference_frequency_differences": {
+            "CHB": 0.05313563106796117,
+            "JPT": 0.014720769230769232,
+            "CEU": 0.05293949494949495
+          }
+        },
+        "rs144918519": {
+          "position_grch38": 108901888,
+          "reference": "G",
+          "alternate": "A",
+          "mapping_sha256": "62f9fcbebc0753c0d9169ff200b867ef5e25a06c20a6e99839e79b9896eb1e82",
+          "status": "EXACT_OUTCOME_ROW",
+          "rows_at_position": 1,
+          "beta_alt": -0.4184,
+          "se": 0.2797,
+          "p": 0.1346,
+          "eaf_alt": 0.05664,
+          "z_alt": -1.4958884519127635,
+          "hm_code": 10,
+          "reference_frequency_differences": {
+            "CHB": 0.037222524271844665,
+            "JPT": 0.027793846153846155,
+            "CEU": 0.051589494949494955
+          }
+        },
+        "rs260643": {
+          "position_grch38": 108923197,
+          "reference": "A",
+          "alternate": "G",
+          "mapping_sha256": "47d0312c5c29bf1d43177b948e5cf1cd54145c0e3507f3f617e3237393db3bde",
+          "status": "EXACT_OUTCOME_ROW",
+          "rows_at_position": 1,
+          "beta_alt": -0.3538,
+          "se": 0.2207,
+          "p": 0.109,
+          "eaf_alt": 0.09528,
+          "z_alt": -1.6030811055731762,
+          "hm_code": 10,
+          "reference_frequency_differences": {
+            "CHB": 0.06129941747572816,
+            "JPT": -0.07298923076923078,
+            "CEU": -0.8239119191919192
+          }
+        },
+        "rs3827760": {
+          "position_grch38": 108897145,
+          "reference": "A",
+          "alternate": "G",
+          "mapping_sha256": "7cdd5ee4461a0581fefa734b37b838c62bc34b5b001f64151c24208821b9992e",
+          "status": "EXACT_OUTCOME_ROW",
+          "rows_at_position": 1,
+          "beta_alt": 0.3618,
+          "se": 0.2097,
+          "p": 0.08452,
+          "eaf_alt": 0.8928,
+          "z_alt": 1.7253218884120172,
+          "hm_code": 11,
+          "reference_frequency_differences": {
+            "CHB": -0.044093203883495136,
+            "JPT": 0.08991538461538462,
+            "CEU": 0.8928
+          }
+        },
+        "rs4584990": {
+          "position_grch38": 108872562,
+          "reference": "C",
+          "alternate": "T",
+          "mapping_sha256": "0926a10e93435cc1c930ab1820d35f2840938804f865501d2d7f00e536b213a5",
+          "status": "EXACT_OUTCOME_ROW",
+          "rows_at_position": 1,
+          "beta_alt": 0.4894,
+          "se": 0.2408,
+          "p": 0.04214,
+          "eaf_alt": 0.92097,
+          "z_alt": 2.0323920265780733,
+          "hm_code": 11,
+          "reference_frequency_differences": {
+            "CHB": -0.04990378640776705,
+            "JPT": 0.050777692307692246,
+            "CEU": 0.052283131313131226
+          }
+        },
+        "rs6542772": {
+          "position_grch38": 108558159,
+          "reference": "C",
+          "alternate": "T",
+          "mapping_sha256": "f36bd4285fa37ff26edd9475fe02bec514b1fd2f4aedee2385b51346d992e7f1",
+          "status": "HOLD_MISSING_OR_AMBIGUOUS",
+          "rows_at_position": 0,
+          "exact_rows": 0
+        }
+      },
+      "note": "Fixed post-readout six-variant descriptive audit. Same participants potentially shared between wrinkle sites; no independent replication or conditional beta. Reference LD is not Korean study LD.",
+      "source": {
+        "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+        "bytes": 166468623,
+        "sha256": "567e55db53cb9528680073dd122190528bd640a0706c286d40999f4b283e5927",
+        "md5": "10b0c0ad379b755b80f6d84f7014ef4d"
+      },
+      "rows_scanned": 4950621,
+      "verified_rows": 5,
+      "conditional_analysis": "HOLD_STUDY_MATCHED_LD_AND_MODEL_SCALE"
+    }
+  ],
+  "decision": "10/12 exact associations, 2 absent. Same-cohort site comparison descriptive; no effect difference, conditional association, or replication claim."
+}

@@ -1,0 +1,465 @@
+{
+  "source": {
+    "run_id": 46131440858,
+    "job_id": 140937258376,
+    "source_commit": "67c0b41542b6cb75954d3a23adf0283d2d7958bb",
+    "artifact_id": 15258331163,
+    "reported_artifact_digest": "sha256:398279c76628d4253c5c3055e29679d26a779e1eade2184eae71794adb1a2f32",
+    "readback": "Actual aggregate JSON stdout; artifact digest reported by API, archive bytes not independently downloaded."
+  },
+  "result": {
+    "status": "REFERENCE_LD_CONTEXT_ONLY",
+    "scientific_validation": false,
+    "vcf": "https://1000genomes.s3.amazonaws.com/release/20130502/ALL.chr2.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
+    "source_probes": [
+      {
+        "url": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr2.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
+        "error": "HTTPError: HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://1000genomes.s3.amazonaws.com/release/20130502/ALL.chr2.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
+        "range": "bytes 0-65535/1312735578",
+        "header_range_sha256": "abaefef063f0ae0ee69ba530ce5227b0bb06bc29b50e6ab67295dbe4457ec9c4",
+        "index_sha256": "04f776211dd6b943c0f83bf160c6fd3484860971c7d7497cf4f180bd45845c5f",
+        "status": "HEADER_VERIFIED"
+      }
+    ],
+    "panel": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel",
+    "panel_sha256": "b4023dc6ee2d62ee89c8d4d347db4d348e65518d66d346574cdae7a4bbd76858",
+    "vcf_header_sha256": "45ece9505fce421e1c158f9345158f7a7d9810398a4f1364d0342a767da96c86",
+    "population_counts": {
+      "CHB": 103,
+      "JPT": 104,
+      "CEU": 99
+    },
+    "variants": {
+      "rs115957039": {
+        "status": "EXACT_REFERENCE_ROW",
+        "position_grch37": 109563514,
+        "ensembl_alleles": [
+          "T",
+          "A",
+          "C"
+        ],
+        "reference": "T",
+        "alternate_alleles": [
+          "C"
+        ],
+        "mapping_sha256": "38de07d19ebfac3330034b86dc632970b9436a7ee8c4881544c355225b43f2c7",
+        "indexed_response_sha256": "1f18a4646c23e6a7477701de5a746f874c8e9bf1ff95955aaf4a4fdfb93579d5",
+        "range_bytes": 469042
+      },
+      "rs144918519": {
+        "status": "EXACT_REFERENCE_ROW",
+        "position_grch37": 109518344,
+        "ensembl_alleles": [
+          "G",
+          "A"
+        ],
+        "reference": "G",
+        "alternate_alleles": [
+          "A"
+        ],
+        "mapping_sha256": "114f18590794b7b57eea49dd7c861efe380bafc838c30597bea0c68d81d20ab6",
+        "indexed_response_sha256": "d0424b4d1b9057583f823b0ebabc8714870c43e7f94b6639595bc8fdf1ad5b4f",
+        "range_bytes": 489774
+      },
+      "rs260643": {
+        "status": "EXACT_REFERENCE_ROW",
+        "position_grch37": 109539653,
+        "ensembl_alleles": [
+          "A",
+          "G"
+        ],
+        "reference": "A",
+        "alternate_alleles": [
+          "G"
+        ],
+        "mapping_sha256": "1c601913d81d098ec6b607cbeb98987174dc2da1e79d96f869b724ca12046894",
+        "indexed_response_sha256": "e51371246d485da9e2f44411012e73f238932a724426c7049f964f94fa338e69",
+        "range_bytes": 475405
+      },
+      "rs3827760": {
+        "status": "EXACT_REFERENCE_ROW",
+        "position_grch37": 109513601,
+        "ensembl_alleles": [
+          "A",
+          "C",
+          "G"
+        ],
+        "reference": "A",
+        "alternate_alleles": [
+          "G"
+        ],
+        "mapping_sha256": "06d5e99137adbf40616b2057d83b5113c69388680d8e92ddf98e858a89465b0c",
+        "indexed_response_sha256": "04943ccebfa279021403d2711c44e81fe12e6e1dbaaf7b493960e5dccf0ee8c2",
+        "range_bytes": 489774
+      },
+      "rs4584990": {
+        "status": "EXACT_REFERENCE_ROW",
+        "position_grch37": 109489018,
+        "ensembl_alleles": [
+          "C",
+          "T"
+        ],
+        "reference": "C",
+        "alternate_alleles": [
+          "T"
+        ],
+        "mapping_sha256": "49fb0cef3ea360a9320d426e071c22e582873249534d8c4d86a165d7468b8051",
+        "indexed_response_sha256": "6dfacdcf2ab7e609ad7597dc5d95ee76717ca169e07a8bbf2ad04f6a034762e2",
+        "range_bytes": 477552
+      },
+      "rs6542772": {
+        "status": "EXACT_REFERENCE_ROW",
+        "position_grch37": 109174615,
+        "ensembl_alleles": [
+          "C",
+          "A",
+          "G",
+          "T"
+        ],
+        "reference": "C",
+        "alternate_alleles": [
+          "T"
+        ],
+        "mapping_sha256": "1f6ededfe0c9205f02c761ed16cca0f2177c720c6ae22d02beccedf55bf9261b",
+        "indexed_response_sha256": "64b3d9e5c8b226fd025d40973b9e590e382c2ad346d6508aa7fb3e581c1ec61b",
+        "range_bytes": 488564
+      }
+    },
+    "pairs": [
+      {
+        "first": "rs4584990",
+        "second": "rs144918519",
+        "first_alt": "T",
+        "second_alt": "A",
+        "population": "CHB",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.6600660066006602,
+        "signed_d_prime": -1,
+        "allele_frequency_first": 0.970873786407767,
+        "allele_frequency_second": 0.019417475728155338,
+        "haplotypes": 206
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs144918519",
+        "first_alt": "T",
+        "second_alt": "A",
+        "population": "JPT",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.19911991199119916,
+        "signed_d_prime": -1,
+        "allele_frequency_first": 0.8701923076923077,
+        "allele_frequency_second": 0.028846153846153848,
+        "haplotypes": 208
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs144918519",
+        "first_alt": "T",
+        "second_alt": "A",
+        "population": "CEU",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.03358063256540416,
+        "signed_d_prime": -1,
+        "allele_frequency_first": 0.8686868686868687,
+        "allele_frequency_second": 0.005050505050505051,
+        "haplotypes": 198
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs260643",
+        "first_alt": "T",
+        "second_alt": "G",
+        "population": "CHB",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.5839578846614026,
+        "signed_d_prime": -0.8274706867671696,
+        "allele_frequency_first": 0.970873786407767,
+        "allele_frequency_second": 0.03398058252427184,
+        "haplotypes": 206
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs260643",
+        "first_alt": "T",
+        "second_alt": "G",
+        "population": "JPT",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.7373322809786902,
+        "signed_d_prime": -1,
+        "allele_frequency_first": 0.8701923076923077,
+        "allele_frequency_second": 0.16826923076923078,
+        "haplotypes": 208
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs260643",
+        "first_alt": "T",
+        "second_alt": "G",
+        "population": "CEU",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.5815722738799661,
+        "signed_d_prime": 1,
+        "allele_frequency_first": 0.8686868686868687,
+        "allele_frequency_second": 0.9191919191919192,
+        "haplotypes": 198
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs115957039",
+        "first_alt": "T",
+        "second_alt": "C",
+        "population": "CHB",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.16260162601626021,
+        "signed_d_prime": -1,
+        "allele_frequency_first": 0.970873786407767,
+        "allele_frequency_second": 0.0048543689320388345,
+        "haplotypes": 206
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs115957039",
+        "first_alt": "T",
+        "second_alt": "C",
+        "population": "JPT",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.11539691500267867,
+        "signed_d_prime": -0.6169429097605893,
+        "allele_frequency_first": 0.8701923076923077,
+        "allele_frequency_second": 0.04326923076923077,
+        "haplotypes": 208
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs115957039",
+        "first_alt": "T",
+        "second_alt": "C",
+        "population": "CEU",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.03358063256540416,
+        "signed_d_prime": -1,
+        "allele_frequency_first": 0.8686868686868687,
+        "allele_frequency_second": 0.005050505050505051,
+        "haplotypes": 198
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs6542772",
+        "first_alt": "T",
+        "second_alt": "T",
+        "population": "CHB",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.12099834162520608,
+        "signed_d_prime": 0.38199999999999806,
+        "allele_frequency_first": 0.970873786407767,
+        "allele_frequency_second": 0.9757281553398058,
+        "haplotypes": 206
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs6542772",
+        "first_alt": "T",
+        "second_alt": "T",
+        "population": "JPT",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.3003243935744543,
+        "signed_d_prime": 0.6002882536632241,
+        "allele_frequency_first": 0.8701923076923077,
+        "allele_frequency_second": 0.8894230769230769,
+        "haplotypes": 208
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs6542772",
+        "first_alt": "T",
+        "second_alt": "T",
+        "population": "CEU",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.09362423023338244,
+        "signed_d_prime": 0.8362282878411909,
+        "allele_frequency_first": 0.8686868686868687,
+        "allele_frequency_second": 0.4696969696969697,
+        "haplotypes": 198
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs3827760",
+        "first_alt": "T",
+        "second_alt": "G",
+        "population": "CHB",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.44538461538461666,
+        "signed_d_prime": 1,
+        "allele_frequency_first": 0.970873786407767,
+        "allele_frequency_second": 0.9368932038834952,
+        "haplotypes": 206
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs3827760",
+        "first_alt": "T",
+        "second_alt": "G",
+        "population": "JPT",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.607600053901091,
+        "signed_d_prime": 0.9999999999999996,
+        "allele_frequency_first": 0.8701923076923077,
+        "allele_frequency_second": 0.8028846153846154,
+        "haplotypes": 208
+      },
+      {
+        "first": "rs4584990",
+        "second": "rs3827760",
+        "first_alt": "T",
+        "second_alt": "G",
+        "population": "CEU",
+        "status": "MONOMORPHIC",
+        "allele_frequency_first": 0.8686868686868687,
+        "allele_frequency_second": 0,
+        "haplotypes": 198
+      },
+      {
+        "first": "rs6542772",
+        "second": "rs3827760",
+        "first_alt": "T",
+        "second_alt": "G",
+        "population": "CHB",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.22846350154369674,
+        "signed_d_prime": 0.7865284974093271,
+        "allele_frequency_first": 0.9757281553398058,
+        "allele_frequency_second": 0.9368932038834952,
+        "haplotypes": 206
+      },
+      {
+        "first": "rs6542772",
+        "second": "rs3827760",
+        "first_alt": "T",
+        "second_alt": "G",
+        "population": "JPT",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.5063941990771265,
+        "signed_d_prime": 1,
+        "allele_frequency_first": 0.8894230769230769,
+        "allele_frequency_second": 0.8028846153846154,
+        "haplotypes": 208
+      },
+      {
+        "first": "rs6542772",
+        "second": "rs3827760",
+        "first_alt": "T",
+        "second_alt": "G",
+        "population": "CEU",
+        "status": "MONOMORPHIC",
+        "allele_frequency_first": 0.4696969696969697,
+        "allele_frequency_second": 0,
+        "haplotypes": 198
+      },
+      {
+        "first": "rs260643",
+        "second": "rs3827760",
+        "first_alt": "G",
+        "second_alt": "G",
+        "population": "CHB",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.5222265172013918,
+        "signed_d_prime": -1,
+        "allele_frequency_first": 0.03398058252427184,
+        "allele_frequency_second": 0.9368932038834952,
+        "haplotypes": 206
+      },
+      {
+        "first": "rs260643",
+        "second": "rs3827760",
+        "first_alt": "G",
+        "second_alt": "G",
+        "population": "JPT",
+        "status": "REFERENCE_ALLELE_LD",
+        "r2": 0.8240518821373187,
+        "signed_d_prime": -1,
+        "allele_frequency_first": 0.16826923076923078,
+        "allele_frequency_second": 0.8028846153846154,
+        "haplotypes": 208
+      },
+      {
+        "first": "rs260643",
+        "second": "rs3827760",
+        "first_alt": "G",
+        "second_alt": "G",
+        "population": "CEU",
+        "status": "MONOMORPHIC",
+        "allele_frequency_first": 0.9191919191919192,
+        "allele_frequency_second": 0,
+        "haplotypes": 198
+      }
+    ],
+    "note": "All observed VCF SNV ALT alleles, not selected by LD. GRCh37 reference LD is not Korean outcome-matched LD. No raw genotypes published, no conditional association, no causal inference.",
+    "verified_variants": 6,
+    "verified_allele_pairs": 18
+  },
+  "prior_ensembl_comparison": {
+    "run_id": 46127925139,
+    "job_ids": [
+      140926541351,
+      140926541544,
+      140926541564
+    ],
+    "pairs": [
+      {
+        "population": "CHB",
+        "first": "rs4584990",
+        "second": "rs144918519",
+        "ensembl_r2": 0.660066,
+        "phased_r2": 0.6600660066006602,
+        "absolute_difference": 6.600660129585378e-9
+      },
+      {
+        "population": "CHB",
+        "first": "rs4584990",
+        "second": "rs260643",
+        "ensembl_r2": 0.581463,
+        "phased_r2": 0.5839578846614026,
+        "absolute_difference": 0.0024948846614026854
+      },
+      {
+        "population": "JPT",
+        "first": "rs4584990",
+        "second": "rs144918519",
+        "ensembl_r2": 0.199117,
+        "phased_r2": 0.19911991199119916,
+        "absolute_difference": 0.0000029119911991726255
+      },
+      {
+        "population": "JPT",
+        "first": "rs4584990",
+        "second": "rs260643",
+        "ensembl_r2": 0.737328,
+        "phased_r2": 0.7373322809786902,
+        "absolute_difference": 0.000004280978690207604
+      },
+      {
+        "population": "CEU",
+        "first": "rs4584990",
+        "second": "rs260643",
+        "ensembl_r2": 0.581572,
+        "phased_r2": 0.5815722738799661,
+        "absolute_difference": 2.7387996615058086e-7
+      }
+    ],
+    "max_absolute_difference": 0.0024948846614026854,
+    "note": "Agreement is numerical context, not independent validation; both reference Phase 3."
+  },
+  "decision": {
+    "reference_context_task": "COMPLETE_21_OF_21_CLASSIFIED",
+    "korean_outcome_matched_ld": "HOLD",
+    "regional_qtl_coverage": "HOLD",
+    "conditional_association": "HOLD",
+    "formal_colocalization": "HOLD",
+    "scientific_validation": false,
+    "interpretation": "rs4584990 T and rs3827760 G have moderate positive phased LD in CHB and JPT, with rs3827760 G absent in CEU reference. This prevents assuming GCC2 is independent of EDAR or that EUR LD represents Korean LD. Small rare-allele counts limit precision. No outcome association conditional on EDAR, no causal claim."
+  }
+}

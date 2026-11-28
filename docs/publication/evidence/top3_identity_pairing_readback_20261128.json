@@ -1,0 +1,833 @@
+{
+  "run_id": 46124641076,
+  "source_commit": "24138ce1020cc79c77c3a54133f83f91fd7fdcfd",
+  "note": "Actual JSON from Actions logs; artifact ZIP not independently retrieved. No biological inference.",
+  "jobs": [
+    {
+      "job_id": 140916437858,
+      "result": {
+        "assay": "eQTL",
+        "status": "ID_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "window_grch38": [
+          "2",
+          108372562,
+          109372562
+        ],
+        "anchor_position": 108872562,
+        "source_sha256": "165264e5ef824098f70249261836eb40f08c9e0d99cecde3c257902ee60ca28c",
+        "rows": 870843,
+        "unique_gene_ids": 282,
+        "gene_id_types": {
+          "ensembl": 870843
+        },
+        "variant_id_types": {
+          "coordinate_alleles": 870843
+        },
+        "examples": [
+          [
+            "ENSG00000198912",
+            "1:2900856:T:C"
+          ],
+          [
+            "ENSG00000198912",
+            "1:2901029:C:T"
+          ],
+          [
+            "ENSG00000198912",
+            "1:2902068:G:C"
+          ],
+          [
+            "ENSG00000198912",
+            "1:2902711:G:A"
+          ],
+          [
+            "ENSG00000198912",
+            "1:2902742:A:G"
+          ]
+        ],
+        "invalid_numeric_rows": 0,
+        "gcc2_exact_ids": {},
+        "regional_gene_row_counts": {},
+        "anchor_position_gene_row_counts": {}
+      }
+    },
+    {
+      "job_id": 140916438029,
+      "result": {
+        "status": "PUBLIC_METADATA_DIAGNOSTIC_ONLY",
+        "scientific_validation": false,
+        "records": [
+          {
+            "sample": "SAMN23226928",
+            "run": "SRR16961561",
+            "project": "PRJNA781014",
+            "title": "DEX1",
+            "sha256": "0a0b9f5fd2a8b53fc8c0a31642d8fd966ee4cae2d78904637dcbb072995fad6c",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN23226927",
+            "run": "SRR16961562",
+            "project": "PRJNA781014",
+            "title": "ETH6",
+            "sha256": "778eab2be60efdd2db273073c706b7a089838c00c2a73347054f1aa64f49ee2f",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN23226931",
+            "run": "SRR16961558",
+            "project": "PRJNA781014",
+            "title": "DEX5",
+            "sha256": "caad70d86db57890d56e8173629418d5da90203e77b750311a4de2686732a649",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN23226924",
+            "run": "SRR16961565",
+            "project": "PRJNA781014",
+            "title": "ETH2",
+            "sha256": "d9933a287b7bfa8ee13ec083e01c43e18e1eed44195afd4293de6de7d097ea06",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN23226932",
+            "run": "SRR16961557",
+            "project": "PRJNA781014",
+            "title": "DEX6",
+            "sha256": "04f00731f07fe747baa7b2c1d74a5e5a0eebab589537e059efeb94c0df0e851d",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN23226929",
+            "run": "SRR16961560",
+            "project": "PRJNA781014",
+            "title": "DEX2",
+            "sha256": "f05f3c2a9078b46a5c07904c597fd0391f83d8e3838fa204a5f1d1fb0fd9db99",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN23226926",
+            "run": "SRR16961563",
+            "project": "PRJNA781014",
+            "title": "ETH5",
+            "sha256": "be8013e58974e4e0bbab0a5f85251d72bf19cfc8c66bad77b6fa38a6f5cf8428",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN23226930",
+            "run": "SRR16961559",
+            "project": "PRJNA781014",
+            "title": "DEX3",
+            "sha256": "4a6d63943fcf4202e9c6219a9d9bae413a021f9157c94702397d970f333188b0",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN23226925",
+            "run": "SRR16961564",
+            "project": "PRJNA781014",
+            "title": "ETH3",
+            "sha256": "68d4e12067aa4082019e62b2106f7b7ef8c81f32b90728045ce5fee6d232afa1",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN23226923",
+            "run": "SRR16961566",
+            "project": "PRJNA781014",
+            "title": "ETH1",
+            "sha256": "0e21d7254a2c138d51f2d1bd80648914827c9de56c60950364a4e1c96c8a619a",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184910",
+            "run": "SRR14535079",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "e2cc92813aaa0e3c9830c7ec0407f630f4e368fe69b9e7bcdc9ff329eaba783e",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184915",
+            "run": "SRR14535088",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "a20cf6a55bc73a1aff5b7bcfb065717872a351635b1e244c929e3ca3a3ea49c4",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184912",
+            "run": "SRR14535077",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "3ac357fe9496daa801168b0873af60bee32b86bc1870f753a74448153ac53c43",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184908",
+            "run": "SRR14535081",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "ced1f329219fc4fe5d0f8912fffabfa7999372e0b18dc18b4f92755975cdb4f4",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184907",
+            "run": "SRR14535082",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "2fa58477cb014cf4d8af8b5026d5dfbbd475f6474006d0c6c13fc82bb282be90",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184916",
+            "run": "SRR14535087",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "0c2c2291f57c7d54de7560060f982c62ccc363c5852bfc3a15d34de7f4372b6b",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184909",
+            "run": "SRR14535080",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "3868ef7fd65c674aad491cec2f3793d949fcd63dd40e75b8f8b387593a4095c2",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184914",
+            "run": "SRR14535089",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "d7e27c1398afc9315d11c7a337f4230274e04013700e39d102407b42633d4544",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184913",
+            "run": "SRR14535090",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "2316d15b1729ab918a998641bfbb93e26bcdac7f37225c578372f1632dc35124",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184904",
+            "run": "SRR14535091",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "1164a1f03875a656decbec89bcb6c76df5001f027cd3fdf074fc6070d3defcfe",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184911",
+            "run": "SRR14535078",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "525a1d3dbba7790c8af30bdf5728fbb6996602e6c6b9101d4455599a4e9ea5a2",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184906",
+            "run": "SRR14535083",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "005e9012a84049c14ab39dde07c83809e0ab66a1c1dbfe2f2f8b3ead2a79b97e",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184905",
+            "run": "SRR14535084",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "c38bbc4d72e9585d5d2438b5acd8293e0754ff7f400f0a9937fa30e2ab3bae45",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184918",
+            "run": "SRR14535085",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "46271b538fa93722f3dae8d42dfe7f8fc923a841b2bedc2839ab72aa704c5f35",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "DEX"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184917",
+            "run": "SRR14535086",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "42dd8055af1bb55fa94b4f1f7dca2493953b522a225055b8614f76789dc5d66b",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          },
+          {
+            "sample": "SAMN19184903",
+            "run": "SRR14535092",
+            "project": "PRJNA729873",
+            "title": "Human sample from Homo sapiens",
+            "sha256": "c44211dacc62c192e351cca6095a29979856641bbad0181a5d2b74da2d94d8b0",
+            "attribute_keys": [
+              "age",
+              "biomaterial_provider",
+              "biosamplemodel",
+              "cell_type",
+              "ena-first-public",
+              "ena-last-update",
+              "ethnicity",
+              "insdc secondary accession",
+              "isolate",
+              "ncbi submission package",
+              "organism",
+              "sex",
+              "tissue",
+              "treatment"
+            ],
+            "treatment_attributes": {
+              "treatment": [
+                "ETH"
+              ]
+            }
+          }
+        ],
+        "retrieved": 26
+      }
+    },
+    {
+      "job_id": 140916438051,
+      "result": {
+        "assay": "pQTL",
+        "status": "ID_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "window_grch38": [
+          "2",
+          108372562,
+          109372562
+        ],
+        "anchor_position": 108872562,
+        "source_sha256": "03084fb65d91708fbc3588076a4a25b94b19adff36079e87aa72344f11ee8b6a",
+        "rows": 108872,
+        "unique_gene_ids": 36,
+        "gene_id_types": {
+          "other": 108872
+        },
+        "variant_id_types": {
+          "coordinate_alleles": 108872
+        },
+        "examples": [
+          [
+            "Q9NWV4",
+            "1:52220824:A:G"
+          ],
+          [
+            "Q9NWV4",
+            "1:52223860:G:A"
+          ],
+          [
+            "Q9NWV4",
+            "1:52223992:T:C"
+          ],
+          [
+            "Q9NWV4",
+            "1:52224281:A:G"
+          ],
+          [
+            "Q9NWV4",
+            "1:52225195:G:A"
+          ]
+        ],
+        "invalid_numeric_rows": 0,
+        "gcc2_exact_ids": {},
+        "regional_gene_row_counts": {},
+        "anchor_position_gene_row_counts": {}
+      }
+    }
+  ]
+}

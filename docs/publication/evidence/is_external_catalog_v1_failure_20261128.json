@@ -1,0 +1,99 @@
+{
+  "run_id": 46126646112,
+  "source_commit": "953806d10226e36686c005d2a47761f3e3f346cd",
+  "note": "Actual logs. All v1 endpoints returned 410; not evidence of absence. PMID 36123438 unrelated, invalid positive control; correct 36180795. Superseded by v2 migration.",
+  "jobs": [
+    {
+      "job_id": 140922594707,
+      "result": {
+        "pmid": "42448752",
+        "status": "SOURCE_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "independence_verified": false,
+        "subtype_eligibility_verified": false,
+        "studies": [],
+        "publication": {
+          "title": "Evaluation of stroke-associated risk alleles in a multi-ethnic Singaporean ischemic stroke cohort.",
+          "doi": "10.1038/s41598-026-62350-4",
+          "pmid": "42448752",
+          "pmcid": null,
+          "firstPublicationDate": "2026-07-15",
+          "response_sha256": "577d50d9303d8b6b62c17e620e3e109156475f735f8e0b61c5cd81b0d7866f95"
+        },
+        "catalog_error": "HTTPError: HTTP Error 410: Gone"
+      }
+    },
+    {
+      "job_id": 140922594828,
+      "result": {
+        "pmid": "42224635",
+        "status": "SOURCE_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "independence_verified": false,
+        "subtype_eligibility_verified": false,
+        "studies": [],
+        "publication": {
+          "title": "Identification of Novel Genetic Risk Variants Associated With Early-Onset Ischemic Stroke in Taiwan.",
+          "doi": "10.1212/wnl.0000000000218126",
+          "pmid": "42224635",
+          "pmcid": "PMC13239414",
+          "firstPublicationDate": "2026-06-01",
+          "response_sha256": "bdfc44b01c2933abeea36aeb0ad5d8753dd1423ac383c0a2ff78b3f4abba02e9"
+        },
+        "data_availability": {
+          "xml_sha256": "737a6219e93ae1cab48424300531515fea5f3b0adefdb31f5023e7cd3b385302",
+          "sections": [
+            {
+              "title": "Data Availability",
+              "links": [],
+              "text": "Data Availability The information is available in eMethods."
+            },
+            {
+              "title": "Data Availability Statement",
+              "links": [],
+              "text": "Data Availability Statement The information is available in eMethods."
+            }
+          ]
+        },
+        "catalog_error": "HTTPError: HTTP Error 410: Gone"
+      }
+    },
+    {
+      "job_id": 140922594859,
+      "result": {
+        "pmid": "36123438",
+        "status": "SOURCE_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "independence_verified": false,
+        "subtype_eligibility_verified": false,
+        "studies": [],
+        "publication": {
+          "title": "A functional selection reveals previously undetected anti-phage defence systems in the E. coli pangenome.",
+          "doi": "10.1038/s41564-022-01219-4",
+          "pmid": "36123438",
+          "pmcid": "PMC9519451",
+          "firstPublicationDate": "2022-09-19",
+          "response_sha256": "1f3cc126e167fb58ceb78f9b6bb69fa55a3b9c730fa5f0c89af14d071790457d"
+        },
+        "data_availability": {
+          "xml_sha256": "2db174fd6113d89f9089bc6eb48659b73ff38ef62fe724ade9458a3acd30ee16",
+          "sections": [
+            {
+              "title": "Data availability",
+              "links": [],
+              "text": "Data availability All data generated or analysed during this study are included in the published article (and its Supplementary Information )."
+            },
+            {
+              "title": "Data Availability Statement",
+              "links": [
+                "https://github.com/chrisdoering8197/phagedefense"
+              ],
+              "text": "Data Availability Statement All data generated or analysed during this study are included in the published article (and its Supplementary Information ). Code used in this study is available at https://github.com/chrisdoering8197/phagedefense ."
+            }
+          ]
+        },
+        "catalog_error": "HTTPError: HTTP Error 410: Gone"
+      }
+    }
+  ]
+}

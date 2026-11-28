@@ -1,0 +1,88 @@
+name: Ocular corrected recount3 and author supplement audit
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-corrected-quant-source-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recount:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Correct official paths, positive control and global project index
+        run: |
+          python3 - <<'PY'
+          import gzip,hashlib,io,json,re,urllib.request
+          from pathlib import Path
+          base='https://duffel.rail.bio/recount3/human/data_sources/sra'
+          projects=['SRP009615','SRP346461','SRP319815']
+          out={'status':'HOLD','scientific_validation':False,'source_documentation':'https://rna.recount.bio/docs/quick-access.html','projects':{},'previous_404_invalid':'wrong filename convention'}
+          def get(url,cap=8_000_000):
+              with urllib.request.urlopen(url,timeout=25) as r: data=r.read(cap+1)
+              if len(data)>cap: raise ValueError('bounded transfer exceeded')
+              return data
+          def ungzip(raw):
+              with gzip.GzipFile(fileobj=io.BytesIO(raw)) as f: data=f.read(30_000_001)
+              if len(data)>30_000_000: raise ValueError('decompression cap')
+              return data
+          try:
+              raw=get(base+'/metadata/sra.recount_project.MD.gz')
+              data=ungzip(raw)
+              hits={p:len(re.findall(rb'\b'+p.encode()+rb'\b',data)) for p in projects}
+              out['global_index']={'sha256':hashlib.sha256(raw).hexdigest(),'lines':len(data.splitlines()),'header':data.splitlines()[0].decode(errors='replace')[:500],'project_token_counts':hits}
+          except Exception as e: out['global_index']={'error':type(e).__name__+': '+str(e)[:180]}
+          for p in projects:
+              q={};out['projects'][p]=q
+              key=p[-2:]
+              for kind in ('sra','recount_project'):
+                  url=f'{base}/metadata/{key}/{p}/sra.{kind}.{p}.MD.gz'
+                  item={'url':url};q[kind]=item
+                  try:
+                      raw=get(url,2_000_000);data=ungzip(raw)
+                      item.update(status='FOUND',sha256=hashlib.sha256(raw).hexdigest(),run_ids=sorted({x.decode() for x in re.findall(rb'\bSRR\d+\b',data)}))
+                  except Exception as e: item.update(status='HOLD',error=type(e).__name__+': '+str(e)[:180])
+              url=f'{base}/gene_sums/{key}/{p}/sra.gene_sums.{p}.G026.gz'
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url,method='HEAD'),timeout=20) as r: q['matrix']={'url':url,'http':r.status,'bytes':r.headers.get('Content-Length')}
+              except Exception as e: q['matrix']={'url':url,'error':type(e).__name__+': '+str(e)[:180]}
+          out['positive_control_metadata_pass']=out['projects']['SRP009615']['sra'].get('status')=='FOUND'
+          out['status']='CORRECTED_SOURCE_INVENTORY_ONLY' if out['positive_control_metadata_pass'] else 'HOLD_CONTROL_FAILED'
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-corrected-recount
+          path: result.json
+  author:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Inspect original open access article XML for supplement filenames
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,re,urllib.request,xml.etree.ElementTree as ET
+          from pathlib import Path
+          out={'status':'ARTICLE_INVENTORY_ONLY','scientific_validation':False,'articles':{}}
+          for pmc in ('PMC9117214','PMC9140469'):
+              url=f'https://www.ebi.ac.uk/europepmc/webservices/rest/{pmc}/fullTextXML'
+              item={'url':url};out['articles'][pmc]=item
+              try:
+                  with urllib.request.urlopen(url,timeout=25) as r: raw=r.read(5_000_001)
+                  if len(raw)>5_000_000: raise ValueError('XML cap')
+                  root=ET.fromstring(raw)
+                  supp=[]
+                  for e in root.findall('.//supplementary-material'):
+                      refs=[v for n in e.iter() for k,v in n.attrib.items() if k.endswith('}href') or k=='href']
+                      supp.append({'id':e.get('id'),'refs':refs,'caption':' '.join(' '.join(c.itertext()).split())[:350] if (c:=e.find('caption')) is not None else ''})
+                  item.update(sha256=hashlib.sha256(raw).hexdigest(),title=' '.join(' '.join(root.find('.//article-title').itertext()).split()),supplements=supp,project_mentions=sorted(set(re.findall(r'PRJNA\d+',raw.decode(errors='replace')))))
+              except Exception as e: item['error']=type(e).__name__+': '+str(e)[:180]
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-author-supplement-index
+          path: result.json

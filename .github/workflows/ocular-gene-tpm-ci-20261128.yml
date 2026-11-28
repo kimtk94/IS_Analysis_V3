@@ -1,0 +1,18 @@
+name: Ocular gene TPM aggregation CI
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-gene-tpm-ci-20261128.yml','scripts/ocular_gene_tpm_aggregation.py']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gene-tpm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify aggregation and reject invalid transcript inputs
+        run: python3 scripts/ocular_gene_tpm_aggregation.py --selftest

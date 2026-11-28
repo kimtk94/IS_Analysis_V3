@@ -1,0 +1,323 @@
+{
+  "run_id": 46124457726,
+  "source_commit": "69452bdab26bc73b2246173616864cd555fdb7f7",
+  "note": "Exact JSON from job logs, not independently downloaded ZIPs. Public source table inventory and sample titles only; no biological inference.",
+  "jobs": [
+    {
+      "job_id": 140915854785,
+      "result": {
+        "assay": "eQTL",
+        "url": "https://zenodo.org/records/19638349/files/skin%20eQTL%20summary%20statistics.txt?download=1",
+        "expected_size": 70906052,
+        "expected_md5": "caca80b5a56f3fd9ceeb3b03b9b4cc07",
+        "status": "CHECKSUM_VERIFIED_TABLE_INVENTORY",
+        "scientific_validation": false,
+        "actual_size": 70906052,
+        "actual_md5": "caca80b5a56f3fd9ceeb3b03b9b4cc07",
+        "sha256": "165264e5ef824098f70249261836eb40f08c9e0d99cecde3c257902ee60ca28c",
+        "header": [
+          "gene_id",
+          "variant_id",
+          "tss_distance",
+          "ma_samples",
+          "ma_count",
+          "maf",
+          "pval_nominal",
+          "slope",
+          "slope_se"
+        ],
+        "p_column_candidates": [
+          "pval_nominal"
+        ],
+        "gene_column_candidates": [
+          "gene_id"
+        ],
+        "counts": {
+          "rows": 870843,
+          "ragged": 0,
+          "gcc2_token": 0,
+          "rs4584990_token": 0,
+          "both_tokens": 0,
+          "nominal_p_valid": 870843,
+          "nominal_p_gt_005": 737774,
+          "nominal_p_gt_5e8": 862176
+        }
+      }
+    },
+    {
+      "job_id": 140915854977,
+      "result": {
+        "project": "PRJNA781014",
+        "status": "PUBLIC_TITLES_RETRIEVED_PAIRING_REVIEW_REQUIRED",
+        "scientific_validation": false,
+        "expected_public_runs": 10,
+        "sha256": "f6d4c8c19269ce5008ceab037b565522698578295375d9e0620f65f6d269290b",
+        "runs": [
+          {
+            "run_accession": "SRR16961561",
+            "sample_accession": "SAMN23226928",
+            "experiment_accession": "SRX13153063",
+            "experiment_title": "Illumina HiSeq 2500 sequencing: RNA-seq of human TM primary cells treated with DEX",
+            "sample_title": "DEX1",
+            "study_accession": "PRJNA781014"
+          },
+          {
+            "run_accession": "SRR16961562",
+            "sample_accession": "SAMN23226927",
+            "experiment_accession": "SRX13153062",
+            "experiment_title": "Illumina HiSeq 2500 sequencing: RNA-seq of human TM primary cells treated with ETH",
+            "sample_title": "ETH6",
+            "study_accession": "PRJNA781014"
+          },
+          {
+            "run_accession": "SRR16961558",
+            "sample_accession": "SAMN23226931",
+            "experiment_accession": "SRX13153066",
+            "experiment_title": "Illumina HiSeq 2500 sequencing: RNA-seq of human TM primary cells treated with DEX",
+            "sample_title": "DEX5",
+            "study_accession": "PRJNA781014"
+          },
+          {
+            "run_accession": "SRR16961565",
+            "sample_accession": "SAMN23226924",
+            "experiment_accession": "SRX13153059",
+            "experiment_title": "Illumina HiSeq 2500 sequencing: RNA-seq of human TM primary cells treated with ETH",
+            "sample_title": "ETH2",
+            "study_accession": "PRJNA781014"
+          },
+          {
+            "run_accession": "SRR16961557",
+            "sample_accession": "SAMN23226932",
+            "experiment_accession": "SRX13153067",
+            "experiment_title": "Illumina HiSeq 2500 sequencing: RNA-seq of human TM primary cells treated with DEX",
+            "sample_title": "DEX6",
+            "study_accession": "PRJNA781014"
+          },
+          {
+            "run_accession": "SRR16961560",
+            "sample_accession": "SAMN23226929",
+            "experiment_accession": "SRX13153064",
+            "experiment_title": "Illumina HiSeq 2500 sequencing: RNA-seq of human TM primary cells treated with DEX",
+            "sample_title": "DEX2",
+            "study_accession": "PRJNA781014"
+          },
+          {
+            "run_accession": "SRR16961563",
+            "sample_accession": "SAMN23226926",
+            "experiment_accession": "SRX13153061",
+            "experiment_title": "Illumina HiSeq 2500 sequencing: RNA-seq of human TM primary cells treated with ETH",
+            "sample_title": "ETH5",
+            "study_accession": "PRJNA781014"
+          },
+          {
+            "run_accession": "SRR16961559",
+            "sample_accession": "SAMN23226930",
+            "experiment_accession": "SRX13153065",
+            "experiment_title": "Illumina HiSeq 2500 sequencing: RNA-seq of human TM primary cells treated with DEX",
+            "sample_title": "DEX3",
+            "study_accession": "PRJNA781014"
+          },
+          {
+            "run_accession": "SRR16961564",
+            "sample_accession": "SAMN23226925",
+            "experiment_accession": "SRX13153060",
+            "experiment_title": "Illumina HiSeq 2500 sequencing: RNA-seq of human TM primary cells treated with ETH",
+            "sample_title": "ETH3",
+            "study_accession": "PRJNA781014"
+          },
+          {
+            "run_accession": "SRR16961566",
+            "sample_accession": "SAMN23226923",
+            "experiment_accession": "SRX13153058",
+            "experiment_title": "Illumina HiSeq 2500 sequencing: RNA-seq of human TM primary cells treated with ETH",
+            "sample_title": "ETH1",
+            "study_accession": "PRJNA781014"
+          }
+        ],
+        "run_count": 10
+      }
+    },
+    {
+      "job_id": 140915854986,
+      "result": {
+        "assay": "pQTL",
+        "url": "https://zenodo.org/records/19638349/files/skin%20pQTL%20summary%20statistics.txt?download=1",
+        "expected_size": 8085897,
+        "expected_md5": "5ed66ce34705c8aeff36b68162c73b64",
+        "status": "CHECKSUM_VERIFIED_TABLE_INVENTORY",
+        "scientific_validation": false,
+        "actual_size": 8085897,
+        "actual_md5": "5ed66ce34705c8aeff36b68162c73b64",
+        "sha256": "03084fb65d91708fbc3588076a4a25b94b19adff36079e87aa72344f11ee8b6a",
+        "header": [
+          "gene_id",
+          "variant_id",
+          "tss_distance",
+          "ma_samples",
+          "ma_count",
+          "maf",
+          "pval_nominal",
+          "slope",
+          "slope_se"
+        ],
+        "p_column_candidates": [
+          "pval_nominal"
+        ],
+        "gene_column_candidates": [
+          "gene_id"
+        ],
+        "counts": {
+          "rows": 108872,
+          "ragged": 0,
+          "gcc2_token": 0,
+          "rs4584990_token": 0,
+          "both_tokens": 0,
+          "nominal_p_valid": 108872,
+          "nominal_p_gt_005": 95819,
+          "nominal_p_gt_5e8": 108119
+        }
+      }
+    },
+    {
+      "job_id": 140915855001,
+      "result": {
+        "project": "PRJNA729873",
+        "status": "PUBLIC_TITLES_RETRIEVED_PAIRING_REVIEW_REQUIRED",
+        "scientific_validation": false,
+        "expected_public_runs": 16,
+        "sha256": "d269aaa9d5622559653b9575d9e9cec17715753ff9aa85e2abb5ebe8923c2d09",
+        "runs": [
+          {
+            "run_accession": "SRR14535079",
+            "sample_accession": "SAMN19184910",
+            "experiment_accession": "SRX10879288",
+            "experiment_title": "NextSeq 500 sequencing: GC-Responder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535088",
+            "sample_accession": "SAMN19184915",
+            "experiment_accession": "SRX10879279",
+            "experiment_title": "NextSeq 500 sequencing: GC-nonResponder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535077",
+            "sample_accession": "SAMN19184912",
+            "experiment_accession": "SRX10879290",
+            "experiment_title": "NextSeq 500 sequencing: GC-nonResponder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535081",
+            "sample_accession": "SAMN19184908",
+            "experiment_accession": "SRX10879286",
+            "experiment_title": "NextSeq 500 sequencing: GC-Responder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535082",
+            "sample_accession": "SAMN19184907",
+            "experiment_accession": "SRX10879285",
+            "experiment_title": "NextSeq 500 sequencing: GC-Responder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535087",
+            "sample_accession": "SAMN19184916",
+            "experiment_accession": "SRX10879280",
+            "experiment_title": "NextSeq 500 sequencing: GC-nonResponder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535080",
+            "sample_accession": "SAMN19184909",
+            "experiment_accession": "SRX10879287",
+            "experiment_title": "NextSeq 500 sequencing: GC-Responder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535089",
+            "sample_accession": "SAMN19184914",
+            "experiment_accession": "SRX10879278",
+            "experiment_title": "NextSeq 500 sequencing: GC-nonResponder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535090",
+            "sample_accession": "SAMN19184913",
+            "experiment_accession": "SRX10879277",
+            "experiment_title": "NextSeq 500 sequencing: GC-nonResponder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535091",
+            "sample_accession": "SAMN19184904",
+            "experiment_accession": "SRX10879276",
+            "experiment_title": "NextSeq 500 sequencing: GC-Responder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535078",
+            "sample_accession": "SAMN19184911",
+            "experiment_accession": "SRX10879289",
+            "experiment_title": "NextSeq 500 sequencing: GC-nonResponder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535083",
+            "sample_accession": "SAMN19184906",
+            "experiment_accession": "SRX10879284",
+            "experiment_title": "NextSeq 500 sequencing: GC-Responder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535084",
+            "sample_accession": "SAMN19184905",
+            "experiment_accession": "SRX10879283",
+            "experiment_title": "NextSeq 500 sequencing: GC-Responder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535085",
+            "sample_accession": "SAMN19184918",
+            "experiment_accession": "SRX10879282",
+            "experiment_title": "NextSeq 500 sequencing: GC-nonResponder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535086",
+            "sample_accession": "SAMN19184917",
+            "experiment_accession": "SRX10879281",
+            "experiment_title": "NextSeq 500 sequencing: GC-nonResponder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          },
+          {
+            "run_accession": "SRR14535092",
+            "sample_accession": "SAMN19184903",
+            "experiment_accession": "SRX10879275",
+            "experiment_title": "NextSeq 500 sequencing: GC-Responder",
+            "sample_title": "Human sample from Homo sapiens",
+            "study_accession": "PRJNA729873"
+          }
+        ],
+        "run_count": 16
+      }
+    }
+  ]
+}

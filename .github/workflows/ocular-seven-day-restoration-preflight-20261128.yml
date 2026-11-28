@@ -1,0 +1,111 @@
+name: Ocular seven-day restoration preflight and real pilot TPM
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-seven-day-restoration-preflight-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify archived pairing and exact current ENA file roles
+        run: |
+          python3 - <<'PY'
+          import csv,hashlib,io,json,re,subprocess,urllib.parse,urllib.request
+          from pathlib import Path
+          root=Path('docs/publication/evidence')
+          def pinned(name,sha):
+              p=root/name
+              assert subprocess.check_output(['git','hash-object',str(p)],text=True).strip()==sha
+              return json.loads(p.read_text())
+          src=pinned('top3_source_metadata_readback_20261128.json','9aef45b75089f69304c3e850fe382df70a12009f')
+          old=next(j['result'] for j in src['jobs'] if j['result']['source']=='PRJNA729873')
+          pairing=pinned('ocular_seven_day_library_pairing_20261128.json','20b51fb9cf482d98003160c7875b07fa0666b1db')
+          archive={r['run_accession']:r for r in old['runs']}
+          assert len(archive)==16 and len(pairing['pairs'])==8
+          runs=[p[k] for p in pairing['pairs'] for k in ('DEX','ETH')]
+          assert len(set(runs))==16 and set(runs)==set(archive)
+          assert sum(p['group']=='GC-Responder' for p in pairing['pairs'])==4
+          params=dict(accession='PRJNA729873',result='read_run',fields='run_accession,study_accession,library_layout,fastq_ftp,fastq_md5,fastq_bytes',format='tsv',limit='0')
+          url='https://www.ebi.ac.uk/ena/portal/api/filereport?'+urllib.parse.urlencode(params)
+          with urllib.request.urlopen(url,timeout=45) as res: raw=res.read(200001)
+          assert len(raw)<=200000
+          rows=list(csv.DictReader(io.StringIO(raw.decode()),delimiter='\t'))
+          assert len(rows)==16 and {r['run_accession'] for r in rows}==set(archive)
+          records=[]
+          for r in rows:
+              run=r['run_accession']; prev=archive[run]
+              assert r['study_accession']=='PRJNA729873' and r['library_layout']==prev['library_layout']=='PAIRED'
+              urls=r['fastq_ftp'].split(';'); hashes=r['fastq_md5'].split(';'); sizes=list(map(int,r['fastq_bytes'].split(';')))
+              assert len(urls)==len(hashes)==len(sizes)==3
+              assert sorted(zip(hashes,sizes))==sorted(zip(prev['fastq_md5'].split(';'),map(int,prev['fastq_bytes'].split(';'))))
+              files={}
+              for u,h,n in zip(urls,hashes,sizes):
+                  assert re.fullmatch(r'[a-f0-9]{32}',h) and n>0
+                  p=urllib.parse.urlparse('https://'+u)
+                  assert p.hostname=='ftp.sra.ebi.ac.uk' and p.path.startswith('/vol1/fastq/')
+                  m=re.fullmatch(run+r'(_[12])?\.fastq\.gz',p.path.rsplit('/',1)[-1]); assert m
+                  role={'_1':'R1','_2':'R2',None:'UNPAIRED'}[m.group(1)]
+                  assert role not in files
+                  files[role]={'url':p.geturl(),'md5':h,'bytes':n}
+              assert set(files)=={'R1','R2','UNPAIRED'}
+              records.append({'run':run,'files':files})
+          total=sum(f['bytes'] for r in records for f in r['files'].values())
+          assert total==old['declared_fastq_bytes']
+          paired=sum(r['files'][k]['bytes'] for r in records for k in ('R1','R2'))
+          out={'status':'SOURCE_MANIFEST_VERIFIED_NOT_QUANTIFIED','scientific_validation':False,'live_manifest_sha256':hashlib.sha256(raw).hexdigest(),'runs':16,'pairs':8,'all_files_bytes':total,'paired_files_bytes':paired,'unpaired_bytes':total-paired,'largest_paired_run_bytes':max(sum(r['files'][k]['bytes'] for k in ('R1','R2')) for r in records),'records':records,'note':'Unpaired reads identified separately; no selection by outcome. Full uniform re-quantification requires a reviewed orphan-read handling rule and resource budget; no raw reads transferred.'}
+          Path('manifest.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps({k:v for k,v in out.items() if k!='records'},indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-seven-day-restoration-manifest
+          path: manifest.json
+          if-no-files-found: error
+          retention-days: 90
+  pilot-tpm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-one-run-pilot
+          run-id: 46126956507
+          github-token: ${{ github.token }}
+          path: pilot
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-gencode-v44-tx2gene
+          run-id: 46125833980
+          github-token: ${{ github.token }}
+          path: mapping
+      - name: Verify real pilot output and aggregate to gene TPM
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('pilot/pilot-qc.json').read_text())
+          assert q['run']=='SRR16961557' and q['status']=='TECHNICAL_QUANTIFICATION_COMPLETE_QC_REVIEW_REQUIRED'
+          assert q['abundance_sha256']=='8b9712093ee33f6318ceb70d373f06a8d2cb88ec0eb9ad316d45e4870ebdafaa'
+          assert q['run_info']['n_processed']==42474195 and q['run_info']['n_pseudoaligned']==40262724
+          PY
+          python3 scripts/ocular_gene_tpm_aggregation.py --selftest
+          python3 scripts/ocular_gene_tpm_aggregation.py --map mapping/tx2gene.tsv --abundance pilot/quant/abundance.tsv --expected-abundance-sha 8b9712093ee33f6318ceb70d373f06a8d2cb88ec0eb9ad316d45e4870ebdafaa --out gene-output
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-real-pilot-tpm-summary
+          path: gene-output/summary.json
+          if-no-files-found: error
+          retention-days: 90

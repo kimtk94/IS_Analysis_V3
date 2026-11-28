@@ -1,0 +1,114 @@
+{
+  "date": "2026-11-28",
+  "provenance": {
+    "run": 46137572418,
+    "job": 140956205031,
+    "source_commit": "682f3d1ffee3db84b55a2fc12035f354c20f65a1",
+    "artifacts": [
+      {
+        "id": 15260302894,
+        "name": "is-rs7203740-allele-resolved-reference-ld",
+        "digest": "sha256:a4543f0b305755d3b7c9668a04ebd3d9ff9e72bc9ba6474f31fbee4a392ebe79",
+        "expired": false
+      }
+    ],
+    "regression_run": 46137576445,
+    "passed": 625,
+    "skipped": 1,
+    "readback": "Aggregate actual job stdout; artifact metadata verified, ZIP not independently extracted."
+  },
+  "result": {
+    "status": "ALLELE_RESOLVED_REFERENCE_LD_ONLY",
+    "scientific_validation": false,
+    "anchor": "rs7203740",
+    "anchor_ref": "C",
+    "anchor_alt": "T",
+    "observed_alts": [
+      "T"
+    ],
+    "region_grch37": [
+      81308816,
+      82308816
+    ],
+    "source_probes": [
+      {
+        "url": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chr16.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
+        "error": "HTTPError: HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://1000genomes.s3.amazonaws.com/release/20130502/ALL.chr16.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
+        "range": "bytes 0-65535/495134005",
+        "header_range_sha256": "f6ff64a1ff7a902b2881ef284cc5c9d7e26002471b1a3bd984944ee95dc2edcc",
+        "index_sha256": "7407cd5dd354f6d54128863f7fba1a64a6a36b47322ca39457549d10111e68e4",
+        "status": "HEADER_VERIFIED"
+      }
+    ],
+    "panel_sha256": "b4023dc6ee2d62ee89c8d4d347db4d348e65518d66d346574cdae7a4bbd76858",
+    "mapping_sha256": "0e31a0c7b106fb78a53f12fd43a2e7ccf13435b384e08ae7813bdef200d053c1",
+    "regional_stream_sha256": "58d64ad84faa4579516e466f406cf3f7b51938045d341002ec9ec61867499432",
+    "range_bytes": 9046488,
+    "variant_rows": 44207,
+    "anchor_population_counts": {
+      "CHB": {
+        "haplotypes": 206,
+        "C": 103,
+        "T": 103,
+        "other": 0
+      },
+      "JPT": {
+        "haplotypes": 208,
+        "C": 92,
+        "T": 116,
+        "other": 0
+      },
+      "CEU": {
+        "haplotypes": 198,
+        "C": 33,
+        "T": 165,
+        "other": 0
+      }
+    },
+    "proxies": {
+      "CHB": {
+        "count": 0,
+        "restricted_high_ld": 0,
+        "first5": []
+      },
+      "JPT": {
+        "count": 0,
+        "restricted_high_ld": 0,
+        "first5": []
+      },
+      "CEU": {
+        "count": 0,
+        "restricted_high_ld": 0,
+        "first5": []
+      }
+    },
+    "excluded": {
+      "not_PASS_biallelic_SNV": 1590
+    },
+    "notes": [
+      "Reference phased haplotype LD, not GWAS-matched LD or conditional association.",
+      "All PASS biallelic SNVs in fixed GRCh37 region; rsID-missing and multiallelic partners are counted as excluded, not absent.",
+      "C/T restricted analysis excludes non-C/T anchor haplotypes; all-haplotype T versus non-T is separate. Small allele counts reported; no novelty or independence claim."
+    ],
+    "tested_by_population": {
+      "CHB": 42616,
+      "JPT": 42616,
+      "CEU": 42616
+    },
+    "restricted_proxy_union": 0,
+    "restricted_proxy_shared": 0
+  },
+  "decision": {
+    "status": "HOLD_LD_DISTRIBUTION_AND_PRIOR_PUBLICATION",
+    "scientific_validation": false,
+    "notes": [
+      "44207 distinct regional VCF rows, 1590 excluded non-PASS/non-biallelic SNVs, one anchor, 42616 attempted partner rows per population; attempted includes monomorphic partners, not necessarily finite r2.",
+      "Phase3 anchor only C/T, no other allele observed among CHB/JPT/CEU, so restricted and all-T-vs-nonT coincide in these panels. Ensembl C/A/T annotation is not contradicted by this reference subset.",
+      "Zero r2>=.8 proxies is conditional on the selected reference populations, biallelic PASS SNVs and GRCh37 ±500kb window; no evidence of independence or novelty. Prior empty LD API not equivalent to this calculation.",
+      "Need maximum and distribution of finite LD with nonfinite/monomorphic denominator, independent check of high correlation threshold and regional prior signals. No matched LD, formal Coloc, independent GWAS or causality."
+    ]
+  }
+}

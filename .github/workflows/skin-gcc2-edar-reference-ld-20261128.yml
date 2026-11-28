@@ -1,0 +1,72 @@
+name: Skin fixed GCC2 EDAR reference LD context
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/skin-gcc2-edar-reference-ld-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ld:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    strategy:
+      fail-fast: false
+      matrix:
+        population: [CHB,JPT,CEU]
+    env:
+      POP: ${{ matrix.population }}
+    steps:
+      - name: Query fixed marker pairs using Ensembl reference LD
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,math,os,urllib.parse,urllib.request
+          from pathlib import Path
+          pop='1000GENOMES:phase_3:'+os.environ['POP']
+          base='https://rest.ensembl.org'
+          anchor='rs4584990'
+          pairs=[(anchor,x) for x in ('rs144918519','rs260643','rs115957039','rs6542772','rs3827760')]+[('rs6542772','rs3827760'),('rs260643','rs3827760')]
+          variants=sorted({v for p in pairs for v in p})
+          out={'status':'REFERENCE_LD_CONTEXT_ONLY','scientific_validation':False,'population':pop,'variants':{},'pairs':[],'note':'Exploratory post-readout fixed pairs. Phase 3 reference LD is not Korean outcome-matched LD; no MR, colocalization, conditional association or independence claim. Empty response is not zero LD.'}
+          def get(path,query=None):
+              url=base+path+'?'+urllib.parse.urlencode({'content-type':'application/json',**(query or {})})
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json'}),timeout=20) as r: raw=r.read(2000001)
+              if len(raw)>2000000:raise ValueError('response cap')
+              return json.loads(raw),{'url':url,'sha256':hashlib.sha256(raw).hexdigest()}
+          for rs in variants:
+              try:
+                  v,src=get('/variation/human/'+rs)
+                  if v.get('name')!=rs:raise ValueError('variant identity')
+                  maps=[m for m in v['mappings'] if m.get('assembly_name')=='GRCh38' and str(m.get('seq_region_name'))=='2' and m.get('start')==m.get('end') and m.get('strand')==1]
+                  if len(maps)!=1:raise ValueError('ambiguous chr2 mapping')
+                  m=maps[0];alleles=m['allele_string'].split('/')
+                  if len(alleles)!=2 or any(a not in ('A','C','G','T') for a in alleles):raise ValueError('not biallelic SNV')
+                  out['variants'][rs]={'position':m['start'],'alleles':alleles,'source':src}
+                  if rs==anchor and (m['start']!=108872562 or set(alleles)!={'C','T'}):raise ValueError('anchor drift')
+              except Exception as e:out['variants'][rs]={'error':type(e).__name__+': '+str(e)[:200]}
+          for a,b in pairs:
+              q={'first':a,'second':b,'status':'HOLD'}
+              try:
+                  if 'position' not in out['variants'][a] or 'position' not in out['variants'][b]:raise ValueError('variant identity unverified')
+                  q['distance_bp']=abs(out['variants'][a]['position']-out['variants'][b]['position'])
+                  rows,src=get('/ld/human/pairwise/'+a+'/'+b,{'population_name':pop,'r2':0,'d_prime':0})
+                  q['source']=src
+                  if not isinstance(rows,list):raise ValueError('LD response schema')
+                  q['rows']=len(rows)
+                  if not rows:raise ValueError('empty LD response; not zero')
+                  exact=[r for r in rows if {r.get('variation1'),r.get('variation2')}=={a,b} and r.get('population_name')==pop]
+                  if len(exact)!=1 or len(rows)!=1:raise ValueError('pair/population identity or duplicate')
+                  v=exact[0];r2=float(v['r2']);dp=float(v['d_prime'])
+                  if not math.isfinite(r2) or not math.isfinite(dp) or not 0<=r2<=1 or not -1<=dp<=1:raise ValueError('invalid LD')
+                  q.update(status='REFERENCE_LD_VERIFIED',r2=r2,d_prime=dp)
+              except Exception as e:q['error']=type(e).__name__+': '+str(e)[:200]
+              out['pairs'].append(q)
+          out['verified_pairs']=sum(q['status']=='REFERENCE_LD_VERIFIED' for q in out['pairs'])
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: skin-reference-ld-${{ matrix.population }}
+          path: result.json
+          retention-days: 90

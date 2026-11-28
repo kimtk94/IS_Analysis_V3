@@ -1,0 +1,126 @@
+name: Ocular one-run kallisto technical pilot
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-kallisto-pilot-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ocular-kallisto-one-run-pilot
+  cancel-in-progress: false
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check runner and install quantifier
+        run: |
+          df -h .
+          free -m
+          sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends kallisto
+      - name: Verify inputs and quantify one fixed public paired-end run
+        run: |
+          python3 - <<'PY'
+          import csv,hashlib,io,json,os,re,shutil,subprocess,time,urllib.parse,urllib.request
+          from pathlib import Path
+          start=time.monotonic()
+          outdir=Path('pilot-output');outdir.mkdir(exist_ok=True)
+          work=Path('pilot-work');work.mkdir(exist_ok=True)
+          run='SRR16961557'
+          out={'run':run,'project':'PRJNA781014','selection':'lexicographically first DEX run in existing fixed isolate crosswalk; technical pilot only','status':'HOLD','scientific_validation':False,'reference':'GENCODE human v44 GRCh38.p14 all transcripts','commands':[],'files':[]}
+          def command(args):
+              out['commands'].append(args)
+              t=time.monotonic()
+              p=subprocess.run(args,check=True,text=True,capture_output=True,timeout=900)
+              print(p.stdout[-2000:]);print(p.stderr[-2000:])
+              return {'seconds':round(time.monotonic()-t,2),'stdout_tail':p.stdout[-500:],'stderr_tail':p.stderr[-500:]}
+          def download(url,path,limit,md5,exact=None):
+              t=time.monotonic()
+              # Resume partial transfers rather than discarding verified byte ranges.
+              # Final size and full-file checksum remain mandatory.
+              attempts=[]
+              out.setdefault('transfer_attempts',{})[path.name]=attempts
+              for attempt in range(1,4):
+                  before=path.stat().st_size if path.exists() else 0
+                  if before>limit:raise ValueError('partial file exceeds size cap')
+                  if exact is not None and before==exact:break
+                  args=['curl','--fail','--location','--proto','=https','--proto-redir','=https','--connect-timeout','30','--max-time','600','--speed-time','90','--speed-limit','1024','--max-filesize',str(limit),'--continue-at','-','--output',str(path),url]
+                  out['commands'].append(args)
+                  rc=subprocess.run(args,timeout=625).returncode
+                  after=path.stat().st_size if path.exists() else 0
+                  attempts.append(dict(attempt=attempt,returncode=rc,before=before,after=after))
+                  print(json.dumps({'file':path.name,**attempts[-1]}),flush=True)
+                  if after>limit or after<before:raise ValueError('invalid resumed file size')
+                  if rc==0 or (exact is not None and after==exact):break
+                  if rc not in (5,6,7,18,28,35,52,55,56):raise ValueError('non-retriable curl failure '+str(rc))
+              n=path.stat().st_size
+              if n>limit or (exact is not None and n!=exact): raise ValueError('source size mismatch: '+path.name)
+              m=hashlib.md5();s=hashlib.sha256()
+              with path.open('rb') as f:
+                  for buf in iter(lambda:f.read(1024*1024),b''):
+                      m.update(buf);s.update(buf)
+              if m.hexdigest()!=md5:raise ValueError('source checksum mismatch: '+path.name)
+              out['files'].append(dict(file=path.name,url=url,bytes=n,md5=m.hexdigest(),sha256=s.hexdigest(),seconds=round(time.monotonic()-t,2)))
+          try:
+              out['runner_free_bytes']=shutil.disk_usage('.').free
+              out['runner_memory_kb']=int(re.search(r'MemTotal:\s+(\d+)',Path('/proc/meminfo').read_text()).group(1))
+              if out['runner_free_bytes']<10_000_000_000: raise ValueError('insufficient runner scratch')
+              out['kallisto_version']=command(['kallisto','version'])
+              if '0.48.0' not in out['kallisto_version']['stdout_tail']: raise ValueError('unexpected kallisto version')
+              # The fixed run and official expected FASTQ values are taken from the prior ENA manifest readback.
+              d=json.loads(Path('docs/publication/evidence/top3_source_metadata_readback_20261128.json').read_text())
+              prior=next(x['result'] for x in d['jobs'] if x['result']['source']=='PRJNA781014')
+              rec=next(x for x in prior['runs'] if x['run_accession']==run)
+              expected_hashes=rec['fastq_md5'].split(';');expected_sizes=list(map(int,rec['fastq_bytes'].split(';')))
+              assert expected_sizes==[1256481221,1322682687] and rec['library_layout']=='PAIRED'
+              # Use the previously archived ENA manifest, not a fresh API dependency.
+              # Official ENA 8-digit SRR path layout: prefix / zero-padded last two digits / run.
+              assert re.fullmatch(r'SRR\d{8}',run)
+              assert expected_hashes==['4c0bec8592dcd760f111e405b96bd447','073dde71f829ffa2a8ba920c6a6f4bc3']
+              urls=[f'ftp.sra.ebi.ac.uk/vol1/fastq/{run[:6]}/0{run[-2:]}/{run}/{run}_{i}.fastq.gz' for i in (1,2)]
+              out['manifest_source_run']=46123878528
+              out['manifest_source_sha256']=prior['sha256']
+              out['stage']='reference_download'
+              fasta=work/'gencode.v44.transcripts.fa.gz'
+              download('https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.transcripts.fa.gz',fasta,100_000_000,'a30369535731a2fdaa6add9b3530756a',82601810)
+              out['stage']='fastq_download'
+              mates=[]
+              for i,(u,h,n) in enumerate(zip(urls,expected_hashes,expected_sizes),1):
+                  url='https://'+u
+                  parsed=urllib.parse.urlparse(url)
+                  if parsed.hostname!='ftp.sra.ebi.ac.uk' or not parsed.path.endswith('/'+run+'_'+str(i)+'.fastq.gz'): raise ValueError('unexpected mate URL')
+                  path=work/f'R{i}.fastq.gz';download(url,path,n,h,n);mates.append(str(path))
+              out['stage']='index_build'
+              out['index']=command(['kallisto','index','-i',str(work/'reference.idx'),str(fasta)])
+              out['stage']='quantification'
+              quant=outdir/'quant'
+              out['quant']=command(['kallisto','quant','-i',str(work/'reference.idx'),'-o',str(quant),'-t','2',*mates])
+              info=json.loads((quant/'run_info.json').read_text())
+              out['run_info']=info
+              if int(info['n_processed'])<=0 or int(info['n_pseudoaligned'])<=0 or not (quant/'abundance.tsv').is_file(): raise ValueError('empty quantification')
+              out['stage']='complete'
+              out['status']='TECHNICAL_QUANTIFICATION_COMPLETE_QC_REVIEW_REQUIRED'
+              out['abundance_sha256']=hashlib.sha256((quant/'abundance.tsv').read_bytes()).hexdigest()
+              # Do not calculate signature score or treatment effects. One sample is not a biological test.
+          except Exception as e:
+              out['error']=type(e).__name__+': '+str(e)[:300]
+          finally:
+              out['seconds']=round(time.monotonic()-start,2)
+              (outdir/'pilot-qc.json').write_text(json.dumps(out,indent=2)+'\n')
+              print(json.dumps(out,indent=2))
+              shutil.rmtree(work,ignore_errors=True)
+          if out['status']!='TECHNICAL_QUANTIFICATION_COMPLETE_QC_REVIEW_REQUIRED':
+              raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-one-run-pilot
+          path: |
+            pilot-output/pilot-qc.json
+            pilot-output/quant/run_info.json
+            pilot-output/quant/abundance.tsv
+          if-no-files-found: warn
+          retention-days: 30

@@ -1,0 +1,30 @@
+name: Ocular GENCODE tx2gene reference audit
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-tx2gene-reference-20261128.yml','scripts/ocular_tx2gene_reference_audit.py']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test transcript identifier parser
+        run: python3 scripts/ocular_tx2gene_reference_audit.py --selftest
+      - name: Download exact transcriptome reference used in pilot
+        run: |
+          curl -fLsS --proto '=https' --proto-redir '=https' --connect-timeout 20 --max-time 180 --retry 2 --retry-max-time 360 --max-filesize 100000000 'https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.transcripts.fa.gz' -o reference.fa.gz
+      - name: Verify reference and map frozen panel without expression data
+        run: |
+          python3 scripts/ocular_tx2gene_reference_audit.py --fasta reference.fa.gz --panel docs/publication/evidence/ocular_frozen_241_panel.tsv --output outputs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gencode-v44-tx2gene
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

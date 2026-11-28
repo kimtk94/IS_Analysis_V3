@@ -1,0 +1,109 @@
+name: Skin fixed GCC2 EDAR outcome identity audit
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/skin-gcc2-edar-outcome-identity-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  outcome:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        accession: [GCST90094903,GCST90094904]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Scan exact six frozen variants in verified Korean GWAS
+        env:
+          ACCESSION: ${{ matrix.accession }}
+        run: |
+          python3 - <<'PY'
+          import csv,gzip,hashlib,json,math,os,re,subprocess,urllib.request
+          from pathlib import Path
+          acc=os.environ['ACCESSION']
+          sources={
+              'GCST90094903':(166633054,'b523f5b80f14531206f4d0b42a283662','0c2e1c6cb4411f8dca4d69fa65671e9c68711d1ac6fcc660625371af316f99af'),
+              'GCST90094904':(166468623,'10b0c0ad379b755b80f6d84f7014ef4d','567e55db53cb9528680073dd122190528bd640a0706c286d40999f4b283e5927')}
+          p=Path('docs/publication/evidence/skin_allele_resolved_phase3_ld_readback_20261128.json')
+          assert subprocess.check_output(['git','hash-object',str(p)],text=True).strip()=='70746dd0956e65416f33828184ea772ce0ac809b'
+          prior=json.loads(p.read_text())['result']
+          assert prior['verified_variants']==6 and len(prior['pairs'])==21
+          out={'status':'HOLD','scientific_validation':False,'study':acc,'ancestry':'Korean','sample_size_reported':11079,'variants':{},'note':'Fixed post-readout six-variant descriptive audit. Same participants potentially shared between wrinkle sites; no independent replication or conditional beta. Reference LD is not Korean study LD.'}
+          try:
+              mapping={}
+              for rs,x in prior['variants'].items():
+                  try:
+                      assert len(x['alternate_alleles'])==1
+                      with urllib.request.urlopen('https://rest.ensembl.org/variation/human/'+rs+'?content-type=application/json',timeout=15) as res: raw=res.read(1000001)
+                      assert len(raw)<=1000000
+                      d=json.loads(raw);assert d['name']==rs
+                      maps=[m for m in d['mappings'] if m.get('assembly_name')=='GRCh38' and str(m.get('seq_region_name'))=='2' and m.get('start')==m.get('end') and m.get('strand')==1]
+                      assert len(maps)==1
+                      m=maps[0];ref=x['reference'];alt=x['alternate_alleles'][0]
+                      assert {ref,alt}<=set(m['allele_string'].split('/'))
+                      mapping[rs]=(m['start'],ref,alt)
+                      out['variants'][rs]={'position_grch38':m['start'],'reference':ref,'alternate':alt,'mapping_sha256':hashlib.sha256(raw).hexdigest(),'status':'HOLD_NO_EXACT_OUTCOME_ROW'}
+                  except Exception as e:out['variants'][rs]={'status':'HOLD_MAPPING','error':type(e).__name__+': '+str(e)[:200]}
+              n,md5,sha=sources[acc]
+              url='https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/'+acc+'/harmonised/35421404-'+acc+'-EFO_0008006.h.tsv.gz'
+              subprocess.run(['curl','--fail','--location','--proto','=https','--proto-redir','=https','--connect-timeout','30','--max-time','300','--max-filesize',str(n),'-o','source.gz',url],check=True,timeout=320)
+              f=Path('source.gz');assert f.stat().st_size==n
+              h=hashlib.sha256();m=hashlib.md5()
+              with f.open('rb') as stream:
+                  for b in iter(lambda:stream.read(1024*1024),b''):h.update(b);m.update(b)
+              assert h.hexdigest()==sha and m.hexdigest()==md5
+              out['source']={'url':url,'bytes':n,'sha256':sha,'md5':md5}
+              hits={rs:[] for rs in mapping};count=0
+              pos_to_rs={}
+              for rs,(pos,ref,alt) in mapping.items():pos_to_rs.setdefault(pos,[]).append(rs)
+              with gzip.open(f,'rt',encoding='utf8',newline='') as stream:
+                  reader=csv.DictReader(stream,delimiter='\t')
+                  required={'hm_chrom','hm_pos','hm_rsid','hm_effect_allele','hm_other_allele','hm_beta','standard_error','p_value','hm_effect_allele_frequency','hm_code'}
+                  assert required<=set(reader.fieldnames) and len(reader.fieldnames)==len(set(reader.fieldnames))
+                  for row in reader:
+                      count+=1
+                      if row['hm_chrom'].removeprefix('chr')!='2':continue
+                      try:pos=int(row['hm_pos'])
+                      except ValueError:continue
+                      for rs in pos_to_rs.get(pos,[]):
+                          hits[rs].append({k:row[k] for k in sorted(required)})
+              assert count==4950621
+              out['rows_scanned']=count
+              for rs,(pos,ref,alt) in mapping.items():
+                  dst=out['variants'][rs];rows=hits[rs]
+                  dst['rows_at_position']=len(rows)
+                  exact=[r for r in rows if rs in r['hm_rsid'].split(';') and {r['hm_effect_allele'],r['hm_other_allele']}=={ref,alt}]
+                  if len(exact)!=1 or len(rows)!=1:
+                      dst['status']='HOLD_MISSING_OR_AMBIGUOUS';dst['exact_rows']=len(exact);continue
+                  try:
+                      row=exact[0];assert int(row['hm_code']) in (10,11,12,13)
+                      beta,se,pv,eaf=map(float,(row['hm_beta'],row['standard_error'],row['p_value'],row['hm_effect_allele_frequency']))
+                      assert all(math.isfinite(z) for z in (beta,se,pv,eaf)) and se>0 and 0<pv<=1 and 0<eaf<1
+                      if row['hm_effect_allele']!=alt:beta=-beta;eaf=1-eaf
+                      dst.update(status='EXACT_OUTCOME_ROW',beta_alt=beta,se=se,p=pv,eaf_alt=eaf,z_alt=beta/se,hm_code=int(row['hm_code']))
+                      dst['reference_frequency_differences']={pop:eaf-next(q['allele_frequency_first'] if q['first']==rs else q['allele_frequency_second'] for q in prior['pairs'] if q['population']==pop and rs in (q['first'],q['second'])) for pop in ('CHB','JPT','CEU')}
+                  except Exception as e:dst.update(status='HOLD_STATISTIC',error=type(e).__name__+': '+str(e)[:160])
+              if acc=='GCST90094903':
+                  a=out['variants']['rs4584990']
+                  assert a['status']=='EXACT_OUTCOME_ROW' and math.isclose(a['beta_alt'],1.709) and math.isclose(a['se'],.2923) and math.isclose(a['p'],5.095e-9,rel_tol=1e-8)
+              out['verified_rows']=sum(v['status']=='EXACT_OUTCOME_ROW' for v in out['variants'].values())
+              out['status']='DESCRIPTIVE_OUTCOME_AUDIT_COMPLETE'
+              out['conditional_analysis']='HOLD_STUDY_MATCHED_LD_AND_MODEL_SCALE'
+          except Exception as e:out['error']=type(e).__name__+': '+str(e)[:300]
+          finally:
+              Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+              print(json.dumps(out,indent=2))
+              Path('source.gz').unlink(missing_ok=True)
+          if out['status']!='DESCRIPTIVE_OUTCOME_AUDIT_COMPLETE':raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: skin-fixed-outcome-${{ matrix.accession }}
+          path: result.json
+          retention-days: 90

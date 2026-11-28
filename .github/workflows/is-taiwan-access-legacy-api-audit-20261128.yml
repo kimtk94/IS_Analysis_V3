@@ -1,0 +1,56 @@
+name: IS Taiwan article access and legacy API inventory
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/is-taiwan-access-legacy-api-audit-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Inspect publication source and inventory legacy API references
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,re,subprocess,urllib.request,xml.etree.ElementTree as ET
+          from pathlib import Path
+          out={'status':'SOURCE_AND_CODE_INVENTORY_ONLY','scientific_validation':False,'article':{},'legacy_api':[]}
+          try:
+              url='https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13239414/fullTextXML'
+              with urllib.request.urlopen(url,timeout=45) as r: raw=r.read(5000001)
+              if len(raw)>5000000:raise ValueError('XML limit')
+              expected='737a6219e93ae1cab48424300531515fea5f3b0adefdb31f5023e7cd3b385302'
+              root=ET.fromstring(raw)
+              sha=hashlib.sha256(raw).hexdigest()
+              if sha!=expected:raise ValueError('article XML changed; manual review')
+              paragraphs=[' '.join(' '.join(p.itertext()).split()) for p in root.findall('.//p')]
+              phrases=[p[:1500] for p in paragraphs if re.search(r'lack stroke subtyping|data availability|data sharing|data access|available in eMethods|external IS cohort|TPMI PheWeb',p,re.I)]
+              links=[{'text':' '.join(' '.join(e.itertext()).split())[:200],'href':v} for e in root.iter() for k,v in e.attrib.items() if (k.endswith('}href') or k=='href') and re.search(r'pheweb|supplement|emed|wnl\.',v,re.I)]
+              supp=[{'id':e.get('id'),'hrefs':[v for n in e.iter() for k,v in n.attrib.items() if k.endswith('}href') or k=='href']} for e in root.findall('.//supplementary-material')]
+              out['article']={'sha256':sha,'relevant_paragraphs':phrases,'links':links,'supplements':supp,'subtype_limitation_explicit':any('lack stroke subtyping' in p.lower() for p in paragraphs)}
+          except Exception as e:out['article']={'error':type(e).__name__+': '+str(e)[:200]}
+          # Inventory tracked code only. No mass replacement and no changes to main.
+          paths=subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          for name in paths:
+              if not name or not name.endswith(('.py','.R','.r','.sh','.ps1','.yml','.yaml','.js','.ts')):continue
+              p=Path(name)
+              if not p.is_file() or p.stat().st_size>2000000:continue
+              for n,line in enumerate(p.read_text(errors='replace').splitlines(),1):
+                  if re.search(r'gwas/rest/api/(?!v2(?:/|\b))',line,re.I):
+                      out['legacy_api'].append({'path':name,'line':n})
+          out['legacy_api_count']=len(out['legacy_api'])
+          out['distinct_legacy_files']=len({x['path'] for x in out['legacy_api']})
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          # Avoid reproducing article paragraphs in logs; retain source-specific facts.
+          print(json.dumps({**out,'article':{k:v for k,v in out['article'].items() if k!='relevant_paragraphs'}},indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-taiwan-access-legacy-api-audit
+          path: result.json
+          retention-days: 90
