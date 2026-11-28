@@ -1,0 +1,92 @@
+name: Skin ASTAGR fixed allele external context
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/skin-astagr-fixed-context-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Audit fixed six variants without claiming site-specific replication
+        run: |
+          python3 - <<'PY'
+          import csv,gzip,hashlib,json,math,re,subprocess,urllib.request
+          from pathlib import Path
+          p=Path('docs/publication/evidence/skin_gcc2_edar_outcome_readback_20261128.json')
+          assert subprocess.check_output(['git','hash-object',str(p)],text=True).strip()=='33be6014f3bbcdda7660cc161fe39a010675e589'
+          old=json.loads(p.read_text())['results']
+          assert len(old)==2 and old[0]['study']=='GCST90094903'
+          fixed=old[0]['variants'];assert len(fixed)==6
+          base='https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90502001-GCST90503000/GCST90502802/harmonised/'
+          url=base+'GCST90502802.h.tsv.gz'
+          out={'status':'HOLD','scientific_validation':False,'accession':'GCST90502802','source_metadata_run':46132165733,'sample_size':2424,'phenotype':'Facial wrinkles; site not established','ancestry':'Korean, Thai, Vietnamese, Indonesian; pooled women','variants':{},'limits':'Post-readout fixed six-marker external context only. Not same-site or Korean-specific replication; overlap and phenotype scale unverified. No meta-analysis or conditional association. Missing variants not zero; source MAF cutoff .05.'}
+          try:
+              with urllib.request.urlopen(base+'GCST90502802.h.tsv.gz-meta.yaml',timeout=30) as res:meta=res.read(100001)
+              assert hashlib.sha256(meta).hexdigest()=='127e28d6fc93be954e8aaa129882da4662e81094a62f861b993043b2225314fe'
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'Range':'bytes=0-0','Accept-Encoding':'identity'}),timeout=30) as res:
+                  cr=res.headers.get('Content-Range','')
+                  assert res.status==206 and re.fullmatch(r'bytes 0-0/\d+',cr) and len(res.read(2))==1
+              n=int(cr.split('/')[-1]);out['source_bytes']=n
+              assert 0<n<=350000000,'source above fixed transfer cap'
+              f=Path('source.gz')
+              subprocess.run(['curl','--fail','--location','--proto','=https','--proto-redir','=https','--connect-timeout','30','--max-time','480','--max-filesize',str(n),'-o',str(f),url],check=True,timeout=500)
+              assert f.stat().st_size==n
+              m=hashlib.md5();s=hashlib.sha256()
+              with f.open('rb') as stream:
+                  for b in iter(lambda:stream.read(1048576),b''):m.update(b);s.update(b)
+              assert m.hexdigest()=='c7042f922e9457487aa070226cd05429'
+              out['source']={'url':url,'md5':m.hexdigest(),'sha256':s.hexdigest(),'bytes':n}
+              hits={rs:[] for rs in fixed}
+              pos={v['position_grch38']:rs for rs,v in fixed.items()};assert len(pos)==6
+              with gzip.open(f,'rt',encoding='utf8',newline='') as stream:
+                  rd=csv.DictReader(stream,delimiter='\t')
+                  h=rd.fieldnames;assert h and len(h)==len(set(h))
+                  out['header']=h
+                  needed={'hm_chrom','hm_pos','hm_effect_allele','hm_other_allele','hm_beta','standard_error','p_value','hm_effect_allele_frequency','hm_code'}
+                  assert needed<=set(h),'incompatible harmonised schema'
+                  nrow=0
+                  for row in rd:
+                      nrow+=1
+                      if row['hm_chrom'].removeprefix('chr')!='2':continue
+                      try:k=int(row['hm_pos'])
+                      except ValueError:continue
+                      if k in pos:hits[pos[k]].append({k:row.get(k) for k in needed|{'hm_rsid','rsid','variant_id'}})
+              out['rows_scanned']=nrow;assert nrow>100000
+              for rs,v in fixed.items():
+                  ref,alt=v['reference'],v['alternate']
+                  z={'status':'HOLD_MISSING_OR_AMBIGUOUS','position_grch38':v['position_grch38'],'effect_allele':alt,'other_allele':ref,'rows_at_position':len(hits[rs])}
+                  out['variants'][rs]=z
+                  exact=[r for r in hits[rs] if {r['hm_effect_allele'],r['hm_other_allele']}=={ref,alt}]
+                  z['exact_rows']=len(exact)
+                  if len(exact)!=1 or len(hits[rs])!=1:continue
+                  try:
+                      row=exact[0]
+                      observed=row.get('hm_rsid')
+                      if observed and observed not in ('.','NA','nan','#NA'):assert rs in observed.split(';'),'rsID mismatch'
+                      assert int(row['hm_code']) in (10,11,12,13)
+                      b,se,pv,eaf=map(float,(row['hm_beta'],row['standard_error'],row['p_value'],row['hm_effect_allele_frequency']))
+                      assert all(math.isfinite(x) for x in (b,se,pv,eaf)) and se>0 and 0<pv<=1 and 0<eaf<1
+                      if row['hm_effect_allele']!=alt:b=-b;eaf=1-eaf
+                      z.update(status='EXACT_COORDINATE_ALLELE_CONTEXT',rsid_source=observed,beta_alt=b,se=se,p=pv,eaf_alt=eaf,bonferroni_6=min(1,6*pv),discovery_direction_concordant=(b*v['beta_alt']>0) if v.get('status')=='EXACT_OUTCOME_ROW' and b!=0 else None)
+                  except Exception as e:z.update(status='HOLD_STATISTIC',error=type(e).__name__+': '+str(e)[:150])
+              out['verified_rows']=sum(v['status']=='EXACT_COORDINATE_ALLELE_CONTEXT' for v in out['variants'].values())
+              out['status']='DESCRIPTIVE_EXTERNAL_CONTEXT_COMPLETE'
+          except Exception as e:out['error']=type(e).__name__+': '+str(e)[:400]
+          finally:
+              Path('result.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out,indent=2))
+              Path('source.gz').unlink(missing_ok=True)
+          if out['status']!='DESCRIPTIVE_EXTERNAL_CONTEXT_COMPLETE':raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: skin-astagr-six-marker-context
+          path: result.json
+          retention-days: 90
