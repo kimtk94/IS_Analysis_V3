@@ -1,0 +1,108 @@
+name: TOP3 source qualification follow-up
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/top3-source-qualification-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  skin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    strategy:
+      fail-fast: false
+      matrix:
+        assay: [pQTL,eQTL]
+    env:
+      ASSAY: ${{ matrix.assay }}
+    steps:
+      - name: Verify exact original and inspect full table
+        run: |
+          python3 - <<'PY'
+          import csv, hashlib, json, os, re, urllib.parse, urllib.request
+          from pathlib import Path
+          assay=os.environ['ASSAY']
+          size,expected={'pQTL':(8085897,'5ed66ce34705c8aeff36b68162c73b64'),'eQTL':(70906052,'caca80b5a56f3fd9ceeb3b03b9b4cc07')}[assay]
+          name='skin '+assay+' summary statistics.txt'
+          url='https://zenodo.org/records/19638349/files/'+urllib.parse.quote(name)+'?download=1'
+          result={'assay':assay,'url':url,'expected_size':size,'expected_md5':expected,'status':'HOLD','scientific_validation':False}
+          try:
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'IS-Analysis-source-audit/1.0'}),timeout=60) as res:
+                  raw=res.read(size+1)
+              result.update(actual_size=len(raw),actual_md5=hashlib.md5(raw).hexdigest(),sha256=hashlib.sha256(raw).hexdigest())
+              if len(raw)!=size or result['actual_md5']!=expected: raise ValueError('source checksum or size mismatch')
+              import io
+              f=io.StringIO(raw.decode('utf-8-sig'))
+              first=f.readline().rstrip('\r\n')
+              sep='\t' if '\t' in first else ',' if ',' in first else None
+              def split(s):
+                  return s.rstrip('\r\n').split(sep)
+              header=split(first)
+              if len(header)<2 or len(set(header))!=len(header): raise ValueError('ambiguous header')
+              norm=[re.sub(r'[^a-z0-9]','',x.lower()) for x in header]
+              pidx=[i for i,x in enumerate(norm) if x in ('p','pval','pvalue','pvalnominal','pvaluenominal','pnominal')]
+              gidx=[i for i,x in enumerate(norm) if x in ('gene','geneid','genesymbol','phenotypeid','protein','proteinid','symbol','ensemblgeneid')]
+              counts={'rows':0,'ragged':0,'gcc2_token':0,'rs4584990_token':0,'both_tokens':0,'nominal_p_valid':0,'nominal_p_gt_005':0,'nominal_p_gt_5e8':0}
+              for line in f:
+                  if not line.strip(): continue
+                  a=split(line);counts['rows']+=1
+                  if len(a)!=len(header):
+                      counts['ragged']+=1;continue
+                  gcc=any(re.fullmatch(r'GCC2|ENSG00000135968(?:\.\d+)?',x.strip(),re.I) for x in a)
+                  rs=any(x.strip().lower()=='rs4584990' for x in a)
+                  counts['gcc2_token']+=gcc;counts['rs4584990_token']+=rs;counts['both_tokens']+=gcc and rs
+                  if len(pidx)==1:
+                      try:
+                          p=float(a[pidx[0]])
+                          if 0<=p<=1:
+                              counts['nominal_p_valid']+=1;counts['nominal_p_gt_005']+=p>.05;counts['nominal_p_gt_5e8']+=p>5e-8
+                      except ValueError: pass
+              result.update(header=header,p_column_candidates=[header[i] for i in pidx],gene_column_candidates=[header[i] for i in gidx],counts=counts,status='CHECKSUM_VERIFIED_TABLE_INVENTORY' if not counts['ragged'] else 'HOLD_RAGGED_TABLE')
+              # Token counts are diagnostics, not normalized identities or regional coverage.
+          except Exception as e:
+              result['error']=type(e).__name__+': '+str(e)[:300]
+          Path('result.json').write_text(json.dumps(result,indent=2)+'\n')
+          print(json.dumps(result,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: skin-source-${{ matrix.assay }}
+          path: result.json
+  ocular:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [PRJNA781014,PRJNA729873]
+    env:
+      PROJECT: ${{ matrix.project }}
+    steps:
+      - name: Audit actual public sample titles and run identities
+        run: |
+          python3 - <<'PY'
+          import csv,hashlib,io,json,os,urllib.parse,urllib.request,re
+          from pathlib import Path
+          proj=os.environ['PROJECT']
+          fields='run_accession,sample_accession,experiment_accession,experiment_title,sample_title,study_accession'
+          url='https://www.ebi.ac.uk/ena/portal/api/filereport?'+urllib.parse.urlencode({'accession':proj,'result':'read_run','fields':fields,'format':'tsv','limit':100})
+          out={'project':proj,'status':'HOLD','scientific_validation':False,'expected_public_runs':{'PRJNA781014':10,'PRJNA729873':16}[proj]}
+          try:
+              with urllib.request.urlopen(url,timeout=30) as res:
+                  raw=res.read(500001)
+              if len(raw)>500000: raise ValueError('metadata cap')
+              reader=csv.DictReader(io.StringIO(raw.decode('utf-8-sig')),delimiter='\t')
+              if not set(fields.split(',')).issubset(reader.fieldnames or []): raise ValueError('schema mismatch')
+              rows=list(reader)
+              if len({r['run_accession'] for r in rows})!=len(rows): raise ValueError('duplicate run')
+              # Only public accession/title metadata; do not infer donor pairing from row order.
+              out.update(sha256=hashlib.sha256(raw).hexdigest(),runs=rows,run_count=len(rows),status='PUBLIC_TITLES_RETRIEVED_PAIRING_REVIEW_REQUIRED')
+          except Exception as e: out['error']=type(e).__name__+': '+str(e)[:300]
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-titles-${{ matrix.project }}
+          path: result.json
