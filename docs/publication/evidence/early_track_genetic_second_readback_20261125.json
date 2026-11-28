@@ -1,0 +1,1261 @@
+{
+  "run_id": 45610752424,
+  "head_sha": "dfc28b282525ef8799238611faee7b570cf34334",
+  "source": "Actual stdout, artifact digest from upload log",
+  "records": [
+    {
+      "job_id": 139193308088,
+      "name": "skin (GCST90094904)",
+      "aggregate": {
+        "status": "SKIN_DERIVED_CREDIBLE_SET_INVENTORY",
+        "accession": "GCST90094904",
+        "catalog": {
+          "original_directory": {
+            "source": {
+              "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/",
+              "bytes": 1763,
+              "sha256": "450fc40252604e5cfb9ba24e785536cbb1b6e416d7ff42deb9eb2f58d7458d9c",
+              "content_range": null,
+              "etag": null
+            },
+            "files": [
+              "GCST90094904_buildGRCh37.tsv",
+              "GCST90094904_buildGRCh37.tsv-meta.yaml",
+              "md5sum.txt"
+            ]
+          },
+          "harmonised_directory": {
+            "source": {
+              "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/",
+              "bytes": 2237,
+              "sha256": "3ac136bb7efdb8a7e6d768aeb05987c3c35b2019570db0e18237137802dac2a9",
+              "content_range": null,
+              "etag": null
+            },
+            "files": [
+              "35421404-GCST90094904-EFO_0008006-Build37.f.tsv.gz",
+              "35421404-GCST90094904-EFO_0008006-Build37.f.tsv.gz-meta.yaml",
+              "35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+              "35421404-GCST90094904-EFO_0008006.h.tsv.gz-meta.yaml",
+              "md5sum.txt"
+            ]
+          }
+        },
+        "study": {
+          "id": "GCST90094904",
+          "traitFromSource": "Facial wrinkles (crow's feet)",
+          "pubmedId": "35421404",
+          "publicationFirstAuthor": "Lee SG",
+          "nSamples": 11079,
+          "hasSumstats": true,
+          "summarystatsLocation": null,
+          "qualityControls": [
+            "Study has non empty or zero nSamples with empty nCases and nControls"
+          ]
+        },
+        "study_source": {
+          "url": "https://api.platform.opentargets.org/api/v4/graphql",
+          "bytes": 301,
+          "sha256": "ad23643d620f8ec11d781aa593bc0c5f55496d3db7fbdd7e30e86b93f10176bd",
+          "content_range": null,
+          "etag": null
+        },
+        "credible_set_source": {
+          "url": "https://api.platform.opentargets.org/api/v4/graphql",
+          "bytes": 3489,
+          "sha256": "b5fd7cc95aab4ac928125ee5a3bfe60c545795b7829a1301fc0a8691acef1ad0",
+          "content_range": null,
+          "etag": null
+        },
+        "count": 7,
+        "credible_sets": [
+          {
+            "studyLocusId": "514119865e22dde8235fae4d30dafdfb",
+            "studyId": "GCST90094904",
+            "chromosome": "15",
+            "position": 27989264,
+            "beta": -0.23563630000092894,
+            "standardError": null,
+            "pValueMantissa": 1.1003375053405762,
+            "pValueExponent": -8,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.9887720277349827,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "15_27989264_G_T"
+            }
+          },
+          {
+            "studyLocusId": "5b51a82bef1524b58cb9992f1782f0ca",
+            "studyId": "GCST90094904",
+            "chromosome": "12",
+            "position": 88716633,
+            "beta": -0.06905505748060256,
+            "standardError": null,
+            "pValueMantissa": 1.189724087715149,
+            "pValueExponent": -13,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "12_88716633_A_C"
+            }
+          },
+          {
+            "studyLocusId": "620a2a27eed0cc97da9db6ec46e18d20",
+            "studyId": "GCST90094904",
+            "chromosome": "15",
+            "position": 27983407,
+            "beta": -0.0537617986530152,
+            "standardError": null,
+            "pValueMantissa": 2.997748374938965,
+            "pValueExponent": -12,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "15_27983407_C_T"
+            }
+          },
+          {
+            "studyLocusId": "77b15e2529452f5f854cf0ccc1e80fe9",
+            "studyId": "GCST90094904",
+            "chromosome": "2",
+            "position": 222606549,
+            "beta": -0.05333586623867885,
+            "standardError": null,
+            "pValueMantissa": 1.7541091442108154,
+            "pValueExponent": -11,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.7400756852702057,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_222606549_C_G"
+            }
+          },
+          {
+            "studyLocusId": "a2da67fd718cb949540ed9c5eaa1a445",
+            "studyId": "GCST90094904",
+            "chromosome": "15",
+            "position": 27953421,
+            "beta": 0.12389422177484656,
+            "standardError": null,
+            "pValueMantissa": 2.9813616275787354,
+            "pValueExponent": -6,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.9157693957479082,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "15_27953421_T_C"
+            }
+          },
+          {
+            "studyLocusId": "ae64843418ee8298c1c35994d28307f6",
+            "studyId": "GCST90094904",
+            "chromosome": "9",
+            "position": 16794420,
+            "beta": 0.40274690322453427,
+            "standardError": null,
+            "pValueMantissa": 2.643862724304199,
+            "pValueExponent": -11,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "9_16794420_C_A"
+            }
+          },
+          {
+            "studyLocusId": "faf51bd3d4cd1dbb424d1d5da372db9c",
+            "studyId": "GCST90094904",
+            "chromosome": "19",
+            "position": 3548233,
+            "beta": -0.06857830886724933,
+            "standardError": null,
+            "pValueMantissa": 1.399643898010254,
+            "pValueExponent": -13,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.8977824119091021,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "19_3548233_A_G"
+            }
+          }
+        ],
+        "full_source_readout": {
+          "status": "COMPLETE_MD5_VERIFIED_LEAD_SCAN",
+          "lead_total": 7,
+          "matched": 6,
+          "filename": "35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+          "metadata_source": {
+            "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/35421404-GCST90094904-EFO_0008006.h.tsv.gz-meta.yaml",
+            "bytes": 849,
+            "sha256": "4bdca8c697f5408e29ed60640669eff41be3c9fb101a89fc223bfa0c396f8c2a",
+            "content_range": null,
+            "etag": "\"351-62dbf7d1883f6\""
+          },
+          "metadata": {
+            "gwas_id": "GCST90094904",
+            "data_file_name": "35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+            "genome_assembly": "GRCh38",
+            "is_harmonised": true,
+            "trait_description": [
+              "Facial wrinkles (crow's feet)"
+            ],
+            "samples": [
+              {
+                "sample_ancestry_category": [
+                  "East Asian"
+                ],
+                "sample_ancestry": [
+                  "Korean"
+                ],
+                "sample_size": 11079
+              }
+            ],
+            "data_file_md5sum": "10b0c0ad379b755b80f6d84f7014ef4d"
+          },
+          "expected_md5": "10b0c0ad379b755b80f6d84f7014ef4d",
+          "checksum_source": {
+            "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/md5sum.txt",
+            "bytes": 206,
+            "sha256": "dfc8fc33508cdc8ebe89213a04288e0462cfb8f050fd0c9731e9771e7c6f841f",
+            "content_range": null,
+            "etag": "\"ce-62dbf7d18c47b\""
+          },
+          "remote_size": 166468623,
+          "size_probe": {
+            "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+            "bytes": 1,
+            "sha256": "ffe679bb831c95b67dc17819c63c5090d221aac6f4c7bf530f594ab43d21fa1e",
+            "content_range": "bytes 0-0/166468623",
+            "etag": "\"9ec1c0f-5e37bd11ac1be\""
+          },
+          "full_source": {
+            "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094904/harmonised/35421404-GCST90094904-EFO_0008006.h.tsv.gz",
+            "bytes": 166468623,
+            "md5": "10b0c0ad379b755b80f6d84f7014ef4d",
+            "sha256": "567e55db53cb9528680073dd122190528bd640a0706c286d40999f4b283e5927"
+          },
+          "header": [
+            "hm_variant_id",
+            "hm_rsid",
+            "hm_chrom",
+            "hm_pos",
+            "hm_other_allele",
+            "hm_effect_allele",
+            "hm_beta",
+            "hm_odds_ratio",
+            "hm_ci_lower",
+            "hm_ci_upper",
+            "hm_effect_allele_frequency",
+            "hm_code",
+            "variant_id",
+            "p_value",
+            "chromosome",
+            "base_pair_location",
+            "effect_allele",
+            "other_allele",
+            "effect_allele_frequency",
+            "beta",
+            "standard_error",
+            "odds_ratio",
+            "ci_lower",
+            "ci_upper"
+          ],
+          "rows_scanned": 4950621,
+          "lead_rows": {
+            "15_27989264_G_T": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -0.8006,
+              "standard_error": 0.1401,
+              "p_value": 1.119e-8,
+              "hm_code": 11,
+              "rsid": "rs730502"
+            },
+            "12_88716633_A_C": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -0.9851,
+              "standard_error": 0.1328,
+              "p_value": 1.244e-13,
+              "hm_code": 10,
+              "rsid": "rs72620727"
+            },
+            "15_27983407_C_T": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -1.794,
+              "standard_error": 0.2571,
+              "p_value": 3.115e-12,
+              "hm_code": 10,
+              "rsid": "rs74653330"
+            },
+            "2_222606549_C_G": {
+              "status": "HOLD_EFFECT",
+              "reason": "palindromic or non-SNV lead"
+            },
+            "15_27953421_T_C": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": 0.9746,
+              "standard_error": 0.2086,
+              "p_value": 0.000002988,
+              "hm_code": 10,
+              "rsid": "rs921221"
+            },
+            "9_16794420_C_A": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": 0.8818,
+              "standard_error": 0.1323,
+              "p_value": 2.675e-11,
+              "hm_code": 10,
+              "rsid": "rs12376135"
+            },
+            "19_3548233_A_G": {
+              "status": "MATCHED_FULL_SOURCE_LEAD",
+              "beta_alt": -1.017,
+              "standard_error": 0.1375,
+              "p_value": 1.505e-13,
+              "hm_code": 10,
+              "rsid": "rs2240751"
+            }
+          },
+          "limits": [
+            "Full file MD5/CRC and exact GRCh38 nonpalindromic lead matches required. Source-derived SE only. Same GWAS as Open Targets, not independent validation or LD-pruned MR. No estimate of missing SE from rounded P-values."
+          ]
+        },
+        "limits": [
+          "Open Targets postprocessed fine-mapping of the same original Korean GWAS (Lee et al 2022), not independent replication or full original summary statistics. Lead effects may be missing; no new colocalization, instrument selection, MR or merging distinct wrinkle phenotypes. Check ancestry and LD source before mechanistic use."
+        ],
+        "mode": "GCST90094904",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 413e85de12b5eff2da307ff65394ee4f1bc5342d1136742b48b94d28693bf078",
+        "Artifact skin-source-GCST90094904.zip successfully finalized. Artifact ID 15019154867"
+      ]
+    },
+    {
+      "job_id": 139193308351,
+      "name": "reference",
+      "aggregate": {
+        "status": "FROZEN_LDL_REFERENCE_RECOVERY",
+        "panel": [
+          {
+            "chrom": 1,
+            "pos": 109818530,
+            "rsid": "rs646776",
+            "ea": "T",
+            "oa": "C",
+            "bx": 0.1602,
+            "sx": 0.0044,
+            "p": 1.63e-272,
+            "f": 1325.621900826446,
+            "source_N": 173020.95,
+            "ref_eaf": 0.7876
+          },
+          {
+            "chrom": 2,
+            "pos": 21263900,
+            "rsid": "rs1367117",
+            "ea": "A",
+            "oa": "G",
+            "bx": 0.1186,
+            "sx": 0.004,
+            "p": 9.48e-183,
+            "f": 879.1225,
+            "source_N": 173007.1,
+            "ref_eaf": 0.2876
+          },
+          {
+            "chrom": 3,
+            "pos": 12296469,
+            "rsid": "rs9875338",
+            "ea": "G",
+            "oa": "A",
+            "bx": 0.027,
+            "sx": 0.0037,
+            "p": 2.21e-11,
+            "f": 53.25054784514243,
+            "source_N": 172894.9,
+            "ref_eaf": 0.6121
+          },
+          {
+            "chrom": 4,
+            "pos": 3434885,
+            "rsid": "rs6818397",
+            "ea": "T",
+            "oa": "G",
+            "bx": 0.0224,
+            "sx": 0.004,
+            "p": 1.677e-8,
+            "f": 31.359999999999996,
+            "source_N": 172685,
+            "ref_eaf": 0.4129
+          },
+          {
+            "chrom": 5,
+            "pos": 74656539,
+            "rsid": "rs12916",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.0733,
+            "sx": 0.0038,
+            "p": 7.792e-78,
+            "f": 372.0837950138505,
+            "source_N": 168357,
+            "ref_eaf": 0.4314
+          },
+          {
+            "chrom": 6,
+            "pos": 160578860,
+            "rsid": "rs1564348",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.0481,
+            "sx": 0.005,
+            "p": 2.762e-21,
+            "f": 92.54439999999998,
+            "source_N": 172988.95,
+            "ref_eaf": 0.1451
+          },
+          {
+            "chrom": 7,
+            "pos": 44582331,
+            "rsid": "rs2073547",
+            "ea": "G",
+            "oa": "A",
+            "bx": 0.0485,
+            "sx": 0.0049,
+            "p": 1.923e-21,
+            "f": 97.96959600166598,
+            "source_N": 169889,
+            "ref_eaf": 0.1939
+          },
+          {
+            "chrom": 8,
+            "pos": 126481747,
+            "rsid": "rs2980875",
+            "ea": "A",
+            "oa": "G",
+            "bx": 0.0547,
+            "sx": 0.0036,
+            "p": 2.301e-47,
+            "f": 230.87114197530866,
+            "source_N": 172930,
+            "ref_eaf": 0.5303
+          },
+          {
+            "chrom": 9,
+            "pos": 136154168,
+            "rsid": "rs579459",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.0665,
+            "sx": 0.0045,
+            "p": 2.419e-44,
+            "f": 218.3827160493828,
+            "source_N": 172705.98,
+            "ref_eaf": 0.215
+          },
+          {
+            "chrom": 10,
+            "pos": 113944271,
+            "rsid": "rs2419604",
+            "ea": "A",
+            "oa": "G",
+            "bx": 0.0302,
+            "sx": 0.004,
+            "p": 7.49e-14,
+            "f": 57.0025,
+            "source_N": 172807.03,
+            "ref_eaf": 0.3179
+          },
+          {
+            "chrom": 11,
+            "pos": 61609750,
+            "rsid": "rs174583",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.0522,
+            "sx": 0.0038,
+            "p": 7.003e-41,
+            "f": 188.70083102493078,
+            "source_N": 172982.1,
+            "ref_eaf": 0.6253
+          },
+          {
+            "chrom": 12,
+            "pos": 121416650,
+            "rsid": "rs1169288",
+            "ea": "C",
+            "oa": "A",
+            "bx": 0.0375,
+            "sx": 0.004,
+            "p": 6.447e-21,
+            "f": 87.890625,
+            "source_N": 163086,
+            "ref_eaf": 0.3338
+          },
+          {
+            "chrom": 13,
+            "pos": 32953388,
+            "rsid": "rs4942486",
+            "ea": "T",
+            "oa": "C",
+            "bx": 0.0243,
+            "sx": 0.0037,
+            "p": 2.261e-11,
+            "f": 43.13294375456537,
+            "source_N": 171930.1,
+            "ref_eaf": 0.4617
+          },
+          {
+            "chrom": 14,
+            "pos": 24883887,
+            "rsid": "rs8017377",
+            "ea": "A",
+            "oa": "G",
+            "bx": 0.0303,
+            "sx": 0.0038,
+            "p": 2.516e-15,
+            "f": 63.57963988919668,
+            "source_N": 172866,
+            "ref_eaf": 0.4591
+          },
+          {
+            "chrom": 16,
+            "pos": 72108093,
+            "rsid": "rs2000999",
+            "ea": "A",
+            "oa": "G",
+            "bx": 0.065,
+            "sx": 0.0046,
+            "p": 4.219e-41,
+            "f": 199.6691871455577,
+            "source_N": 171509.95,
+            "ref_eaf": 0.1847
+          },
+          {
+            "chrom": 17,
+            "pos": 45438952,
+            "rsid": "rs6504872",
+            "ea": "T",
+            "oa": "C",
+            "bx": 0.0274,
+            "sx": 0.0037,
+            "p": 3.479e-13,
+            "f": 54.840029218407594,
+            "source_N": 171519,
+            "ref_eaf": 0.4723
+          },
+          {
+            "chrom": 19,
+            "pos": 45412079,
+            "rsid": "rs7412",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.5898,
+            "sx": 0.0101,
+            "p": 0,
+            "f": 3410.097441427311,
+            "source_N": 82533.09,
+            "ref_eaf": 0.93404
+          },
+          {
+            "chrom": 20,
+            "pos": 39724338,
+            "rsid": "rs6065311",
+            "ea": "C",
+            "oa": "T",
+            "bx": 0.0417,
+            "sx": 0.0036,
+            "p": 1.656e-30,
+            "f": 134.17361111111111,
+            "source_N": 171333.1,
+            "ref_eaf": 0.4604
+          },
+          {
+            "chrom": 22,
+            "pos": 30378703,
+            "rsid": "rs5763662",
+            "ea": "T",
+            "oa": "C",
+            "bx": 0.0767,
+            "sx": 0.0121,
+            "p": 1.191e-8,
+            "f": 40.180930264326214,
+            "source_N": 162777.24,
+            "ref_eaf": 0.02507
+          }
+        ],
+        "selection": {
+          "source_rows": 2437751,
+          "eligible_genomewide_significant_rows": 2511,
+          "selected_before_coordinate_uniqueness": 19,
+          "selected": 19,
+          "excluded_rows": {
+            "not_genomewide_significant": 2024570,
+            "numeric_frequency_or_N": 17470,
+            "palindrome": 373662,
+            "extended_MHC": 14196,
+            "missing_rsid": 18,
+            "parse": 5324
+          },
+          "header": [
+            "SNP_hg18",
+            "SNP_hg19",
+            "rsid",
+            "A1",
+            "A2",
+            "beta",
+            "se",
+            "N",
+            "P-value",
+            "Freq.A1.1000G.EUR"
+          ],
+          "selection": "One strongest reported P per autosome after exposure-only filters; ties by decreasing F then position/rsID. No outcome-dependent replacements. Exclude A/T, C/G and extended MHC. P=0 allowed only if |z|>=37; treated as underflow, not exact zero. No within-chromosome pair retained."
+        },
+        "exposure_source": {
+          "bytes": 58851380,
+          "sha256": "ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce",
+          "md5": "c01937bd545acc888b119d3f8cb74d76",
+          "url": "https://csg.sph.umich.edu/abecasis/public/lipids2013/jointGwasMc_LDL.txt.gz"
+        },
+        "reference_sources": {
+          "GRCh37": {
+            "host": "grch37.rest.ensembl.org",
+            "received": 0,
+            "batch_or_individual_sources": [],
+            "transport_failures": {
+              "batch": "HTTP Error 500: Internal Server Error",
+              "rs646776": "HTTP Error 500: Internal Server Error",
+              "rs1367117": "HTTP Error 500: Internal Server Error",
+              "rs9875338": "HTTP Error 500: Internal Server Error",
+              "rs6818397": "HTTP Error 500: Internal Server Error",
+              "rs12916": "HTTP Error 500: Internal Server Error",
+              "rs1564348": "HTTP Error 500: Internal Server Error",
+              "rs2073547": "HTTP Error 500: Internal Server Error",
+              "rs2980875": "HTTP Error 500: Internal Server Error",
+              "rs579459": "HTTP Error 500: Internal Server Error",
+              "rs2419604": "HTTP Error 500: Internal Server Error",
+              "rs174583": "HTTP Error 500: Internal Server Error",
+              "rs1169288": "HTTP Error 500: Internal Server Error",
+              "rs4942486": "HTTP Error 500: Internal Server Error",
+              "rs8017377": "HTTP Error 500: Internal Server Error",
+              "rs2000999": "HTTP Error 500: Internal Server Error",
+              "rs6504872": "HTTP Error 500: Internal Server Error",
+              "rs7412": "HTTP Error 500: Internal Server Error",
+              "rs6065311": "HTTP Error 500: Internal Server Error",
+              "rs5763662": "HTTP Error 500: Internal Server Error"
+            }
+          },
+          "GRCh38": {
+            "host": "rest.ensembl.org",
+            "received": 19,
+            "batch_or_individual_sources": [
+              {
+                "host": "rest.ensembl.org",
+                "ids": [
+                  "rs646776",
+                  "rs1367117",
+                  "rs9875338",
+                  "rs6818397",
+                  "rs12916",
+                  "rs1564348",
+                  "rs2073547",
+                  "rs2980875",
+                  "rs579459",
+                  "rs2419604",
+                  "rs174583",
+                  "rs1169288",
+                  "rs4942486",
+                  "rs8017377",
+                  "rs2000999",
+                  "rs6504872",
+                  "rs7412",
+                  "rs6065311",
+                  "rs5763662"
+                ],
+                "bytes": 12202,
+                "sha256": "3fcde79e25a2779f0ea5daa6cc320df290a2b136ae2816902c33e11ccb96004e"
+              }
+            ],
+            "transport_failures": {}
+          }
+        },
+        "reference": {
+          "rs646776": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs1367117": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs9875338": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs6818397": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs12916": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs1564348": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs2073547": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs2980875": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs579459": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs2419604": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs174583": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs1169288": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs4942486": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs8017377": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs2000999": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs6504872": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs7412": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs6065311": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          },
+          "rs5763662": {
+            "status": "HOLD_REFERENCE",
+            "reason": "reference transport/identity unavailable"
+          }
+        },
+        "matched": 0,
+        "limits": [
+          "Same 19 frozen exposure SNPs; no replacements, proxy or multiallelic rescue. GRCh37 exact source position and both unique primary assemblies required. Reference allele ordering may legitimately change between assemblies; set and effect alignment must still agree. No LD certification."
+        ],
+        "mode": "reference",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 4a87f26f2b6955d551c1a1dd260d4c5b9e22e90e16047a1436b2dce9ccf9616a",
+        "Artifact genetic-reference.zip successfully finalized. Artifact ID 15020291206"
+      ]
+    },
+    {
+      "job_id": 139193308671,
+      "name": "skin (GCST90094903)",
+      "aggregate": {
+        "status": "SKIN_DERIVED_CREDIBLE_SET_INVENTORY",
+        "accession": "GCST90094903",
+        "catalog": {
+          "original_directory": {
+            "source": {
+              "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094903/",
+              "bytes": 1763,
+              "sha256": "b12ff6c9f16b4df8e6aaed20dbaf36847a7c218f803f6d33abb146b177c39d2a",
+              "content_range": null,
+              "etag": null
+            },
+            "files": [
+              "GCST90094903_buildGRCh37.tsv",
+              "GCST90094903_buildGRCh37.tsv-meta.yaml",
+              "md5sum.txt"
+            ]
+          },
+          "harmonised_directory": {
+            "source": {
+              "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094903/harmonised/",
+              "bytes": 1939,
+              "sha256": "06e16f2128f48563f29d202fda5e282a1e26118b16fcd8c6c40db23001b13538",
+              "content_range": null,
+              "etag": null
+            },
+            "files": [
+              "35421404-GCST90094903-EFO_0008006-Build37.f.tsv.gz",
+              "35421404-GCST90094903-EFO_0008006.h.tsv.gz",
+              "35421404-GCST90094903-EFO_0008006.h.tsv.gz-meta.yaml",
+              "md5sum.txt"
+            ]
+          }
+        },
+        "study": {
+          "id": "GCST90094903",
+          "traitFromSource": "Facial wrinkles (under eye)",
+          "pubmedId": "35421404",
+          "publicationFirstAuthor": "Lee SG",
+          "nSamples": 11079,
+          "hasSumstats": true,
+          "summarystatsLocation": null,
+          "qualityControls": [
+            "Study has non empty or zero nSamples with empty nCases and nControls"
+          ]
+        },
+        "study_source": {
+          "url": "https://api.platform.opentargets.org/api/v4/graphql",
+          "bytes": 299,
+          "sha256": "063c45bcd7078043aef55e4ae426538359297c6b3ffcb4eea914982507ea06a6",
+          "content_range": null,
+          "etag": null
+        },
+        "credible_set_source": {
+          "url": "https://api.platform.opentargets.org/api/v4/graphql",
+          "bytes": 5962,
+          "sha256": "a2546c77dcc5d35cdc1c197236dafc80b7d1eeaaf4a624e6a9d16fbc0e30f97e",
+          "content_range": null,
+          "etag": null
+        },
+        "count": 12,
+        "credible_sets": [
+          {
+            "studyLocusId": "27a61b428fe8a149882b08c4312f3a53",
+            "studyId": "GCST90094903",
+            "chromosome": "4",
+            "position": 123254257,
+            "beta": -0.046104311742306496,
+            "standardError": null,
+            "pValueMantissa": 5.389942169189453,
+            "pValueExponent": -10,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.30935054452766547,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "4_123254257_G_A"
+            }
+          },
+          {
+            "studyLocusId": "4ae6a77a3df83c876f70140f543c4b4e",
+            "studyId": "GCST90094903",
+            "chromosome": "9",
+            "position": 20312794,
+            "beta": 0.5998279352443477,
+            "standardError": null,
+            "pValueMantissa": 1.0365662574768066,
+            "pValueExponent": -7,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "9_20312794_A_G"
+            }
+          },
+          {
+            "studyLocusId": "6e00b1b1e4ce33342d514a4caac6c6b9",
+            "studyId": "GCST90094903",
+            "chromosome": "2",
+            "position": 108901888,
+            "beta": 0.14309604783250088,
+            "standardError": null,
+            "pValueMantissa": 6.067874431610107,
+            "pValueExponent": -8,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.9393458243728489,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_108901888_G_A"
+            }
+          },
+          {
+            "studyLocusId": "7f90bdb604b3592c9bc914a1fde630a3",
+            "studyId": "GCST90094903",
+            "chromosome": "15",
+            "position": 27988767,
+            "beta": -0.11745508745898525,
+            "standardError": null,
+            "pValueMantissa": 5.226352691650391,
+            "pValueExponent": -6,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.9887720277349827,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "15_27988767_C_T"
+            }
+          },
+          {
+            "studyLocusId": "7fa7ce6878c8eb3771726df0cb57fe51",
+            "studyId": "GCST90094903",
+            "chromosome": "2",
+            "position": 118841801,
+            "beta": 0.06509684290231521,
+            "standardError": null,
+            "pValueMantissa": 2.4397048950195312,
+            "pValueExponent": -12,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.7760011635955545,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_118841801_A_T"
+            }
+          },
+          {
+            "studyLocusId": "90a0253dbf07b9b75f0bf6902c2487ca",
+            "studyId": "GCST90094903",
+            "chromosome": "3",
+            "position": 139302337,
+            "beta": 0.09625676061162704,
+            "standardError": null,
+            "pValueMantissa": 2.4018778800964355,
+            "pValueExponent": -7,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.8694185985310353,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "3_139302337_A_G"
+            }
+          },
+          {
+            "studyLocusId": "a24d8b7fc037e03c7b588f2581675c79",
+            "studyId": "GCST90094903",
+            "chromosome": "3",
+            "position": 139286078,
+            "beta": -0.06534511052533415,
+            "standardError": null,
+            "pValueMantissa": 1.8062909841537476,
+            "pValueExponent": -12,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.88323122129024,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "3_139286078_G_A"
+            }
+          },
+          {
+            "studyLocusId": "c9fb889f136cdc30a82a1813fa7998e9",
+            "studyId": "GCST90094903",
+            "chromosome": "15",
+            "position": 27983407,
+            "beta": -0.05414361927858257,
+            "standardError": null,
+            "pValueMantissa": 1.569138765335083,
+            "pValueExponent": -11,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "15_27983407_C_T"
+            }
+          },
+          {
+            "studyLocusId": "cd42b447148b6d3a4f2c79ddac0ac6c3",
+            "studyId": "GCST90094903",
+            "chromosome": "2",
+            "position": 108947058,
+            "beta": 0.5450845043547491,
+            "standardError": null,
+            "pValueMantissa": 1.4123990535736084,
+            "pValueExponent": -7,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.9880917959739604,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_108947058_T_C"
+            }
+          },
+          {
+            "studyLocusId": "db971381849ced3b60acaea0a8afc45b",
+            "studyId": "GCST90094903",
+            "chromosome": "2",
+            "position": 108872562,
+            "beta": 0.3464622580803513,
+            "standardError": null,
+            "pValueMantissa": 5.013217926025391,
+            "pValueExponent": -9,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 0.9971672653509669,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_108872562_C_T"
+            }
+          },
+          {
+            "studyLocusId": "e987e0b7a8f0a01c2810d15aac72c572",
+            "studyId": "GCST90094903",
+            "chromosome": "2",
+            "position": 108923197,
+            "beta": -0.3482837913748986,
+            "standardError": null,
+            "pValueMantissa": 3.8791139125823975,
+            "pValueExponent": -8,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "2_108923197_A_G"
+            }
+          },
+          {
+            "studyLocusId": "ec1dcef5ce91d1750eac5856e0b6fccc",
+            "studyId": "GCST90094903",
+            "chromosome": "9",
+            "position": 20311336,
+            "beta": -0.7559185779770482,
+            "standardError": null,
+            "pValueMantissa": 1.196412205696106,
+            "pValueExponent": -7,
+            "finemappingMethod": "SuSiE-inf",
+            "confidence": "SuSiE fine-mapped credible set with out-of-sample LD",
+            "purityMinR2": 1,
+            "qualityControls": [
+              "Study has quality control flag(s)",
+              "Study locus finemapped without in-sample LD reference"
+            ],
+            "variant": {
+              "id": "9_20311336_C_A"
+            }
+          }
+        ],
+        "full_source_readout": {
+          "status": "HOLD_FULL_SOURCE",
+          "lead_total": 12,
+          "matched": 0,
+          "filename": "35421404-GCST90094903-EFO_0008006.h.tsv.gz",
+          "metadata_source": {
+            "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90094001-GCST90095000/GCST90094903/harmonised/35421404-GCST90094903-EFO_0008006.h.tsv.gz-meta.yaml",
+            "bytes": 847,
+            "sha256": "544c9494d26092c3db01ccd519b42038c5ebfc10be05bec375a04f324541cb7a",
+            "content_range": null,
+            "etag": "\"34f-6106796c7e0ae\""
+          },
+          "metadata": {
+            "gwas_id": "GCST90094903",
+            "data_file_name": "35421404-GCST90094903-EFO_0008006.h.tsv.gz",
+            "genome_assembly": "GRCh38",
+            "is_harmonised": true,
+            "trait_description": [
+              "Facial wrinkles (under eye)"
+            ],
+            "samples": [
+              {
+                "sample_ancestry_category": [
+                  "East Asian"
+                ],
+                "sample_ancestry": [
+                  "Korean"
+                ],
+                "sample_size": 11079
+              }
+            ],
+            "data_file_md5sum": "b523f5b80f14531206f4d0b42a283662"
+          },
+          "stage": "checksum",
+          "reason": "unique published MD5 absent",
+          "limits": [
+            "Full file MD5/CRC and exact GRCh38 nonpalindromic lead matches required. Source-derived SE only. Same GWAS as Open Targets, not independent validation or LD-pruned MR. No estimate of missing SE from rounded P-values."
+          ]
+        },
+        "limits": [
+          "Open Targets postprocessed fine-mapping of the same original Korean GWAS (Lee et al 2022), not independent replication or full original summary statistics. Lead effects may be missing; no new colocalization, instrument selection, MR or merging distinct wrinkle phenotypes. Check ancestry and LD source before mechanistic use."
+        ],
+        "mode": "GCST90094903",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is e1339d380e8e19018324f710342802ff799e7f4f52b9afb85ceed63d21c0a7b0",
+        "Artifact skin-source-GCST90094903.zip successfully finalized. Artifact ID 15019718584"
+      ]
+    },
+    {
+      "job_id": 139194104758,
+      "name": "outcomes (CE)",
+      "aggregate": {
+        "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM",
+        "outcome": "CE",
+        "reference_exposure_sha": "ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce",
+        "reference_matched": 0,
+        "matched": 0,
+        "effects": {},
+        "source_metadata_qualified": false,
+        "limits": [
+          "Fewer than the fixed minimum of ten eligible references; no heavy outcome requests."
+        ],
+        "mode": "CE",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 7a283037917b518d461526d0cb36a4b3ecd405b072527d37e5525b2ebb099645",
+        "Artifact genetic-outcome-CE.zip successfully finalized. Artifact ID 15020475299"
+      ]
+    },
+    {
+      "job_id": 139194104895,
+      "name": "outcomes (SVD)",
+      "aggregate": {
+        "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM",
+        "outcome": "SVD",
+        "reference_exposure_sha": "ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce",
+        "reference_matched": 0,
+        "matched": 0,
+        "effects": {},
+        "source_metadata_qualified": false,
+        "limits": [
+          "Fewer than the fixed minimum of ten eligible references; no heavy outcome requests."
+        ],
+        "mode": "SVD",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 081b3d81af291db32d7c99122659b5362788b2562df0ed092a6705a2734ee28a",
+        "Artifact genetic-outcome-SVD.zip successfully finalized. Artifact ID 15018719827"
+      ]
+    },
+    {
+      "job_id": 139194104931,
+      "name": "outcomes (LAA)",
+      "aggregate": {
+        "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM",
+        "outcome": "LAA",
+        "reference_exposure_sha": "ddf75ed591ffcce8c3e81ae2f4c77f4428cd7dbf4628b24467aa8cf6e85e3dce",
+        "reference_matched": 0,
+        "matched": 0,
+        "effects": {},
+        "source_metadata_qualified": false,
+        "limits": [
+          "Fewer than the fixed minimum of ten eligible references; no heavy outcome requests."
+        ],
+        "mode": "LAA",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is d72fc0941ec41855d0c238686b0d058fd6bb4bede53f6f759bf0f1ff3dbbde0d",
+        "Artifact genetic-outcome-LAA.zip successfully finalized. Artifact ID 15018484222"
+      ]
+    },
+    {
+      "job_id": 139194395798,
+      "name": "combine",
+      "aggregate": {
+        "status": "CKM_FROZEN_COMMON_PANEL_READOUT",
+        "reference_matched": 0,
+        "coverage": {
+          "LAA": {
+            "matched": 0,
+            "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM"
+          },
+          "CE": {
+            "matched": 0,
+            "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM"
+          },
+          "SVD": {
+            "matched": 0,
+            "status": "HOLD_REFERENCE_BELOW_COMMON_PANEL_MINIMUM"
+          }
+        },
+        "analysis": {
+          "status": "HOLD_TOO_FEW_COMMON_SNP",
+          "common": 0
+        },
+        "limits": [
+          "Original #334 minimum common instrument count, fixed six contrast family, worst-case per-SNP cross-outcome covariance, leave-one-out. No claims of causal or ancestry-specific mechanism; exposure standardization, sample overlap and between-SNP LD still unresolved. Missing not zero."
+        ],
+        "mode": "combine",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 00ea803c4bfe8af12feeb90ba761c91dae0df78b7f418d53510389615b3ec8cf",
+        "Artifact genetic-combine.zip successfully finalized. Artifact ID 15019873079"
+      ]
+    }
+  ]
+}

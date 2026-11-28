@@ -1,0 +1,3 @@
+# Chinese skin second readback and narrow pQTL source-label repair
+
+Run 45614624939 2/2 technical success. eQTL exact MD5 and SHA, 870843 valid rows /282 eGenes, no GCC2, no rs4584990, no fixed region rows. This public file is not an unfiltered genome-wide nominal eQTL resource; absence cannot test GCC2. No repeat eQTL transfer. pQTL complete file size/MD5/SHA verified, header contains gene_id not expected protein_id/pro_id. Allow exact source gene_id only as a field name, then require every trait key maps to author-pinned S4 protein IDs; no guessing based on gene or row order. Preserve both actual outputs. If molecular trait identity fails, explicit HOLD. No coloc or MR, no new result claim.

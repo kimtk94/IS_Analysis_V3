@@ -1,0 +1,159 @@
+{
+  "run_id": 45614087522,
+  "head_sha": "685d03dc9162391f68215304a5b09fc51da1e5d6",
+  "source": "Actual stdout; reported artifact digests not independently downloaded",
+  "records": [
+    {
+      "job_id": 139204871396,
+      "aggregate": {
+        "status": "AUTHOR_SIGNIFICANT_TABLE_READBACK",
+        "assay": "pQTL",
+        "source": {
+          "url": "https://raw.githubusercontent.com/zzwang1030/skin_pQTL/74b17724f23f6de983a0b76320f95f85439a289a/data/TableS4_skin_pQTL_allSig_pairs.csv",
+          "bytes": 272959,
+          "sha256": "7f10fb2dfea3a82e62bc440d64e63623bc64661680bd056f2d331afb96772241",
+          "content_range": null,
+          "etag": "\"70accd18eaef9d61a69a9120bac8a4962432cae62877e201f9a17b4bbbd0cdbf\""
+        },
+        "git_blob": "1b8080dad7ca60e6ad66b93d4b7a131b2c560e7c",
+        "source_header": [
+          "protein_id",
+          "variant_id",
+          "chr_var",
+          "pos_var",
+          "ref",
+          "alt",
+          "is_LeadpQTL",
+          "tss_distance",
+          "ma_samples",
+          "ma_count",
+          "maf",
+          "pval_nominal",
+          "slope",
+          "slope_se",
+          "pval_perm_LeadpQTL",
+          "qval_protein",
+          "pval_nominal_threshold",
+          "gene_name",
+          "pip",
+          "cs_id"
+        ],
+        "rows": 1765,
+        "molecular_traits": 36,
+        "expected_paper_rows": 1765,
+        "expected_paper_traits": 36,
+        "paper_denominator_match": true,
+        "duplicate_keys": 0,
+        "invalid_or_unparsed_rows": 0,
+        "GCC2_rows": 0,
+        "GCC2_valid_summary_rows": 0,
+        "GCC2_region_rows": 0,
+        "GCC2_best_nominal": [],
+        "exact_rs4584990_rows": [],
+        "regional_significant_rows": 0,
+        "regional_traits": 0,
+        "limits": [
+          "Public significant-only supplementary table, pinned author Git blob; no individual genotype or expression data. Absence is not no association or no expression. Reported slopes as published, not assumed effect allele until source documentation; no colocalization or MR. Chinese molecular cohort not Korean-specific replication. Check paper denominator before scientific use."
+        ],
+        "mode": "pQTL",
+        "scientific_status": "HOLD_FULL_REGIONAL_AND_ANCESTRY_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is f58462d220d3ec61bf9bc00356de4e6244962cae76580b22f3e6059918c922b8",
+        "Artifact chinese-skin-pQTL.zip successfully finalized. Artifact ID 15020474822"
+      ]
+    },
+    {
+      "job_id": 139204871712,
+      "aggregate": {
+        "status": "AUTHOR_SIGNIFICANT_TABLE_READBACK",
+        "assay": "eQTL",
+        "source": {
+          "url": "https://raw.githubusercontent.com/zzwang1030/skin_pQTL/74b17724f23f6de983a0b76320f95f85439a289a/data/TableS5_skin_eQTL_allSig_pairs.csv",
+          "bytes": 2899879,
+          "sha256": "88d2be3a9006df6f5d7e7663f79516e8ea7e2159e9c9a0b555efbd217bfe2f0c",
+          "content_range": null,
+          "etag": "\"3905068c01a120d985af33a32bb19696626047e9ef9281a05df824bc56a58a88\""
+        },
+        "git_blob": "f4e83aebb5b39d46948387294443d8eb2ad35b05",
+        "source_header": [
+          "gene_id",
+          "variant_id",
+          "chr_var",
+          "pos_var",
+          "ref",
+          "alt",
+          "tss_distance",
+          "ma_samples",
+          "ma_count",
+          "maf",
+          "pval_nominal",
+          "slope",
+          "slope_se",
+          "pval_perm_SmallesteQTL",
+          "qval_gene"
+        ],
+        "rows": 24788,
+        "molecular_traits": 282,
+        "expected_paper_rows": 20999,
+        "expected_paper_traits": 282,
+        "paper_denominator_match": false,
+        "duplicate_keys": 0,
+        "invalid_or_unparsed_rows": 0,
+        "GCC2_rows": 0,
+        "GCC2_valid_summary_rows": 0,
+        "GCC2_region_rows": 0,
+        "GCC2_best_nominal": [],
+        "exact_rs4584990_rows": [],
+        "regional_significant_rows": 0,
+        "regional_traits": 0,
+        "limits": [
+          "Public significant-only supplementary table, pinned author Git blob; no individual genotype or expression data. Absence is not no association or no expression. Reported slopes as published, not assumed effect allele until source documentation; no colocalization or MR. Chinese molecular cohort not Korean-specific replication. Check paper denominator before scientific use."
+        ],
+        "mode": "eQTL",
+        "scientific_status": "HOLD_FULL_REGIONAL_AND_ANCESTRY_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is e73b2f777f23e15f9f4ba209302b5c9f583bb72a78b6a30efffec9b7937531b1",
+        "Artifact chinese-skin-eQTL.zip successfully finalized. Artifact ID 15022150251"
+      ]
+    },
+    {
+      "job_id": 139204872255,
+      "aggregate": {
+        "status": "CHINESE_SKIN_QTL_PUBLIC_RECORD_INVENTORY",
+        "source": {
+          "url": "https://zenodo.org/api/records/19638349",
+          "bytes": 3761,
+          "sha256": "9210172701b57cb24256e87852016df30cd39fc4f2ee194d66a593efed4037f2",
+          "content_range": null,
+          "etag": "\"4\""
+        },
+        "doi": "10.5281/zenodo.19638349",
+        "file_count": 2,
+        "files": [
+          {
+            "name": "skin pQTL summary statistics.txt",
+            "bytes": 8085897,
+            "checksum": "md5:5ed66ce34705c8aeff36b68162c73b64"
+          },
+          {
+            "name": "skin eQTL summary statistics.txt",
+            "bytes": 70906052,
+            "checksum": "md5:caca80b5a56f3fd9ceeb3b03b9b4cc07"
+          }
+        ],
+        "total_bytes": 78991949,
+        "limits": [
+          "Only official record metadata; no genotype or participant-level downloads. Allpairs availability, exact compression/schema, effect orientation and full file integrity require separate qualification. No absence claim from significant tables."
+        ],
+        "mode": "inventory",
+        "scientific_status": "HOLD_FULL_REGIONAL_AND_ANCESTRY_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 11e2bd80e48230a49af11089f69178d596db18d36849a6642198cfe747a1508a",
+        "Artifact chinese-skin-inventory.zip successfully finalized. Artifact ID 15020199428"
+      ]
+    }
+  ]
+}
