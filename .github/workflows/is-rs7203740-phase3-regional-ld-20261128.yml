@@ -1,0 +1,220 @@
+name: IS rs7203740 allele-resolved regional reference LD
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/is-rs7203740-phase3-regional-ld-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Resolve C/T anchor and bounded indexed Phase3 region
+        run: |
+          python3 - <<'PY'
+          import csv,hashlib,io,json,math,re,subprocess,urllib.request,urllib.parse,gzip,struct,zlib
+          from pathlib import Path
+          base='https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/'
+          filename='ALL.chr16.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz'
+          mirrors=[base,'https://1000genomes.s3.amazonaws.com/release/20130502/','https://hgdownload.soe.ucsc.edu/gbdb/hg19/1000Genomes/phase3/']
+          panel_url=base+'integrated_call_samples_v3.20130502.ALL.panel'
+          anchor_pos=81808816; lower=anchor_pos-500000; upper=anchor_pos+500000
+          pops=('CHB','JPT','CEU')
+          def get(url,cap=1000000):
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json'}),timeout=25) as res:raw=res.read(cap+1)
+              if len(raw)>cap:raise ValueError('response exceeds cap')
+              return raw
+          def sha(raw):return hashlib.sha256(raw).hexdigest()
+          def http_range(url,lo,hi,total):
+              assert 0<=lo<=hi<total and hi-lo+1<=12_000_000
+              req=urllib.request.Request(url,headers={'Range':f'bytes={lo}-{hi}','Accept-Encoding':'identity'})
+              with urllib.request.urlopen(req,timeout=45) as res:
+                  assert res.status==206 and res.headers.get('Content-Range')==f'bytes {lo}-{hi}/{total}'
+                  raw=res.read(hi-lo+2)
+              assert len(raw)==hi-lo+1
+              return raw
+          def bgzf(raw):
+              # Decode only complete BGZF blocks; final partial block is not consumed.
+              pos=0;blocks={}
+              while pos+18<=len(raw):
+                  assert raw[pos:pos+4]==b'\x1f\x8b\x08\x04'
+                  xlen=struct.unpack_from('<H',raw,pos+10)[0]
+                  if pos+12+xlen>len(raw):break
+                  extra=raw[pos+12:pos+12+xlen];i=0;size=None
+                  while i+4<=len(extra):
+                      n=struct.unpack_from('<H',extra,i+2)[0]
+                      assert i+4+n<=len(extra)
+                      if extra[i:i+2]==b'BC':
+                          assert n==2
+                          size=struct.unpack_from('<H',extra,i+4)[0]+1
+                      i+=4+n
+                  assert size is not None and 26<=size<=65536
+                  if pos+size>len(raw):break
+                  blocks[pos]=zlib.decompress(raw[pos:pos+size],wbits=31)
+                  assert len(blocks[pos])<=65536
+                  pos+=size
+              return blocks
+          def index_parse(raw):
+              raw=gzip.decompress(raw);assert raw[:4]==b'TBI\x01'
+              f=io.BytesIO(raw[4:])
+              def take(fmt):
+                  b=f.read(struct.calcsize(fmt));assert len(b)==struct.calcsize(fmt)
+                  return struct.unpack(fmt,b)
+              nref,fmt,seq,beg,end,meta,skip,ln=take('<8i')
+              assert nref>0 and fmt==2 and (seq,beg,end,meta)==(1,2,0,35)
+              names=f.read(ln).rstrip(b'\0').decode().split('\0');assert len(names)==nref
+              result={}
+              for name in names:
+                  bins={}
+                  for _ in range(take('<i')[0]):
+                      bin_id,n=take('<Ii')
+                      chunks=[take('<QQ') for _ in range(n)]
+                      if bin_id<37450:bins[bin_id]=chunks
+                  lin=[take('<Q')[0] for _ in range(take('<i')[0])]
+                  result[name]=(bins,lin)
+              return result
+          def region_chunks(index,chrom,pos,last=None):
+              b=pos-1;e=(last or pos)-1
+              bins,lin=index[chrom]
+              ids=[0]
+              for offset,shift in ((1,26),(9,23),(73,20),(585,17),(4681,14)):
+                  ids.extend(range(offset+(b>>shift),offset+(e>>shift)+1))
+              minoff=lin[b>>14] if b>>14<len(lin) else 0
+              cs=sorted((max(lo,minoff),hi) for i in ids for lo,hi in bins.get(i,[]) if hi>max(lo,minoff))
+              merged=[]
+              for lo,hi in cs:
+                  if merged and lo<=merged[-1][1]:merged[-1]=(merged[-1][0],max(merged[-1][1],hi))
+                  else:merged.append((lo,hi))
+              return merged
+          def indexed_query(index,url,total,chrom,pos,last_pos):
+              result=set();transferred=0
+              for lo,hi in region_chunks(index,chrom,pos,last_pos):
+                  start=lo>>16;end=hi>>16
+                  last=min(total-1,end+65535)
+                  transferred+=last-start+1
+                  assert transferred<=32_000_000,'regional range cap'
+                  blocks=bgzf(http_range(url,start,last,total))
+                  assert 0 in blocks
+                  data=[]
+                  for off,block in sorted(blocks.items()):
+                      absolute=start+off
+                      if absolute>end:break
+                      l=(lo&65535) if absolute==start else 0
+                      h=(hi&65535) if absolute==end else len(block)
+                      assert 0<=l<=h<=len(block)
+                      data.append(block[l:h])
+                  assert end-start in blocks or (hi&65535)==0 and end==total,'missing end block'
+                  for row in b''.join(data).splitlines():
+                      cols=row.split(b'\t',2)
+                      if len(cols)==3 and cols[0]==chrom.encode() and pos<=int(cols[1])<=last_pos:result.add(row)
+              return b'\n'.join(sorted(result)),transferred
+          assert bgzf(b'')=={}
+          assert region_chunks({'2':({4681:[(1,5),(4,8)]},[0])},'2',1)==[(1,8)]
+          def ld(x,y):
+              assert len(x)==len(y) and len(x)>0
+              n=len(x);p=sum(x)/n;q=sum(y)/n
+              if not 0<p<1 or not 0<q<1:return {'status':'MONOMORPHIC','allele_frequency_first':p,'allele_frequency_second':q,'haplotypes':n}
+              d=sum(a*b for a,b in zip(x,y))/n-p*q
+              dmax=min(p*(1-q),(1-p)*q) if d>=0 else min(p*q,(1-p)*(1-q))
+              return {'status':'REFERENCE_ALLELE_LD','r2':min(1.,d*d/(p*(1-p)*q*(1-q))),'signed_d_prime':max(-1.,min(1.,d/dmax)),'allele_frequency_first':p,'allele_frequency_second':q,'haplotypes':n}
+          assert abs(ld([0,0,1,1],[0,0,1,1])['r2']-1)<1e-12
+          assert abs(ld([0,0,1,1],[0,1,0,1])['r2'])<1e-12
+          assert ld([0,0],[0,1])['status']=='MONOMORPHIC'
+          panelraw=get(panel_url)
+          panel={r['sample']:r['pop'] for r in csv.DictReader(io.StringIO(panelraw.decode()),delimiter='\t')}
+          assert len(panel)==2504 and sha(panelraw)=='b4023dc6ee2d62ee89c8d4d347db4d348e65518d66d346574cdae7a4bbd76858'
+          probes=[];hdr=None
+          for mirror in mirrors:
+              candidate=mirror+filename
+              probe={'url':candidate}
+              try:
+                  req=urllib.request.Request(candidate,headers={'Range':'bytes=0-65535','Accept-Encoding':'identity'})
+                  with urllib.request.urlopen(req,timeout=20) as res:
+                      cr=res.headers.get('Content-Range','')
+                      if res.status!=206 or not re.fullmatch(r'bytes 0-65535/\d+',cr):raise ValueError('HTTP range not supported')
+                      first=res.read(65537)
+                  assert len(first)==65536 and first[:2]==b'\x1f\x8b'
+                  idx=get(candidate+'.tbi',20000000)
+                  assert idx[:2]==b'\x1f\x8b'
+                  probe.update(range=cr,header_range_sha256=sha(first),index_sha256=sha(idx))
+                  total=int(cr.rsplit('/',1)[1]);assert total>65536
+                  index=index_parse(idx);assert '16' in index
+                  hdr=b''.join(bgzf(first).values())
+                  assert b'#CHROM\t' in hdr and b'\n' in hdr.split(b'#CHROM\t',1)[1]
+                  hdr=b'\n'.join(l for l in hdr.splitlines() if l.startswith(b'#'))
+                  vcf=candidate
+                  probe['status']='HEADER_VERIFIED';probes.append(probe);break
+              except Exception as e:
+                  probe['error']=type(e).__name__+': '+str(e)[:550];probes.append(probe);hdr=None
+          print(json.dumps({'source_probes':probes},indent=2))
+          if hdr is None:
+              Path('result.json').write_text(json.dumps({'status':'HOLD_INDEXED_SOURCE','scientific_validation':False,'source_probes':probes},indent=2)+'\n')
+              raise SystemExit(1)
+          head=[l for l in hdr.decode().splitlines() if l.startswith('#CHROM\t')]
+          assert len(head)==1
+          samples=head[0].split('\t')[9:];assert len(samples)==len(set(samples))==2504 and set(samples)==set(panel)
+          indices={pop:[i for i,s in enumerate(samples) if panel[s]==pop] for pop in pops}
+          assert {p:len(i) for p,i in indices.items()}=={'CHB':103,'JPT':104,'CEU':99}
+          mapping_raw=get('https://grch37.rest.ensembl.org/variation/human/rs7203740?content-type=application/json')
+          mapping=json.loads(mapping_raw)
+          assert mapping['name']=='rs7203740'
+          matches=[m for m in mapping['mappings'] if m.get('assembly_name')=='GRCh37' and str(m.get('seq_region_name'))=='16' and m.get('start')==m.get('end')==anchor_pos and m.get('strand')==1]
+          assert len(matches)==1 and {'C','T'}<=set(matches[0]['allele_string'].split('/'))
+          raw,transferred=indexed_query(index,vcf,total,'16',lower,upper)
+          rows=[line.split(b'\t') for line in raw.splitlines()]
+          assert 0<len(rows)<=30000
+          anchors=[r for r in rows if int(r[1])==anchor_pos and b'rs7203740' in r[2].split(b';')]
+          assert len(anchors)==1
+          ar=anchors[0];assert ar[3]==b'C' and b'T' in ar[4].split(b',') and ar[6]==b'PASS'
+          def genotypes(r):
+              assert len(r)==2504+9 and r[8].split(b':')[0]==b'GT'
+              a=r[4].split(b',');g=[]
+              for x in r[9:]:
+                  q=x.split(b':')[0]
+                  assert re.fullmatch(rb'[0-9]+\|[0-9]+',q)
+                  pair=tuple(map(int,q.split(b'|')));assert all(0<=v<=len(a) for v in pair)
+                  g.append(pair)
+              return g
+          ag=genotypes(ar);ti=ar[4].split(b',').index(b'T')+1
+          anchors_by_pop={pop:[a for k in ix for a in ag[k]] for pop,ix in indices.items()}
+          info={pop:{'haplotypes':len(x),'C':x.count(0),'T':x.count(ti),'other':len(x)-x.count(0)-x.count(ti)} for pop,x in anchors_by_pop.items()}
+          out={'status':'ALLELE_RESOLVED_REFERENCE_LD_ONLY','scientific_validation':False,'anchor':'rs7203740','anchor_ref':'C','anchor_alt':'T','observed_alts':ar[4].decode().split(','),'region_grch37':[lower,upper],'source_probes':probes,'panel_sha256':sha(panelraw),'mapping_sha256':sha(mapping_raw),'regional_stream_sha256':sha(raw),'range_bytes':transferred,'variant_rows':len(rows),'anchor_population_counts':info,'proxies':{},'excluded':{},'notes':['Reference phased haplotype LD, not GWAS-matched LD or conditional association.','All PASS biallelic SNVs in fixed GRCh37 region; rsID-missing and multiallelic partners are counted as excluded, not absent.','C/T restricted analysis excludes non-C/T anchor haplotypes; all-haplotype T versus non-T is separate. Small allele counts reported; no novelty or independence claim.']}
+          import collections
+          excluded=collections.Counter();tested=collections.Counter();results={p:[] for p in pops}
+          for r in rows:
+              if r==ar:continue
+              if r[6]!=b'PASS' or r[3] not in (b'A',b'C',b'G',b'T') or r[4] not in (b'A',b'C',b'G',b'T') or r[3]==r[4]:
+                  excluded['not_PASS_biallelic_SNV']+=1;continue
+              ids=r[2].decode().split(';')
+              if len(ids)!=1 or not re.fullmatch(r'rs[0-9]+',ids[0]):
+                  excluded['missing_or_multiple_rsid']+=1;continue
+              try:g=genotypes(r)
+              except AssertionError:
+                  excluded['invalid_or_missing_phased_GT']+=1;continue
+              for pop,ix in indices.items():
+                  x=anchors_by_pop[pop];y=[a for k in ix for a in g[k]]
+                  z=[(int(a==ti),b) for a,b in zip(x,y) if a in (0,ti)]
+                  if not z:continue
+                  restricted=ld([a for a,b in z],[b for a,b in z]);all_hap=ld([int(a==ti) for a in x],y)
+                  tested[pop]+=1
+                  if restricted.get('r2',0)>=.8 or all_hap.get('r2',0)>=.8:
+                      results[pop].append({'rsid':ids[0],'position_grch37':int(r[1]),'ref':r[3].decode(),'alt':r[4].decode(),'restricted_CT':restricted,'all_T_vs_nonT':all_hap,'restricted_high_ld':restricted.get('r2',0)>=.8})
+          for pop,items in results.items():
+              assert len({x['rsid'] for x in items})==len(items)
+              out['proxies'][pop]=sorted(items,key=lambda x:(-x['restricted_CT'].get('r2',0),x['rsid']))
+          out['excluded']=dict(excluded);out['tested_by_population']=dict(tested)
+          sets={p:{x['rsid'] for x in v if x['restricted_high_ld']} for p,v in results.items()}
+          out['restricted_proxy_union']=len(set().union(*sets.values()))
+          out['restricted_proxy_shared']=len(set.intersection(*sets.values()))
+          Path('result.json').write_text(json.dumps(out,indent=2,allow_nan=False)+'\n')
+          print(json.dumps({**out,'proxies':{p:{'count':len(v),'restricted_high_ld':len(sets[p]),'first5':v[:5]} for p,v in results.items()}},indent=2,allow_nan=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-rs7203740-allele-resolved-reference-ld
+          path: result.json
+          if-no-files-found: error
+          retention-days: 90
