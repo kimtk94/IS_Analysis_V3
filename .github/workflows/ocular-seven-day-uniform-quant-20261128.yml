@@ -1,0 +1,246 @@
+name: Ocular seven-day uniform quantification
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-seven-day-uniform-quant-20261128.yml']
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'pilot (fixed smallest pair) or full (all 16, explicit budget approval)'
+        type: choice
+        options: [pilot, full]
+        default: pilot
+      approve_full_75gb:
+        description: 'Approve approximately 75 GB public FASTQ transfer for full cohort'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ocular-seven-day-uniform-quant
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      scope: ${{ steps.plan.outputs.scope }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-seven-day-restoration-manifest
+          run-id: 46130181827
+          github-token: ${{ github.token }}
+          path: source
+      - name: Freeze all run identities and resource-only pilot selection
+        id: plan
+        env:
+          SCOPE: ${{ inputs.scope || 'pilot' }}
+          APPROVE: ${{ inputs.approve_full_75gb || false }}
+        run: |
+          python3 - <<'PY'
+          import json,os,subprocess,re,urllib.parse
+          from pathlib import Path
+          root=Path('docs/publication/evidence')
+          def pin(name,sha):
+              p=root/name
+              assert subprocess.check_output(['git','hash-object',str(p)],text=True).strip()==sha
+              return json.loads(p.read_text())
+          source=pin('top3_source_metadata_readback_20261128.json','9aef45b75089f69304c3e850fe382df70a12009f')
+          old=next(j['result'] for j in source['jobs'] if j['result']['source']=='PRJNA729873')
+          pairing=pin('ocular_seven_day_library_pairing_20261128.json','20b51fb9cf482d98003160c7875b07fa0666b1db')
+          manifest=json.loads(Path('source/manifest.json').read_text())
+          assert manifest['status']=='SOURCE_MANIFEST_VERIFIED_NOT_QUANTIFIED'
+          assert manifest['live_manifest_sha256']=='65047154cdcdff77cf2b5c5ee00457d965c227612f423529b5ba8f902168a54d'
+          records={x['run']:x['files'] for x in manifest['records']}
+          archived={x['run_accession']:x for x in old['runs']}
+          runs=[p[k] for p in pairing['pairs'] for k in ('DEX','ETH')]
+          assert len(runs)==len(set(runs))==len(records)==16 and set(runs)==set(records)==set(archived)
+          for run,files in records.items():
+              assert set(files)=={'R1','R2','UNPAIRED'}
+              rec=archived[run]
+              assert sorted((x['md5'],x['bytes']) for x in files.values())==sorted(zip(rec['fastq_md5'].split(';'),map(int,rec['fastq_bytes'].split(';'))))
+              for role,x in files.items():
+                  p=urllib.parse.urlparse(x['url'])
+                  suffix={'R1':'_1','R2':'_2','UNPAIRED':''}[role]
+                  assert p.scheme=='https' and p.hostname=='ftp.sra.ebi.ac.uk' and p.path.startswith('/vol1/fastq/') and p.path.endswith('/'+run+suffix+'.fastq.gz')
+                  assert re.fullmatch('[a-f0-9]{32}',x['md5']) and 0<x['bytes']<4_000_000_000
+          total=lambda p:sum(records[p[k]][role]['bytes'] for k in ('DEX','ETH') for role in ('R1','R2'))
+          pilot=min(pairing['pairs'],key=lambda p:(total(p),sorted([p['DEX'],p['ETH']])))
+          scope=os.environ['SCOPE']
+          assert scope in ('pilot','full')
+          if scope=='full':
+              assert os.environ['APPROVE'].lower()=='true', 'full transfer requires explicit approval'
+          selected=sorted(runs if scope=='full' else [pilot['DEX'],pilot['ETH']])
+          n=sum(records[r][k]['bytes'] for r in selected for k in ('R1','R2'))
+          assert n<=(75_000_000_000 if scope=='full' else 9_000_000_000)
+          plan={'scope':scope,'runs':selected,'paired_bytes':n,'orphan_policy':'Exclude ENA unpaired singleton FASTQ consistently; paired-end technical protocol only; no treatment scores.','scientific_validation':False,'selection':'minimum combined compressed paired FASTQ size, independent of expression; full scope always all 16'}
+          Path('plan.json').write_text(json.dumps(plan,indent=2)+'\n')
+          print(json.dumps(plan,indent=2))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('matrix='+json.dumps({'run':selected})+'\nscope='+scope+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-seven-day-quant-plan
+          path: plan.json
+          retention-days: 90
+  quantify:
+    needs: plan
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-seven-day-restoration-manifest
+          run-id: 46130181827
+          github-token: ${{ github.token }}
+          path: source
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-gencode-v44-tx2gene
+          run-id: 46125833980
+          github-token: ${{ github.token }}
+          path: mapping
+      - name: Install pinned quantifier version and validate code
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends kallisto
+          python3 scripts/ocular_gene_tpm_aggregation.py --selftest
+      - name: Verify original FASTQ and uniformly quantify each run
+        env:
+          RUN: ${{ matrix.run }}
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os,shutil,subprocess,time,re,urllib.parse
+          from pathlib import Path
+          start=time.monotonic()
+          run=os.environ['RUN']; assert re.fullmatch(r'SRR145350(?:7[7-9]|8[0-9]|9[0-2])',run)
+          work=Path('scratch'); work.mkdir()
+          outdir=Path('out'); outdir.mkdir()
+          report={'run':run,'status':'HOLD','scientific_validation':False,'stage':'preflight','files':[],'orphan_policy':'uniformly excluded; no biological scores'}
+          def verify_download(url,path,n,md5):
+              p=urllib.parse.urlparse(url)
+              assert p.scheme=='https' and p.hostname in ('ftp.sra.ebi.ac.uk','ftp.ebi.ac.uk')
+              attempts=[]
+              for i in range(5):
+                  before=path.stat().st_size if path.exists() else 0
+                  if before==n: break
+                  assert 0<=before<n
+                  rc=subprocess.run(['curl','--fail','--location','--proto','=https','--proto-redir','=https','--connect-timeout','30','--max-time','600','--speed-time','90','--speed-limit','1024','--max-filesize',str(n),'--continue-at','-','--output',str(path),url],timeout=625).returncode
+                  after=path.stat().st_size if path.exists() else 0
+                  attempts.append({'attempt':i+1,'rc':rc,'before':before,'after':after})
+                  assert before<=after<=n
+                  if after==n: break
+                  if rc not in (5,6,7,18,28,35,52,55,56): raise ValueError('unexpected transfer result')
+              assert path.stat().st_size==n
+              m=hashlib.md5();s=hashlib.sha256()
+              with path.open('rb') as f:
+                  for block in iter(lambda:f.read(1024*1024),b''): m.update(block);s.update(block)
+              assert m.hexdigest()==md5
+              report['files'].append({'name':path.name,'bytes':n,'md5':md5,'sha256':s.hexdigest(),'attempts':attempts})
+          def command(args,timeout):
+              p=subprocess.run(args,check=True,text=True,capture_output=True,timeout=timeout)
+              print(p.stdout[-2000:]);print(p.stderr[-2000:])
+              return p.stdout
+          try:
+              assert shutil.disk_usage('.').free>15_000_000_000
+              assert '0.48.0' in command(['kallisto','version'],30)
+              m=json.loads(Path('source/manifest.json').read_text())
+              assert m['live_manifest_sha256']=='65047154cdcdff77cf2b5c5ee00457d965c227612f423529b5ba8f902168a54d'
+              rec=next(r['files'] for r in m['records'] if r['run']==run)
+              report['stage']='reference'
+              fasta=work/'reference.fa.gz'
+              verify_download('https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.transcripts.fa.gz',fasta,82601810,'a30369535731a2fdaa6add9b3530756a')
+              assert report['files'][-1]['sha256']=='50a4143885523829c2fc8b1399b97c136ead8f313457165b855d63751a4e63f4'
+              report['stage']='paired_fastq'
+              mates=[]
+              for role in ('R1','R2'):
+                  f=rec[role]; path=work/(role+'.fastq.gz')
+                  verify_download(f['url'],path,f['bytes'],f['md5']);mates.append(str(path))
+              report['unpaired_bytes_excluded']=rec['UNPAIRED']['bytes']
+              report['stage']='index'
+              index=work/'reference.idx';command(['kallisto','index','-i',str(index),str(fasta)],1200)
+              report['stage']='quantification'
+              quant=work/'quant'
+              command(['kallisto','quant','-i',str(index),'-o',str(quant),'-t','2',*mates],1800)
+              info=json.loads((quant/'run_info.json').read_text())
+              report['run_info']=info
+              assert int(info['n_processed'])>0 and 0<int(info['n_pseudoaligned'])<=int(info['n_processed'])
+              abundance=quant/'abundance.tsv'; h=hashlib.sha256(abundance.read_bytes()).hexdigest()
+              report['abundance_sha256']=h
+              report['stage']='gene_tpm'
+              command(['python3','scripts/ocular_gene_tpm_aggregation.py','--map','mapping/tx2gene.tsv','--abundance',str(abundance),'--expected-abundance-sha',h,'--out',str(outdir)],180)
+              report['gene_summary']=json.loads((outdir/'summary.json').read_text())
+              assert report['gene_summary']['genes']==62700
+              report['status']='TECHNICAL_COMPLETE_QC_REVIEW_REQUIRED';report['stage']='complete'
+          except Exception as e:
+              report['error']=type(e).__name__+': '+str(e)[:400]
+          finally:
+              report['elapsed_seconds']=round(time.monotonic()-start,2)
+              (outdir/'qc.json').write_text(json.dumps(report,indent=2)+'\n')
+              print(json.dumps(report,indent=2))
+              shutil.rmtree(work,ignore_errors=True)
+          if report['status']!='TECHNICAL_COMPLETE_QC_REVIEW_REQUIRED':raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-seven-day-gene-${{ matrix.run }}
+          path: |
+            out/qc.json
+            out/summary.json
+            out/gene_tpm.tsv
+          if-no-files-found: error
+          retention-days: 90
+  inventory:
+    needs: [plan, quantify]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-seven-day-quant-plan
+          path: plan
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ocular-seven-day-gene-*
+          path: results
+      - name: Preserve complete denominator and technical status only
+        run: |
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=json.loads(Path('plan/plan.json').read_text());rows=[]
+          for r in p['runs']:
+              d=Path('results')/('ocular-seven-day-gene-'+r)
+              try:
+                  q=json.loads((d/'qc.json').read_text())
+                  assert q['run']==r
+                  if q['status']=='TECHNICAL_COMPLETE_QC_REVIEW_REQUIRED':
+                      assert hashlib.sha256((d/'gene_tpm.tsv').read_bytes()).hexdigest()==q['gene_summary']['gene_table_sha256']
+                  rows.append({'run':r,'status':q['status'],'pseudoaligned_pct':q.get('run_info',{}).get('p_pseudoaligned'),'gene_table_sha256':q.get('gene_summary',{}).get('gene_table_sha256')})
+              except Exception as e: rows.append({'run':r,'status':'HOLD_MISSING_OR_INVALID','error':str(e)[:150]})
+          complete=sum(r['status']=='TECHNICAL_COMPLETE_QC_REVIEW_REQUIRED' for r in rows)
+          result={'scope':p['scope'],'expected':len(rows),'technical_complete':complete,'cohort_denominator':16,'scientific_validation':False,'results':rows,'note':'No expression scores; never infer biological outcomes from partial or technical data.'}
+          Path('inventory.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
+          if complete!=len(rows): raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-seven-day-technical-inventory
+          path: inventory.json
+          retention-days: 90
