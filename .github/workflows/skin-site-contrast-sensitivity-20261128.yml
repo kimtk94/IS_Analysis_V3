@@ -1,0 +1,57 @@
+name: Skin site contrast covariance sensitivity
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/skin-site-contrast-sensitivity-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sensitivity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Evaluate hypothetical equal-scale contrasts over full covariance bounds
+        run: |
+          python3 - <<'PY'
+          import json,math,subprocess
+          from pathlib import Path
+          from statistics import NormalDist
+          p=Path('docs/publication/evidence/skin_gcc2_edar_outcome_readback_20261128.json')
+          assert subprocess.check_output(['git','hash-object',str(p)],text=True).strip()=='33be6014f3bbcdda7660cc161fe39a010675e589'
+          a,b=json.loads(p.read_text())['results']
+          assert (a['study'],b['study'])==('GCST90094903','GCST90094904')
+          assert set(a['variants'])==set(b['variants']) and len(a['variants'])==6
+          family=6;crit=NormalDist().inv_cdf(1-.05/(2*family))
+          def calc(delta,s1,s2,rho):
+              assert s1>0 and s2>0 and -1<=rho<=1
+              var=(s1-s2)**2+2*s1*s2*(1-rho)
+              if var==0:return {'status':'DEGENERATE'}
+              se=math.sqrt(var);z=delta/se
+              p=math.erfc(abs(z)/math.sqrt(2))
+              return {'status':'HYPOTHETICAL_ONLY','rho':rho,'se_delta':se,'z':z,'p':p,'bonferroni_6':min(1,6*p),'interval':[delta-crit*se,delta+crit*se]}
+          assert math.isclose(calc(1,2,3,-1)['se_delta'],5)
+          assert math.isclose(calc(1,2,3,1)['se_delta'],1)
+          assert calc(1,2,2,1)['status']=='DEGENERATE'
+          out={'status':'DESIGN_SENSITIVITY_ONLY','scientific_validation':False,'scale_gate':'HOLD','covariance_gate':'HOLD','family':6,'critical_z':crit,'note':'Only hypothetical arithmetic assuming equal phenotype coefficient scale and compatible models; these are not verified. Correlation is between estimated coefficients, not LD or phenotype correlation. Post-readout descriptive family; no new confirmatory claim. Bounds apply per SNP, not an estimate of covariance. Missing markers retained in denominator.','variants':{}}
+          for rs,x in a['variants'].items():
+              y=b['variants'][rs]
+              if x['status']!='EXACT_OUTCOME_ROW' or y['status']!='EXACT_OUTCOME_ROW':
+                  out['variants'][rs]={'status':'HOLD_MISSING'};continue
+              assert (x['position_grch38'],x['reference'],x['alternate'])==(y['position_grch38'],y['reference'],y['alternate'])
+              d=x['beta_alt']-y['beta_alt'];s1=x['se'];s2=y['se']
+              threshold=(s1*s1+s2*s2-(abs(d)/crit)**2)/(2*s1*s2)
+              z={'status':'HYPOTHETICAL_EQUAL_SCALE_ONLY','delta':d,'minimum_rho_for_bonferroni_significance':threshold,'all_covariance_bound':calc(d,s1,s2,-1),'grid':[calc(d,s1,s2,r) for r in (-1,-.5,0,.25,.5,.75,.9,1)]}
+              out['variants'][rs]=z
+          assert sum(v['status']=='HYPOTHETICAL_EQUAL_SCALE_ONLY' for v in out['variants'].values())==5
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: skin-site-contrast-sensitivity
+          path: result.json
+          retention-days: 90
