@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pmid: ['42224635','42448752','36123438']
+        pmid: ['42224635','42448752','36180795']
     env:
       PMID: ${{ matrix.pmid }}
     steps:
@@ -49,22 +49,48 @@ jobs:
                   except Exception as e:out['xml_error']=type(e).__name__+': '+str(e)[:180]
           except Exception as e:out['publication_error']=type(e).__name__+': '+str(e)[:180]
           try:
-              url='https://www.ebi.ac.uk/gwas/rest/api/studies/search/findByPublicationIdPubmedId?'+urllib.parse.urlencode({'pubmedId':pmid,'size':100})
-              raw=fetch(url);d=json.loads(raw)
-              studies=d.get('_embedded',{}).get('studies',[])
-              page=d.get('page',{})
-              if not isinstance(studies,list) or page.get('totalElements',len(studies))!=len(studies): raise ValueError('incomplete catalog pagination')
-              for s in studies:
-                  pub=s.get('publicationInfo',{})
-                  if str(pub.get('pubmedId'))!=pmid: raise ValueError('publication identity mismatch')
-                  out['studies'].append({k:s.get(k) for k in ('accessionId','diseaseTrait','initialSampleSize','replicationSampleSize','fullPvalueSet','fullPvalueSetLocation','summaryStatistics','ancestry')})
-              out['catalog']={'url':url,'sha256':hashlib.sha256(raw).hexdigest(),'study_count':len(studies),'page':page}
+              base='https://www.ebi.ac.uk/gwas/rest/api/v2/studies'
+              page_number=0
+              total=None
+              records=[]
+              while True:
+                  url=base+'?'+urllib.parse.urlencode({'pubmed_id':pmid,'size':50,'page':page_number})
+                  raw=fetch(url);d=json.loads(raw)
+                  page=d.get('page',{})
+                  studies=d.get('studies')
+                  if not isinstance(studies,list):
+                      studies=d.get('_embedded',{}).get('studies')
+                  if not isinstance(studies,list):raise ValueError('unexpected v2 envelope keys '+str(list(d)))
+                  count=page.get('total_elements',page.get('totalElements'))
+                  if not isinstance(count,int) or (total is not None and count!=total):raise ValueError('v2 pagination total absent or drift')
+                  total=count
+                  if not isinstance(page.get('number'),int) or page['number']!=page_number:raise ValueError('page number mismatch')
+                  records.extend(studies)
+                  out.setdefault('catalog_pages',[]).append({'url':url,'sha256':hashlib.sha256(raw).hexdigest(),'rows':len(studies)})
+                  if len(records)==total:break
+                  if len(records)>total or not studies or page_number>=19:raise ValueError('incomplete bounded pagination')
+                  page_number+=1
+              ids=set()
+              for s in records:
+                  acc=s.get('accession_id')
+                  if not isinstance(acc,str) or not re.fullmatch(r'GCST\d+',acc) or acc in ids:raise ValueError('study identity')
+                  ids.add(acc)
+                  pub=s.get('pubmed_id') or (s.get('publication') or {}).get('pubmed_id') or (s.get('publication_info') or {}).get('pubmed_id')
+                  if pub is not None and str(pub)!=pmid:raise ValueError('publication identity mismatch')
+                  out['studies'].append(s)
+              if pmid=='36180795' and not records:raise ValueError('positive control empty')
+              out['catalog']={'api_version':2,'study_count':len(records),'page_count':page_number+1,'publication_filter':pmid,'status':'CATALOG_QUERY_VERIFIED'}
           except Exception as e:out['catalog_error']=type(e).__name__+': '+str(e)[:180]
+          expected={'42224635':'10.1212/wnl.0000000000218126','42448752':'10.1038/s41598-026-62350-4','36180795':'10.1038/s41586-022-05165-3'}
+          if str(out.get('publication',{}).get('doi','')).lower()!=expected[pmid]:out['identity_error']='DOI mismatch'
+          if 'catalog_error' in out or 'publication_error' in out or 'identity_error' in out:out['status']='HOLD_SOURCE_QUERY_FAILED'
           # Publication date and catalog membership alone do not establish independence.
           Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
           print(json.dumps(out,indent=2))
+          if out['status']=='HOLD_SOURCE_QUERY_FAILED':raise SystemExit(1)
           PY
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: is-catalog-${{ matrix.pmid }}
           path: result.json
