@@ -1,0 +1,5 @@
+# External LAS response contract and fixed-family reconstruction handoff — 2026-11-28
+
+External LAS contract run 46140883293 job 140966320327 SUCCESS. Actual log confirms 48 fixed primary LAS marker-ancestry cells, 0 received or eligible, 48 missing, 0 paired markers. 13 synthetic contract checks passed. This is technical readiness only. INFO >=0.8 proposed threshold; cohort independence, TOAST and governance still require actual documentation. No external contact sent.
+
+Independent numerical reconstruction workflow commit 0c41d5ddd69b1ba92c7c1b920cd6675fb9cf3c49. Download nine pinned ZIPs from original run 45534891070, verify SHA256 and expected member names, compare eight independent extraction artifacts against combined archived source rows, recompute all 192 fixed contrasts without importing original contrast implementation. Expected 170 matched marker-study cells, 158 evaluable contrasts, 34 missing, 11 Bonferroni hits under zero covariance, 4 under maximum variance. These are acceptance criteria, not verified new results yet. No raw publisher re-download or independent cohort replication. No main merge or schedule change.
