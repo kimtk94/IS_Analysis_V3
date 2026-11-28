@@ -11,12 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - name: Install indexed VCF reader
-        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends tabix
       - name: Resolve exact variants and compute aggregate phased LD
         run: |
           python3 - <<'PY'
-          import csv,hashlib,io,json,math,re,subprocess,urllib.request,urllib.parse
+          import csv,hashlib,io,json,math,re,subprocess,urllib.request,urllib.parse,gzip,struct,zlib
           from pathlib import Path
           base='https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/'
           filename='ALL.chr2.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz'
@@ -30,11 +28,91 @@ jobs:
               if len(raw)>cap:raise ValueError('response exceeds cap')
               return raw
           def sha(raw):return hashlib.sha256(raw).hexdigest()
-          def tabix(args):
-              p=subprocess.run(['tabix',*args],capture_output=True,timeout=60)
-              if p.returncode:raise ValueError('tabix rc='+str(p.returncode)+' '+p.stderr.decode(errors='replace')[:450])
-              if len(p.stdout)>4000000:raise ValueError('indexed query exceeds cap')
-              return p.stdout
+          def http_range(url,lo,hi,total):
+              assert 0<=lo<=hi<total and hi-lo+1<=12_000_000
+              req=urllib.request.Request(url,headers={'Range':f'bytes={lo}-{hi}','Accept-Encoding':'identity'})
+              with urllib.request.urlopen(req,timeout=45) as res:
+                  assert res.status==206 and res.headers.get('Content-Range')==f'bytes {lo}-{hi}/{total}'
+                  raw=res.read(hi-lo+2)
+              assert len(raw)==hi-lo+1
+              return raw
+          def bgzf(raw):
+              # Decode only complete BGZF blocks; final partial block is not consumed.
+              pos=0;blocks={}
+              while pos+18<=len(raw):
+                  assert raw[pos:pos+4]==b'\x1f\x8b\x08\x04'
+                  xlen=struct.unpack_from('<H',raw,pos+10)[0]
+                  if pos+12+xlen>len(raw):break
+                  extra=raw[pos+12:pos+12+xlen];i=0;size=None
+                  while i+4<=len(extra):
+                      n=struct.unpack_from('<H',extra,i+2)[0]
+                      assert i+4+n<=len(extra)
+                      if extra[i:i+2]==b'BC':
+                          assert n==2
+                          size=struct.unpack_from('<H',extra,i+4)[0]+1
+                      i+=4+n
+                  assert size is not None and 26<=size<=65536
+                  if pos+size>len(raw):break
+                  blocks[pos]=zlib.decompress(raw[pos:pos+size],wbits=31)
+                  assert len(blocks[pos])<=65536
+                  pos+=size
+              return blocks
+          def index_parse(raw):
+              raw=gzip.decompress(raw);assert raw[:4]==b'TBI\x01'
+              f=io.BytesIO(raw[4:])
+              def take(fmt):
+                  b=f.read(struct.calcsize(fmt));assert len(b)==struct.calcsize(fmt)
+                  return struct.unpack(fmt,b)
+              nref,fmt,seq,beg,end,meta,skip,ln=take('<8i')
+              assert nref>0 and fmt==2 and (seq,beg,end,meta)==(1,2,0,35)
+              names=f.read(ln).rstrip(b'\0').decode().split('\0');assert len(names)==nref
+              result={}
+              for name in names:
+                  bins={}
+                  for _ in range(take('<i')[0]):
+                      bin_id,n=take('<Ii')
+                      chunks=[take('<QQ') for _ in range(n)]
+                      if bin_id<37450:bins[bin_id]=chunks
+                  lin=[take('<Q')[0] for _ in range(take('<i')[0])]
+                  result[name]=(bins,lin)
+              return result
+          def region_chunks(index,chrom,pos):
+              b=pos-1;e=pos-1
+              bins,lin=index[chrom]
+              ids=[0]
+              for offset,shift in ((1,26),(9,23),(73,20),(585,17),(4681,14)):
+                  ids.extend(range(offset+(b>>shift),offset+(e>>shift)+1))
+              minoff=lin[b>>14] if b>>14<len(lin) else 0
+              cs=sorted((max(lo,minoff),hi) for i in ids for lo,hi in bins.get(i,[]) if hi>max(lo,minoff))
+              merged=[]
+              for lo,hi in cs:
+                  if merged and lo<=merged[-1][1]:merged[-1]=(merged[-1][0],max(merged[-1][1],hi))
+                  else:merged.append((lo,hi))
+              return merged
+          def indexed_query(index,url,total,chrom,pos):
+              result=set();transferred=0
+              for lo,hi in region_chunks(index,chrom,pos):
+                  start=lo>>16;end=hi>>16
+                  last=min(total-1,end+65535)
+                  transferred+=last-start+1
+                  assert transferred<=24_000_000,'per-marker range cap'
+                  blocks=bgzf(http_range(url,start,last,total))
+                  assert 0 in blocks
+                  data=[]
+                  for off,block in sorted(blocks.items()):
+                      absolute=start+off
+                      if absolute>end:break
+                      l=(lo&65535) if absolute==start else 0
+                      h=(hi&65535) if absolute==end else len(block)
+                      assert 0<=l<=h<=len(block)
+                      data.append(block[l:h])
+                  assert end-start in blocks or (hi&65535)==0 and end==total,'missing end block'
+                  for row in b''.join(data).splitlines():
+                      cols=row.split(b'\t',2)
+                      if len(cols)==3 and cols[0]==chrom.encode() and cols[1]==str(pos).encode():result.add(row)
+              return b'\n'.join(sorted(result)),transferred
+          assert bgzf(b'')=={}
+          assert region_chunks({'2':({4681:[(1,5),(4,8)]},[0])},'2',1)==[(1,8)]
           def ld(x,y):
               assert len(x)==len(y) and len(x)>0
               n=len(x);p=sum(x)/n;q=sum(y)/n
@@ -62,12 +140,14 @@ jobs:
                   idx=get(candidate+'.tbi',20000000)
                   assert idx[:2]==b'\x1f\x8b'
                   probe.update(range=cr,header_range_sha256=sha(first),index_sha256=sha(idx))
-                  # Use separately verified local index; avoid implicit index downloads.
-                  local=Path('reference.tbi');local.write_bytes(idx)
-                  candidate_with_index=candidate+'##idx##'+str(local.resolve())
-                  hdr=tabix(['-H',candidate_with_index])
-                  assert b'#CHROM\t' in hdr
-                  vcf=candidate;vcf_query=candidate_with_index
+                  assert sha(first)=='abaefef063f0ae0ee69ba530ce5227b0bb06bc29b50e6ab67295dbe4457ec9c4'
+                  assert sha(idx)=='04f776211dd6b943c0f83bf160c6fd3484860971c7d7497cf4f180bd45845c5f'
+                  total=int(cr.rsplit('/',1)[1]);assert total==1312735578
+                  index=index_parse(idx);assert '2' in index
+                  hdr=b''.join(bgzf(first).values())
+                  assert b'#CHROM\t' in hdr and b'\n' in hdr.split(b'#CHROM\t',1)[1]
+                  hdr=b'\n'.join(l for l in hdr.splitlines() if l.startswith(b'#'))
+                  vcf=candidate
                   probe['status']='HEADER_VERIFIED';probes.append(probe);break
               except Exception as e:
                   probe['error']=type(e).__name__+': '+str(e)[:550];probes.append(probe);hdr=None
@@ -89,7 +169,7 @@ jobs:
                   maps=[m for m in d['mappings'] if m.get('assembly_name')=='GRCh37' and str(m.get('seq_region_name'))=='2' and m.get('start')==m.get('end') and m.get('strand')==1]
                   assert len(maps)==1
                   m=maps[0];pos=m['start'];a=m['allele_string'].split('/')
-                  q=tabix([vcf_query,'2:'+str(pos)+'-'+str(pos)])
+                  q,transferred=indexed_query(index,vcf,total,'2',pos)
                   rows=[l.split('\t') for l in q.decode().splitlines()]
                   rows=[r for r in rows if int(r[1])==pos and rs in r[2].split(';')]
                   assert len(rows)==1,'missing or duplicate exact rsID/position'
@@ -108,7 +188,7 @@ jobs:
                       gt.append(alleles)
                   assert len(gt)==2504
                   genotypes[rs]=(alts,gt)
-                  out['variants'][rs]={'status':'EXACT_REFERENCE_ROW','position_grch37':pos,'ensembl_alleles':a,'reference':ref,'alternate_alleles':alts,'mapping_sha256':sha(raw),'indexed_response_sha256':sha(q)}
+                  out['variants'][rs]={'status':'EXACT_REFERENCE_ROW','position_grch37':pos,'ensembl_alleles':a,'reference':ref,'alternate_alleles':alts,'mapping_sha256':sha(raw),'indexed_response_sha256':sha(q),'range_bytes':transferred}
               except Exception as e:out['variants'][rs]={'status':'HOLD','error':type(e).__name__+': '+str(e)[:200]}
           for a,b in pairs:
               for pop in pops:
