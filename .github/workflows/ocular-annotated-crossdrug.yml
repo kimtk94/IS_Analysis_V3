@@ -1,0 +1,56 @@
+name: Ocular annotated cross-drug fixed panel
+on:
+  push:
+    branches: [research/ocular-annotated-crossdrug-20261125]
+    paths: ['scripts/ocular_annotated_crossdrug.py','.github/workflows/ocular-annotated-crossdrug.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  crossdrug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: frozen
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 32bdfc54c2b6418cee6acd65e6d39fac878864ca
+          path: prior
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Focused contract checks
+        run: |
+          export PYTHONPATH="$PWD/frozen/scripts:$PWD/prior/scripts"
+          python -m py_compile scripts/ocular_annotated_crossdrug.py
+          python scripts/ocular_annotated_crossdrug.py --selftest
+      - name: Bounded original public source retrieval
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          echo 'Frozen panel archive'
+          curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 4000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o "$RUNNER_TEMP/panel.zip"
+          echo 'GSE16643 matrix'
+          curl -fLsS --connect-timeout 15 --max-time 90 --max-filesize 15000000 "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE16nnn/GSE16643/matrix/GSE16643_series_matrix.txt.gz" -o "$RUNNER_TEMP/matrix.gz"
+          echo 'GPL6480 compact pinned annotation'
+          curl -fLsS --connect-timeout 15 --max-time 90 --max-filesize 15000000 "https://ftp.ncbi.nlm.nih.gov/geo/platforms/GPL6nnn/GPL6480/annot/GPL6480.annot.gz" -o "$RUNNER_TEMP/annot.gz"
+      - name: Score frozen panels without donor-level inference
+        run: |
+          export PYTHONPATH="$PWD/frozen/scripts:$PWD/prior/scripts"
+          python scripts/ocular_annotated_crossdrug.py --root "$RUNNER_TEMP" --out outputs/crossdrug.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-annotated-crossdrug-summary
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
