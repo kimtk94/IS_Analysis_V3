@@ -242,7 +242,8 @@ def render(manifest, root, output):
                         check(all(abs(a-b*600) <= 2 for a, b in zip(im.size, size)), "Raster size mismatch")
                         dpi = im.info.get("dpi")
                         check(dpi and all(abs(float(v)-600) < 1 for v in dpi), "Raster DPI mismatch")
-                        exports[path.name].update(pixels=list(im.size), dpi=list(dpi))
+                        # TIFF metadata may contain Pillow IFDRational values, not JSON primitives.
+                        exports[path.name].update(pixels=list(im.size), dpi=[float(v) for v in dpi])
             report = {"status": "DRAFT_REVIEW_REQUIRED", "schema_version": 1,
                       "data_status": spec["data_status"], "manifest_sha256": digest(manifest),
                       "code_sha256": digest(Path(__file__)), "matplotlib": matplotlib.__version__,
