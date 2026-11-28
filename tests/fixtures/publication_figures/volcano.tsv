@@ -1,0 +1,9 @@
+label	log2fc	p
+Example A	1.5	0.006
+Example B	-1.7	0.012
+Example C	0.2	0.8
+Example D	-0.4	0.2
+Example E	1.2	0.08
+Example F	-1.0	0.09
+Example G	0.8	0.025
+Example H	-0.7	0.04

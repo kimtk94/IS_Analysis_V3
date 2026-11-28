@@ -1,0 +1,52 @@
+name: Publication figures (synthetic only)
+on:
+  pull_request:
+    paths:
+      - 'scripts/publication_figures.py'
+      - 'config/publication-figures-requirements.txt'
+      - 'tests/test_publication_figures.py'
+      - 'tests/fixtures/publication_figures/**'
+      - 'docs/PUBLICATION_FIGURES.md'
+      - '.github/workflows/publication-figures-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r config/publication-figures-requirements.txt
+      - name: Focused tests
+        run: python -m unittest discover -s tests -p 'test_publication_figures.py' -v
+      - name: Check out integrated foundation for repository compatibility
+        uses: actions/checkout@v4
+        with:
+          ref: c7e02e2b737274ac64041ea1e71f7cc7741a533b
+          path: foundation
+          persist-credentials: false
+      - name: Install repository test runtimes
+        run: |
+          python -m pip install -r foundation/requirements-test.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends r-base-core
+      - name: Repository smoke tests (integrated foundation plus figure changes)
+        run: |
+          cp scripts/publication_figures.py foundation/scripts/
+          cp tests/test_publication_figures.py foundation/tests/
+          mkdir -p foundation/tests/fixtures/publication_figures
+          cp -r tests/fixtures/publication_figures/. foundation/tests/fixtures/publication_figures/
+          cd foundation
+          bash scripts/codex_smoke_test.sh --fixture-only
+      - name: Render synthetic demonstration
+        run: python scripts/publication_figures.py --manifest tests/fixtures/publication_figures/demo.json --input-root tests/fixtures/publication_figures --out figure-ci-demo
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-publication-figure-demo
+          path: figure-ci-demo
+          retention-days: 7
+          if-no-files-found: error
