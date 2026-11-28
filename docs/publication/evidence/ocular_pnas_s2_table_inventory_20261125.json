@@ -1,0 +1,1275 @@
+{
+  "provenance": {
+    "run_id": 45577966619,
+    "job_id": 139080502412,
+    "artifact_id": 15004853464,
+    "reported_artifact_zip_sha256": "8d7116341277cb5b9addd0642104c23caf59e5cddcc3cadb465b633e2c138384",
+    "source_commit": "e97be4cd733be99157311ccbb3aac29f8dbdbb4a",
+    "readback": "Actual stdout; full S2 source rows in artifact, workbook and XML hash-pinned."
+  },
+  "result": {
+    "status": "COMPLETE_PINNED_S2_TABLE_INVENTORY",
+    "article_xml": {
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/PMC13778663.1.xml",
+      "bytes": 154636,
+      "sha256": "4f78c568928a024c038e8cb96fc49c1d91735af4691d6c2c507c9526075b5c29"
+    },
+    "supplement_source": {
+      "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd02.xlsx",
+      "bytes": 25410,
+      "sha256": "9197476141d1ca99a40d83fa92137fca48657082f14b9ad5ddcb646babd95cf7"
+    },
+    "author_definition_excerpts": [
+      "hromatin loop sets [i.e., resource (Fig. 1); control; and dex-treated (Figs. 2 and 3)]. We identify 29 target genes associated with 23 lead IOP variants",
+      "dex-treated (Figs. 2 and 3)]. We identify 29 target genes associated with 23 lead IOP variants and 57 target genes linked to 46 POAG lead",
+      "57 target genes linked to 46 POAG lead variants through contacts with gene promoters. (Fig. 5A and Dataset S2). Of these, 19 target genes are",
+      "Dataset S02 (XLSX)"
+    ],
+    "tables": {
+      "POAG_Gharahkhani": {
+        "rows": 39,
+        "first_six_rows": [
+          [
+            "Dataset S2. Target genes identified for GWAS SNPs.",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Target gene for dexamethasone control",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Lead variant",
+            "Loci",
+            "Chr",
+            "Chromosome position (hg38)",
+            "ID",
+            "Promoter target gene",
+            "Promoter length",
+            "Distance of variant from promoter"
+          ],
+          [
+            "rs2790053",
+            "TMCO1",
+            "chr1",
+            165768467,
+            "ENSG00000283936",
+            "MIR3658",
+            359,
+            139456
+          ],
+          [
+            "rs2627761",
+            "PNPT1/EFEMP1",
+            "chr2",
+            55705879,
+            "ENSG00000207798",
+            "MIR216A",
+            839,
+            283907
+          ],
+          [
+            "rs72904286",
+            "TFAP2B/PKHD1",
+            "chr6",
+            51550124,
+            "ENSG00000008196",
+            "TFAP2B",
+            839,
+            -731215
+          ]
+        ],
+        "last_two_rows": [
+          [
+            "rs216197",
+            "SMG6",
+            "chr17",
+            2298650,
+            "ENSG00000262664",
+            "OVCA2",
+            968,
+            -256467
+          ],
+          [
+            "rs1348518145",
+            "NPEPPS",
+            "chr17",
+            47617876,
+            "ENSG00000004897",
+            "CDC27",
+            479,
+            -428147
+          ]
+        ],
+        "columns": [
+          {
+            "column": 1,
+            "nonempty_after_row4": 33,
+            "unique": 15,
+            "all_values_if_leq_15": {
+              "rs2627761": 2,
+              "rs72904286": 2,
+              "rs62521288": 6,
+              "rs33912345": 4,
+              "rs754458": 3,
+              "rs4903352": 2,
+              "rs13050568": 1,
+              "Targte gene dexamethasone treatment": 1,
+              "Lead variant": 2,
+              "rs2790053": 3,
+              "rs7111873": 2,
+              "Target gene resource": 1,
+              "rs6732795": 2,
+              "rs216197": 1,
+              "rs1348518145": 1
+            },
+            "examples": [
+              "rs2627761",
+              "rs72904286",
+              "rs62521288",
+              "rs33912345"
+            ]
+          },
+          {
+            "column": 2,
+            "nonempty_after_row4": 31,
+            "unique": 13,
+            "all_values_if_leq_15": {
+              "PNPT1/EFEMP1": 2,
+              "TFAP2B/PKHD1": 2,
+              "FBXO32": 6,
+              "SIX6": 4,
+              "LTBP2/AREL1": 3,
+              "TTLL5": 2,
+              "LOC101928435/PSMG1": 1,
+              "Loci": 2,
+              "TMCO1": 3,
+              "RAPSN": 2,
+              "ANTXR1": 2,
+              "SMG6": 1,
+              "NPEPPS": 1
+            },
+            "examples": [
+              "PNPT1/EFEMP1",
+              "TFAP2B/PKHD1",
+              "FBXO32",
+              "SIX6"
+            ]
+          },
+          {
+            "column": 3,
+            "nonempty_after_row4": 31,
+            "unique": 9,
+            "all_values_if_leq_15": {
+              "chr2": 4,
+              "chr6": 2,
+              "chr8": 6,
+              "chr14": 9,
+              "chr21": 1,
+              "Chr": 2,
+              "chr1": 3,
+              "chr11": 2,
+              "chr17": 2
+            },
+            "examples": [
+              "chr2",
+              "chr6",
+              "chr8",
+              "chr14"
+            ]
+          },
+          {
+            "column": 4,
+            "nonempty_after_row4": 31,
+            "unique": 13,
+            "all_values_if_leq_15": {
+              "2298650": 1,
+              "39034705": 1,
+              "47447887": 2,
+              "47617876": 1,
+              "51550124": 2,
+              "55705879": 2,
+              "60509819": 4,
+              "69184385": 2,
+              "74618126": 3,
+              "75905315": 2,
+              "123542077": 6,
+              "165768467": 3,
+              "Chromosome position (hg38)": 2
+            },
+            "examples": [
+              "55705879",
+              "51550124",
+              "123542077",
+              "60509819"
+            ]
+          },
+          {
+            "column": 5,
+            "nonempty_after_row4": 31,
+            "unique": 19,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "ENSG00000207798",
+              "ENSG00000008196",
+              "ENSG00000104537",
+              "ENSG00000176853"
+            ]
+          },
+          {
+            "column": 6,
+            "nonempty_after_row4": 31,
+            "unique": 19,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "MIR216A",
+              "TFAP2B",
+              "ANXA13",
+              "FAM91A1"
+            ]
+          },
+          {
+            "column": 7,
+            "nonempty_after_row4": 31,
+            "unique": 13,
+            "all_values_if_leq_15": {
+              "359": 3,
+              "479": 2,
+              "598": 3,
+              "599": 1,
+              "719": 7,
+              "826": 3,
+              "839": 3,
+              "859": 2,
+              "860": 1,
+              "968": 1,
+              "1082": 1,
+              "1500": 2,
+              "Promoter length": 2
+            },
+            "examples": [
+              "839",
+              "719",
+              "598",
+              "826"
+            ]
+          },
+          {
+            "column": 8,
+            "nonempty_after_row4": 31,
+            "unique": 19,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "283907",
+              "-731215",
+              "195905",
+              "226503"
+            ]
+          }
+        ]
+      },
+      "POAG_Han": {
+        "rows": 88,
+        "first_six_rows": [
+          [
+            "Dataset S2. Target genes identified for GWAS SNPs.",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Target gene for dexamethasone control",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Lead variant",
+            "Loci",
+            "Chr",
+            "Chromosome position (hg38)",
+            "ID",
+            "Promoter target gene",
+            "Promoter length",
+            "Distance of variant from promoter"
+          ],
+          [
+            "rs659437",
+            "AKR1A1",
+            "chr1",
+            45571722,
+            "ENSG00000132781",
+            "MUTYH",
+            1079,
+            -231129
+          ],
+          [
+            "rs7525880",
+            "BCAR3",
+            "chr1",
+            93566431,
+            "ENSG00000211575",
+            "MIR760",
+            119,
+            280149
+          ],
+          [
+            "rs4657477",
+            "TMCO1",
+            "chr1",
+            165766938,
+            "ENSG00000283936",
+            "MIR3658",
+            359,
+            140985
+          ]
+        ],
+        "last_two_rows": [
+          [
+            "rs1782976",
+            "APP",
+            "chr21",
+            25894555,
+            "ENSG00000142192",
+            "APP",
+            1098,
+            277531
+          ],
+          [
+            "rs994003",
+            "ERG",
+            "chr21",
+            38665626,
+            "ENSG00000183527",
+            "PSMG1",
+            580,
+            518517
+          ]
+        ],
+        "columns": [
+          {
+            "column": 1,
+            "nonempty_after_row4": 82,
+            "unique": 39,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "rs7525880",
+              "rs4657477",
+              "rs2627761",
+              "rs72818971"
+            ]
+          },
+          {
+            "column": 2,
+            "nonempty_after_row4": 80,
+            "unique": 36,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "BCAR3",
+              "TMCO1",
+              "PNPT1",
+              "NPAS2"
+            ]
+          },
+          {
+            "column": 3,
+            "nonempty_after_row4": 80,
+            "unique": 17,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "chr1",
+              "chr2",
+              "chr3",
+              "chr5"
+            ]
+          },
+          {
+            "column": 4,
+            "nonempty_after_row4": 80,
+            "unique": 37,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "93566431",
+              "165766938",
+              "55705879",
+              "100986287"
+            ]
+          },
+          {
+            "column": 5,
+            "nonempty_after_row4": 80,
+            "unique": 49,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "ENSG00000211575",
+              "ENSG00000283936",
+              "ENSG00000207798",
+              "ENSG00000170485"
+            ]
+          },
+          {
+            "column": 6,
+            "nonempty_after_row4": 80,
+            "unique": 49,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "MIR760",
+              "MIR3658",
+              "MIR216A",
+              "NPAS2"
+            ]
+          },
+          {
+            "column": 7,
+            "nonempty_after_row4": 80,
+            "unique": 25,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "119",
+              "359",
+              "839",
+              "239"
+            ]
+          },
+          {
+            "column": 8,
+            "nonempty_after_row4": 80,
+            "unique": 51,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "280149",
+              "140985",
+              "283907",
+              "-166483"
+            ]
+          }
+        ]
+      },
+      "IOP_Gharahkhani": {
+        "rows": 29,
+        "first_six_rows": [
+          [
+            "Dataset S2. Target genes identified for GWAS SNPs.",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Target gene for dexamethasone control",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Lead variant",
+            "Loci",
+            "Chr",
+            "Chromosome position (hg38)",
+            "ID",
+            "Promoter target gene",
+            "Promoter length",
+            "Distance of variant from promoter"
+          ],
+          [
+            "rs2790053",
+            "LOC100147773",
+            "chr1",
+            165768467,
+            "ENSG00000283936",
+            "MIR3658",
+            359,
+            139456
+          ],
+          [
+            "rs2627761",
+            "PNPT1-EFEMP1",
+            "chr2",
+            55705879,
+            "ENSG00000207798",
+            "MIR216A",
+            839,
+            283907
+          ],
+          [
+            "rs72904286",
+            "TFAP2B-PKHD1",
+            "chr6",
+            51550124,
+            "ENSG00000008196",
+            "TFAP2B",
+            839,
+            -731215
+          ]
+        ],
+        "last_two_rows": [
+          [
+            "rs62521288",
+            "FBXO32",
+            "chr8",
+            123542077,
+            "ENSG00000176853",
+            "FAM91A1",
+            719,
+            226503
+          ],
+          [
+            "rs754458",
+            "LTBP2-AREL1",
+            "chr14",
+            74618126,
+            "ENSG00000119682",
+            "AREL1",
+            826,
+            94958
+          ]
+        ],
+        "columns": [
+          {
+            "column": 1,
+            "nonempty_after_row4": 23,
+            "unique": 10,
+            "all_values_if_leq_15": {
+              "rs2627761": 2,
+              "rs72904286": 2,
+              "rs62521288": 6,
+              "rs754458": 2,
+              "Targte gene dexamethasone treatment": 1,
+              "Lead variant": 2,
+              "rs2790053": 3,
+              "rs7111873": 2,
+              "Target gene resource": 1,
+              "rs6732795": 2
+            },
+            "examples": [
+              "rs2627761",
+              "rs72904286",
+              "rs62521288",
+              "rs754458"
+            ]
+          },
+          {
+            "column": 2,
+            "nonempty_after_row4": 21,
+            "unique": 8,
+            "all_values_if_leq_15": {
+              "PNPT1-EFEMP1": 2,
+              "TFAP2B-PKHD1": 2,
+              "FBXO32": 6,
+              "LTBP2-AREL1": 2,
+              "Loci": 2,
+              "LOC100147773": 3,
+              "RAPSN": 2,
+              "ANTXR1": 2
+            },
+            "examples": [
+              "PNPT1-EFEMP1",
+              "TFAP2B-PKHD1",
+              "FBXO32",
+              "LTBP2-AREL1"
+            ]
+          },
+          {
+            "column": 3,
+            "nonempty_after_row4": 21,
+            "unique": 7,
+            "all_values_if_leq_15": {
+              "chr2": 4,
+              "chr6": 2,
+              "chr8": 6,
+              "chr14": 2,
+              "Chr": 2,
+              "chr1": 3,
+              "chr11": 2
+            },
+            "examples": [
+              "chr2",
+              "chr6",
+              "chr8",
+              "chr14"
+            ]
+          },
+          {
+            "column": 4,
+            "nonempty_after_row4": 21,
+            "unique": 8,
+            "all_values_if_leq_15": {
+              "47447887": 2,
+              "51550124": 2,
+              "55705879": 2,
+              "69184385": 2,
+              "74618126": 2,
+              "123542077": 6,
+              "165768467": 3,
+              "Chromosome position (hg38)": 2
+            },
+            "examples": [
+              "55705879",
+              "51550124",
+              "123542077",
+              "74618126"
+            ]
+          },
+          {
+            "column": 5,
+            "nonempty_after_row4": 21,
+            "unique": 13,
+            "all_values_if_leq_15": {
+              "ENSG00000207798": 1,
+              "ENSG00000008196": 2,
+              "ENSG00000104537": 3,
+              "ENSG00000176853": 3,
+              "ENSG00000119682": 2,
+              "ID": 2,
+              "ENSG00000143179": 2,
+              "ENSG00000123444": 1,
+              "ENSG00000025434": 1,
+              "ENSG00000283936": 1,
+              "ENSG00000207548": 1,
+              "ENSG00000183607": 1,
+              "ENSG00000169604": 1
+            },
+            "examples": [
+              "ENSG00000207798",
+              "ENSG00000008196",
+              "ENSG00000104537",
+              "ENSG00000176853"
+            ]
+          },
+          {
+            "column": 6,
+            "nonempty_after_row4": 21,
+            "unique": 13,
+            "all_values_if_leq_15": {
+              "MIR216A": 1,
+              "TFAP2B": 2,
+              "ANXA13": 3,
+              "FAM91A1": 3,
+              "AREL1": 2,
+              "Promoter target gene": 2,
+              "UCK2": 2,
+              "KBTBD4": 1,
+              "NR1H3": 1,
+              "MIR3658": 1,
+              "MIR217": 1,
+              "GKN2": 1,
+              "ANTXR1": 1
+            },
+            "examples": [
+              "MIR216A",
+              "TFAP2B",
+              "ANXA13",
+              "FAM91A1"
+            ]
+          },
+          {
+            "column": 7,
+            "nonempty_after_row4": 21,
+            "unique": 9,
+            "all_values_if_leq_15": {
+              "359": 2,
+              "479": 1,
+              "599": 1,
+              "719": 7,
+              "826": 2,
+              "839": 3,
+              "859": 2,
+              "1082": 1,
+              "Promoter length": 2
+            },
+            "examples": [
+              "839",
+              "719",
+              "826",
+              "Promoter length"
+            ]
+          },
+          {
+            "column": 8,
+            "nonempty_after_row4": 21,
+            "unique": 13,
+            "all_values_if_leq_15": {
+              "59295": 2,
+              "94958": 2,
+              "131238": 1,
+              "139456": 1,
+              "195905": 3,
+              "226503": 3,
+              "277515": 1,
+              "283907": 1,
+              "-731215": 2,
+              "Distance of variant from promoter": 2,
+              "-198567": 1,
+              "-230920": 1,
+              "-171133": 1
+            },
+            "examples": [
+              "283907",
+              "-731215",
+              "195905",
+              "226503"
+            ]
+          }
+        ]
+      },
+      "IOP_Khawaja": {
+        "rows": 37,
+        "first_six_rows": [
+          [
+            "Dataset S2. Target genes identified for GWAS SNPs.",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Target gene for dexamethasone control",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Lead variant",
+            "Loci",
+            "Chr",
+            "Chromosome position (hg38)",
+            "ID",
+            "Promoter target gene",
+            "Promoter length",
+            "Distance of variant from promoter"
+          ],
+          [
+            "rs116089225",
+            "TMCO1",
+            "chr1",
+            165715441,
+            "ENSG00000143179",
+            "UCK2",
+            859,
+            112321
+          ],
+          [
+            "rs116089225",
+            "TMCO1",
+            "chr1",
+            165715441,
+            "ENSG00000283936",
+            "MIR3658",
+            359,
+            192482
+          ],
+          [
+            "rs10918274",
+            "TMCO1",
+            "chr1",
+            165745179,
+            "ENSG00000283936",
+            "MIR3658",
+            359,
+            162744
+          ]
+        ],
+        "last_two_rows": [
+          [
+            "rs35381200",
+            "IL34",
+            "chr16",
+            70643165,
+            "ENSG00000261777",
+            "LOC100506083",
+            239,
+            -296287
+          ],
+          [
+            "rs35381200",
+            "IL34",
+            "chr16",
+            70643165,
+            "ENSG00000103051",
+            "COG4",
+            479,
+            -119397
+          ]
+        ],
+        "columns": [
+          {
+            "column": 1,
+            "nonempty_after_row4": 31,
+            "unique": 17,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "rs116089225",
+              "rs10918274",
+              "rs6781336",
+              "rs10036789"
+            ]
+          },
+          {
+            "column": 2,
+            "nonempty_after_row4": 29,
+            "unique": 14,
+            "all_values_if_leq_15": {
+              "TMCO1": 3,
+              "KBTBD8/LRIGI": 3,
+              "PTCD2": 3,
+              "EXOC2": 1,
+              "PKHD1": 2,
+              "HGF": 1,
+              "NA": 1,
+              "SYT13": 3,
+              "ELMO3": 5,
+              "GNB1L/TXNRD2": 1,
+              "EMID1": 1,
+              "Loci": 2,
+              "PTPRJ": 1,
+              "IL34": 2
+            },
+            "examples": [
+              "TMCO1",
+              "KBTBD8/LRIGI",
+              "PTCD2",
+              "EXOC2"
+            ]
+          },
+          {
+            "column": 3,
+            "nonempty_after_row4": 29,
+            "unique": 10,
+            "all_values_if_leq_15": {
+              "chr1": 3,
+              "chr3": 3,
+              "chr5": 3,
+              "chr6": 3,
+              "chr7": 1,
+              "chr10": 1,
+              "chr11": 4,
+              "chr16": 7,
+              "chr22": 2,
+              "Chr": 2
+            },
+            "examples": [
+              "chr1",
+              "chr3",
+              "chr5",
+              "chr6"
+            ]
+          },
+          {
+            "column": 4,
+            "nonempty_after_row4": 29,
+            "unique": 15,
+            "all_values_if_leq_15": {
+              "597203": 1,
+              "19854787": 1,
+              "29224336": 1,
+              "45358223": 3,
+              "47991932": 1,
+              "51542050": 2,
+              "66807626": 3,
+              "67199363": 5,
+              "70643165": 2,
+              "72400091": 3,
+              "81209661": 1,
+              "129032674": 1,
+              "165715441": 2,
+              "165745179": 1,
+              "Chromosome position (hg38)": 2
+            },
+            "examples": [
+              "165715441",
+              "165745179",
+              "66807626",
+              "72400091"
+            ]
+          },
+          {
+            "column": 5,
+            "nonempty_after_row4": 29,
+            "unique": 18,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "ENSG00000283936",
+              "ENSG00000144749",
+              "ENSG00000083312",
+              "ENSG00000137273"
+            ]
+          },
+          {
+            "column": 6,
+            "nonempty_after_row4": 29,
+            "unique": 18,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "MIR3658",
+              "LRIG1",
+              "TNPO1",
+              "FOXF2"
+            ]
+          },
+          {
+            "column": 7,
+            "nonempty_after_row4": 29,
+            "unique": 11,
+            "all_values_if_leq_15": {
+              "119": 1,
+              "239": 4,
+              "359": 8,
+              "360": 2,
+              "479": 2,
+              "599": 1,
+              "719": 1,
+              "839": 2,
+              "841": 3,
+              "1073": 3,
+              "Promoter length": 2
+            },
+            "examples": [
+              "359",
+              "239",
+              "1073",
+              "839"
+            ]
+          },
+          {
+            "column": 8,
+            "nonempty_after_row4": 29,
+            "unique": 19,
+            "all_values_if_leq_15": null,
+            "examples": [
+              "192482",
+              "162744",
+              "-306203",
+              "416676"
+            ]
+          }
+        ]
+      },
+      "IOP_MacGregor": {
+        "rows": 26,
+        "first_six_rows": [
+          [
+            "Dataset S2. Target genes identified for GWAS SNPs.",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Target gene for dexamethasone control",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Lead variant",
+            "Loci",
+            "Chr",
+            "Chromosome position (hg38)",
+            "ID",
+            "Promoter target gene",
+            "Promoter length",
+            "Distance of variant from promoter"
+          ],
+          [
+            "rs10918274",
+            "TMCO1",
+            "chr1",
+            165745179,
+            "ENSG00000283936",
+            "MIR3658",
+            359,
+            162744
+          ],
+          [
+            "rs11123857",
+            "NPAS2",
+            "chr2",
+            100987350,
+            "ENSG00000170485",
+            "NPAS2",
+            119,
+            -167546
+          ],
+          [
+            "rs6781336",
+            "LRIG1",
+            "chr3",
+            66807626,
+            "ENSG00000144749",
+            "LRIG1",
+            239,
+            -306203
+          ]
+        ],
+        "last_two_rows": [
+          [
+            "rs2697920",
+            "MYBPC3",
+            "chr11",
+            47349056,
+            "ENSG00000275208",
+            "MIR6745",
+            355,
+            -168971
+          ],
+          [
+            "rs7123436",
+            "PTPRJ",
+            "chr11",
+            47991932,
+            "ENSG00000263693",
+            "MIR3161",
+            119,
+            104832
+          ]
+        ],
+        "columns": [
+          {
+            "column": 1,
+            "nonempty_after_row4": 20,
+            "unique": 13,
+            "all_values_if_leq_15": {
+              "rs11123857": 1,
+              "rs6781336": 3,
+              "rs10036789": 3,
+              "rs113985657": 1,
+              "rs17752199": 2,
+              "rs327716": 1,
+              "rs9608740": 1,
+              "Targte gene dexamethasone treatment": 1,
+              "Lead variant": 2,
+              "Target gene resource": 1,
+              "rs6732795": 2,
+              "rs2697920": 1,
+              "rs7123436": 1
+            },
+            "examples": [
+              "rs11123857",
+              "rs6781336",
+              "rs10036789",
+              "rs113985657"
+            ]
+          },
+          {
+            "column": 2,
+            "nonempty_after_row4": 18,
+            "unique": 11,
+            "all_values_if_leq_15": {
+              "NPAS2": 1,
+              "LRIG1": 3,
+              "PTCD2": 3,
+              "EXOC2": 1,
+              "PKHD1": 2,
+              "SEMA3C": 1,
+              "EMID1": 1,
+              "Loci": 2,
+              "ANTXR1": 2,
+              "MYBPC3": 1,
+              "PTPRJ": 1
+            },
+            "examples": [
+              "NPAS2",
+              "LRIG1",
+              "PTCD2",
+              "EXOC2"
+            ]
+          },
+          {
+            "column": 3,
+            "nonempty_after_row4": 18,
+            "unique": 8,
+            "all_values_if_leq_15": {
+              "chr2": 3,
+              "chr3": 3,
+              "chr5": 3,
+              "chr6": 3,
+              "chr7": 1,
+              "chr22": 1,
+              "Chr": 2,
+              "chr11": 2
+            },
+            "examples": [
+              "chr2",
+              "chr3",
+              "chr5",
+              "chr6"
+            ]
+          },
+          {
+            "column": 4,
+            "nonempty_after_row4": 18,
+            "unique": 11,
+            "all_values_if_leq_15": {
+              "597203": 1,
+              "29224336": 1,
+              "47349056": 1,
+              "47991932": 1,
+              "51542050": 2,
+              "66807626": 3,
+              "69184385": 2,
+              "72400091": 3,
+              "81209661": 1,
+              "100987350": 1,
+              "Chromosome position (hg38)": 2
+            },
+            "examples": [
+              "100987350",
+              "66807626",
+              "72400091",
+              "597203"
+            ]
+          },
+          {
+            "column": 5,
+            "nonempty_after_row4": 18,
+            "unique": 12,
+            "all_values_if_leq_15": {
+              "ENSG00000170485": 1,
+              "ENSG00000144749": 3,
+              "ENSG00000083312": 3,
+              "ENSG00000137273": 1,
+              "ENSG00000008196": 2,
+              "ENSG00000075223": 1,
+              "ENSG00000100249": 1,
+              "ID": 2,
+              "ENSG00000183607": 1,
+              "ENSG00000169604": 1,
+              "ENSG00000275208": 1,
+              "ENSG00000263693": 1
+            },
+            "examples": [
+              "ENSG00000170485",
+              "ENSG00000144749",
+              "ENSG00000083312",
+              "ENSG00000137273"
+            ]
+          },
+          {
+            "column": 6,
+            "nonempty_after_row4": 18,
+            "unique": 12,
+            "all_values_if_leq_15": {
+              "NPAS2": 1,
+              "LRIG1": 3,
+              "TNPO1": 3,
+              "FOXF2": 1,
+              "TFAP2B": 2,
+              "SEMA3C": 1,
+              "C22orf31": 1,
+              "Promoter target gene": 2,
+              "GKN2": 1,
+              "ANTXR1": 1,
+              "MIR6745": 1,
+              "MIR3161": 1
+            },
+            "examples": [
+              "NPAS2",
+              "LRIG1",
+              "TNPO1",
+              "FOXF2"
+            ]
+          },
+          {
+            "column": 7,
+            "nonempty_after_row4": 18,
+            "unique": 10,
+            "all_values_if_leq_15": {
+              "119": 2,
+              "239": 3,
+              "355": 1,
+              "359": 1,
+              "479": 1,
+              "599": 1,
+              "719": 2,
+              "839": 2,
+              "1073": 3,
+              "Promoter length": 2
+            },
+            "examples": [
+              "119",
+              "239",
+              "1073",
+              "359"
+            ]
+          },
+          {
+            "column": 8,
+            "nonempty_after_row4": 18,
+            "unique": 12,
+            "all_values_if_leq_15": {
+              "104832": 1,
+              "416676": 3,
+              "792475": 1,
+              "-167546": 1,
+              "-306203": 3,
+              "-723141": 2,
+              "-286599": 1,
+              "-161728": 1,
+              "Distance of variant from promoter": 2,
+              "-230920": 1,
+              "-171133": 1,
+              "-168971": 1
+            },
+            "examples": [
+              "-167546",
+              "-306203",
+              "416676",
+              "792475"
+            ]
+          }
+        ]
+      }
+    },
+    "source_lineage": {
+      "PNAS_final": "GSE301525",
+      "RNA_subseries": "GSE301517",
+      "GEO_super_series": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE301525",
+      "IOVS_corrected_PRJNA": "PRJNA1243143",
+      "IOVS_corrected_source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12882097/"
+    },
+    "limits": [
+      "All five S2 sheets preserved verbatim as public CC BY source data with attribution (Singh et al., PNAS 2026 DOI 10.1073/pnas.2609070123; NLM PMC Cloud). No source gene set inferred from worksheet names, row counts or the abstract alone. Need explicit interpretation of control versus DEX columns and author gene inclusion rules before exact overlap.",
+      "No donor-level data or genetic records. No novelty result, no inferential enrichment test, no independent validation."
+    ]
+  }
+}

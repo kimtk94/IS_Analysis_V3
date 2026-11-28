@@ -1,0 +1,124 @@
+{
+  "provenance": {
+    "run_id": 45538483133,
+    "job_id": 138950875402,
+    "artifact_id": 14988391600,
+    "reported_artifact_zip_sha256": "329ab72bdab522f82d7e66654129ea20d77afe077e83a8578143e8569ebeef0f",
+    "source_commit": "5eccfda0776b825f478a5c4c4fa07e275db498f8",
+    "readback": "Actual aggregate JSON stdout; reported artifact digest not independently downloaded. Full artifact may contain additional detail."
+  },
+  "result": {
+    "status": "BLINDED_TWO_PLATFORM_SOURCE_GATE",
+    "study": "GSE65240",
+    "panel_sha256": "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606",
+    "platforms": {
+      "GPL14550": {
+        "status": "BLINDED_PLATFORM_QC",
+        "matrix_sha256": "e45a6f3ee81552d462be998f17dc4f61de0af01eb653ff940321974fc9875d8a",
+        "annotation_sha256": "7d9c55be92867b90e9d510fff18a851d7ac0d2f51a41e5379296733a784571d8",
+        "matrix_rows": 42405,
+        "annotation_rows": 42545,
+        "eligible_probes": 29831,
+        "complete_rank_universe": 29831,
+        "nonfinite": 0,
+        "samples": [
+          {
+            "gsm": "GSM1590607",
+            "commercial_lot": "4973",
+            "arm": "control",
+            "platform": "GPL14550",
+            "source_name_lot_matches": true
+          },
+          {
+            "gsm": "GSM1590608",
+            "commercial_lot": "4973",
+            "arm": "dex",
+            "platform": "GPL14550",
+            "source_name_lot_matches": true
+          }
+        ],
+        "mapped_candidates": 220
+      },
+      "GPL17077": {
+        "status": "BLINDED_PLATFORM_QC",
+        "matrix_sha256": "64fc6f88743edb8246a992ccbcb04428179ea80838815cecc9b7c86d40bfa19a",
+        "annotation_sha256": "b4714e80b7044823978f93cd4e305c54891446175790d4af1a7cdc100f3de34e",
+        "matrix_rows": 50599,
+        "annotation_rows": 50739,
+        "eligible_probes": 29831,
+        "complete_rank_universe": 29831,
+        "nonfinite": 0,
+        "samples": [
+          {
+            "gsm": "GSM1590603",
+            "commercial_lot": "2584",
+            "arm": "control",
+            "platform": "GPL17077",
+            "source_name_lot_matches": false
+          },
+          {
+            "gsm": "GSM1590604",
+            "commercial_lot": "2584",
+            "arm": "dex",
+            "platform": "GPL17077",
+            "source_name_lot_matches": false
+          },
+          {
+            "gsm": "GSM1590605",
+            "commercial_lot": "3423",
+            "arm": "control",
+            "platform": "GPL17077",
+            "source_name_lot_matches": false
+          },
+          {
+            "gsm": "GSM1590606",
+            "commercial_lot": "3423",
+            "arm": "dex",
+            "platform": "GPL17077",
+            "source_name_lot_matches": false
+          }
+        ],
+        "mapped_candidates": 220
+      }
+    },
+    "limits": [
+      "Three commercial primary-cell lots, donor independence not certified. Six arrays are not six donors. Two platforms are kept separate.",
+      "Source-name conflict is recorded, not silently corrected. Only title/explicit lot and arm agreement is used for candidate pairing; resolve discrepancies before scoring.",
+      "No expression response readout, no effect estimates, no post-hoc panel changes, no clinical prediction. This previously examined public study is descriptive only."
+    ],
+    "same_platform_lot_pairs": 3,
+    "source_name_conflict_count": 4,
+    "common_panels": {
+      "all241": {
+        "frozen": 241,
+        "mapped_common_exact_entrez": 220,
+        "direction_coverage": {
+          "1": {
+            "frozen": 117,
+            "mapped": 106
+          },
+          "-1": {
+            "frozen": 124,
+            "mapped": 114
+          }
+        },
+        "coverage_gate": true
+      },
+      "ECM16": {
+        "frozen": 16,
+        "mapped_common_exact_entrez": 16,
+        "direction_coverage": {
+          "1": {
+            "frozen": 7,
+            "mapped": 7
+          },
+          "-1": {
+            "frozen": 9,
+            "mapped": 9
+          }
+        },
+        "coverage_gate": true
+      }
+    }
+  }
+}

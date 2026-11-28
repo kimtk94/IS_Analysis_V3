@@ -1,0 +1,29 @@
+name: Ocular 10-day and 14-day context figure
+on:
+  push:
+    branches: [research/ocular-exvivo-fixed-panel-20261125]
+    paths: ['scripts/ocular_long_exposure_context_figure.py','.github/workflows/ocular-long-exposure-context-figure.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  context-figure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate context-specific rank score figure from verified aggregates
+        run: |
+          python -m pip install 'matplotlib==3.10.1'
+          python scripts/ocular_long_exposure_context_figure.py --evidence docs/publication/evidence --out outputs/figure
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-long-exposure-context-figure
+          path: outputs/figure/
+          if-no-files-found: error
+          retention-days: 90

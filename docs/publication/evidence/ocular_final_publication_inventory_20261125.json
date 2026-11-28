@@ -1,0 +1,1816 @@
+{
+  "provenance": {
+    "run_id": 45577692199,
+    "job_id": 139079583702,
+    "artifact_id": 15004134568,
+    "reported_artifact_zip_sha256": "7a329293f079a129b3812dce4afe23aede7f99efe7a0fea91111c3a10529de70",
+    "source_commit": "3e11fd61021a8591ed1cbc203366832a8f7f2eef",
+    "readback": "Verified actual stdout; public PMC object MD5 and SHA256 checked, ZIP digest reported by upload."
+  },
+  "result": {
+    "status": "PMC_OFFICIAL_PUBLIC_SOURCE_INVENTORY_NOT_OVERLAP",
+    "source": "https://registry.opendata.aws/ncbi-pmc",
+    "documentation": "https://pmc.ncbi.nlm.nih.gov/tools/pmcaws/",
+    "papers": {
+      "PNAS": {
+        "status": "VERSION_INVENTORY_READ",
+        "version_listing": {
+          "url": "https://pmc-oa-opendata.s3.amazonaws.com/?list-type=2&prefix=PMC13778663.&delimiter=%2F&max-keys=20",
+          "bytes": 344,
+          "sha256": "996ba3978e27a06a8edb6f4d3282783f708bf02d839ec63e24b7d52420e46a04"
+        },
+        "versions": [
+          "PMC13778663.1/"
+        ],
+        "articles": [
+          {
+            "prefix": "PMC13778663.1/",
+            "status": "PUBLIC_SOURCE_INVENTORY_COMPLETE",
+            "metadata_source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/metadata/PMC13778663.1.json",
+              "bytes": 2015,
+              "sha256": "7c0476a3e0bc0e3517480cc56dbc184dda0016ff2688ca089571a6e486e89f09"
+            },
+            "metadata": {
+              "pmcid": "PMC13778663",
+              "version": 1,
+              "pmid": 43013538,
+              "doi": "10.1073/pnas.2609070123",
+              "title": "Chromatin dynamics secondary to dexamethasone exposure identifies 67 genes linked to elevated IOP and primary open-angle glaucoma",
+              "citation": "Proc Natl Acad Sci U S A. 2026 Nov 11;123(46):e2609070123. doi: 10.1073/pnas.2609070123",
+              "is_pmc_openaccess": true,
+              "is_manuscript": false,
+              "is_retracted": false,
+              "license_code": "CC BY"
+            },
+            "xml_source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/PMC13778663.1.xml",
+              "bytes": 154636,
+              "sha256": "4f78c568928a024c038e8cb96fc49c1d91735af4691d6c2c507c9526075b5c29",
+              "key": "PMC13778663.1/PMC13778663.1.xml",
+              "published_md5": "2d2cdda52259e0ce299e5658b039c26d"
+            },
+            "supplement_references": [
+              {
+                "href": "pnas.2609070123.sapp.pdf",
+                "label": ""
+              },
+              {
+                "href": "pnas.2609070123.sd01.xlsx",
+                "label": ""
+              },
+              {
+                "href": "pnas.2609070123.sd02.xlsx",
+                "label": ""
+              },
+              {
+                "href": "pnas.2609070123.sd03.xlsx",
+                "label": ""
+              },
+              {
+                "href": "pnas.2609070123.sd04.xlsx",
+                "label": ""
+              },
+              {
+                "href": "pnas.2609070123.sd05.xlsx",
+                "label": ""
+              },
+              {
+                "href": "pnas.2609070123.sd06.xlsx",
+                "label": ""
+              }
+            ],
+            "public_accession_tokens": [
+              "GSE301525"
+            ],
+            "supplement_file_inventory": [
+              {
+                "key": "PMC13778663.1/pnas.2609070123.sapp.pdf",
+                "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sapp.pdf",
+                "md5": "26374503f54cd1a70b79574d3fcb9e16"
+              },
+              {
+                "key": "PMC13778663.1/pnas.2609070123.sd01.xlsx",
+                "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd01.xlsx",
+                "md5": "ff3927f2af87f1509f7f466833bfce55"
+              },
+              {
+                "key": "PMC13778663.1/pnas.2609070123.sd02.xlsx",
+                "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd02.xlsx",
+                "md5": "053b1876594fe2a795b9554c17864f2c"
+              },
+              {
+                "key": "PMC13778663.1/pnas.2609070123.sd03.xlsx",
+                "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd03.xlsx",
+                "md5": "f4c69a785d1ea7e2a5f33b7fdefa3867"
+              },
+              {
+                "key": "PMC13778663.1/pnas.2609070123.sd04.xlsx",
+                "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd04.xlsx",
+                "md5": "93635baf7bb4271a0c23e9e3c379c7bf"
+              },
+              {
+                "key": "PMC13778663.1/pnas.2609070123.sd05.xlsx",
+                "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd05.xlsx",
+                "md5": "5b1c9efbf1d515fc65c9cc3f11758d6f"
+              },
+              {
+                "key": "PMC13778663.1/pnas.2609070123.sd06.xlsx",
+                "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd06.xlsx",
+                "md5": "3b328797b3655c8e72f2e2b4d24e60b6"
+              }
+            ],
+            "referenced_xlsx_count": 6,
+            "workbooks": [
+              {
+                "status": "REFERENCED_WORKBOOK_SCHEMA_READ",
+                "source": {
+                  "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd01.xlsx",
+                  "bytes": 35265,
+                  "sha256": "a7ece7c8df45fe647bf955e24ea48c60d149c30485251628b3c7a2a57482632b",
+                  "key": "PMC13778663.1/pnas.2609070123.sd01.xlsx",
+                  "published_md5": "ff3927f2af87f1509f7f466833bfce55"
+                },
+                "sheets": [
+                  {
+                    "name": "SE_results",
+                    "reported_max_row": 259,
+                    "reported_max_column": 11,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S1. Changes in H3K27ac over gained and lost super enhancers. ",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "SE_ID",
+                          "Binary_SE_classification",
+                          "Chromosome",
+                          "Start",
+                          "End",
+                          "H3K27ac_log2FC_Dex_vs_Control",
+                          "LRT_P_value",
+                          "BH_FDR",
+                          "H3K27ac_direction",
+                          "Direction_matches_binary_call",
+                          "Significance",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "status": "REFERENCED_WORKBOOK_SCHEMA_READ",
+                "source": {
+                  "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd02.xlsx",
+                  "bytes": 25410,
+                  "sha256": "9197476141d1ca99a40d83fa92137fca48657082f14b9ad5ddcb646babd95cf7",
+                  "key": "PMC13778663.1/pnas.2609070123.sd02.xlsx",
+                  "published_md5": "053b1876594fe2a795b9554c17864f2c"
+                },
+                "sheets": [
+                  {
+                    "name": "POAG_Gharahkhani",
+                    "reported_max_row": 39,
+                    "reported_max_column": 8,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S2. Target genes identified for GWAS SNPs.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Target gene for dexamethasone control",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "POAG_Han",
+                    "reported_max_row": 88,
+                    "reported_max_column": 8,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S2. Target genes identified for GWAS SNPs.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Target gene for dexamethasone control",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IOP_Gharahkhani",
+                    "reported_max_row": 29,
+                    "reported_max_column": 8,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S2. Target genes identified for GWAS SNPs.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Target gene for dexamethasone control",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IOP_Khawaja",
+                    "reported_max_row": 37,
+                    "reported_max_column": 8,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S2. Target genes identified for GWAS SNPs.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Target gene for dexamethasone control",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IOP_MacGregor",
+                    "reported_max_row": 26,
+                    "reported_max_column": 8,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S2. Target genes identified for GWAS SNPs.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Target gene for dexamethasone control",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "status": "REFERENCED_WORKBOOK_SCHEMA_READ",
+                "source": {
+                  "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd03.xlsx",
+                  "bytes": 54927,
+                  "sha256": "4c98ddfcadcb4b5eae794a4f2dd51a33bffcf6e0828f10ce634ea2fc0c42e9e3",
+                  "key": "PMC13778663.1/pnas.2609070123.sd03.xlsx",
+                  "published_md5": "f4c69a785d1ea7e2a5f33b7fdefa3867"
+                },
+                "sheets": [
+                  {
+                    "name": "POAG_Gharahkhani_Fibro_eQTL",
+                    "reported_max_row": 20,
+                    "reported_max_column": 20,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S3. Comparison of putative targets of GWAS SNPs identified by promoter capture Hi-C and eQTLs from GTEx cultured fibroblasts and retina.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Variant_chromosome",
+                          "Variant_start",
+                          "Variant_end",
+                          "Variant",
+                          "Loci",
+                          "Promoter target gene",
+                          "phenotype_id",
+                          "Gene",
+                          "Biotype",
+                          "variant_id",
+                          "start_distance",
+                          "af",
+                          "ma_samples",
+                          "ma_count",
+                          "pval_nominal",
+                          "slope",
+                          "slope_se",
+                          "pval_nominal_threshold",
+                          "min_pval_nominal",
+                          "pval_beta",
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "POAG_Gharahkhani_Retina_eQTL",
+                    "reported_max_row": 13,
+                    "reported_max_column": 32,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S3. Comparison of putative targets of GWAS SNPs identified by promoter capture Hi-C and eQTLs from GTEx cultured fibroblasts and retina.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Variant_chromosome",
+                          "Variant_start",
+                          "Variant_end",
+                          "Variant",
+                          "Loci",
+                          "Promoter target gene",
+                          "Phenotype",
+                          "Gene",
+                          "Biotype",
+                          "Chr",
+                          "Start",
+                          "End",
+                          "Strand",
+                          "Number_of_variants",
+                          "Distance_varaints",
+                          "Variant",
+                          "Chr_1",
+                          "Start_1",
+                          "End_1",
+                          "Rank",
+                          "Forward_nominal_P_value",
+                          "Forward_r_squared",
+                          "Forward_slope",
+                          "Forward_slope_se"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "POAG_Han_Fibro_eQTL",
+                    "reported_max_row": 121,
+                    "reported_max_column": 20,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S3. Comparison of putative targets of GWAS SNPs identified by promoter capture Hi-C and eQTLs from GTEx cultured fibroblasts and retina.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Variant_chromosome",
+                          "Variant_start",
+                          "Variant_end",
+                          "Variant",
+                          "Loci",
+                          "Promoter target gene",
+                          "phenotype_id",
+                          "Gene",
+                          "Biotype",
+                          "variant_id",
+                          "start_distance",
+                          "af",
+                          "ma_samples",
+                          "ma_count",
+                          "pval_nominal",
+                          "slope",
+                          "slope_se",
+                          "pval_nominal_threshold",
+                          "min_pval_nominal",
+                          "pval_beta",
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "POAG_Han_Retina_eQTL",
+                    "reported_max_row": 45,
+                    "reported_max_column": 32,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S3. Comparison of putative targets of GWAS SNPs identified by promoter capture Hi-C and eQTLs from GTEx cultured fibroblasts and retina.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Variant_chromosome",
+                          "Variant_start",
+                          "Variant_end",
+                          "Variant",
+                          "Loci",
+                          "Promoter target gene",
+                          "Phenotype",
+                          "Gene",
+                          "Biotype",
+                          "Chr",
+                          "Start",
+                          "End",
+                          "Strand",
+                          "Number_of_variants",
+                          "Distance_varaints",
+                          "Variant",
+                          "Chr_1",
+                          "Start_1",
+                          "End_1",
+                          "Rank",
+                          "Forward_nominal_P_value",
+                          "Forward_r_squared",
+                          "Forward_slope",
+                          "Forward_slope_se"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IOP_Gharahkhani_Fibro_eQTL",
+                    "reported_max_row": 24,
+                    "reported_max_column": 20,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S3. Comparison of putative targets of GWAS SNPs identified by promoter capture Hi-C and eQTLs from GTEx cultured fibroblasts and retina.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Variant_chromosome",
+                          "Variant_start",
+                          "Variant_end",
+                          "Variant",
+                          "Loci",
+                          "Promoter target gene",
+                          "phenotype_id",
+                          "Gene",
+                          "Biotype",
+                          "variant_id",
+                          "start_distance",
+                          "af",
+                          "ma_samples",
+                          "ma_count",
+                          "pval_nominal",
+                          "slope",
+                          "slope_se",
+                          "pval_nominal_threshold",
+                          "min_pval_nominal",
+                          "pval_beta",
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IOP_Gharahkhani_Retina_eQTL",
+                    "reported_max_row": 6,
+                    "reported_max_column": 32,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S3. Comparison of putative targets of GWAS SNPs identified by promoter capture Hi-C and eQTLs from GTEx cultured fibroblasts and retina.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Variant_chromosome",
+                          "Variant_start",
+                          "Variant_end",
+                          "Variant",
+                          "Loci",
+                          "Promoter target gene",
+                          "Phenotype",
+                          "Gene",
+                          "Biotype",
+                          "Chr",
+                          "Start",
+                          "End",
+                          "Strand",
+                          "Number_of_variants",
+                          "Distance_varaints",
+                          "Variant",
+                          "Chr_1",
+                          "Start_1",
+                          "End_1",
+                          "Rank",
+                          "Forward_nominal_P_value",
+                          "Forward_r_squared",
+                          "Forward_slope",
+                          "Forward_slope_se"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IOP_Khawaja_Fibro_eQTL",
+                    "reported_max_row": 4,
+                    "reported_max_column": 20,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S3. Comparison of putative targets of GWAS SNPs identified by promoter capture Hi-C and eQTLs from GTEx cultured fibroblasts and retina.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Variant_chromosome",
+                          "Variant_start",
+                          "Variant_end",
+                          "Variant",
+                          "Loci",
+                          "Promoter target gene",
+                          "phenotype_id",
+                          "Gene",
+                          "Biotype",
+                          "variant_id",
+                          "start_distance",
+                          "af",
+                          "ma_samples",
+                          "ma_count",
+                          "pval_nominal",
+                          "slope",
+                          "slope_se",
+                          "pval_nominal_threshold",
+                          "min_pval_nominal",
+                          "pval_beta",
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IOP_Khawaja_Retina_eQTL",
+                    "reported_max_row": 14,
+                    "reported_max_column": 32,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S3. Comparison of putative targets of GWAS SNPs identified by promoter capture Hi-C and eQTLs from GTEx cultured fibroblasts and retina.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Variant_chromosome",
+                          "Variant_start",
+                          "Variant_end",
+                          "Variant",
+                          "Loci",
+                          "Promoter target gene",
+                          "Phenotype",
+                          "Gene",
+                          "Biotype",
+                          "Chr",
+                          "Start",
+                          "End",
+                          "Strand",
+                          "Number_of_variants",
+                          "Distance_varaints",
+                          "Variant",
+                          "Chr_1",
+                          "Start_1",
+                          "End_1",
+                          "Rank",
+                          "Forward_nominal_P_value",
+                          "Forward_r_squared",
+                          "Forward_slope",
+                          "Forward_slope_se"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IOP_MacGregor_Fibro_eQTL",
+                    "reported_max_row": 12,
+                    "reported_max_column": 20,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S3. Comparison of putative targets of GWAS SNPs identified by promoter capture Hi-C and eQTLs from GTEx cultured fibroblasts and retina.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Variant_chromosome",
+                          "Variant_start",
+                          "Variant_end",
+                          "Variant",
+                          "Loci",
+                          "Promoter target gene",
+                          "phenotype_id",
+                          "Gene",
+                          "Biotype",
+                          "variant_id",
+                          "start_distance",
+                          "af",
+                          "ma_samples",
+                          "ma_count",
+                          "pval_nominal",
+                          "slope",
+                          "slope_se",
+                          "pval_nominal_threshold",
+                          "min_pval_nominal",
+                          "pval_beta",
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IOP_MacGregor_Retina_eQTL",
+                    "reported_max_row": 4,
+                    "reported_max_column": 32,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S3. Comparison of putative targets of GWAS SNPs identified by promoter capture Hi-C and eQTLs from GTEx cultured fibroblasts and retina.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Variant_chromosome",
+                          "Variant_start",
+                          "Variant_end",
+                          "Variant",
+                          "Loci",
+                          "Promoter target gene",
+                          "Phenotype",
+                          "Gene",
+                          "Biotype",
+                          "Chr",
+                          "Start",
+                          "End",
+                          "Strand",
+                          "Number_of_variants",
+                          "Distance_varaints",
+                          "Variant",
+                          "Chr_1",
+                          "Start_1",
+                          "End_1",
+                          "Rank",
+                          "Forward_nominal_P_value",
+                          "Forward_r_squared",
+                          "Forward_slope",
+                          "Forward_slope_se"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "status": "REFERENCED_WORKBOOK_SCHEMA_READ",
+                "source": {
+                  "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd04.xlsx",
+                  "bytes": 112800,
+                  "sha256": "1b9191ff550f0066dcc54e9a7249ff22463a2a523ff38c565d0dd7e9491703da",
+                  "key": "PMC13778663.1/pnas.2609070123.sd04.xlsx",
+                  "published_md5": "93635baf7bb4271a0c23e9e3c379c7bf"
+                },
+                "sheets": [
+                  {
+                    "name": "Significant_results",
+                    "reported_max_row": 7,
+                    "reported_max_column": 22,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S4. Allele-specific chromatin accessibility, epigenetic marks, and expression for putative targets of GWAS SNPs. ",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "assay",
+                          "mark",
+                          "donor",
+                          "candidate_lead_variant",
+                          "assigned_gene",
+                          "measured_variant",
+                          "chromosome",
+                          "position",
+                          "allele_1",
+                          "allele_2",
+                          "pooled_allele_1",
+                          "pooled_allele_2",
+                          "control_allele_1",
+                          "control_allele_2",
+                          "dex_allele_1",
+                          "dex_allele_2",
+                          "primary_P",
+                          "primary_FDR",
+                          "treatment_P",
+                          "treatment_FDR",
+                          "conclusion",
+                          "limitation",
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ATAC_all_loci",
+                    "reported_max_row": 179,
+                    "reported_max_column": 21,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S4. Allele-specific chromatin accessibility, epigenetic marks, and expression for putative targets of GWAS SNPs. ",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "donor",
+                          "snp",
+                          "chr",
+                          "position",
+                          "genome_ref",
+                          "A_count",
+                          "C_count",
+                          "G_count",
+                          "T_count",
+                          "N_count",
+                          "usable_depth",
+                          "aggregation_level",
+                          "loci",
+                          "gene_ids",
+                          "sources",
+                          "allele_string",
+                          "ancestral_allele",
+                          "minor_allele",
+                          "maf",
+                          "library_concordance",
+                          "informative_for_allelic_test",
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ATAC_heterozygous_tests",
+                    "reported_max_row": 21,
+                    "reported_max_column": 20,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S4. Allele-specific chromatin accessibility, epigenetic marks, and expression for putative targets of GWAS SNPs. ",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "donor",
+                          "snp",
+                          "chr",
+                          "position",
+                          "loci",
+                          "allele_string",
+                          "observed_alleles",
+                          "allele_1_count",
+                          "allele_2_count",
+                          "usable_depth",
+                          "minor_fraction",
+                          "fisher_p",
+                          "fisher_FDR",
+                          "pooled_binomial_p",
+                          "pooled_binomial_FDR",
+                          "control_binomial_p",
+                          "control_binomial_FDR",
+                          "dex_binomial_p",
+                          "dex_binomial_FDR",
+                          "interpretation",
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "CUTTag_pooled_tests",
+                    "reported_max_row": 65,
+                    "reported_max_column": 10,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S4. Allele-specific chromatin accessibility, epigenetic marks, and expression for putative targets of GWAS SNPs. ",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "donor",
+                          "snp",
+                          "loci",
+                          "observed_alleles",
+                          "pooled_allele1_count",
+                          "pooled_allele2_count",
+                          "mark",
+                          "depth",
+                          "pooled_binomial_p",
+                          "pooled_binomial_FDR",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "CUTTag_condition_tests",
+                    "reported_max_row": 65,
+                    "reported_max_column": 11,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S4. Allele-specific chromatin accessibility, epigenetic marks, and expression for putative targets of GWAS SNPs. ",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "mark",
+                          "donor",
+                          "snp",
+                          "loci",
+                          "observed_alleles",
+                          "control_a1",
+                          "control_a2",
+                          "dex_a1",
+                          "dex_a2",
+                          "fisher_p",
+                          "fisher_FDR",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "RNA_SNP_gene_ASE",
+                    "reported_max_row": 457,
+                    "reported_max_column": 23,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset  S4. Allele-specific chromatin accessibility, epigenetic marks, and expression for putative targets of GWAS SNPs. ",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "gene_id",
+                          "lead_snp",
+                          "assigned_gene",
+                          "source",
+                          "ref",
+                          "alt",
+                          "donor",
+                          "control_ref",
+                          "control_alt",
+                          "control_depth",
+                          "control_alt_fraction",
+                          "control_p",
+                          "control_FDR",
+                          "dex_ref",
+                          "dex_alt",
+                          "dex_depth",
+                          "dex_alt_fraction",
+                          "dex_p",
+                          "dex_FDR",
+                          "condition_p",
+                          "condition_FDR",
+                          "informative_both_conditions",
+                          "interpretation",
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "status": "REFERENCED_WORKBOOK_SCHEMA_READ",
+                "source": {
+                  "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd05.xlsx",
+                  "bytes": 15592,
+                  "sha256": "7d2acd89c691a0331286099b371b41854f202f95d108059328bad38e011dcb36",
+                  "key": "PMC13778663.1/pnas.2609070123.sd05.xlsx",
+                  "published_md5": "5b1c9efbf1d515fc65c9cc3f11758d6f"
+                },
+                "sheets": [
+                  {
+                    "name": "Sheet1",
+                    "reported_max_row": 69,
+                    "reported_max_column": 3,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S5: Details of the reagents and resources used in the paper. ",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "REAGENT or RESOURCE",
+                          "SOURCE",
+                          "IDENTIFIER",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "status": "REFERENCED_WORKBOOK_SCHEMA_READ",
+                "source": {
+                  "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13778663.1/pnas.2609070123.sd06.xlsx",
+                  "bytes": 10218,
+                  "sha256": "7dbd440a31a38299500a9c3e5b6cc68c6a70f1dd78042c7dda6dd2d6777b0263",
+                  "key": "PMC13778663.1/pnas.2609070123.sd06.xlsx",
+                  "published_md5": "3b328797b3655c8e72f2e2b4d24e60b6"
+                },
+                "sheets": [
+                  {
+                    "name": "Sheet1",
+                    "reported_max_row": 8,
+                    "reported_max_column": 17,
+                    "schema_preview": [
+                      {
+                        "row": 1,
+                        "values": [
+                          "Dataset S6. Overview of samples used for each experiment.",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      },
+                      {
+                        "row": 2,
+                        "values": [
+                          "Line Name",
+                          null,
+                          "RNA-seq",
+                          null,
+                          null,
+                          "CUT&Tag",
+                          null,
+                          null,
+                          "CUT&RUN",
+                          null,
+                          null,
+                          "pcHiC",
+                          null,
+                          null,
+                          "ATAC",
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "IOVS_ERRATUM": {
+        "status": "VERSION_INVENTORY_READ",
+        "version_listing": {
+          "url": "https://pmc-oa-opendata.s3.amazonaws.com/?list-type=2&prefix=PMC13712379.&delimiter=%2F&max-keys=20",
+          "bytes": 344,
+          "sha256": "45befc3f12974e068ed8fd2edc60c28dad5b3fd93288799b93765a0714f7aa86"
+        },
+        "versions": [
+          "PMC13712379.1/"
+        ],
+        "articles": [
+          {
+            "prefix": "PMC13712379.1/",
+            "status": "PUBLIC_SOURCE_INVENTORY_COMPLETE",
+            "metadata_source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/metadata/PMC13712379.1.json",
+              "bytes": 779,
+              "sha256": "17f34366f68563c524573f8c0417e9f1a3206dbcb79dc01cf07ee5c13a0d87fb"
+            },
+            "metadata": {
+              "pmcid": "PMC13712379",
+              "version": 1,
+              "pmid": 42895266,
+              "doi": "10.1167/iovs.67.12.34",
+              "title": "Erratum in: Time-Dependent Glucocorticoid-Induced Transcriptomic Changes in Human Trabecular Meshwork and Schlemm's Canal Cells",
+              "citation": "Invest Ophthalmol Vis Sci. 2026 Oct 19;67(12):34. doi: 10.1167/iovs.67.12.34",
+              "is_pmc_openaccess": true,
+              "is_manuscript": false,
+              "is_retracted": false,
+              "license_code": "CC BY-NC-ND"
+            },
+            "xml_source": {
+              "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC13712379.1/PMC13712379.1.xml",
+              "bytes": 7270,
+              "sha256": "72c468ae0f6c405c7fd7225ef65f6b9ccb79884f680dd1ce5e12530777a529fc",
+              "key": "PMC13712379.1/PMC13712379.1.xml",
+              "published_md5": "df3153a6d30b39c68d25b8c358bc3857"
+            },
+            "supplement_references": [],
+            "public_accession_tokens": [
+              "PRJNA1243143"
+            ],
+            "supplement_file_inventory": [],
+            "referenced_xlsx_count": 0,
+            "workbooks": []
+          }
+        ]
+      }
+    },
+    "limits": [
+      "Official public cloud only. No full-text web scraping, paywall bypass, restricted records, or redistribution of complete publisher supplementary files.",
+      "Verify article version, DOI/PMID and published object MD5. Workbook schema previews are not full gene sets. Do not reconstruct 67 genes from counts or select sheets by matching expected count.",
+      "No panel overlap or novelty result until exact published table identities and complete rows are verified."
+    ]
+  }
+}

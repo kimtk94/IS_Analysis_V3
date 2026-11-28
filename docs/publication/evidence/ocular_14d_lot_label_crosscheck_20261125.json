@@ -1,0 +1,359 @@
+{
+  "provenance": {
+    "run_id": 45561823908,
+    "job_id": 139027089517,
+    "artifact_id": 14998391249,
+    "reported_artifact_zip_sha256": "c48f59acf133147886b59aacc8df0507a8b536eed0bb556db1704578f9dff72d",
+    "source_commit": "5321c0f21405df7d5d48c998611ac6a9ee19c2e3",
+    "readback": "Actual stdout. Reparse archived filenames with explicit optional underscore; no expression read or source modification."
+  },
+  "result": {
+    "status": "BLINDED_SAMPLE_LABEL_CROSSCHECK",
+    "series": "GSE65240",
+    "original_paper": "https://pubmed.ncbi.nlm.nih.gov/26066748/",
+    "platforms": {
+      "GPL14550": {
+        "status": "PINNED_MATRIX_METADATA_READ",
+        "source": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE65nnn/GSE65240/matrix/GSE65240-GPL14550_series_matrix.txt.gz",
+          "sha256": "e45a6f3ee81552d462be998f17dc4f61de0af01eb653ff940321974fc9875d8a",
+          "bytes": 366192
+        },
+        "sample_count": 2
+      },
+      "GPL17077": {
+        "status": "PINNED_MATRIX_METADATA_READ",
+        "source": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE65nnn/GSE65240/matrix/GSE65240-GPL17077_series_matrix.txt.gz",
+          "sha256": "64fc6f88743edb8246a992ccbcb04428179ea80838815cecc9b7c86d40bfa19a",
+          "bytes": 695620
+        },
+        "sample_count": 4
+      }
+    },
+    "samples": {
+      "GSM1590607": {
+        "platform": "GPL14550",
+        "expected_lot": "4973",
+        "expected_arm": "control",
+        "matrix_metadata": {
+          "!Sample_title": [
+            "4973 TM cell control"
+          ],
+          "!Sample_source_name_ch1": [
+            "Trabecular meshwork cell lot 4973"
+          ],
+          "!Sample_characteristics_ch1": [
+            "cell type: Primary human trabecular meshwork cells",
+            "cell line vendor: ScienCell Ltd",
+            "cell line lot #: Lot 4973",
+            "cultured with: none (control)"
+          ],
+          "!Sample_supplementary_file": [
+            "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590607/suppl/GSM1590607_4973_control.txt.gz"
+          ]
+        },
+        "matrix_file_matches": [
+          {
+            "filename": "GSM1590607_4973_control.txt.gz",
+            "lot": "4973",
+            "arm": "control"
+          }
+        ],
+        "supplementary_directory": {
+          "status": "LISTING_READ",
+          "source": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590607/suppl/",
+            "sha256": "713e4c8b1c4ba40cefd74ea1bf0066d634b4583863a518b518b736005edad93e",
+            "bytes": 619
+          },
+          "filenames": [
+            "GSM1590607_4973_control.txt.gz"
+          ],
+          "parsed": [
+            {
+              "filename": "GSM1590607_4973_control.txt.gz",
+              "lot": "4973",
+              "arm": "control"
+            }
+          ]
+        },
+        "raw_filename_corroborates_lot_and_arm": true,
+        "matrix_supplementary_and_directory_agree": true
+      },
+      "GSM1590608": {
+        "platform": "GPL14550",
+        "expected_lot": "4973",
+        "expected_arm": "dex",
+        "matrix_metadata": {
+          "!Sample_title": [
+            "4973 TM cell DEX treated"
+          ],
+          "!Sample_source_name_ch1": [
+            "Trabecular meshwork cell lot 4973"
+          ],
+          "!Sample_characteristics_ch1": [
+            "cell type: Primary human trabecular meshwork cells",
+            "cell line vendor: ScienCell Ltd",
+            "cell line lot #: Lot 4973",
+            "cultured with: 100nM dexamethsone for 14 days"
+          ],
+          "!Sample_supplementary_file": [
+            "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590608/suppl/GSM1590608_4973_DEX.txt.gz"
+          ]
+        },
+        "matrix_file_matches": [
+          {
+            "filename": "GSM1590608_4973_DEX.txt.gz",
+            "lot": "4973",
+            "arm": "dex"
+          }
+        ],
+        "supplementary_directory": {
+          "status": "LISTING_READ",
+          "source": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590608/suppl/",
+            "sha256": "ad081e706164f2e2f6222049e75403eee2ca782f833a65d319266d879b773c96",
+            "bytes": 615
+          },
+          "filenames": [
+            "GSM1590608_4973_DEX.txt.gz"
+          ],
+          "parsed": [
+            {
+              "filename": "GSM1590608_4973_DEX.txt.gz",
+              "lot": "4973",
+              "arm": "dex"
+            }
+          ]
+        },
+        "raw_filename_corroborates_lot_and_arm": true,
+        "matrix_supplementary_and_directory_agree": true
+      },
+      "GSM1590603": {
+        "platform": "GPL17077",
+        "expected_lot": "2584",
+        "expected_arm": "control",
+        "matrix_metadata": {
+          "!Sample_title": [
+            "2584 TM cell control"
+          ],
+          "!Sample_source_name_ch1": [
+            "Trabecular meshwork cell lot 4973"
+          ],
+          "!Sample_characteristics_ch1": [
+            "cell type: Primary human trabecular meshwork cells",
+            "cell line vendor: ScienCell Ltd",
+            "cell line lot #: Lot 2584",
+            "cultured with: none (control)"
+          ],
+          "!Sample_supplementary_file": [
+            "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590603/suppl/GSM1590603_2584control.txt.gz"
+          ]
+        },
+        "matrix_file_matches": [],
+        "supplementary_directory": {
+          "status": "LISTING_READ",
+          "source": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590603/suppl/",
+            "sha256": "89198800f98eea4ca610cb0183236bcd29867f233dfbd4018679386be31d3779",
+            "bytes": 618
+          },
+          "filenames": [
+            "GSM1590603_2584control.txt.gz"
+          ],
+          "parsed": []
+        },
+        "raw_filename_corroborates_lot_and_arm": false,
+        "matrix_supplementary_and_directory_agree": false
+      },
+      "GSM1590604": {
+        "platform": "GPL17077",
+        "expected_lot": "2584",
+        "expected_arm": "dex",
+        "matrix_metadata": {
+          "!Sample_title": [
+            "2584 TM cell DEX treated"
+          ],
+          "!Sample_source_name_ch1": [
+            "Trabecular meshwork cell lot 4973"
+          ],
+          "!Sample_characteristics_ch1": [
+            "cell type: Primary human trabecular meshwork cells",
+            "cell line vendor: ScienCell Ltd",
+            "cell line lot #: Lot 2584",
+            "cultured with: 100nM dexamethsone for 14 days"
+          ],
+          "!Sample_supplementary_file": [
+            "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590604/suppl/GSM1590604_2584DEX.txt.gz"
+          ]
+        },
+        "matrix_file_matches": [],
+        "supplementary_directory": {
+          "status": "LISTING_READ",
+          "source": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590604/suppl/",
+            "sha256": "8b95b2e1ec4538db8b21eaff0f3dfc201fec0d0c5cb187dae13fe7132c5b99a5",
+            "bytes": 614
+          },
+          "filenames": [
+            "GSM1590604_2584DEX.txt.gz"
+          ],
+          "parsed": []
+        },
+        "raw_filename_corroborates_lot_and_arm": false,
+        "matrix_supplementary_and_directory_agree": false
+      },
+      "GSM1590605": {
+        "platform": "GPL17077",
+        "expected_lot": "3423",
+        "expected_arm": "control",
+        "matrix_metadata": {
+          "!Sample_title": [
+            "3423 TM cell control"
+          ],
+          "!Sample_source_name_ch1": [
+            "Trabecular meshwork cell lot 4973"
+          ],
+          "!Sample_characteristics_ch1": [
+            "cell type: Primary human trabecular meshwork cells",
+            "cell line vendor: ScienCell Ltd",
+            "cell line lot #: Lot 3423",
+            "cultured with: none (control)"
+          ],
+          "!Sample_supplementary_file": [
+            "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590605/suppl/GSM1590605_3423control.txt.gz"
+          ]
+        },
+        "matrix_file_matches": [],
+        "supplementary_directory": {
+          "status": "LISTING_READ",
+          "source": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590605/suppl/",
+            "sha256": "f17d6528cab69801cb7f80281f7ee858fac025b15f6a0c91602640488fe702e7",
+            "bytes": 618
+          },
+          "filenames": [
+            "GSM1590605_3423control.txt.gz"
+          ],
+          "parsed": []
+        },
+        "raw_filename_corroborates_lot_and_arm": false,
+        "matrix_supplementary_and_directory_agree": false
+      },
+      "GSM1590606": {
+        "platform": "GPL17077",
+        "expected_lot": "3423",
+        "expected_arm": "dex",
+        "matrix_metadata": {
+          "!Sample_title": [
+            "3423 TM cell DEX treated"
+          ],
+          "!Sample_source_name_ch1": [
+            "Trabecular meshwork cell lot 4973"
+          ],
+          "!Sample_characteristics_ch1": [
+            "cell type: Primary human trabecular meshwork cells",
+            "cell line vendor: ScienCell Ltd",
+            "cell line lot #: Lot 3423",
+            "cultured with: 100nM dexamethsone for 14 days"
+          ],
+          "!Sample_supplementary_file": [
+            "ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590606/suppl/GSM1590606_3423DEX.txt.gz"
+          ]
+        },
+        "matrix_file_matches": [],
+        "supplementary_directory": {
+          "status": "LISTING_READ",
+          "source": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM1590nnn/GSM1590606/suppl/",
+            "sha256": "4caf6ab235df673a102de826784b48bf1563f51d861cd924c0c1203d915be48c",
+            "bytes": 614
+          },
+          "filenames": [
+            "GSM1590606_3423DEX.txt.gz"
+          ],
+          "parsed": []
+        },
+        "raw_filename_corroborates_lot_and_arm": false,
+        "matrix_supplementary_and_directory_agree": false
+      }
+    },
+    "limits": [
+      "Original paper reports three commercial primary TM cell batches, 100 nM DEX, 14 days; no proof of donor independence.",
+      "Inspect only matrix metadata above expression table and public supplementary directory filenames, never expression outcomes. Filenames are depositor-supplied evidence, not an independent cohort or verified chain of custody. A matching filename cannot prove that a source-name field is erroneous.",
+      "Any unresolved source-name discrepancy stays explicit. No scoring, cross-platform pooling, donor independence or post-readout label changes."
+    ],
+    "arrayexpress": {
+      "status": "HOLD_SOURCE_OR_SCHEMA",
+      "reason": "Unexpected source response"
+    },
+    "matrix_samples_read": 6,
+    "filename_corroborated_samples": 2,
+    "matrix_and_directory_filename_agreement": 2,
+    "scoring_status": "HOLD_REVIEW_LABEL_CONFLICT"
+  },
+  "filename_reconciliation": {
+    "status": "DEPOSITOR_LABELS_CORROBORATED_PRIMARY_CONFLICT_RETAINED",
+    "samples": [
+      {
+        "gsm": "GSM1590603",
+        "lot": "2584",
+        "arm": "control",
+        "platform": "GPL17077",
+        "filename": "GSM1590603_2584control.txt.gz",
+        "source_name": "Trabecular meshwork cell lot 4973",
+        "source_conflict": true
+      },
+      {
+        "gsm": "GSM1590604",
+        "lot": "2584",
+        "arm": "dex",
+        "platform": "GPL17077",
+        "filename": "GSM1590604_2584DEX.txt.gz",
+        "source_name": "Trabecular meshwork cell lot 4973",
+        "source_conflict": true
+      },
+      {
+        "gsm": "GSM1590605",
+        "lot": "3423",
+        "arm": "control",
+        "platform": "GPL17077",
+        "filename": "GSM1590605_3423control.txt.gz",
+        "source_name": "Trabecular meshwork cell lot 4973",
+        "source_conflict": true
+      },
+      {
+        "gsm": "GSM1590606",
+        "lot": "3423",
+        "arm": "dex",
+        "platform": "GPL17077",
+        "filename": "GSM1590606_3423DEX.txt.gz",
+        "source_name": "Trabecular meshwork cell lot 4973",
+        "source_conflict": true
+      },
+      {
+        "gsm": "GSM1590607",
+        "lot": "4973",
+        "arm": "control",
+        "platform": "GPL14550",
+        "filename": "GSM1590607_4973_control.txt.gz",
+        "source_name": "Trabecular meshwork cell lot 4973",
+        "source_conflict": false
+      },
+      {
+        "gsm": "GSM1590608",
+        "lot": "4973",
+        "arm": "dex",
+        "platform": "GPL14550",
+        "filename": "GSM1590608_4973_DEX.txt.gz",
+        "source_name": "Trabecular meshwork cell lot 4973",
+        "source_conflict": false
+      }
+    ],
+    "filename_matches": 6,
+    "source_name_conflicts": 4,
+    "primary_scoring": "HOLD",
+    "conditional_descriptive_scoring": "All three lot pairs, and prespecified conflict-free 4973 pair separately; no formal inference."
+  }
+}

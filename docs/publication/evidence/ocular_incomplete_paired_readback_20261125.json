@@ -1,0 +1,29 @@
+{
+  "provenance": {
+    "run_id": 45386503377,
+    "job_id": 138418680217,
+    "artifact_id": 14915833786,
+    "reported_artifact_zip_sha256": "d2d18b93363578906744435b1b612c4cb35d301753acd550a37ddf2844845bda",
+    "readback": "Verified actual stdout, upload-reported ZIP SHA256; not independently downloaded."
+  },
+  "result": {
+    "all_241": {
+      "pairs": 5,
+      "positive": 5,
+      "negative": 0,
+      "ties": 0,
+      "median_signed_log2_difference": 0.8157962532214961,
+      "two_sided_p": 0.0625,
+      "holm_p": 0.125
+    },
+    "ECM_16": {
+      "pairs": 5,
+      "positive": 5,
+      "negative": 0,
+      "ties": 0,
+      "median_signed_log2_difference": 0.916263422378456,
+      "two_sided_p": 0.0625,
+      "holm_p": 0.125
+    }
+  }
+}

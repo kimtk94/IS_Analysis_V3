@@ -1,0 +1,54 @@
+name: Ocular current 48h workbook parity
+on:
+  push:
+    branches: [research/ocular-exvivo-fixed-panel-20261125]
+    paths: ['scripts/ocular_current_48h_workbook_parity.py','.github/workflows/ocular-current-48h-workbook-parity.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  lineage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: frozen
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: dad9e89c0ae55bdccae1d2d9366357b115da9401
+          path: selection
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/checkout@v4
+        with:
+          ref: 0d39a9b41aa500d39327fdd8709f9ccb179f8502
+          path: official
+          persist-credentials: false
+          sparse-checkout: scripts/ocular
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit the fixed 67 IDs against original aggregate models
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          python -m pip install 'openpyxl==3.1.5'
+          curl -fLsS --connect-timeout 15 --max-time 90 --max-filesize 4000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/12995175346/zip" -o "$RUNNER_TEMP/p5d.zip"
+          curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 4000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o "$RUNNER_TEMP/panel.zip"
+          curl -fLsS --connect-timeout 15 --max-time 120 --max-filesize 73400320 "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12882097/supplementaryFiles" -o "$RUNNER_TEMP/tm.zip"
+          export PYTHONPATH="$PWD/selection/scripts:$PWD/frozen/scripts:$PWD/official/scripts/ocular"
+          python scripts/ocular_current_48h_workbook_parity.py --hold docs/publication/evidence/ocular_pnas67_exact_48h_hold_20261125.json --targets docs/publication/evidence/ocular_pnas_exact_target_overlap_20261125.json --pool "$RUNNER_TEMP/p5d.zip" --panel "$RUNNER_TEMP/panel.zip" --external "$RUNNER_TEMP/tm.zip" --out outputs/current-48h-parity.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-current-48h-workbook-parity
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

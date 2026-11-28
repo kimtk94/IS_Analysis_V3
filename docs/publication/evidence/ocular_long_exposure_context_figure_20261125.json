@@ -1,0 +1,40 @@
+{
+  "provenance": {
+    "run_id": 45573016759,
+    "job_id": 139064028857,
+    "artifact_id": 15003381515,
+    "source_commit": "076da59b9d20bfbfcdb4d402118ce41b777d0cb0",
+    "reported_artifact_zip_sha256": "7100c132cf2cd371d0f26fa547f94c0c6ca0026c79b120fe79ea2992c1f9c9df",
+    "readback": "Verified stdout and upload-reported ZIP digest; visual QA pending."
+  },
+  "result": {
+    "status": "CONTEXT_FIGURE_GENERATED",
+    "ten_day_pairs": 5,
+    "fourteen_day_lots": 3,
+    "primary_source_gate": "HOLD_SOURCE_NAME_CONFLICT",
+    "png_shape": [
+      1643,
+      3750,
+      4
+    ],
+    "files": [
+      {
+        "name": "LEGEND.md",
+        "bytes": 441
+      },
+      {
+        "name": "ocular_10d_14d_contexts.pdf",
+        "bytes": 22398
+      },
+      {
+        "name": "ocular_10d_14d_contexts.png",
+        "bytes": 207012
+      },
+      {
+        "name": "ocular_10d_14d_contexts.svg",
+        "bytes": 18269
+      }
+    ],
+    "visual_inspection": false
+  }
+}

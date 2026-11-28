@@ -1,0 +1,51 @@
+name: Ocular ex vivo unique gene rank sensitivity
+on:
+  push:
+    branches: [research/ocular-exvivo-fixed-panel-20261125]
+    paths: ['scripts/ocular_exvivo_gene_rank_sensitivity.py','.github/workflows/ocular-exvivo-gene-rank-sensitivity.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  gene-rank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: frozen
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 32bdfc54c2b6418cee6acd65e6d39fac878864ca
+          path: prior
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Focused tests and pinned public inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          export PYTHONPATH="$PWD/frozen/scripts:$PWD/prior/scripts"
+          python -m py_compile scripts/ocular_exvivo_gene_rank_sensitivity.py
+          python scripts/ocular_exvivo_gene_rank_sensitivity.py --selftest
+          curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 4000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o "$RUNNER_TEMP/panel.zip"
+          curl -fLsS --connect-timeout 15 --max-time 80 --max-filesize 20000000 'https://ftp.ncbi.nlm.nih.gov/geo/series/GSE37nnn/GSE37474/matrix/GSE37474_series_matrix.txt.gz' -o "$RUNNER_TEMP/matrix.gz"
+          curl -fLsS --connect-timeout 15 --max-time 80 --max-filesize 20000000 'https://ftp.ncbi.nlm.nih.gov/geo/platforms/GPLnnn/GPL570/annot/GPL570.annot.gz' -o "$RUNNER_TEMP/annot.gz"
+      - name: Compare probe-rank primary result to unique gene rank sensitivity
+        run: |
+          export PYTHONPATH="$PWD/frozen/scripts:$PWD/prior/scripts"
+          python scripts/ocular_exvivo_gene_rank_sensitivity.py --root "$RUNNER_TEMP" --primary docs/publication/evidence/ocular_exvivo_paired_20261125.json --out outputs/exvivo-gene-rank-sensitivity.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-exvivo-gene-rank-sensitivity
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

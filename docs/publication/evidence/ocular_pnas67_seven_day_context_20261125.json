@@ -1,0 +1,289 @@
+{
+  "provenance": {
+    "run_id": 45595015809,
+    "job_id": 139138678266,
+    "artifact_id": 15012343987,
+    "reported_artifact_zip_sha256": "37f54a6567c9241bcf43c7d3a5eded3cbc3572cb423a2e4ca83d58d1c103ca5b",
+    "source_commit": "a270f5086447389ae587b7fcd9ed942521390d19",
+    "readback": "Verified actual aggregate stdout; full target rows in artifact; artifact ZIP digest upload-reported."
+  },
+  "result": {
+    "status": "FIXED_PNAS67_7DAY_DESCRIPTIVE",
+    "source": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE301nnn/GSE301517/suppl/GSE301517_Control_vs_Dex_Gene_CPM_MSTR.tsv.gz",
+    "source_sha256": "717f4c9861de4d6b169439ef56a781f50d93ec918c456a9d0e61873e4a6e5f09",
+    "source_rows": 85298,
+    "all_targets": 67,
+    "mapped": 67,
+    "missing_ids": [],
+    "direction_reference_available": 48,
+    "groups": {
+      "all67": {
+        "total": 67,
+        "strata": [
+          {
+            "min_arm_mean_cpm": 0,
+            "mapped_expression_eligible": 67,
+            "direction_evaluable": 48,
+            "mean_direction_concordant": 30,
+            "all_three_direction_concordant": 10,
+            "all_three_abs_ge025": 3,
+            "all_leave_one_strain_out_same": 22,
+            "median_signed_mean_log2_ratio": 0.05667197399941616
+          },
+          {
+            "min_arm_mean_cpm": 1,
+            "mapped_expression_eligible": 44,
+            "direction_evaluable": 43,
+            "mean_direction_concordant": 25,
+            "all_three_direction_concordant": 9,
+            "all_three_abs_ge025": 3,
+            "all_leave_one_strain_out_same": 20,
+            "median_signed_mean_log2_ratio": 0.05641222255381084
+          },
+          {
+            "min_arm_mean_cpm": 5,
+            "mapped_expression_eligible": 39,
+            "direction_evaluable": 38,
+            "mean_direction_concordant": 22,
+            "all_three_direction_concordant": 8,
+            "all_three_abs_ge025": 2,
+            "all_leave_one_strain_out_same": 17,
+            "median_signed_mean_log2_ratio": 0.0452710058342065
+          }
+        ]
+      },
+      "donor_direction": {
+        "total": 48,
+        "strata": [
+          {
+            "min_arm_mean_cpm": 0,
+            "mapped_expression_eligible": 48,
+            "direction_evaluable": 48,
+            "mean_direction_concordant": 30,
+            "all_three_direction_concordant": 10,
+            "all_three_abs_ge025": 3,
+            "all_leave_one_strain_out_same": 22,
+            "median_signed_mean_log2_ratio": 0.05667197399941616
+          },
+          {
+            "min_arm_mean_cpm": 1,
+            "mapped_expression_eligible": 43,
+            "direction_evaluable": 43,
+            "mean_direction_concordant": 25,
+            "all_three_direction_concordant": 9,
+            "all_three_abs_ge025": 3,
+            "all_leave_one_strain_out_same": 20,
+            "median_signed_mean_log2_ratio": 0.05641222255381084
+          },
+          {
+            "min_arm_mean_cpm": 5,
+            "mapped_expression_eligible": 38,
+            "direction_evaluable": 38,
+            "mean_direction_concordant": 22,
+            "all_three_direction_concordant": 8,
+            "all_three_abs_ge025": 2,
+            "all_leave_one_strain_out_same": 17,
+            "median_signed_mean_log2_ratio": 0.0452710058342065
+          }
+        ]
+      },
+      "both_significant_concordant37": {
+        "total": 37,
+        "strata": [
+          {
+            "min_arm_mean_cpm": 0,
+            "mapped_expression_eligible": 37,
+            "direction_evaluable": 37,
+            "mean_direction_concordant": 26,
+            "all_three_direction_concordant": 8,
+            "all_three_abs_ge025": 3,
+            "all_leave_one_strain_out_same": 19,
+            "median_signed_mean_log2_ratio": 0.07340150340125355
+          },
+          {
+            "min_arm_mean_cpm": 1,
+            "mapped_expression_eligible": 33,
+            "direction_evaluable": 33,
+            "mean_direction_concordant": 22,
+            "all_three_direction_concordant": 7,
+            "all_three_abs_ge025": 3,
+            "all_leave_one_strain_out_same": 17,
+            "median_signed_mean_log2_ratio": 0.07340150340125355
+          },
+          {
+            "min_arm_mean_cpm": 5,
+            "mapped_expression_eligible": 29,
+            "direction_evaluable": 29,
+            "mean_direction_concordant": 20,
+            "all_three_direction_concordant": 6,
+            "all_three_abs_ge025": 2,
+            "all_leave_one_strain_out_same": 15,
+            "median_signed_mean_log2_ratio": 0.07340150340125355
+          }
+        ]
+      },
+      "internal_strong4": {
+        "total": 4,
+        "strata": [
+          {
+            "min_arm_mean_cpm": 0,
+            "mapped_expression_eligible": 4,
+            "direction_evaluable": 4,
+            "mean_direction_concordant": 4,
+            "all_three_direction_concordant": 2,
+            "all_three_abs_ge025": 1,
+            "all_leave_one_strain_out_same": 3,
+            "median_signed_mean_log2_ratio": 0.3932782439002771
+          },
+          {
+            "min_arm_mean_cpm": 1,
+            "mapped_expression_eligible": 2,
+            "direction_evaluable": 2,
+            "mean_direction_concordant": 2,
+            "all_three_direction_concordant": 1,
+            "all_three_abs_ge025": 1,
+            "all_leave_one_strain_out_same": 2,
+            "median_signed_mean_log2_ratio": 1.0323290586763678
+          },
+          {
+            "min_arm_mean_cpm": 5,
+            "mapped_expression_eligible": 2,
+            "direction_evaluable": 2,
+            "mean_direction_concordant": 2,
+            "all_three_direction_concordant": 1,
+            "all_three_abs_ge025": 1,
+            "all_leave_one_strain_out_same": 2,
+            "median_signed_mean_log2_ratio": 1.0323290586763678
+          }
+        ]
+      }
+    },
+    "internal_strong_4": [
+      {
+        "gene_id": "ENSG00000104537",
+        "donor": {
+          "symbol": "ANXA13",
+          "log2fc": 1.6638692932259,
+          "fdr": 4.77090816692786e-19
+        },
+        "pool": {
+          "symbol": "ANXA13",
+          "log2fc": 1.58007231308191,
+          "fdr": 2.14392407613448e-7
+        },
+        "internal_status": "INTERNAL_STRONG_ELIGIBLE",
+        "observed_7d": {
+          "strain_log2_ratios": {
+            "TM62": 0.5185828459995501,
+            "TM70": -0.07855538803079648,
+            "TM72": -0.07703636492230759
+          },
+          "mean_log2_ratio": 0.120997031015482,
+          "min_arm_mean_cpm": 0.3759510643885214
+        },
+        "directional": {
+          "signed_mean": 0.120997031015482,
+          "same_mean": true,
+          "all_three_same": false,
+          "all_three_abs_ge025": false,
+          "leave_one_strain_out_all_same": false
+        }
+      },
+      {
+        "gene_id": "ENSG00000119699",
+        "donor": {
+          "symbol": "TGFB3",
+          "log2fc": -1.15555083193841,
+          "fdr": 5.66233947717345e-25
+        },
+        "pool": {
+          "symbol": "TGFB3",
+          "log2fc": -1.301141133098,
+          "fdr": 7.38254273447365e-9
+        },
+        "internal_status": "INTERNAL_STRONG_ELIGIBLE",
+        "observed_7d": {
+          "strain_log2_ratios": {
+            "TM62": -1.9318308257766525,
+            "TM70": -2.1243542295333206,
+            "TM72": -0.7085508395775185
+          },
+          "mean_log2_ratio": -1.5882452982958306,
+          "min_arm_mean_cpm": 23.701663578090283
+        },
+        "directional": {
+          "signed_mean": 1.5882452982958306,
+          "same_mean": true,
+          "all_three_same": true,
+          "all_three_abs_ge025": true,
+          "leave_one_strain_out_all_same": true
+        }
+      },
+      {
+        "gene_id": "ENSG00000144749",
+        "donor": {
+          "symbol": "LRIG1",
+          "log2fc": -1.05003341867173,
+          "fdr": 1.82456459521035e-29
+        },
+        "pool": {
+          "symbol": "LRIG1",
+          "log2fc": -1.13917647987598,
+          "fdr": 1.44830861588875e-8
+        },
+        "internal_status": "INTERNAL_STRONG_ELIGIBLE",
+        "observed_7d": {
+          "strain_log2_ratios": {
+            "TM62": -0.8386625557048559,
+            "TM70": 0.2477649076703193,
+            "TM72": -0.8383408091361788
+          },
+          "mean_log2_ratio": -0.47641281905690513,
+          "min_arm_mean_cpm": 67.91402424375624
+        },
+        "directional": {
+          "signed_mean": 0.47641281905690513,
+          "same_mean": true,
+          "all_three_same": false,
+          "all_three_abs_ge025": false,
+          "leave_one_strain_out_all_same": true
+        }
+      },
+      {
+        "gene_id": "ENSG00000159713",
+        "donor": {
+          "symbol": "TPPP3",
+          "log2fc": -1.0905761679782,
+          "fdr": 2.52528613702821e-9
+        },
+        "pool": {
+          "symbol": "TPPP3",
+          "log2fc": -1.07001173959181,
+          "fdr": 0.000100492653451551
+        },
+        "internal_status": "INTERNAL_STRONG_ELIGIBLE",
+        "observed_7d": {
+          "strain_log2_ratios": {
+            "TM62": -0.22139235539145724,
+            "TM70": -0.23974221245917626,
+            "TM72": -0.4692964383803137
+          },
+          "mean_log2_ratio": -0.31014366874364907,
+          "min_arm_mean_cpm": 0.39675597975176546
+        },
+        "directional": {
+          "signed_mean": 0.31014366874364907,
+          "same_mean": true,
+          "all_three_same": true,
+          "all_three_abs_ge025": false,
+          "leave_one_strain_out_all_same": true
+        }
+      }
+    ],
+    "limits": [
+      "GSE301517 belongs to the same PNAS study GSE301525 that defined the 67 promoter-contact targets; not independent validation of the PNAS study. Donor/pool direction uses the same GSE313736 discovery cohort. Subgroups fixed from already observed internal model results, not prospective confirmation.",
+      "Report all 67; no imputed direction for untested genes, no missing=zero. CPM normalized values; strain technical repeats averaged, equal strain weights; log2((DEX mean+1)/(control mean+1)). No gene-level inferential P, pooled study test, causal or clinical prediction claim.",
+      "Separate exploratory target audit, not a change to the frozen241/ECM16 panel. No claim of expression specificity, effect equality or time trend."
+    ]
+  }
+}

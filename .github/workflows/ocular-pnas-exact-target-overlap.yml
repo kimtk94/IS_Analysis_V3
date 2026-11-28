@@ -1,0 +1,44 @@
+name: Ocular PNAS exact 67 target overlap
+on:
+  push:
+    branches: [research/ocular-exvivo-fixed-panel-20261125]
+    paths: ['scripts/ocular_pnas_exact_target_overlap.py','.github/workflows/ocular-pnas-exact-target-overlap.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  overlap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: frozen
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-pnas-s2-table-inventory
+          path: inputs
+          run-id: 45577966619
+          github-token: ${{ github.token }}
+      - name: Read frozen panel and compare all explicit publisher target sections
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 4000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o "$RUNNER_TEMP/panel.zip"
+          export PYTHONPATH="$PWD/frozen/scripts"
+          python scripts/ocular_pnas_exact_target_overlap.py --input inputs/s2-inventory.json --evidence docs/publication/evidence/ocular_pnas_s2_table_inventory_20261125.json --panel "$RUNNER_TEMP/panel.zip" --out outputs/target-overlap.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-pnas-exact-target-overlap
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

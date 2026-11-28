@@ -1,0 +1,29 @@
+name: Ocular GSE65240 blinded lot label audit
+on:
+  push:
+    branches: [research/ocular-exvivo-fixed-panel-20261125]
+    paths: ['scripts/ocular_14d_lot_label_crosscheck.py','.github/workflows/ocular-14d-lot-label-crosscheck.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  labels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compare hash-pinned matrix metadata with raw filenames and public SDRF
+        run: |
+          python -m py_compile scripts/ocular_14d_lot_label_crosscheck.py
+          python scripts/ocular_14d_lot_label_crosscheck.py --evidence docs/publication/evidence/ocular_14d_lot_source_gate_20261125.json --out outputs/label-crosscheck.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-14d-lot-label-crosscheck
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

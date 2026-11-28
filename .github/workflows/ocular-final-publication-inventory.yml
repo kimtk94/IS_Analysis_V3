@@ -1,0 +1,29 @@
+name: Ocular final publication source inventory
+on:
+  push:
+    branches: [research/ocular-exvivo-fixed-panel-20261125]
+    paths: ['scripts/ocular_final_publication_inventory.py','.github/workflows/ocular-final-publication-inventory.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspect bounded official PMC open access objects
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+          python scripts/ocular_final_publication_inventory.py --out outputs/publication-inventory.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-final-publication-inventory
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
