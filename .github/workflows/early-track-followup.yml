@@ -1,0 +1,38 @@
+name: Early track oral and HCC follow-up
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/publication/early_track_followup.py'
+      - '.github/workflows/early-track-followup.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  followup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        mode: [PT, MET, hcc]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6 scipy==1.15.3 openpyxl==3.1.5
+      - run: python scripts/publication/early_track_followup.py selftest
+      - name: Run full matrix or public supplement audit
+        env:
+          MODE: ${{ matrix.mode }}
+          OMP_NUM_THREADS: '2'
+        run: python -u scripts/publication/early_track_followup.py "$MODE" --out "evidence/$MODE.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: early-followup-${{ matrix.mode }}
+          path: evidence/${{ matrix.mode }}.json
+          if-no-files-found: error
+          retention-days: 30

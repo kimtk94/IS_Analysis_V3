@@ -1,0 +1,557 @@
+{
+  "provenance": {
+    "run_id": 45597748445,
+    "head_sha": "73b1dceeab9e0a8facc743b72226330de76b3a5a",
+    "method": "Parsed actual job stdout; artifact upload-reported digests, no independent ZIP download"
+  },
+  "completed": [
+    {
+      "job_id": 139148219931,
+      "name": "source (hcc)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "HCC_ALTERNATE_PUBLIC_SUPPLEMENT_AUDIT",
+        "article": {
+          "url": "https://pmc-oa-opendata.s3.amazonaws.com/metadata/PMC9068765.1.json",
+          "bytes": 3310,
+          "sha256": "fdf5019d521fc998aff8f9f79ab4f9228768d2f2837e3ad64a8107c91fced716",
+          "content_range": null,
+          "etag": "\"90bed237bfc8be8a1bf684e2a2a8cdb4\""
+        },
+        "xml": {
+          "url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC9068765.1/PMC9068765.1.xml",
+          "bytes": 215115,
+          "sha256": "fb926a98950ac2b3c1d8735e27a601526e42869056740d08ad39b5eea1a2b70f",
+          "content_range": null,
+          "etag": "\"6c39e13b84a6070b1ad29680871bdaf4\""
+        },
+        "inventory": [
+          {
+            "file": "41467_2022_29960_MOESM4_ESM.xlsx",
+            "caption": "Supplementary Data 1",
+            "bytes": 46914
+          },
+          {
+            "file": "41467_2022_29960_MOESM5_ESM.xlsx",
+            "caption": "Supplementary Data 2",
+            "bytes": 145150
+          },
+          {
+            "file": "41467_2022_29960_MOESM6_ESM.xlsx",
+            "caption": "Supplementary Datat 3",
+            "bytes": 378845
+          },
+          {
+            "file": "41467_2022_29960_MOESM7_ESM.xlsx",
+            "caption": "Supplementary Data 4",
+            "bytes": 148185
+          },
+          {
+            "file": "41467_2022_29960_MOESM8_ESM.xlsx",
+            "caption": "Supplementary Data 5",
+            "bytes": 30337
+          },
+          {
+            "file": "41467_2022_29960_MOESM9_ESM.xlsx",
+            "caption": "Supplementary Data 6",
+            "bytes": 302806
+          },
+          {
+            "file": "41467_2022_29960_MOESM10_ESM.xlsx",
+            "caption": "Supplementary Data 7",
+            "bytes": 737950
+          },
+          {
+            "file": "41467_2022_29960_MOESM11_ESM.xlsx",
+            "caption": "Supplementary Data 8",
+            "bytes": 19549
+          },
+          {
+            "file": "41467_2022_29960_MOESM12_ESM.xlsx",
+            "caption": "Supplementary Data 9",
+            "bytes": 4513437
+          },
+          {
+            "file": "41467_2022_29960_MOESM13_ESM.xlsx",
+            "caption": "Supplementary Data 10",
+            "bytes": 24715
+          },
+          {
+            "file": "41467_2022_29960_MOESM14_ESM.xlsx",
+            "caption": "Supplementary Data 11",
+            "bytes": 104190
+          },
+          {
+            "file": "41467_2022_29960_MOESM15_ESM.xlsx",
+            "caption": "Supplementary Data 12",
+            "bytes": 12397
+          },
+          {
+            "file": "41467_2022_29960_MOESM16_ESM.xlsx",
+            "caption": "Supplementary Data 13",
+            "bytes": 282915
+          },
+          {
+            "file": "41467_2022_29960_MOESM17_ESM.xlsx",
+            "caption": "Supplementary Data 14",
+            "bytes": 122099
+          },
+          {
+            "file": "41467_2022_29960_MOESM19_ESM.xlsx",
+            "caption": "Source Data",
+            "bytes": 4446471
+          }
+        ],
+        "inspected": [
+          {
+            "file": "41467_2022_29960_MOESM4_ESM.xlsx",
+            "bytes": 46914,
+            "sha256": "edf1d2afd3baaedd56edee8536c16f10e4a62cb6cdac929863a062671ee73d25",
+            "sheet_schemas": [
+              {
+                "rows": 142,
+                "columns": 48,
+                "recognized_header_terms": {
+                  "tumor": 10,
+                  "patient": 1,
+                  "BCLC": 1,
+                  "survival": 1,
+                  "RNA": 2,
+                  "proteom": 2
+                }
+              },
+              {
+                "rows": 21,
+                "columns": 10,
+                "recognized_header_terms": {
+                  "RNA": 2,
+                  "proteom": 2
+                }
+              }
+            ]
+          }
+        ],
+        "limits": [
+          "122 tumors/114 patients and 51 multi-omic tumors/49 patients reported by paper; not observed matched rows. EGA raw sequencing restricted. No individual records emitted, no RNA-protein join or survival model."
+        ],
+        "track": "hcc",
+        "scientific_status": "HOLD_NOT_INDEPENDENTLY_VALIDATED"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 8ae67cc36ef891f7d6d3bca639a96537baaa7f4a3b6e8ee3a8f9d78014234dca",
+        "Artifact early-track-hcc.zip successfully finalized. Artifact ID 15013093917",
+        "Artifact early-track-hcc has been successfully uploaded! Final size is 1128 bytes. Artifact ID is 15013093917"
+      ]
+    },
+    {
+      "job_id": 139148220412,
+      "name": "source (muscle)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "MUSCLE_NEW_ENDPOINT_SOURCE_AUDIT",
+        "sources": {
+          "GSE270823": {
+            "status": "METADATA_READ",
+            "source": {
+              "directory": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE270nnn/GSE270823/matrix/",
+                "bytes": 603,
+                "sha256": "7c50734b849da7f440b097d9a12da81b9d8ed44f1723db13b030d90b817def3f",
+                "content_range": null,
+                "etag": null
+              },
+              "matrix": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE270nnn/GSE270823/matrix/GSE270823_series_matrix.txt.gz",
+                "bytes": 1048576,
+                "sha256": "8056a2b68497a725afe7b5310c59b1f08b5d72438b973a99926f6193ac7c0c6d",
+                "content_range": "bytes 0-1048575/185260329",
+                "etag": null
+              },
+              "mode": "bounded_compressed_prefix"
+            },
+            "samples": 274,
+            "fields": {
+              "tissue": {
+                "covered": 274,
+                "numeric": 0,
+                "distinct_values": 1
+              },
+              "treatment group and time": {
+                "covered": 274,
+                "numeric": 0,
+                "distinct_values": 4
+              },
+              "age": {
+                "covered": 274,
+                "numeric": 0,
+                "distinct_values": 2
+              }
+            },
+            "endpoint_candidates": {},
+            "linkage_candidates": {}
+          },
+          "GSE163434": {
+            "status": "METADATA_READ",
+            "source": {
+              "directory": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE163nnn/GSE163434/matrix/",
+                "bytes": 603,
+                "sha256": "59b0f0f4090d42f91923ca14893a67b00a5de2fb24cb861bb5fd0f0455f2b9ed",
+                "content_range": null,
+                "etag": null
+              },
+              "matrix": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE163nnn/GSE163434/matrix/GSE163434_series_matrix.txt.gz",
+                "bytes": 2180,
+                "sha256": "943daccd4ad42bd1b5d30c440dc2270a605fdb54d635ad45039bba2c7ff0ad4a",
+                "content_range": null,
+                "etag": null
+              },
+              "mode": "bounded_complete_gzip"
+            },
+            "samples": 4,
+            "fields": {
+              "tissue": {
+                "covered": 4,
+                "numeric": 0,
+                "distinct_values": 1
+              },
+              "age": {
+                "covered": 4,
+                "numeric": 4,
+                "distinct_values": 2
+              },
+              "time point": {
+                "covered": 4,
+                "numeric": 4,
+                "distinct_values": 2
+              }
+            },
+            "endpoint_candidates": {},
+            "linkage_candidates": {
+              "time point": {
+                "covered": 4,
+                "numeric": 4,
+                "distinct_values": 2
+              }
+            }
+          },
+          "GSE157585": {
+            "status": "METADATA_READ",
+            "source": {
+              "directory": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE157nnn/GSE157585/matrix/",
+                "bytes": 603,
+                "sha256": "e17b181c3aa0af764be7bbe8af2aa19cf358bd35b149ecf8f8abc20d5571a27d",
+                "content_range": null,
+                "etag": null
+              },
+              "matrix": {
+                "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE157nnn/GSE157585/matrix/GSE157585_series_matrix.txt.gz",
+                "bytes": 8427,
+                "sha256": "e30f6fd4fbb1ebac090bce637380ec7236bc437ec1d12d39116705aec4143af4",
+                "content_range": null,
+                "etag": null
+              },
+              "mode": "bounded_complete_gzip"
+            },
+            "samples": 136,
+            "fields": {
+              "tissue": {
+                "covered": 136,
+                "numeric": 0,
+                "distinct_values": 1
+              },
+              "study arm": {
+                "covered": 136,
+                "numeric": 0,
+                "distinct_values": 3
+              },
+              "biopsy": {
+                "covered": 136,
+                "numeric": 136,
+                "distinct_values": 3
+              },
+              "batch": {
+                "covered": 136,
+                "numeric": 136,
+                "distinct_values": 2
+              }
+            },
+            "endpoint_candidates": {},
+            "linkage_candidates": {
+              "study arm": {
+                "covered": 136,
+                "numeric": 0,
+                "distinct_values": 3
+              }
+            }
+          }
+        },
+        "limits": [
+          "No numeric field is automatically a validated outcome; confirm participant/limb, units, baseline/post, overlap and selection. GSE163434 reuses GSE157585; GSE270823 has seven shared baseline specimens. Preserve #343 negative result, no panel retuning or prediction."
+        ],
+        "track": "muscle",
+        "scientific_status": "HOLD_NOT_INDEPENDENTLY_VALIDATED"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is f9051ef8c53361d542bcdb4f5762a612f29883d4ceea5fe26d97c7915511a2bf",
+        "Artifact early-track-muscle.zip successfully finalized. Artifact ID 15013583699",
+        "Artifact early-track-muscle has been successfully uploaded! Final size is 1215 bytes. Artifact ID is 15013583699"
+      ]
+    },
+    {
+      "job_id": 139148220471,
+      "name": "source (oral)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "ORAL_NEW_COHORT_QUALIFICATION",
+        "source": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE322nnn/GSE322620/matrix/",
+            "bytes": 603,
+            "sha256": "c0bdc4cc8c6a9ceb1bb3e65e82fc83ca3e79d2878f61b248b6f809aa5bc91f04",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE322nnn/GSE322620/matrix/GSE322620_series_matrix.txt.gz",
+            "bytes": 3006,
+            "sha256": "afe1a32a22fd533c2d0cdf131497f69be462ada9caf09ee4c552b5d1a58b6482",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "specimens": 10,
+        "title_group_counts": {
+          "PT": 5,
+          "MET": 5
+        },
+        "characteristic_fields": {
+          "tissue": {
+            "covered": 10,
+            "numeric": 0,
+            "distinct_values": 2
+          },
+          "cell line": {
+            "covered": 10,
+            "numeric": 0,
+            "distinct_values": 1
+          },
+          "cell type": {
+            "covered": 10,
+            "numeric": 0,
+            "distinct_values": 1
+          }
+        },
+        "matrix_prefix_verified": 10,
+        "records": [
+          {
+            "status": "DIMENSION_PREFIX_VERIFIED",
+            "group": "PT",
+            "file_types": [
+              "barcodes",
+              "features",
+              "matrix"
+            ],
+            "genes": 36601,
+            "cells": 9073,
+            "declared_nonzero": 21940684,
+            "feature_sha256": "88e2713a5f5df51295f876c2c74d598ef193fdfd0f9a9a99f9e24ca530d51531",
+            "barcode_sha256": "6e6d5bc9819318f0cd26136e50d6c0f414a28aee966278db7b7913d9234f49bf",
+            "matrix_prefix_sha256": "5cf0f83c425a76132e4c99b5a757b39a0ed381a3873b488ab87abcc375f1b4f6"
+          },
+          {
+            "status": "DIMENSION_PREFIX_VERIFIED",
+            "group": "PT",
+            "file_types": [
+              "barcodes",
+              "features",
+              "matrix"
+            ],
+            "genes": 36601,
+            "cells": 7287,
+            "declared_nonzero": 18065190,
+            "feature_sha256": "88e2713a5f5df51295f876c2c74d598ef193fdfd0f9a9a99f9e24ca530d51531",
+            "barcode_sha256": "26ff458d61dce94b1cebc8f3d79d3b791d99cef34a95c55ae2f31fa556125436",
+            "matrix_prefix_sha256": "0642b9ff0638a193c4a99aeac52a79b529b0d9e99428cbc25acc82d8fb0e845f"
+          },
+          {
+            "status": "DIMENSION_PREFIX_VERIFIED",
+            "group": "PT",
+            "file_types": [
+              "barcodes",
+              "features",
+              "matrix"
+            ],
+            "genes": 36601,
+            "cells": 12394,
+            "declared_nonzero": 27493080,
+            "feature_sha256": "88e2713a5f5df51295f876c2c74d598ef193fdfd0f9a9a99f9e24ca530d51531",
+            "barcode_sha256": "b1f62f0c9d824af22e7ba32e67e719a936608a97d5306eda0b204203a84e290d",
+            "matrix_prefix_sha256": "a94d7182300274c39225a3b058635164663a2c5c0b7c09c3dfbd6bbfe0d3f8f1"
+          },
+          {
+            "status": "DIMENSION_PREFIX_VERIFIED",
+            "group": "PT",
+            "file_types": [
+              "barcodes",
+              "features",
+              "matrix"
+            ],
+            "genes": 36601,
+            "cells": 6632,
+            "declared_nonzero": 20602166,
+            "feature_sha256": "88e2713a5f5df51295f876c2c74d598ef193fdfd0f9a9a99f9e24ca530d51531",
+            "barcode_sha256": "e7425a74ed948828fb3010de5446fb23d814447f1b592f70f683f185297b2b2e",
+            "matrix_prefix_sha256": "75b42c25a4ebcf0954c1b35ccaaf06dedefc308a1173fdecad9e21d99fb133bd"
+          },
+          {
+            "status": "DIMENSION_PREFIX_VERIFIED",
+            "group": "PT",
+            "file_types": [
+              "barcodes",
+              "features",
+              "matrix"
+            ],
+            "genes": 36601,
+            "cells": 6095,
+            "declared_nonzero": 13844425,
+            "feature_sha256": "88e2713a5f5df51295f876c2c74d598ef193fdfd0f9a9a99f9e24ca530d51531",
+            "barcode_sha256": "8774dbe18615d372c60b1232f431736f313df632bf21f65d5a59d50b291bb067",
+            "matrix_prefix_sha256": "c991e4da63dbcbdb14c9cc1fb0ec6217de62e1a071cde2ab7428fee124af6bc9"
+          },
+          {
+            "status": "DIMENSION_PREFIX_VERIFIED",
+            "group": "MET",
+            "file_types": [
+              "barcodes",
+              "features",
+              "matrix"
+            ],
+            "genes": 36601,
+            "cells": 10802,
+            "declared_nonzero": 21470161,
+            "feature_sha256": "88e2713a5f5df51295f876c2c74d598ef193fdfd0f9a9a99f9e24ca530d51531",
+            "barcode_sha256": "c986263a8b166d8750260935b0d9ee84b6153815a1ff179c85e30838412c2287",
+            "matrix_prefix_sha256": "8595d58bc8a50dd14e3dd672fcfd82bf9066b48048ebaa07209590a24a347483"
+          },
+          {
+            "status": "DIMENSION_PREFIX_VERIFIED",
+            "group": "MET",
+            "file_types": [
+              "barcodes",
+              "features",
+              "matrix"
+            ],
+            "genes": 36601,
+            "cells": 11553,
+            "declared_nonzero": 20436359,
+            "feature_sha256": "88e2713a5f5df51295f876c2c74d598ef193fdfd0f9a9a99f9e24ca530d51531",
+            "barcode_sha256": "51b72be0d7e8ce394604a65ebed7c32f156f0953737eae7fed2fb3f86035a845",
+            "matrix_prefix_sha256": "d61b7edf323a509b4b21e02c39bf9ee16622c6dfa38ee4223447434d97f5614a"
+          },
+          {
+            "status": "DIMENSION_PREFIX_VERIFIED",
+            "group": "MET",
+            "file_types": [
+              "barcodes",
+              "features",
+              "matrix"
+            ],
+            "genes": 36601,
+            "cells": 8272,
+            "declared_nonzero": 19598059,
+            "feature_sha256": "88e2713a5f5df51295f876c2c74d598ef193fdfd0f9a9a99f9e24ca530d51531",
+            "barcode_sha256": "87945226e63bc7f80bd25a2149badf9e5d5224a963510659720881b7866d8488",
+            "matrix_prefix_sha256": "50ef04f9f1cf4147ae258ee1d5367f5a2d7e3d513335853d21aa3051bdb7e5b1"
+          },
+          {
+            "status": "DIMENSION_PREFIX_VERIFIED",
+            "group": "MET",
+            "file_types": [
+              "barcodes",
+              "features",
+              "matrix"
+            ],
+            "genes": 36601,
+            "cells": 11466,
+            "declared_nonzero": 22902901,
+            "feature_sha256": "88e2713a5f5df51295f876c2c74d598ef193fdfd0f9a9a99f9e24ca530d51531",
+            "barcode_sha256": "c58ce356026109cfbcfa6afeef7d2c20399cae8c586023df67f9adda8efca4bb",
+            "matrix_prefix_sha256": "8f29037e7d410f700b7060fe3f972be8fce420647bf5dc0bac4e734995adbf51"
+          },
+          {
+            "status": "DIMENSION_PREFIX_VERIFIED",
+            "group": "MET",
+            "file_types": [
+              "barcodes",
+              "features",
+              "matrix"
+            ],
+            "genes": 36601,
+            "cells": 6599,
+            "declared_nonzero": 16667487,
+            "feature_sha256": "88e2713a5f5df51295f876c2c74d598ef193fdfd0f9a9a99f9e24ca530d51531",
+            "barcode_sha256": "3f7bd376a436a2c45210805e54c22b241bf0586f860377a624436f37289f2eff",
+            "matrix_prefix_sha256": "59fc9694f0eca66e4a6908aa31b30a7ce597b32a2f0c0279c57f140e49aedd6c"
+          }
+        ],
+        "limits": [
+          "Unpaired unless documented same-donor identity, no inference from PT/MET number; no full matrix body checksum or cell type assignment; no DEG or patient-level inference."
+        ],
+        "track": "oral",
+        "scientific_status": "HOLD_NOT_INDEPENDENTLY_VALIDATED"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 35dc6c065a5b176635bd82d4e8a2da6919b31e98b22c1d6413c55f1de79e61a9",
+        "Artifact early-track-oral.zip successfully finalized. Artifact ID 15014351067",
+        "Artifact early-track-oral has been successfully uploaded! Final size is 1902 bytes. Artifact ID is 15014351067"
+      ]
+    },
+    {
+      "job_id": 139148220656,
+      "name": "source (metabolic)",
+      "conclusion": "success",
+      "aggregate": {
+        "status": "METABOLIC_LONGITUDINAL_RELEASE_AUDIT",
+        "source": {
+          "url": "https://charls.pku.edu.cn/en/News.htm",
+          "bytes": 18332,
+          "sha256": "46e64422eac8da90960e4805cd735d0985bc82f49cdad055b5f4da8e48047a77",
+          "content_range": null,
+          "etag": "\"479c-6412bf0d348f6-gzip\""
+        },
+        "official_release_mentions": {
+          "wave_3_blood_2015": true,
+          "wave_4_2018": true,
+          "wave_5_2020": true
+        },
+        "endpoint_gate": "HOLD_3_COMPLETE_BIOMARKER_WAVES_NOT_ESTABLISHED",
+        "limits": [
+          "2011/2015 blood panels reported in release documentation; later survey release is not equivalent to repeated fasting blood assays. No individual data, genetics, recovery/relapse counts or models. KoGES remains primary candidate for three-wave genetic design."
+        ],
+        "track": "metabolic",
+        "scientific_status": "HOLD_NOT_INDEPENDENTLY_VALIDATED"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 2a60de59bbbc6c0cb7a3e73d6a9d0e99fc860ac2291a8471a1067661f4e8794d",
+        "Artifact early-track-metabolic.zip successfully finalized. Artifact ID 15013014298",
+        "Artifact early-track-metabolic has been successfully uploaded! Final size is 707 bytes. Artifact ID is 15013014298"
+      ]
+    }
+  ],
+  "unfinished": [
+    {
+      "job_id": 139148220540,
+      "name": "source (ckm)",
+      "status": "in_progress"
+    },
+    {
+      "job_id": 139148220693,
+      "name": "source (skin)",
+      "status": "in_progress"
+    }
+  ]
+}

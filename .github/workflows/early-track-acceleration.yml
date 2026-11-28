@@ -1,0 +1,52 @@
+name: Early research track acceleration
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/publication/early_track_acceleration.py'
+      - '.github/workflows/early-track-acceleration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        track: [oral, muscle, hcc, skin, metabolic, ckm]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install scoped public-source readers
+        run: python -m pip install PyYAML==6.0.2 openpyxl==3.1.5
+      - name: Check focused source contracts
+        run: python scripts/publication/early_track_acceleration.py selftest
+      - name: Checkout immutable CKM helper
+        if: matrix.track == 'ckm'
+        uses: actions/checkout@v4
+        with:
+          ref: 0587064640a1c91bfc7de1a6c3834305e6269e35
+          path: ckm_helpers
+      - name: Checkout immutable indexed GWAS helper
+        if: matrix.track == 'ckm'
+        uses: actions/checkout@v4
+        with:
+          ref: 040eee7a16e3a1079e4ab5e2bcbd74ac3bea9bc7
+          path: indexed_helpers
+      - name: Execute bounded public source follow-up
+        env:
+          PYTHONPATH: ${{ github.workspace }}/ckm_helpers/scripts:${{ github.workspace }}/indexed_helpers/scripts/is:${{ github.workspace }}/indexed_helpers/scripts
+          TRACK: ${{ matrix.track }}
+        run: python -u scripts/publication/early_track_acceleration.py "$TRACK" --out "evidence/$TRACK.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: early-track-${{ matrix.track }}
+          path: evidence/${{ matrix.track }}.json
+          if-no-files-found: error
+          retention-days: 30
