@@ -1,0 +1,80 @@
+name: IS G0014 FZD8 public pQTL credible sets
+on:
+  push:
+    branches: [research/is-g0014-qtl-pilot-20261128]
+    paths: ['.github/workflows/is-g0014-fzd8-credible-sets.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read exact study and credible-set schema and records
+        run: |
+          python3 - <<'PY'
+          import json,hashlib,urllib.request,urllib.error,time
+          from pathlib import Path
+          url='https://api.platform.opentargets.org/api/v4/graphql'
+          sid='UKB_PPP_EUR_FZD8_Q9H461_OID30818_v1'
+          out={'status':'HOLD_CREDIBLE_SET_CONTEXT','scientific_validation':False,'study_id':sid,'limits':['Public fine-mapped study index only; not full pQTL summary statistics, not formal colocalization.','Exact lead/proxy membership not proof of shared causal signal.']}
+          def save():Path('credible.json').write_text(json.dumps(out,indent=2,allow_nan=False)+'\n')
+          def query(q):
+              time.sleep(1)
+              req=urllib.request.Request(url,data=json.dumps({'query':q}).encode(),headers={'Content-Type':'application/json','Accept':'application/json'})
+              with urllib.request.urlopen(req,timeout=40) as res:raw=res.read(8000001)
+              assert len(raw)<=8000000
+              x=json.loads(raw)
+              if x.get('errors'):raise ValueError(str(x['errors'])[:500])
+              return x['data'],hashlib.sha256(raw).hexdigest()
+          def schema(name):
+              d,h=query('{__type(name:'+json.dumps(name)+'){fields{name args{name} type{kind name ofType{kind name ofType{kind name ofType{kind name}}}}}}}')
+              assert d['__type'] is not None
+              out.setdefault('schema_hashes',{})[name]=h
+              return {f['name']:f for f in d['__type']['fields']}
+          def unwrap(t):
+              while t.get('ofType'):t=t['ofType']
+              return t
+          def scalars(fields,desired):
+              return [n for n in desired if n in fields and not fields[n]['args'] and unwrap(fields[n]['type'])['kind'] in ('SCALAR','ENUM')]
+          try:
+              cs=schema('CredibleSets')
+              assert 'rows' in cs and 'count' in cs
+              rowtype=unwrap(cs['rows']['type'])['name'];assert rowtype
+              fields=schema(rowtype)
+              select=scalars(fields,('studyLocusId','id','studyId','variantId','beta','standardError','pValueMantissa','pValueExponent','effectAlleleFrequencyFromSource','credibleSetIndex','finemappingMethod','purityMinR2','purityMeanR2','region','chromosome','position','isTransQtl','qualityControls'))
+              if 'variant' in fields and not fields['variant']['args']:
+                  vf=schema(unwrap(fields['variant']['type'])['name'])
+                  vs=scalars(vf,('id','variantId','rsIds','chromosome','position','referenceAllele','alternateAllele'))
+                  if vs:select.append('variant{'+ ' '.join(vs)+'}')
+              assert select
+              out['credible_set_fields']=list(fields);out['selected_fields']=select
+              d,h=query('{study(studyId:'+json.dumps(sid)+'){id studyType nSamples hasSumstats summarystatsLocation pubmedId credibleSets(page:{index:0,size:100}){count rows{'+ ' '.join(select)+'}}}}')
+              study=d['study'];assert study['id']==sid and study['studyType']=='pqtl' and study['nSamples']==32867
+              result=study['credibleSets'];assert isinstance(result['count'],int) and result['count']==len(result['rows'])<=100
+              out.update(status='PUBLIC_CREDIBLE_SET_INVENTORY_ONLY',study=study,response_sha256=h)
+              prior=json.loads(Path('docs/is/evidence/IS_G0014_PROXY_CURATED_READBACK_20261128.json').read_text())
+              proxies=set(prior['result']['proxy_ids']);assert len(proxies)==55
+              comparisons=[]
+              for row in result['rows']:
+                  v=row.get('variant') or {}
+                  ids=v.get('rsIds') or []
+                  if isinstance(ids,str):ids=[ids]
+                  comparisons.append({'study_locus_id':row.get('studyLocusId',row.get('id')),'lead_variant':v or row.get('variantId'),'exact_anchor_rsid': 'rs2767060' in ids,'exact_proxy_rsids':sorted(proxies.intersection(ids)),'rsid_available':bool(ids)})
+              out['lead_comparisons']=comparisons
+          except urllib.error.HTTPError as e:out['error']=str(e);out['http_error_body']=e.read(4000).decode(errors='replace')
+          except Exception as e:out['error']=type(e).__name__+': '+str(e)[:500]
+          save();print(json.dumps(out,indent=2,allow_nan=False))
+          if out['status'].startswith('HOLD'):raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-g0014-fzd8-credible-sets
+          path: credible.json
+          if-no-files-found: warn
+          retention-days: 90
