@@ -1,0 +1,218 @@
+{
+  "status": "HOLD_SCOPE_RECONCILIATION_ONLY",
+  "scientific_validation": false,
+  "source_legacy": "0bf646fd6f29322d17da878253f37def24c01c74",
+  "source_newer": "dea5733170cebab70946721e4d599ddff91c13bd",
+  "legacy_gene_count": 9,
+  "newer_gene_count": 15,
+  "common": [
+    "ENSG00000177283",
+    "ENSG00000177291",
+    "ENSG00000226646",
+    "ENSG00000227313",
+    "ENSG00000227475",
+    "ENSG00000273312"
+  ],
+  "legacy_only": [
+    "ENSG00000108100",
+    "ENSG00000264780",
+    "ENSG00000271335"
+  ],
+  "newer_only": [
+    "ENSG00000294862",
+    "ENSG00000280719",
+    "ENSG00000309863",
+    "ENSG00000301879",
+    "ENSG00000299958",
+    "ENSG00000299999",
+    "ENSG00000287528",
+    "ENSG00000288893",
+    "ENSG00000284265"
+  ],
+  "union_count": 18,
+  "legacy_symbols": {
+    "ENSG00000108100": "CCNY",
+    "ENSG00000177283": "FZD8",
+    "ENSG00000177291": "GJD4",
+    "ENSG00000226646": "RP11-382K22.1",
+    "ENSG00000227313": "RP11-309N24.1",
+    "ENSG00000227475": "RP11-810B23.1",
+    "ENSG00000264780": "MIR4683",
+    "ENSG00000271335": "RP11-324I22.4",
+    "ENSG00000273312": "RP11-425A6.5"
+  },
+  "newer_genes": {
+    "ENSG00000294862": {
+      "id": "ENSG00000294862",
+      "symbol": null,
+      "biotype": "lncRNA",
+      "start": 35847091,
+      "end": 35848428,
+      "distance_bp": 13728
+    },
+    "ENSG00000280719": {
+      "id": "ENSG00000280719",
+      "symbol": "PCAT5",
+      "biotype": "lncRNA",
+      "start": 35778302,
+      "end": 35800920,
+      "distance_bp": 32443
+    },
+    "ENSG00000309863": {
+      "id": "ENSG00000309863",
+      "symbol": null,
+      "biotype": "lncRNA",
+      "start": 35887818,
+      "end": 35898053,
+      "distance_bp": 54455
+    },
+    "ENSG00000227313": {
+      "id": "ENSG00000227313",
+      "symbol": "LINC02630",
+      "biotype": "lncRNA",
+      "start": 35890050,
+      "end": 35899258,
+      "distance_bp": 56687
+    },
+    "ENSG00000301879": {
+      "id": "ENSG00000301879",
+      "symbol": null,
+      "biotype": "lncRNA",
+      "start": 35729669,
+      "end": 35753321,
+      "distance_bp": 80042
+    },
+    "ENSG00000299958": {
+      "id": "ENSG00000299958",
+      "symbol": null,
+      "biotype": "lncRNA",
+      "start": 35928122,
+      "end": 36072494,
+      "distance_bp": 94759
+    },
+    "ENSG00000299999": {
+      "id": "ENSG00000299999",
+      "symbol": null,
+      "biotype": "lncRNA",
+      "start": 35934232,
+      "end": 35938090,
+      "distance_bp": 100869
+    },
+    "ENSG00000226646": {
+      "id": "ENSG00000226646",
+      "symbol": "RPL7P37",
+      "biotype": "processed_pseudogene",
+      "start": 35697300,
+      "end": 35698037,
+      "distance_bp": 135326
+    },
+    "ENSG00000287528": {
+      "id": "ENSG00000287528",
+      "symbol": null,
+      "biotype": "lncRNA",
+      "start": 35641097,
+      "end": 35647828,
+      "distance_bp": 185535
+    },
+    "ENSG00000288893": {
+      "id": "ENSG00000288893",
+      "symbol": null,
+      "biotype": "lncRNA",
+      "start": 35643844,
+      "end": 35644674,
+      "distance_bp": 188689
+    },
+    "ENSG00000177283": {
+      "id": "ENSG00000177283",
+      "symbol": "FZD8",
+      "biotype": "protein_coding",
+      "start": 35638247,
+      "end": 35642296,
+      "distance_bp": 191067
+    },
+    "ENSG00000284265": {
+      "id": "ENSG00000284265",
+      "symbol": "MIR4683",
+      "biotype": "miRNA",
+      "start": 35641172,
+      "end": 35641252,
+      "distance_bp": 192111
+    },
+    "ENSG00000177291": {
+      "id": "ENSG00000177291",
+      "symbol": "GJD4",
+      "biotype": "protein_coding",
+      "start": 35605341,
+      "end": 35608935,
+      "distance_bp": 224428
+    },
+    "ENSG00000273312": {
+      "id": "ENSG00000273312",
+      "symbol": "GJD4-AS1",
+      "biotype": "lncRNA",
+      "start": 35604485,
+      "end": 35608153,
+      "distance_bp": 225210
+    },
+    "ENSG00000227475": {
+      "id": "ENSG00000227475",
+      "symbol": null,
+      "biotype": "lncRNA",
+      "start": 36071643,
+      "end": 36118419,
+      "distance_bp": 238280
+    }
+  },
+  "prior_aorta_anchor_parity": [
+    {
+      "gene_id": "ENSG00000177283",
+      "beta_equal": true,
+      "se_equal": true,
+      "p_equal": true
+    },
+    {
+      "gene_id": "ENSG00000227475",
+      "beta_equal": true,
+      "se_equal": true,
+      "p_equal": true
+    }
+  ],
+  "prior_aorta_newer_only": [
+    {
+      "gene": "lncRNA ENSG00000287528",
+      "gene_id": "ENSG00000287528",
+      "molecular_trait_id": "ENSG00000287528",
+      "ref": "C",
+      "alt": "T",
+      "beta_ALT": 0.0335172,
+      "se": 0.0758011,
+      "p": 0.658621,
+      "maf": 0.156331,
+      "ac": 121,
+      "an": 774,
+      "alt_frequency": 0.15633074935400518,
+      "genotyped_alleles_half_not_model_N": 387
+    },
+    {
+      "gene": "lncRNA ENSG00000288893",
+      "gene_id": "ENSG00000288893",
+      "molecular_trait_id": "ENSG00000288893",
+      "ref": "C",
+      "alt": "T",
+      "beta_ALT": 0.0238926,
+      "se": 0.0854191,
+      "p": 0.779856,
+      "maf": 0.156331,
+      "ac": 121,
+      "an": 774,
+      "alt_frequency": 0.15633074935400518,
+      "genotyped_alleles_half_not_model_N": 387
+    }
+  ],
+  "limits": [
+    "Distinct archived positional selection schemes; not evidence of gene ID retirement or a complete gene universe.",
+    "Keep primary 27-cell panel unchanged. Any union-panel extension is separate exploratory analysis with prespecified denominator 54; do not merge significance families.",
+    "MIR4683 symbol occurs with different stable IDs; identity requires release-specific annotation mapping before equivalence.",
+    "Formal coloc remains HOLD; absence of anchor significance or weak correlations is not proof of no colocalization."
+  ]
+}
