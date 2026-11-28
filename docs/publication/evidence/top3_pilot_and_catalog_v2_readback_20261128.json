@@ -1,0 +1,1926 @@
+{
+  "runs": [
+    46125386194,
+    46126800821
+  ],
+  "note": "Actual logs. Pilot index success but FASTQ transfer timeout; no expression result. Taiwan GWAS Catalog v2 confirms two non-subtype studies without full summary statistics. Singapore envelope unresolved; not evidence of absence.",
+  "jobs": [
+    {
+      "job_id": 140918722897,
+      "result": {
+        "run": "SRR16961557",
+        "project": "PRJNA781014",
+        "selection": "lexicographically first DEX run in existing fixed isolate crosswalk; technical pilot only",
+        "status": "HOLD",
+        "scientific_validation": false,
+        "reference": "GENCODE human v44 GRCh38.p14 all transcripts",
+        "commands": [
+          [
+            "kallisto",
+            "version"
+          ],
+          [
+            "curl",
+            "--fail",
+            "--location",
+            "--proto",
+            "=https",
+            "--proto-redir",
+            "=https",
+            "--connect-timeout",
+            "20",
+            "--max-time",
+            "480",
+            "--retry",
+            "2",
+            "--retry-delay",
+            "4",
+            "--retry-max-time",
+            "600",
+            "--max-filesize",
+            "100000000",
+            "--output",
+            "pilot-work/gencode.v44.transcripts.fa.gz",
+            "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.transcripts.fa.gz"
+          ],
+          [
+            "kallisto",
+            "index",
+            "-i",
+            "pilot-work/reference.idx",
+            "pilot-work/gencode.v44.transcripts.fa.gz"
+          ],
+          [
+            "curl",
+            "--fail",
+            "--location",
+            "--proto",
+            "=https",
+            "--proto-redir",
+            "=https",
+            "--connect-timeout",
+            "20",
+            "--max-time",
+            "480",
+            "--retry",
+            "2",
+            "--retry-delay",
+            "4",
+            "--retry-max-time",
+            "600",
+            "--max-filesize",
+            "1256481221",
+            "--output",
+            "pilot-work/R1.fastq.gz",
+            "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR169/057/SRR16961557/SRR16961557_1.fastq.gz"
+          ]
+        ],
+        "files": [
+          {
+            "file": "gencode.v44.transcripts.fa.gz",
+            "url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.transcripts.fa.gz",
+            "bytes": 82601810,
+            "md5": "a30369535731a2fdaa6add9b3530756a",
+            "sha256": "50a4143885523829c2fc8b1399b97c136ead8f313457165b855d63751a4e63f4",
+            "seconds": 83.97
+          }
+        ],
+        "runner_free_bytes": 93069037568,
+        "runner_memory_kb": 16366632,
+        "kallisto_version": {
+          "seconds": 0,
+          "stdout_tail": "kallisto, version 0.48.0\n",
+          "stderr_tail": ""
+        },
+        "manifest_source_run": 46123878528,
+        "manifest_source_sha256": "894adabd9901d5a4a1ad8667bc75a39e56a543269b0a126dd2a7704cedd399dc",
+        "stage": "fastq_download",
+        "index": {
+          "seconds": 333.61,
+          "stdout_tail": "",
+          "stderr_tail": "ading fasta file pilot-work/gencode.v44.transcripts.fa.gz\n[build] k-mer length: 31\n[build] warning: clipped off poly-A tail (longer than 10)\n        from 2033 target sequences\n[build] warning: replaced 4 non-ACGUT characters in the input sequence\n        with pseudorandom nucleotides\n[build] counting k-mers ... done.\n[build] building target de Bruijn graph ...  done \n[build] creating equivalence classes ...  done\n[build] target de Bruijn graph has 1633668 contigs and contains 150374999 k-mers \n\n"
+        },
+        "error": "TimeoutExpired: Command '['curl', '--fail', '--location', '--proto', '=https', '--proto-redir', '=https', '--connect-timeout', '20', '--max-time', '480', '--retry', '2', '--retry-delay', '4', '--retry-max-time', '600', '--max-filesize', '1256481221', '--output', 'pilot-work/R1.fastq.gz', 'https://ftp.sra.ebi.ac.uk/",
+        "seconds": 1037.61
+      }
+    },
+    {
+      "job_id": 140923075007,
+      "result": {
+        "pmid": "42448752",
+        "status": "HOLD_SOURCE_QUERY_FAILED",
+        "scientific_validation": false,
+        "independence_verified": false,
+        "subtype_eligibility_verified": false,
+        "studies": [],
+        "publication": {
+          "title": "Evaluation of stroke-associated risk alleles in a multi-ethnic Singaporean ischemic stroke cohort.",
+          "doi": "10.1038/s41598-026-62350-4",
+          "pmid": "42448752",
+          "pmcid": null,
+          "firstPublicationDate": "2026-07-15",
+          "response_sha256": "577d50d9303d8b6b62c17e620e3e109156475f735f8e0b61c5cd81b0d7866f95"
+        },
+        "catalog_error": "ValueError: unexpected v2 envelope keys ['_links', 'page']"
+      }
+    },
+    {
+      "job_id": 140923075324,
+      "result": {
+        "pmid": "36180795",
+        "status": "SOURCE_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "independence_verified": false,
+        "subtype_eligibility_verified": false,
+        "studies": [
+          {
+            "initial_sample_size": "6,811 European ancestry cases, 1,234,808 European ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "imputed": true,
+            "accession_id": "GCST90162546",
+            "full_summary_stats_available": false,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [NR] (imputed)",
+            "disease_trait": "Small vessel stroke (MTAG)",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001504",
+                "efo_trait": "small vessel stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "1241619 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "NA",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90162546"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90162546/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "5,532 East Asian ancestry cases, 237,242 East Asian ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "imputed": true,
+            "accession_id": "GCST90162545",
+            "full_summary_stats_available": false,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [NR] (imputed)",
+            "disease_trait": "Large artery stroke (MTAG)",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005490",
+                "efo_trait": "large artery stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "242774 East Asian (China, Japan, Republic of Korea)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "NA",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "CKB",
+              "HISAYAMA",
+              "KCPS",
+              "BBJ",
+              "INTERSTROKE"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90162545"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90162545/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "6,399 European ancestry cases, 1,234,808 European ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "imputed": true,
+            "accession_id": "GCST90162544",
+            "full_summary_stats_available": false,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [NR] (imputed)",
+            "disease_trait": "Large artery stroke (MTAG)",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005490",
+                "efo_trait": "large artery stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "1241207 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "NA",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90162544"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90162544/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "10,804 European ancestry cases, 1,234,808 European ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "imputed": true,
+            "accession_id": "GCST90162543",
+            "full_summary_stats_available": false,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [NR] (imputed)",
+            "disease_trait": "Cardioembolic stroke (MTAG)",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001976",
+                "efo_trait": "cardioembolic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "1245612 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "NA",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90162543"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90162543/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "705 South Asian ancestry cases, 7,672 South Asian ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 3803264,
+            "imputed": true,
+            "accession_id": "GCST90104562",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [3803264] (imputed)",
+            "disease_trait": "Large artery stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005490",
+                "efo_trait": "large artery stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "8377 South Asian (India, Pakistan)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104562",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "RACE",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104562"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104562/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "167 Hispanic cases, 4,146 Hispanic controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 7357893,
+            "imputed": true,
+            "accession_id": "GCST90104557",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [7357893] (imputed)",
+            "disease_trait": "Large artery stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005490",
+                "efo_trait": "large artery stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "4313 Hispanic or Latin American (Brazil, Canada, U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104557",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "MESA",
+              "NOMAS",
+              "INTERSTROKE",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104557"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104557/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "6,399 European ancestry cases, 1,234,808 European ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 5974029,
+            "imputed": true,
+            "accession_id": "GCST90104542",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [5974029] (imputed)",
+            "disease_trait": "Large artery stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005490",
+                "efo_trait": "large artery stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "1241207 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104542",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104542"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104542/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "1,735 East Asian ancestry cases, 237,242 East Asian ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 6173638,
+            "imputed": true,
+            "accession_id": "GCST90104547",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [6173638] (imputed)",
+            "disease_trait": "Large artery stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005490",
+                "efo_trait": "large artery stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "238977 East Asian (China, Japan, Republic of Korea)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104547",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "CKB",
+              "HISAYAMA",
+              "KCPS",
+              "BBJ",
+              "INTERSTROKE"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104547"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104547/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "423 African American cases, 20,030 African American controls, 5,532 East Asian ancestry cases, 237,242 East Asian ancestry controls, 6,811 European ancestry cases, 1,234,808 European ancestry controls, 207 Hispanic cases, 4,146 Hispanic controls, 647 South Asian ancestry cases, 7,672 South Asian ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 6395566,
+            "imputed": true,
+            "accession_id": "GCST90104537",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [6395566] (imputed)",
+            "disease_trait": "Small vessel stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001504",
+                "efo_trait": "small vessel stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "20453 African American or Afro-Caribbean (U.S.)",
+              "8319 South Asian (India, Pakistan)",
+              "242774 East Asian (China, Japan, Republic of Korea)",
+              "1241619 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)",
+              "4353 Hispanic or Latin American (Brazil, Canada, U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104537",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104537"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104537/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "213 African American cases, 20,030 African American controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 5259725,
+            "imputed": true,
+            "accession_id": "GCST90104552",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [5259725] (imputed)",
+            "disease_trait": "Large artery stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005490",
+                "efo_trait": "large artery stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "20243 African American or Afro-Caribbean (U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104552",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "ARIC",
+              "CHS",
+              "MESA",
+              "INTERSTROKE",
+              "SIGN",
+              "COMPASS",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104552"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104552/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "647 South Asian ancestry cases, 7,672 South Asian ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 3864188,
+            "imputed": true,
+            "accession_id": "GCST90104563",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [3864188] (imputed)",
+            "disease_trait": "Small vessel stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001504",
+                "efo_trait": "small vessel stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "8319 South Asian (India, Pakistan)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104563",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "RACE",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104563"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104563/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "207 Hispanic cases, 4,146 Hispanic controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 7176984,
+            "imputed": true,
+            "accession_id": "GCST90104558",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [7176984] (imputed)",
+            "disease_trait": "Small vessel stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001504",
+                "efo_trait": "small vessel stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "4353 Hispanic or Latin American (Brazil, Canada, U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104558",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "MESA",
+              "NOMAS",
+              "INTERSTROKE",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104558"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104558/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "6,811 European ancestry cases, 1,234,808 European ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 5784789,
+            "imputed": true,
+            "accession_id": "GCST90104543",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [5784789] (imputed)",
+            "disease_trait": "Small vessel stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001504",
+                "efo_trait": "small vessel stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "1241619 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104543",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104543"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104543/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "5,532 East Asian ancestry cases, 237,242 East Asian ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 5993006,
+            "imputed": true,
+            "accession_id": "GCST90104548",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [5993006] (imputed)",
+            "disease_trait": "Small vessel stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001504",
+                "efo_trait": "small vessel stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "242774 East Asian (China, Japan, Republic of Korea)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104548",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "CKB",
+              "HISAYAMA",
+              "KCPS",
+              "BBJ",
+              "INTERSTROKE"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104548"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104548/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "213 African American cases, 20,030 African American controls, 1,735 East Asian ancestry cases, 237,242 East Asian ancestry controls, 6,399 European ancestry cases, 1,234,808 European ancestry controls, 167 Hispanic cases, 4,146 Hispanic controls, 705 South Asian ancestry cases, 7,672 South Asian ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 5980001,
+            "imputed": true,
+            "accession_id": "GCST90104538",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [5980001] (imputed)",
+            "disease_trait": "Large artery stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005490",
+                "efo_trait": "large artery stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "1241207 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)",
+              "238977 East Asian (China, Japan, Republic of Korea)",
+              "8377 South Asian (India, Pakistan)",
+              "20243 African American or Afro-Caribbean (U.S.)",
+              "4313 Hispanic or Latin American (Brazil, Canada, U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104538",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104538"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104538/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "423 African American cases, 20,030 African American controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 5298687,
+            "imputed": true,
+            "accession_id": "GCST90104553",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [5298687] (imputed)",
+            "disease_trait": "Small vessel stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001504",
+                "efo_trait": "small vessel stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "20453 African American or Afro-Caribbean (U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104553",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "ARIC",
+              "CHS",
+              "MESA",
+              "INTERSTROKE",
+              "SIGN",
+              "COMPASS",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104553"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104553/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "596 South Asian ancestry cases, 7,672 South Asian ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 3936847,
+            "imputed": true,
+            "accession_id": "GCST90104561",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [3936847] (imputed)",
+            "disease_trait": "Cardioembolic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001976",
+                "efo_trait": "cardioembolic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "8268 South Asian (India, Pakistan)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104561",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "RACE",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104561"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104561/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "223 Hispanic cases, 4,146 Hispanic controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 7404873,
+            "imputed": true,
+            "accession_id": "GCST90104556",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [7404873] (imputed)",
+            "disease_trait": "Cardioembolic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001976",
+                "efo_trait": "cardioembolic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "4369 Hispanic or Latin American (Brazil, Canada, U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104556",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "MESA",
+              "NOMAS",
+              "INTERSTROKE",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104556"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104556/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "10,804 European ancestry cases, 1,234,808 European ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 6659794,
+            "imputed": true,
+            "accession_id": "GCST90104541",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [6659794] (imputed)",
+            "disease_trait": "Cardioembolic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001976",
+                "efo_trait": "cardioembolic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "1245612 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104541",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104541"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104541/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "926 East Asian ancestry cases, 237,242 East Asian ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 5169601,
+            "imputed": true,
+            "accession_id": "GCST90104546",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [5169601] (imputed)",
+            "disease_trait": "Cardioembolic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001976",
+                "efo_trait": "cardioembolic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "238168 East Asian (China, Japan, Republic of Korea)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104546",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "CKB",
+              "HISAYAMA",
+              "KCPS",
+              "BBJ",
+              "INTERSTROKE"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104546"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104546/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "241 African American cases, 20,030 African American controls, 926 East Asian ancestry cases, 237,242 East Asian ancestry controls, 10,804 European ancestry cases, 1,234,808 European ancestry controls, 223 Hispanic cases, 4,146 Hispanic controls, 596 South Asian ancestry cases, 7,672 South Asian ancestry controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 6614654,
+            "imputed": true,
+            "accession_id": "GCST90104536",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [6614654] (imputed)",
+            "disease_trait": "Cardioembolic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001976",
+                "efo_trait": "cardioembolic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "238168 East Asian (China, Japan, Republic of Korea)",
+              "8268 South Asian (India, Pakistan)",
+              "20271 African American or Afro-Caribbean (U.S.)",
+              "4369 Hispanic or Latin American (Brazil, Canada, U.S.)",
+              "1245612 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104536",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104536"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104536/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "241 African American cases, 20,030 African American controls",
+            "replication_sample_size": "NA",
+            "gxg": false,
+            "snp_count": 6635546,
+            "imputed": true,
+            "accession_id": "GCST90104551",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [6635546] (imputed)",
+            "disease_trait": "Cardioembolic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "EFO_1001976",
+                "efo_trait": "cardioembolic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "20271 African American or Afro-Caribbean (U.S.)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104551",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "ARIC",
+              "CHS",
+              "MESA",
+              "INTERSTROKE",
+              "SIGN",
+              "COMPASS",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104551"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104551/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "3,640 South Asian ancestry cases, 7,672 South Asian ancestry controls",
+            "replication_sample_size": "114 South Asian ancestry cases, 143 South Asian ancestry controls",
+            "gxg": false,
+            "snp_count": 3306957,
+            "imputed": true,
+            "accession_id": "GCST90104559",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [3306957] (imputed)",
+            "disease_trait": "Stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005098",
+                "efo_trait": "stroke disorder"
+              }
+            ],
+            "discovery_ancestry": [
+              "11312 South Asian (India, Pakistan)"
+            ],
+            "replication_ancestry": [
+              "257 South Asian (NR)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104559",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "RACE",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104559"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104559/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "1,516 Hispanic cases, 4,146 Hispanic controls",
+            "replication_sample_size": "3,634 Hispanic cases, 49,323 Hispanic controls",
+            "gxg": false,
+            "snp_count": 7718819,
+            "imputed": true,
+            "accession_id": "GCST90104554",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [7718819] (imputed)",
+            "disease_trait": "Stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005098",
+                "efo_trait": "stroke disorder"
+              }
+            ],
+            "discovery_ancestry": [
+              "5662 Hispanic or Latin American (Brazil, Canada, U.S.)"
+            ],
+            "replication_ancestry": [
+              "52957 Hispanic or Latin American (NR)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104554",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "MESA",
+              "NOMAS",
+              "INTERSTROKE",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104554"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104554/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "73,652 European ancestry cases, 1,234,808 European ancestry controls",
+            "replication_sample_size": "62,395 European ancestry cases, 665,176 European ancestry controls",
+            "gxg": false,
+            "snp_count": 7511477,
+            "imputed": true,
+            "accession_id": "GCST90104539",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [7511477] (imputed)",
+            "disease_trait": "Stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005098",
+                "efo_trait": "stroke disorder"
+              }
+            ],
+            "discovery_ancestry": [
+              "1308460 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)"
+            ],
+            "replication_ancestry": [
+              "727571 European (Finland, NR, U.S.)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104539",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104539"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104539/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "27,413 East Asian ancestry cases, 237,242 East Asian ancestry controls",
+            "replication_sample_size": "9,038 East Asian ancestry cases, 174,855 East Asian ancestry controls",
+            "gxg": false,
+            "snp_count": 6789910,
+            "imputed": true,
+            "accession_id": "GCST90104544",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [6789910] (imputed)",
+            "disease_trait": "Stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005098",
+                "efo_trait": "stroke disorder"
+              }
+            ],
+            "discovery_ancestry": [
+              "264655 East Asian (China, Japan, Republic of Korea)"
+            ],
+            "replication_ancestry": [
+              "183893 East Asian (NR, Republic of Korea)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104544",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "CKB",
+              "HISAYAMA",
+              "KCPS",
+              "BBJ",
+              "INTERSTROKE"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104544"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104544/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "3,961 African American cases, 20,030 African American controls, 27,413 East Asian ancestry cases, 237,242 East Asian ancestry controls, 73,652 European ancestry cases, 1,234,808 European ancestry controls, 1,516 Hispanic cases, 4,146 Hispanic controls, 3,640 South Asian ancestry cases, 7,672 South Asian ancestry controls",
+            "replication_sample_size": "13,903 African ancestry cases, 124,346 African ancestry controls, 9,038 East Asian ancestry cases, 174,855 East Asian ancestry controls, 62,395 European ancestry cases, 665,176 European ancestry controls, 3,634 Hispanic cases, 49,323 Hispanic controls, 114 South Asian ancestry cases, 143 South Asian ancestry controls",
+            "gxg": false,
+            "snp_count": 7588359,
+            "imputed": true,
+            "accession_id": "GCST90104534",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [7588359] (imputed)",
+            "disease_trait": "Stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005098",
+                "efo_trait": "stroke disorder"
+              }
+            ],
+            "discovery_ancestry": [
+              "11312 South Asian (India, Pakistan)",
+              "23991 African American or Afro-Caribbean (U.S.)",
+              "5662 Hispanic or Latin American (Brazil, Canada, U.S.)",
+              "264655 East Asian (China, Japan, Republic of Korea)",
+              "1308460 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)"
+            ],
+            "replication_ancestry": [
+              "727571 European (Finland, NR, U.S.)",
+              "52957 Hispanic or Latin American (NR)",
+              "138249 African unspecified (Ghana, Nigeria, U.S.)",
+              "183893 East Asian (NR, Republic of Korea)",
+              "257 South Asian (NR)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104534",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104534"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104534/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "3,961 African American cases, 20,030 African American controls",
+            "replication_sample_size": "13,903 African ancestry cases, 124,346 African ancestry controls",
+            "gxg": false,
+            "snp_count": 10831841,
+            "imputed": true,
+            "accession_id": "GCST90104549",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [10831841] (imputed)",
+            "disease_trait": "Stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "MONDO_0005098",
+                "efo_trait": "stroke disorder"
+              }
+            ],
+            "discovery_ancestry": [
+              "23991 African American or Afro-Caribbean (U.S.)"
+            ],
+            "replication_ancestry": [
+              "138249 African unspecified (Ghana, Nigeria, U.S.)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104549",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "ARIC",
+              "CHS",
+              "MESA",
+              "INTERSTROKE",
+              "SIGN",
+              "COMPASS",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104549"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104549/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "3,462 South Asian ancestry cases, 7,672 South Asian ancestry controls",
+            "replication_sample_size": "100 South Asian ancestry cases, 143 South Asian ancestry controls",
+            "gxg": false,
+            "snp_count": 3306954,
+            "imputed": true,
+            "accession_id": "GCST90104560",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [3306954] (imputed)",
+            "disease_trait": "Ischemic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "HP_0002140",
+                "efo_trait": "Ischemic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "11134 South Asian (India, Pakistan)"
+            ],
+            "replication_ancestry": [
+              "243 South Asian (NR)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104560",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "RACE",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104560"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104560/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "1,180 Hispanic cases, 4,146 Hispanic controls",
+            "replication_sample_size": "3,522 Hispanic cases, 49,323 Hispanic controls",
+            "gxg": false,
+            "snp_count": 7277674,
+            "imputed": true,
+            "accession_id": "GCST90104555",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [7277674] (imputed)",
+            "disease_trait": "Ischemic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "HP_0002140",
+                "efo_trait": "Ischemic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "5326 Hispanic or Latin American (Brazil, Canada, U.S.)"
+            ],
+            "replication_ancestry": [
+              "52845 Hispanic or Latin American (NR)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104555",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "MESA",
+              "NOMAS",
+              "INTERSTROKE",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104555"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104555/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "62,100 European ancestry cases, 1,234,808 European ancestry controls",
+            "replication_sample_size": "59,911 European ancestry cases, 665,176 European ancestry controls",
+            "gxg": false,
+            "snp_count": 7482033,
+            "imputed": true,
+            "accession_id": "GCST90104540",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [7482033] (imputed)",
+            "disease_trait": "Ischemic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "HP_0002140",
+                "efo_trait": "Ischemic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "1296908 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)"
+            ],
+            "replication_ancestry": [
+              "725087 European (Finland, NR, U.S.)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104540",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104540"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104540/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "19,032 East Asian ancestry cases, 237,242 East Asian ancestry controls",
+            "replication_sample_size": "8,304 East Asian ancestry cases, 174,855 East Asian ancestry controls",
+            "gxg": false,
+            "snp_count": 6725217,
+            "imputed": true,
+            "accession_id": "GCST90104545",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [6725217] (imputed)",
+            "disease_trait": "Ischemic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "HP_0002140",
+                "efo_trait": "Ischemic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "256274 East Asian (China, Japan, Republic of Korea)"
+            ],
+            "replication_ancestry": [
+              "183159 East Asian (NR, Republic of Korea)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104545",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "CKB",
+              "HISAYAMA",
+              "KCPS",
+              "BBJ",
+              "INTERSTROKE"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104545"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104545/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "894 African American cases, 20,030 African American controls, 19,032 East Asian ancestry cases, 237,242 East Asian ancestry controls, 62,100 European ancestry cases, 1,234,808 European ancestry controls, 1,180 Hispanic cases, 4,146 Hispanic controls, 3,462 South Asian ancestry cases, 7,672 South Asian ancestry controls",
+            "replication_sample_size": "13,709 African ancestry cases, 124,346 African ancestry controls, 8,304 East Asian ancestry cases, 174,855 East Asian ancestry controls, 59,911 European ancestry cases, 665,176 European ancestry controls, 3,522 Hispanic cases, 49,323 Hispanic controls, 100 South Asian ancestry cases, 143 South Asian ancestry controls",
+            "gxg": false,
+            "snp_count": 7407884,
+            "imputed": true,
+            "accession_id": "GCST90104535",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [7407884] (imputed)",
+            "disease_trait": "Ischemic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "HP_0002140",
+                "efo_trait": "Ischemic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "1296908 European (Australia, Canada, Denmark, Estonia, Finland, France, Germany, Iceland, Netherlands, Spain, Sweden, U.K., U.S.)",
+              "5326 Hispanic or Latin American (Brazil, Canada, U.S.)",
+              "20924 African American or Afro-Caribbean (U.S.)",
+              "256274 East Asian (China, Japan, Republic of Korea)",
+              "11134 South Asian (India, Pakistan)"
+            ],
+            "replication_ancestry": [
+              "183159 East Asian (NR, Republic of Korea)",
+              "138055 African unspecified (Ghana, Nigeria, U.S.)",
+              "52845 Hispanic or Latin American (NR)",
+              "725087 European (Finland, NR, U.S.)",
+              "243 South Asian (NR)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104535",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "multiple"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104535"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104535/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "894 African American cases, 20,030 African American controls",
+            "replication_sample_size": "13,709 African ancestry cases, 124,346 African ancestry controls",
+            "gxg": false,
+            "snp_count": 8357163,
+            "imputed": true,
+            "accession_id": "GCST90104550",
+            "full_summary_stats_available": true,
+            "pubmed_id": 36180795,
+            "platforms": "Affymetrix,Illumina [8357163] (imputed)",
+            "disease_trait": "Ischemic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "HP_0002140",
+                "efo_trait": "Ischemic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "20924 African American or Afro-Caribbean (U.S.)"
+            ],
+            "replication_ancestry": [
+              "138055 African unspecified (Ghana, Nigeria, U.S.)"
+            ],
+            "full_summary_stats": "http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90104001-GCST90105000/GCST90104550",
+            "terms_of_license": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "ARIC",
+              "CHS",
+              "REGARDS",
+              "SIGNET",
+              "MESA",
+              "JHS",
+              "INTERSTROKE",
+              "SIGN",
+              "COMPASS",
+              "other"
+            ],
+            "array_manufacturer": [
+              "Illumina",
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104550"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90104550/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          }
+        ],
+        "publication": {
+          "title": "Stroke genetics informs drug discovery and risk prediction across ancestries.",
+          "doi": "10.1038/s41586-022-05165-3",
+          "pmid": "36180795",
+          "pmcid": "PMC9524349",
+          "firstPublicationDate": "2022-09-30",
+          "response_sha256": "f5eb3ca7b110efe70d249147fffed5d76231161f90293188d2b3d3d1936ea261"
+        },
+        "data_availability": {
+          "xml_sha256": "7f1105825c4111f73f8b8c36f55897e5c1a19b39b0b240eabc9da3822ac89f79",
+          "sections": []
+        },
+        "catalog_pages": [
+          {
+            "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies?pubmed_id=36180795&size=50&page=0",
+            "sha256": "d9baf91017164a0a2f698b6b7695def7d28368cc5c6d59aa1b9ea48e1b7b83a9",
+            "rows": 34
+          }
+        ],
+        "catalog": {
+          "api_version": 2,
+          "study_count": 34,
+          "page_count": 1,
+          "publication_filter": "36180795",
+          "status": "CATALOG_QUERY_VERIFIED"
+        }
+      }
+    },
+    {
+      "job_id": 140923075378,
+      "result": {
+        "pmid": "42224635",
+        "status": "SOURCE_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "independence_verified": false,
+        "subtype_eligibility_verified": false,
+        "studies": [
+          {
+            "initial_sample_size": "21,544 Han Chinese ancestry cases, 267,198 Han Chinese ancestry controls",
+            "replication_sample_size": "NA",
+            "gxe": false,
+            "gxg": false,
+            "snp_count": 7819092,
+            "imputed": true,
+            "accession_id": "GCST90866312",
+            "full_summary_stats_available": false,
+            "user_requested": false,
+            "pubmed_id": 42224635,
+            "platforms": "Affymetrix [7819092] (imputed)",
+            "disease_trait": "Ischemic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "HP_0002140",
+                "efo_trait": "Ischemic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "288742 East Asian (Taiwan)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "NA",
+            "terms_of_license": "https://www.ebi.ac.uk/about/terms-of-use/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "TPMI"
+            ],
+            "array_manufacturer": [
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90866312"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90866312/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          },
+          {
+            "initial_sample_size": "5,546 Han Chinese ancestry cases, 143,017 Han Chinese ancestry controls",
+            "replication_sample_size": "NA",
+            "gxe": false,
+            "gxg": false,
+            "snp_count": 7819092,
+            "imputed": true,
+            "accession_id": "GCST90866311",
+            "full_summary_stats_available": false,
+            "user_requested": false,
+            "pubmed_id": 42224635,
+            "platforms": "Affymetrix [7819092] (imputed)",
+            "disease_trait": "Early-onset ischemic stroke",
+            "genotyping_technologies": [
+              "Genome-wide genotyping array"
+            ],
+            "efo_traits": [
+              {
+                "efo_id": "HP_0002140",
+                "efo_trait": "Ischemic stroke"
+              }
+            ],
+            "discovery_ancestry": [
+              "148563 East Asian (Taiwan)"
+            ],
+            "replication_ancestry": [],
+            "full_summary_stats": "NA",
+            "terms_of_license": "https://www.ebi.ac.uk/about/terms-of-use/",
+            "bg_efo_traits": [],
+            "cohort": [
+              "TPMI"
+            ],
+            "array_manufacturer": [
+              "Affymetrix"
+            ],
+            "_links": {
+              "self": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90866311"
+              },
+              "ancestries": {
+                "href": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies/GCST90866311/ancestries{?sort,direction}",
+                "templated": true
+              }
+            }
+          }
+        ],
+        "publication": {
+          "title": "Identification of Novel Genetic Risk Variants Associated With Early-Onset Ischemic Stroke in Taiwan.",
+          "doi": "10.1212/wnl.0000000000218126",
+          "pmid": "42224635",
+          "pmcid": "PMC13239414",
+          "firstPublicationDate": "2026-06-01",
+          "response_sha256": "bdfc44b01c2933abeea36aeb0ad5d8753dd1423ac383c0a2ff78b3f4abba02e9"
+        },
+        "data_availability": {
+          "xml_sha256": "737a6219e93ae1cab48424300531515fea5f3b0adefdb31f5023e7cd3b385302",
+          "sections": [
+            {
+              "title": "Data Availability",
+              "links": [],
+              "text": "Data Availability The information is available in eMethods."
+            },
+            {
+              "title": "Data Availability Statement",
+              "links": [],
+              "text": "Data Availability Statement The information is available in eMethods."
+            }
+          ]
+        },
+        "catalog_pages": [
+          {
+            "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/studies?pubmed_id=42224635&size=50&page=0",
+            "sha256": "b38e6cf08f9ba24d372915090782fcf84ef09bf3d88b0674b45d05ef253db956",
+            "rows": 2
+          }
+        ],
+        "catalog": {
+          "api_version": 2,
+          "study_count": 2,
+          "page_count": 1,
+          "publication_filter": "42224635",
+          "status": "CATALOG_QUERY_VERIFIED"
+        }
+      }
+    }
+  ]
+}
