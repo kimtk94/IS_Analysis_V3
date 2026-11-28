@@ -1,0 +1,679 @@
+{
+  "run_id": 45606353863,
+  "head_sha": "8281675b81e7ef0184b4a1a1c1897918cf8b30df",
+  "source": "Actual job stdout, no independent artifact ZIP read",
+  "records": [
+    {
+      "job_id": 139178104339,
+      "aggregate": {
+        "status": "ORAL_FIRST_PAIR_SCHEMA_REPAIR",
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/",
+            "bytes": 603,
+            "sha256": "4667612422cf8b2170fd45d552a9494af8fda884b7f625c505e049879a226c1e",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/GSE198315_series_matrix.txt.gz",
+            "bytes": 3680,
+            "sha256": "0c1fc954d1abc4d942a2e1facb8dc0c32f8bfbc5268db377d0b51e6ce1086339",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "records": [
+          {
+            "site": "TC",
+            "status": "HOLD_PILOT",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944923/suppl/GSM5944923_P01-TC_UMI_count_matrix.txt.gz",
+              "bytes": 246350977,
+              "sha256": "a5d32a9bd2213703f9b4b1eccaf63a0c0fc833fb823e2e87b498ed3f8f1d71c8",
+              "content_range": null,
+              "etag": null
+            },
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_PILOT",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944924/suppl/GSM5944924_P01-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 109959389,
+              "sha256": "254c5659d9f13d154889bb7504a431788e2210b861d3adc7784acadc43fce2d5",
+              "content_range": null,
+              "etag": null
+            },
+            "reason": "header/row width mismatch"
+          }
+        ],
+        "limits": [
+          "Preselected P01 only; no new inference. Cap increased because original GEO TC file exceeds 220 MB; no combined 5-7 GB download. No cell-level exports; no malignant label."
+        ],
+        "mode": "sc_pilot",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 32decc34acd9c286237a53b1d08571711455748c94ad1179f3bf10392a02c7ab",
+        "Artifact early-schema-sc_pilot.zip successfully finalized. Artifact ID 15018830011"
+      ]
+    },
+    {
+      "job_id": 139178104566,
+      "aggregate": {
+        "status": "HOLD_SOURCE_OR_CONTRACT",
+        "reason": "expected one feature and 108 count columns",
+        "mode": "bulk",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 35776a240172a6747327279d1fb33318f2fb88794dcccb9943a48658e777b5a9",
+        "Artifact early-schema-bulk.zip successfully finalized. Artifact ID 15018380344"
+      ]
+    },
+    {
+      "job_id": 139178104647,
+      "aggregate": {
+        "status": "ORAL_PAIRED_SOURCE_HEADER_REPAIR",
+        "site": "mLN",
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/",
+            "bytes": 603,
+            "sha256": "4667612422cf8b2170fd45d552a9494af8fda884b7f625c505e049879a226c1e",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/GSE198315_series_matrix.txt.gz",
+            "bytes": 3680,
+            "sha256": "0c1fc954d1abc4d942a2e1facb8dc0c32f8bfbc5268db377d0b51e6ce1086339",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "target_matrices": 10,
+        "verified": 0,
+        "records": [
+          {
+            "site": "mLN",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944924/suppl/GSM5944924_P01-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "f7fb645399fd4791771643ca9490442bc7a638d9cdd22fbe366805c4aad8ac02",
+              "content_range": "bytes 0-2097151/109959389",
+              "etag": null
+            },
+            "header_width": 4895,
+            "first_row_width": 4895,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944927/suppl/GSM5944927_P02-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "456fb6d7356a719767e7e1507ccb0deb69141be527a549d0e3d816d42f802f92",
+              "content_range": "bytes 0-2097151/118369081",
+              "etag": null
+            },
+            "header_width": 6144,
+            "first_row_width": 6144,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944930/suppl/GSM5944930_P03-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "43d30b0f67f206f4409ddd035e241dc2bc401194dc91dca5f1ede6449f8bd517",
+              "content_range": "bytes 0-2097151/127179375",
+              "etag": null
+            },
+            "header_width": 7033,
+            "first_row_width": 7033,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944934/suppl/GSM5944934_P04-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "b69e5e08bfad35c81a43dc193dd9fe412b813dca43d4551f4e666dff0c30644a",
+              "content_range": "bytes 0-2097151/185577485",
+              "etag": null
+            },
+            "header_width": 10058,
+            "first_row_width": 10058,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944937/suppl/GSM5944937_P05-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "aea7a49d591c1abd852a7926278eda08cfebb96e570ff13e467f4d951219857a",
+              "content_range": "bytes 0-2097151/157986852",
+              "etag": null
+            },
+            "header_width": 8646,
+            "first_row_width": 8646,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944941/suppl/GSM5944941_P06-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "5d046df5cd71cd32932c9fb29f1e4ccf34909dfa43d336eba1ab266656d1c3ee",
+              "content_range": "bytes 0-2097151/127867379",
+              "etag": null
+            },
+            "header_width": 6636,
+            "first_row_width": 6636,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944945/suppl/GSM5944945_P07-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "7bd05524267d4f60e7dfaca89d449e6fd4b2ffd5a8ea4aa37af9961b992e4457",
+              "content_range": "bytes 0-2097151/60838842",
+              "etag": null
+            },
+            "header_width": 4332,
+            "first_row_width": 4332,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944949/suppl/GSM5944949_P08-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "ea0d6ac212c03726a8f3fd1ac9cc529afcbed7b6c187ab3fb5291cd8512c5583",
+              "content_range": "bytes 0-2097151/96336566",
+              "etag": null
+            },
+            "header_width": 5401,
+            "first_row_width": 5401,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944953/suppl/GSM5944953_P09-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "a391b7928f32a053224b97f45c38ed5dabf32bfda640c963b64f44541d767df0",
+              "content_range": "bytes 0-2097151/83120818",
+              "etag": null
+            },
+            "header_width": 5047,
+            "first_row_width": 5047,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944957/suppl/GSM5944957_P10-mLN_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "0a31904bc81b61a5bc3a83bf72b7c0974e6ccb513b7a34982dc3191702b218e7",
+              "content_range": "bytes 0-2097151/78976061",
+              "etag": null
+            },
+            "header_width": 4517,
+            "first_row_width": 4517,
+            "reason": "header/row width mismatch"
+          }
+        ],
+        "limits": [
+          "Header orientation only; no patient inference. Exact barcode and fixed marker identifiers required. No cell identifiers exported."
+        ],
+        "mode": "sc_mLN",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 6cfb6c6937d131f7d96b0b23bcae352e5a56edbf1fdc64519e20080ab3038f67",
+        "Artifact early-schema-sc_mLN.zip successfully finalized. Artifact ID 15017204551"
+      ]
+    },
+    {
+      "job_id": 139178104749,
+      "aggregate": {
+        "status": "HCC_PROTEOME_LINKAGE_QUALIFICATION",
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/matrix/",
+            "bytes": 603,
+            "sha256": "56ed7bcc81944b7edfa326a8b06e2755253c1dcb3c6440afac5924f29c48a1da",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/matrix/GSE124535_series_matrix.txt.gz",
+            "bytes": 5239,
+            "sha256": "b38f3760685f18c97dfe7571c33837ea5fe2661db822ca97c941d4878bb0352b",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "title_pairs": 35,
+        "alias_pairs": 35,
+        "pride": {
+          "PXD006512": {
+            "status": "HOLD_DIRECTORY",
+            "reason": "HTTP Error 404: Not Found"
+          },
+          "PXD008373": {
+            "source": {
+              "url": "https://ftp.pride.ebi.ac.uk/pride/data/archive/2019/03/PXD008373/",
+              "bytes": 185736,
+              "sha256": "73d37b5d7118f206cbe995bd1c4296e4e2ccdaed6fad1680990b1906ba65cd49",
+              "content_range": null,
+              "etag": null
+            },
+            "raw_file_links": 712,
+            "processed_candidates": [
+              "Phospho_MaxQuant_results.zip"
+            ]
+          }
+        },
+        "publisher_supplement": {
+          "status": "PUBLIC_ZIP_SCHEMA_READ",
+          "source": {
+            "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41586-019-0987-8/MediaObjects/41586_2019_987_MOESM4_ESM.zip",
+            "bytes": 16291367,
+            "sha256": "71d411dd235baa050605ae208810042f55c417a16b4e79dc0922c779ec13b3f3",
+            "content_range": null,
+            "etag": "\"ef879f3d89104fefc162264baa73ec82\""
+          },
+          "members": 18,
+          "xlsx_workbooks": 15,
+          "candidate_sheets": [
+            {
+              "table_file": "2017-04-04932E-Supplementary Table 5.xlsx",
+              "sheet_index": 1,
+              "dimensions": [
+                16458,
+                74
+              ],
+              "exact_sample_keys": {
+                "title": 70,
+                "description_alias": 0
+              },
+              "complete_pairs": {
+                "title": 35,
+                "description_alias": 0
+              }
+            },
+            {
+              "table_file": "2017-04-04932E-Supplementary Table 13.xlsx",
+              "sheet_index": 1,
+              "dimensions": [
+                192,
+                122
+              ],
+              "exact_sample_keys": {
+                "title": 0,
+                "description_alias": 0
+              },
+              "complete_pairs": {
+                "title": 0,
+                "description_alias": 0
+              }
+            },
+            {
+              "table_file": "2017-04-04932E-Supplementary Table 13.xlsx",
+              "sheet_index": 2,
+              "dimensions": [
+                33,
+                122
+              ],
+              "exact_sample_keys": {
+                "title": 0,
+                "description_alias": 0
+              },
+              "complete_pairs": {
+                "title": 0,
+                "description_alias": 0
+              }
+            },
+            {
+              "table_file": "2017-04-04932E-Supplementary Table 14.xlsx",
+              "sheet_index": 2,
+              "dimensions": [
+                86,
+                202
+              ],
+              "exact_sample_keys": {
+                "title": 0,
+                "description_alias": 0
+              },
+              "complete_pairs": {
+                "title": 0,
+                "description_alias": 0
+              }
+            },
+            {
+              "table_file": "2017-04-04932E-Supplementary Table 14.xlsx",
+              "sheet_index": 3,
+              "dimensions": [
+                14,
+                98
+              ],
+              "exact_sample_keys": {
+                "title": 0,
+                "description_alias": 0
+              },
+              "complete_pairs": {
+                "title": 0,
+                "description_alias": 0
+              }
+            },
+            {
+              "table_file": "2017-04-04932E-Supplementary Table 18.xlsx",
+              "sheet_index": 1,
+              "dimensions": [
+                37,
+                260
+              ],
+              "exact_sample_keys": {
+                "title": 0,
+                "description_alias": 0
+              },
+              "complete_pairs": {
+                "title": 0,
+                "description_alias": 0
+              }
+            },
+            {
+              "table_file": "2017-04-04932E-Supplementary Table 18.xlsx",
+              "sheet_index": 2,
+              "dimensions": [
+                18,
+                260
+              ],
+              "exact_sample_keys": {
+                "title": 0,
+                "description_alias": 0
+              },
+              "complete_pairs": {
+                "title": 0,
+                "description_alias": 0
+              }
+            },
+            {
+              "table_file": "2017-04-04932E-Supplementary Table 4.xlsx",
+              "sheet_index": 1,
+              "dimensions": [
+                54,
+                8
+              ],
+              "exact_sample_keys": {
+                "title": 1,
+                "description_alias": 0
+              },
+              "complete_pairs": {
+                "title": 0,
+                "description_alias": 0
+              }
+            }
+          ]
+        },
+        "limits": [
+          "RNA title/alias relationship from GEO only. Candidate protein column labels are not confirmed biological aliquot or quantitative units. No raw or individual data outputs."
+        ],
+        "mode": "hcc_protein",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 6267cec292ab3175da8acdd758f9efba531e64f08b6239e05cb2b869219785ce",
+        "Artifact early-schema-hcc_protein.zip successfully finalized. Artifact ID 15017149403"
+      ]
+    },
+    {
+      "job_id": 139178104806,
+      "aggregate": {
+        "status": "HCC_RNA_EXACT_SAMPLE_MATRIX",
+        "column_mapping": "title",
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/matrix/",
+            "bytes": 603,
+            "sha256": "56ed7bcc81944b7edfa326a8b06e2755253c1dcb3c6440afac5924f29c48a1da",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/matrix/GSE124535_series_matrix.txt.gz",
+            "bytes": 5239,
+            "sha256": "b38f3760685f18c97dfe7571c33837ea5fe2661db822ca97c941d4878bb0352b",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "source": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/suppl/GSE124535_HCC.RNA-seq.35.samples.fpkm.txt.gz",
+          "bytes": 7751197,
+          "sha256": "d89057532dc1e766b23f88d7a69575047bbe1e959e234fbe55a2e689eedf2b56",
+          "content_range": null,
+          "etag": null
+        },
+        "title_pairs": 35,
+        "alias_pairs": 35,
+        "header_width": 74,
+        "candidate_column_matches": {
+          "title": 70,
+          "description_alias": 0,
+          "GSM": 0
+        },
+        "exact_sample_columns": 70,
+        "feature_rows": 63652,
+        "finite_nonnegative_rows": 63652,
+        "other_rows": 0,
+        "limits": [
+          "FPKM only; no raw-count DE. Exact title/description alias validated by GEO; still need independent protein aliquot linkage. No patient rows exported."
+        ],
+        "mode": "hcc_rna",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 2594e5ea1cdd1e055b2dd9d5bab983ad461d6fd183a66a03fed889e58311f77c",
+        "Artifact early-schema-hcc_rna.zip successfully finalized. Artifact ID 15018076695"
+      ]
+    },
+    {
+      "job_id": 139178104951,
+      "aggregate": {
+        "status": "ORAL_PAIRED_SOURCE_HEADER_REPAIR",
+        "site": "TC",
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/",
+            "bytes": 603,
+            "sha256": "4667612422cf8b2170fd45d552a9494af8fda884b7f625c505e049879a226c1e",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/GSE198315_series_matrix.txt.gz",
+            "bytes": 3680,
+            "sha256": "0c1fc954d1abc4d942a2e1facb8dc0c32f8bfbc5268db377d0b51e6ce1086339",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "target_matrices": 10,
+        "verified": 0,
+        "records": [
+          {
+            "site": "TC",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944923/suppl/GSM5944923_P01-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "1c44abc6c0a11a4dffca2e5b13f6b9c0127552d475ef8e88cdd317e0fd4c9159",
+              "content_range": "bytes 0-2097151/246350977",
+              "etag": null
+            },
+            "header_width": 8895,
+            "first_row_width": 8895,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944925/suppl/GSM5944925_P02-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "03747bd08424de8d3622139d02691900d3ef9896ff7dd6d975dd9f7bf8562b76",
+              "content_range": "bytes 0-2097151/163984579",
+              "etag": null
+            },
+            "header_width": 8358,
+            "first_row_width": 8358,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944928/suppl/GSM5944928_P03-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "6dcc3ef7d4910cdce0a5dbcde436393f9be58da4269a8318f32539acc47a1092",
+              "content_range": "bytes 0-2097151/141201307",
+              "etag": null
+            },
+            "header_width": 6882,
+            "first_row_width": 6882,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944932/suppl/GSM5944932_P04-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "d4054fbc05d28a84995c75dd431f6a868bd0b5a3d8b20adf973dedce369668a8",
+              "content_range": "bytes 0-2097151/172139953",
+              "etag": null
+            },
+            "header_width": 8174,
+            "first_row_width": 8174,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944935/suppl/GSM5944935_P05-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "bc9acf9bd723cf25ec9bab7780da9b1f43f0af7e6daa5585492234900ef50125",
+              "content_range": "bytes 0-2097151/187042369",
+              "etag": null
+            },
+            "header_width": 8799,
+            "first_row_width": 8799,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944939/suppl/GSM5944939_P06-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "13949b810e9a796a6e8d51c780a38b9e02ddf60e9d9bf6a966bd20c5ce257680",
+              "content_range": "bytes 0-2097151/217517123",
+              "etag": null
+            },
+            "header_width": 8517,
+            "first_row_width": 8517,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944943/suppl/GSM5944943_P07-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "5911a93d20d456b777e31c2460f906391ad19c4d06e96341fffb5865fead8aec",
+              "content_range": "bytes 0-2097151/160420205",
+              "etag": null
+            },
+            "header_width": 7730,
+            "first_row_width": 7730,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944947/suppl/GSM5944947_P08-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "9388a157b5839d00353498059f4187c2c1c948ecea255ff800ed9fb86bcdc536",
+              "content_range": "bytes 0-2097151/175704013",
+              "etag": null
+            },
+            "header_width": 7277,
+            "first_row_width": 7277,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944951/suppl/GSM5944951_P09-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "437c08f78d8b728f8df0d16c0f5c8c7833ac7ee31a09ddc16eada8d2605bb168",
+              "content_range": "bytes 0-2097151/231604033",
+              "etag": null
+            },
+            "header_width": 12300,
+            "first_row_width": 12300,
+            "reason": "header/row width mismatch"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_HEADER",
+            "source": {
+              "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5944nnn/GSM5944955/suppl/GSM5944955_P10-TC_UMI_count_matrix.txt.gz",
+              "bytes": 2097152,
+              "sha256": "ee2f32f3fc09a8366518e766e26c6f515c0101231f84b96df2a5c80e3f046606",
+              "content_range": "bytes 0-2097151/138786360",
+              "etag": null
+            },
+            "header_width": 6471,
+            "first_row_width": 6471,
+            "reason": "header/row width mismatch"
+          }
+        ],
+        "limits": [
+          "Header orientation only; no patient inference. Exact barcode and fixed marker identifiers required. No cell identifiers exported."
+        ],
+        "mode": "sc_TC",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is ed2621d6bd6fc238d29b53e8290a967afc1d81239b2d8a03df9d6812584d5a49",
+        "Artifact early-schema-sc_TC.zip successfully finalized. Artifact ID 15017402549"
+      ]
+    }
+  ]
+}
