@@ -1,0 +1,54 @@
+name: CKD EAS public cis-assay proteome screen
+on:
+  push:
+    branches: [research/ckd-eas-proteome-screen-20261124]
+    paths: ['scripts/ckd_eas_proteome_screen.py','.github/workflows/ckd-eas-proteome-screen.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  outcome:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - trait: egfr
+            file_id: 42774049
+          - trait: bun
+            file_id: 43218600
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/ckd_eas_proteome_screen.py selftest
+      - run: python3 -m pip install pyliftover==0.4.1 openpyxl==3.1.5
+      - name: Retrieve pinned public pQTL and reagent mapping supplements
+        run: |
+          set -eu
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 90 --max-filesize 50000000 "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-025-56935-2/MediaObjects/41467_2025_56935_MOESM7_ESM.xlsx" -o "$RUNNER_TEMP/ckb.xlsx"
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 90 --max-filesize 20000000 "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-025-56935-2/MediaObjects/41467_2025_56935_MOESM4_ESM.xlsx" -o "$RUNNER_TEMP/mapping.xlsx"
+      - name: Obtain exact public build chains and publisher outcome metadata
+        run: |
+          set -eu
+          for pair in hg38:hg19 hg19:hg38; do
+            from=${pair%:*}
+            to=${pair#*:}
+            up=$(echo "$to" | sed 's/^h/H/')
+            curl -fLsS --retry 1 --connect-timeout 15 --max-time 60 --max-filesize 10000000 "https://hgdownload.soe.ucsc.edu/goldenPath/$from/liftOver/${from}To${up}.over.chain.gz" -o "$RUNNER_TEMP/${from}To${up}.over.chain.gz"
+            curl -fLsS --retry 1 --connect-timeout 15 --max-time 45 --max-filesize 1000000 "https://hgdownload.soe.ucsc.edu/goldenPath/$from/liftOver/md5sum.txt" -o "$RUNNER_TEMP/$from.md5"
+          done
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 45 --max-filesize 1000000 "https://api.figshare.com/v2/articles/24356587" -o "$RUNNER_TEMP/figshare.json"
+      - name: Download publisher original GWAS (bounded)
+        run: |
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 180 --max-filesize 160000000 "https://ndownloader.figshare.com/files/${{ matrix.file_id }}" -o "$RUNNER_TEMP/outcome.gz"
+      - name: Verify source and screen frozen exposure-defined assay universe
+        run: python3 scripts/ckd_eas_proteome_screen.py ${{ matrix.trait }} --root "$RUNNER_TEMP" --out outputs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-eas-${{ matrix.trait }}-proteome-screen
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
