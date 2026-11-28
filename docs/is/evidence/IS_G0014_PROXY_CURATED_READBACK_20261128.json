@@ -1,0 +1,422 @@
+{
+  "provenance": {
+    "run_id": 46139304505,
+    "job_id": 140961480192,
+    "source_commit": "af49e68bc2b75776fdc15119f8c3daf88df3a9c6",
+    "artifact_id": 15260539741,
+    "reported_artifact_zip_sha256": "34e9666539ab02d355b7a2e59e11d817795aadd103e343864b3a4e083ae76865",
+    "readback": "Actual aggregate stdout; input LD artifact SHA256 verified by CI; output ZIP not independently downloaded."
+  },
+  "result": {
+    "status": "CURATED_INVENTORY_COMPLETE_NOT_NOVELTY",
+    "complete_proxy": 55,
+    "control_pass": true,
+    "release_stable": true,
+    "proxy_ids": [
+      "rs11010315",
+      "rs11010320",
+      "rs12572225",
+      "rs1326952",
+      "rs1475385",
+      "rs1475386",
+      "rs1887230",
+      "rs1977423",
+      "rs2209688",
+      "rs2210857",
+      "rs2210858",
+      "rs2225797",
+      "rs2247156",
+      "rs2767051",
+      "rs2767052",
+      "rs2767053",
+      "rs2767054",
+      "rs2767055",
+      "rs2767056",
+      "rs2767057",
+      "rs2767059",
+      "rs2767061",
+      "rs2767062",
+      "rs2767063",
+      "rs2767064",
+      "rs2767066",
+      "rs2784756",
+      "rs2784757",
+      "rs2784758",
+      "rs2784760",
+      "rs2804819",
+      "rs2804824",
+      "rs2804832",
+      "rs2804834",
+      "rs2804835",
+      "rs2804836",
+      "rs2804842",
+      "rs2804850",
+      "rs2804851",
+      "rs2845908",
+      "rs2845914",
+      "rs2845915",
+      "rs2845917",
+      "rs2845918",
+      "rs2845919",
+      "rs2845921",
+      "rs2845922",
+      "rs495369",
+      "rs582921",
+      "rs599240",
+      "rs623716",
+      "rs641528",
+      "rs641539",
+      "rs646373",
+      "rs679178"
+    ],
+    "summary": [
+      {
+        "rsid": "rs2129981",
+        "status": "COMPLETE",
+        "records": 1,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767060",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs11010315",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs11010320",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs12572225",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs1326952",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs1475385",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs1475386",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs1887230",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs1977423",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2209688",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2210857",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2210858",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2225797",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2247156",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767051",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767052",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767053",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767054",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767055",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767056",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767057",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767059",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767061",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767062",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767063",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767064",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2767066",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2784756",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2784757",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2784758",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2784760",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2804819",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2804824",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2804832",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2804834",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2804835",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2804836",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2804842",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2804850",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2804851",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2845908",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2845914",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2845915",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2845917",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2845918",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2845919",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2845921",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs2845922",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs495369",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs582921",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs599240",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs623716",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs641528",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs641539",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs646373",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      },
+      {
+        "rsid": "rs679178",
+        "status": "COMPLETE",
+        "records": 0,
+        "stroke_flags": []
+      }
+    ]
+  },
+  "limits": [
+    "No exact curated records for anchor and 55 directly computed proxies does not establish novelty.",
+    "Earlier 78-proxy API panel not reconciled; no complete literature/supplement or regional analysis claim.",
+    "No causal inference, independent replication or source-wide coverage claim."
+  ]
+}
