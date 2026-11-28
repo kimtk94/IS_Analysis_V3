@@ -1,0 +1,105 @@
+name: Skin allele-resolved phase3 LD audit
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/skin-allele-resolved-phase3-ld-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Install indexed VCF reader
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends tabix
+      - name: Resolve exact variants and compute aggregate phased LD
+        run: |
+          python3 - <<'PY'
+          import csv,hashlib,io,json,math,re,subprocess,urllib.request
+          from pathlib import Path
+          base='https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/'
+          vcf=base+'ALL.chr2.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz'
+          panel_url=base+'integrated_call_samples_v3.20130502.ALL.panel'
+          pairs=[('rs4584990',x) for x in ('rs144918519','rs260643','rs115957039','rs6542772','rs3827760')]+[('rs6542772','rs3827760'),('rs260643','rs3827760')]
+          variants=sorted({x for pair in pairs for x in pair})
+          pops=('CHB','JPT','CEU')
+          def get(url,cap=1000000):
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json'}),timeout=25) as res:raw=res.read(cap+1)
+              if len(raw)>cap:raise ValueError('response exceeds cap')
+              return raw
+          def sha(raw):return hashlib.sha256(raw).hexdigest()
+          def tabix(args):
+              p=subprocess.run(['tabix',*args],capture_output=True,check=True,timeout=90)
+              if len(p.stdout)>4000000:raise ValueError('indexed query exceeds cap')
+              return p.stdout
+          def ld(x,y):
+              assert len(x)==len(y) and len(x)>0
+              n=len(x);p=sum(x)/n;q=sum(y)/n
+              if not 0<p<1 or not 0<q<1:return {'status':'MONOMORPHIC','allele_frequency_first':p,'allele_frequency_second':q,'haplotypes':n}
+              d=sum(a*b for a,b in zip(x,y))/n-p*q
+              dmax=min(p*(1-q),(1-p)*q) if d>=0 else min(p*q,(1-p)*(1-q))
+              return {'status':'REFERENCE_ALLELE_LD','r2':min(1.,d*d/(p*(1-p)*q*(1-q))),'signed_d_prime':max(-1.,min(1.,d/dmax)),'allele_frequency_first':p,'allele_frequency_second':q,'haplotypes':n}
+          assert abs(ld([0,0,1,1],[0,0,1,1])['r2']-1)<1e-12
+          assert abs(ld([0,0,1,1],[0,1,0,1])['r2'])<1e-12
+          assert ld([0,0],[0,1])['status']=='MONOMORPHIC'
+          panelraw=get(panel_url)
+          panel={r['sample']:r['pop'] for r in csv.DictReader(io.StringIO(panelraw.decode()),delimiter='\t')}
+          assert len(panel)==2504
+          hdr=tabix(['-H',vcf])
+          head=[l for l in hdr.decode().splitlines() if l.startswith('#CHROM\t')]
+          assert len(head)==1
+          samples=head[0].split('\t')[9:];assert len(samples)==len(set(samples))==2504 and set(samples)==set(panel)
+          indices={pop:[i for i,s in enumerate(samples) if panel[s]==pop] for pop in pops}
+          assert {p:len(i) for p,i in indices.items()}=={'CHB':103,'JPT':104,'CEU':99}
+          out={'status':'REFERENCE_LD_CONTEXT_ONLY','scientific_validation':False,'vcf':vcf,'panel':panel_url,'panel_sha256':sha(panelraw),'vcf_header_sha256':sha(hdr),'population_counts':{p:len(i) for p,i in indices.items()},'variants':{},'pairs':[],'note':'All observed VCF SNV ALT alleles, not selected by LD. GRCh37 reference LD is not Korean outcome-matched LD. No raw genotypes published, no conditional association, no causal inference.'}
+          genotypes={}
+          for rs in variants:
+              try:
+                  raw=get('https://grch37.rest.ensembl.org/variation/human/'+rs+'?content-type=application/json')
+                  d=json.loads(raw);assert d['name']==rs
+                  maps=[m for m in d['mappings'] if m.get('assembly_name')=='GRCh37' and str(m.get('seq_region_name'))=='2' and m.get('start')==m.get('end') and m.get('strand')==1]
+                  assert len(maps)==1
+                  m=maps[0];pos=m['start'];a=m['allele_string'].split('/')
+                  q=tabix([vcf,'2:'+str(pos)+'-'+str(pos)])
+                  rows=[l.split('\t') for l in q.decode().splitlines()]
+                  rows=[r for r in rows if int(r[1])==pos and rs in r[2].split(';')]
+                  assert len(rows)==1,'missing or duplicate exact rsID/position'
+                  row=rows[0];ref=row[3];alts=row[4].split(',')
+                  assert ref in 'ACGT' and len(ref)==1 and all(len(x)==1 and x in 'ACGT' for x in alts)
+                  assert len(set([ref,*alts]))==1+len(alts) and set([ref,*alts])<=set(a)
+                  assert row[6]=='PASS' and row[8].split(':')[0]=='GT'
+                  if rs=='rs4584990':assert {ref,*alts}=={'C','T'}
+                  if rs=='rs3827760':assert pos==109513601
+                  gt=[]
+                  for field in row[9:]:
+                      g=field.split(':')[0]
+                      assert re.fullmatch(r'[0-9]+\|[0-9]+',g),'unphased/missing genotype'
+                      alleles=tuple(map(int,g.split('|')))
+                      assert all(0<=x<=len(alts) for x in alleles)
+                      gt.append(alleles)
+                  assert len(gt)==2504
+                  genotypes[rs]=(alts,gt)
+                  out['variants'][rs]={'status':'EXACT_REFERENCE_ROW','position_grch37':pos,'ensembl_alleles':a,'reference':ref,'alternate_alleles':alts,'mapping_sha256':sha(raw),'indexed_response_sha256':sha(q)}
+              except Exception as e:out['variants'][rs]={'status':'HOLD','error':type(e).__name__+': '+str(e)[:200]}
+          for a,b in pairs:
+              for pop in pops:
+                  if a not in genotypes or b not in genotypes:
+                      out['pairs'].append({'first':a,'second':b,'population':pop,'status':'HOLD_VARIANT_IDENTITY'});continue
+                  aa,ga=genotypes[a];ab,gb=genotypes[b]
+                  for i,alt1 in enumerate(aa,1):
+                      for j,alt2 in enumerate(ab,1):
+                          x=[int(g==i) for k in indices[pop] for g in ga[k]]
+                          y=[int(g==j) for k in indices[pop] for g in gb[k]]
+                          out['pairs'].append({'first':a,'second':b,'first_alt':alt1,'second_alt':alt2,'population':pop,**ld(x,y)})
+          out['verified_variants']=len(genotypes)
+          out['verified_allele_pairs']=sum(x['status']=='REFERENCE_ALLELE_LD' for x in out['pairs'])
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: skin-allele-resolved-phase3-aggregate
+          path: result.json
+          if-no-files-found: error
+          retention-days: 90
