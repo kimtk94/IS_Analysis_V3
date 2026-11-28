@@ -1,0 +1,33 @@
+name: Publication fixed-family sensitivity audit
+on:
+  pull_request:
+    paths:
+      - 'scripts/publication_inference_audit_20261128.py'
+      - '.github/workflows/publication-inference-audit-20261128.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fixed-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Focused arithmetic checks
+        run: python3 scripts/publication_inference_audit_20261128.py --self-test
+      - name: Retrieve only two pinned public aggregate files
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/publication-inference"
+          cd "${RUNNER_TEMP}/publication-inference"
+          curl --fail --silent --show-error --location --max-time 30 --max-filesize 2000000 'https://raw.githubusercontent.com/kimtk94/IS_Analysis_V3/8a4beaca82c043586691bb45a11973f9be16fc21/docs/publication/evidence/ocular_incomplete_paired_readback_20261125.json' -o ocular.json
+          curl --fail --silent --show-error --location --max-time 30 --max-filesize 2000000 'https://raw.githubusercontent.com/kimtk94/IS_Analysis_V3/dea5733170cebab70946721e4d599ddff91c13bd/docs/publication/evidence/is_fixed24_subtype_contrasts_20261125.json' -o is.json
+      - name: Verify Git blob identities and reproduce aggregate diagnostics
+        run: |
+          python3 scripts/publication_inference_audit_20261128.py --ocular "${RUNNER_TEMP}/publication-inference/ocular.json" --is-readback "${RUNNER_TEMP}/publication-inference/is.json" --out "${RUNNER_TEMP}/publication-inference/audit.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: publication-fixed-family-sensitivity
+          path: ${{ runner.temp }}/publication-inference/audit.json
+          if-no-files-found: error
+          retention-days: 30
