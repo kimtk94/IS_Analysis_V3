@@ -1,0 +1,79 @@
+name: IS frozen 24 exact curated novelty inventory
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/is-fixed24-curated-novelty-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: is-fixed24-curated-novelty
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dea5733170cebab70946721e4d599ddff91c13bd
+          persist-credentials: false
+      - name: Inventory all 24 exact rsIDs with bounded Catalog pagination
+        run: |
+          python3 - <<'PY'
+          import csv,json,math,re,sys,subprocess
+          from pathlib import Path
+          sys.path.insert(0,'scripts/is')
+          import fixed24_two_locus_catalog_audit as api
+          p=Path('docs/publication/external_validation_20261125/marker_request.tsv')
+          assert subprocess.check_output(['git','hash-object',str(p)],text=True).strip()=='3035e008ddc29133c5f72008977c0dfe8a07551e'
+          markers=list(csv.DictReader(p.open(),delimiter='\t'))
+          assert len(markers)==len({x['rsid'] for x in markers})==24
+          assert all(re.fullmatch(r'rs[0-9]+',x['rsid']) for x in markers)
+          # A text flag for manual review, never a validated phenotype ontology classification.
+          pattern=re.compile(r'\b(stroke|cerebrovascular|cerebral infarct\w*|brain infarct\w*|cardioembolic|small vessel disease|large artery atherosclero\w*)\b',re.I)
+          def flag(a):
+              return bool(pattern.search(' '.join(a.get('reported_trait') or [])))
+          assert flag({'reported_trait':['Ischemic stroke']}) and not flag({'reported_trait':['Congestive heart failure']})
+          meta,ms=api.fetch('metadata')
+          assert meta.get('version')=='2.0' and meta.get('gene_build','').startswith('GRCh38')
+          rows={}
+          for marker in markers:
+              rs=marker['rsid']
+              try:
+                  rr,pg=api.paged('associations',{'rs_id':rs,'sort':'p_value','direction':'asc'})
+                  seen=set();records=[]
+                  for a in rr:
+                      assert any(x.get('rs_id')==rs for x in a['snp_allele'] if isinstance(x,dict))
+                      aid=a['association_id'];assert aid not in seen;seen.add(aid)
+                      pv=a['p_value'];assert isinstance(pv,(int,float)) and math.isfinite(pv) and 0<=pv<=1
+                      assert isinstance(a.get('reported_trait'),list) and all(isinstance(t,str) for t in a['reported_trait'])
+                      records.append({**{k:a.get(k) for k in ('association_id','reported_trait','p_value','accession_id','pubmed_id','first_author','mapped_genes','snp_allele','multi_snp_haplotype','snp_interaction','beta_num','beta_unit','or_per_copy_num')},'stroke_text_review_flag':flag(a)})
+                  rows[rs]={'status':'COMPLETE_EXACT_CURATED_ASSOCIATIONS' if pg['complete'] else 'HOLD_PAGE_CAP','pagination':pg,'records':records}
+              except (OSError,ValueError,KeyError,TypeError,IndexError,AssertionError) as e:
+                  rows[rs]={'status':'HOLD_SOURCE_OR_SCHEMA','error':str(e)[:240]}
+          after,after_src=api.fetch('metadata')
+          keys=('version','data_release_date','gene_build')
+          stable=all(meta.get(k)==after.get(k) for k in keys)
+          control=rows['rs2129981']
+          control_pass=control['status']=='COMPLETE_EXACT_CURATED_ASSOCIATIONS' and any(a['association_id']==64718801 and a['pubmed_id']=='32514122' for a in control['records'])
+          summary=[]
+          for rs,x in rows.items():
+              complete=x['status']=='COMPLETE_EXACT_CURATED_ASSOCIATIONS'
+              records=x.get('records',[])
+              flagged=[a for a in records if a['stroke_text_review_flag']]
+              summary.append(dict(rsid=rs,status=x['status'],curated_count=len(records) if complete else None,stroke_text_flag_count=len(flagged) if complete else None,flagged_records=flagged))
+          n=sum(x['status']=='COMPLETE_EXACT_CURATED_ASSOCIATIONS' for x in rows.values())
+          status='EXACT_CURATED_INVENTORY_COMPLETE_NOT_NOVELTY' if n==24 and stable and control_pass else 'HOLD_INCOMPLETE_OR_RELEASE_CONTROL'
+          out=dict(status=status,scientific_validation=False,marker_family=24,complete=n,release_stable=stable,positive_control_pass=control_pass,metadata=meta,metadata_source=ms,metadata_end_source=after_src,rows=rows,summary=summary,limits=['Exact curated rsID search only, not LD proxy or regional evidence and not full summary statistics.','Text flags are for manual phenotype review; no flag or absent record does not establish novelty.','Multi-SNP/haplotype, ancestry, cohort overlap, allele and effect contrast require original-paper qualification.','Historical three-marker regional audit remains separate; no thresholds or fixed family changed.'])
+          Path('inventory.json').write_text(json.dumps(out,indent=2,allow_nan=False)+'\n')
+          print(json.dumps({k:out[k] for k in ('status','scientific_validation','marker_family','complete','release_stable','positive_control_pass','summary')},indent=2,allow_nan=False))
+          if status.startswith('HOLD'):raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-fixed24-exact-curated-inventory
+          path: inventory.json
+          if-no-files-found: error
+          retention-days: 90
