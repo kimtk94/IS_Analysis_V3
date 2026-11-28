@@ -1,0 +1,116 @@
+name: Ocular frozen-panel external strain sensitivity
+on:
+  pull_request:
+    paths:
+      - 'scripts/ocular_frozen_241_external.py'
+      - 'tests/test_ocular_frozen_241_external.py'
+      - 'scripts/ocular_paired_panel_validation.py'
+      - 'tests/test_ocular_paired_panel_validation.py'
+      - 'scripts/ocular_frozen_panel_archives.py'
+      - 'tests/test_ocular_frozen_panel_archives.py'
+      - '.github/workflows/ocular-frozen-241-external.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  external:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_ocular_frozen_241_external.py
+      - name: Verify frozen derived results and evaluate public third study
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          curl -fLsS --max-time 60 --max-filesize 1000000 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/kimtk94/IS_Analysis_V3/actions/artifacts/14912728421/zip" \
+            -o "$RUNNER_TEMP/frozen.zip"
+          python3 scripts/ocular_frozen_241_external.py --panel "$RUNNER_TEMP/frozen.zip" --out outputs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-frozen-241-seven-day-external
+          path: outputs/
+          retention-days: 90
+          if-no-files-found: warn
+
+  archived-results:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_ocular_frozen_241_external.py
+      - run: python3 tests/test_ocular_frozen_panel_archives.py
+      - name: Download only four pinned gene-level result archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          cd "$RUNNER_TEMP"
+          for id in 14912728421 13041944372 13044762180 13037335888; do
+            curl -fLsS --retry 1 --max-time 60 --max-filesize 4000000 \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/kimtk94/IS_Analysis_V3/actions/artifacts/$id/zip" \
+              -o "$id.zip"
+          done
+      - run: |
+          python3 scripts/ocular_frozen_panel_archives.py \
+            --panel "$RUNNER_TEMP/14912728421.zip" \
+            --score050 "$RUNNER_TEMP/13041944372.zip" \
+            --dual55 "$RUNNER_TEMP/13044762180.zip" \
+            --seven-day "$RUNNER_TEMP/13037335888.zip" \
+            --out outputs/archives
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-frozen-241-archive-sensitivity
+          path: outputs/archives/
+          if-no-files-found: warn
+          retention-days: 90
+
+  paired-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 tests/test_ocular_paired_panel_validation.py
+      - name: Fetch the frozen panel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --retry 1 --max-time 45 --max-filesize 1000000 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/14912728421/zip" \
+            -o "$RUNNER_TEMP/panel.zip"
+      - name: Fetch public ENA run metadata and the DEE2 project counts
+        run: |
+          fields='secondary_study_accession,study_accession,experiment_accession,run_accession,sample_accession,sample_alias,library_name,experiment_title'
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 60 --max-filesize 100000 \
+            "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA729873&result=read_run&fields=${fields}&format=tsv" \
+            -o "$RUNNER_TEMP/ena.tsv"
+          curl -fLsS --retry 1 --connect-timeout 15 --max-time 80 --max-filesize 30000000 \
+            'https://dee2.io/huge/hsapiens/SRP319815_NA.zip' -o "$RUNNER_TEMP/counts.zip"
+      - name: Evaluate both prespecified donor-paired panels
+        run: |
+          python3 scripts/ocular_paired_panel_validation.py --panel "$RUNNER_TEMP/panel.zip" \
+            --ena "$RUNNER_TEMP/ena.tsv" --bundle "$RUNNER_TEMP/counts.zip" \
+            --out outputs/paired/panel_summary.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-paired-donor-panels
+          path: outputs/paired/panel_summary.json
+          if-no-files-found: error
+          retention-days: 90
