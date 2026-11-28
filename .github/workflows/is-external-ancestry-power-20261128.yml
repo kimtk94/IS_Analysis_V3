@@ -1,0 +1,87 @@
+name: IS independent ancestry contrast design audit
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/is-external-ancestry-power-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  design:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dea5733170cebab70946721e4d599ddff91c13bd
+          persist-credentials: false
+      - name: Audit fixed family and model conditional sample size scenarios
+        run: |
+          python3 - <<'PY'
+          import csv,json,math,subprocess,hashlib
+          from pathlib import Path
+          from statistics import NormalDist
+          root=Path('docs/publication')
+          p=root/'evidence/is_fixed24_subtype_contrasts_20261125.json'
+          m=root/'external_validation_20261125/marker_request.tsv'
+          def pin(path,expected):
+              assert subprocess.check_output(['git','hash-object',str(path)],text=True).strip()==expected
+          pin(p,'e505329c7325c9778088ad426a635a57c4748c3b')
+          pin(m,'3035e008ddc29133c5f72008977c0dfe8a07551e')
+          data=json.loads(p.read_text())['result'];assert data['family']==192
+          markers=list(csv.DictReader(m.open(),delimiter='\t'))
+          assert len(markers)==len({r['rsid'] for r in markers})==24
+          target=next(r for r in markers if r['rsid']=='rs2767060')
+          assert (target['requested_effect_allele'],target['requested_other_allele'])==('T','C')
+          hit=next(x for x in data['significant_zero_covariance'] if x['rsid']=='rs2767060' and x['first']=='EAS_LAS' and x['second']=='EUR_LAS')
+          delta=hit['delta'];assert abs(delta-.3672)<1e-10
+          # Independent external cohorts, additive log-odds, unrelated HWE genotypes,
+          # information approximation at local effect. No real external EAF or N.
+          norm=NormalDist()
+          def a(p,k): return (1+k)/(k*2*p*(1-p))
+          def power(d,var,z):
+              u=abs(d)/math.sqrt(var)
+              return norm.cdf(u-z)+norm.cdf(-u-z)
+          def round100(x): return math.ceil(x/100)*100
+          z=norm.inv_cdf(1-.05/(2*24))
+          rows=[]
+          for pe in (.03,.0596,.10):
+            for pu in (.05,.20,.40):
+              for retain in (1.,.75,.5):
+                for k in (1,4):
+                  for goal in (.8,.9):
+                    ae,au=a(pe,k),a(pu,k)
+                    threshold=(z+norm.inv_cdf(goal))**2/(delta*retain)**2
+                    equal=round100(threshold*(ae+au))
+                    # Minimize total case count for independent cohorts with same k.
+                    ne=round100(threshold*math.sqrt(ae)*(math.sqrt(ae)+math.sqrt(au)))
+                    nu=round100(threshold*math.sqrt(au)*(math.sqrt(ae)+math.sqrt(au)))
+                    v=ae/ne+au/nu
+                    achieved=power(delta*retain,v,z)
+                    assert achieved>=goal-1e-10
+                    assert power(delta*retain,(ae+au)/equal,z)>=goal-1e-10
+                    rows.append(dict(eas_control_eaf=pe,eur_control_eaf=pu,effect_retained=retain,delta_logodds_hypothetical=delta*retain,controls_per_case=k,power_target=goal,equal_las_cases_per_ancestry=equal,equal_controls_per_ancestry=equal*k,optimal_eas_cases=ne,optimal_eur_cases=nu,optimal_eas_controls=ne*k,optimal_eur_controls=nu*k,optimal_achieved_power=achieved))
+          assert len(rows)==108
+          subset=[r for r in rows if r['eas_control_eaf']==.0596 and r['controls_per_case']==4 and r['power_target']==.8]
+          assert [r['equal_las_cases_per_ancestry'] for r in subset]==[2800,5000,11100,1800,3100,6900,1600,2800,6300]
+          # Information cannot be recovered from total registry N without LAS fraction and controls.
+          registry=[]
+          for fraction in (.15,.25,.35,.5):
+              n=math.floor(5328*fraction)
+              for retain in (1.,.75,.5):
+                  for pu in (.05,.2,.4):
+                      ae,au=a(.0596,4),a(pu,4)
+                      target_var=(delta*retain/(z+norm.inv_cdf(.8)))**2
+                      remaining=target_var-ae/n
+                      need=round100(au/remaining) if remaining>0 else None
+                      registry.append(dict(hypothetical_las_fraction=fraction,hypothetical_eas_cases=n,effect_retained=retain,eur_control_eaf=pu,required_eur_cases=need,eas_controls_assumed=n*4,eur_controls_required=None if need is None else need*4,limit='No finite EUR N under this approximation' if need is None else 'Conditional design only'))
+          out=dict(status='DESIGN_SCENARIOS_ONLY',scientific_validation=False,discovery_delta=delta,discovery_family=192,proposed_external_family=24,source_blob='e505329c7325c9778088ad426a635a57c4748c3b',marker_blob='3035e008ddc29133c5f72008977c0dfe8a07551e',external_inputs_received=0,assumptions='Independent unrelated external case-control cohorts, comparable LAS phenotype and marginal additive logOR scales, no covariance or sample overlap, local effect/HWE genotype variance approximation; hypothetical control EAF, no imputation or real cohort counts. Adjust across additional families if tested jointly.',scenarios=rows,registry_scenarios=registry)
+          Path('design.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(dict(status=out['status'],scientific_validation=False,scenario_count=len(rows),registry_count=len(registry),selected=subset,registry_example=[r for r in registry if r['hypothetical_las_fraction']==.25 and r['eur_control_eaf']==.2]),indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-external-ancestry-design-only
+          path: design.json
+          if-no-files-found: error
+          retention-days: 90
