@@ -1,0 +1,84 @@
+name: CKD filtration biomarkers and kidney tissue evidence
+on:
+  push:
+    branches: [research/ckd-filtration-tissue-20261124]
+    paths: ['scripts/ckd_filtration_tissue.py','.github/workflows/ckd-filtration-tissue.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  renal:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - trait: cys
+            url: https://ckdgen.imbi.uni-freiburg.de/files/Stanzick2021/metal_eGFRcys_meta1.TBL.map.annot.gc.gz
+          - trait: ckd
+            url: https://ckdgen.imbi.uni-freiburg.de/files/Wuttke2019/CKD_overall_EA_JW_20180223_nstud23.dbgap.txt.gz
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download fixed EAS discovery artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 2000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14922713044/zip" -o "$RUNNER_TEMP/egfr.zip"
+      - name: Download original public CKDGen file
+        run: curl -fLsS --connect-timeout 20 --max-time 360 --max-filesize 1200000000 "${{ matrix.url }}" -o "$RUNNER_TEMP/outcome.gz"
+      - run: python3 scripts/ckd_filtration_tissue.py ${{ matrix.trait }} --root "$RUNNER_TEMP" --out outputs/renal.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-fixed-seven-${{ matrix.trait }}
+          path: outputs/
+          if-no-files-found: error
+  korean-schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/ckd_filtration_tissue.py korean-probe --out outputs/korean_schema.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: koges-source-schema-probe
+          path: outputs/
+          if-no-files-found: error
+  biopsy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m pip install scipy==1.15.3
+      - name: Download processed series matrix and platform-only annotation
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 15 --max-time 90 --max-filesize 80000000 "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE116nnn/GSE116626/matrix/GSE116626_series_matrix.txt.gz" -o "$RUNNER_TEMP/matrix.gz"
+          curl -fLsS --connect-timeout 15 --max-time 90 --max-filesize 80000000 "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL14951&targ=self&form=text&view=full" -o "$RUNNER_TEMP/platform.txt"
+      - run: python3 scripts/ckd_filtration_tissue.py biopsy --root "$RUNNER_TEMP" --out outputs/biopsy.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-igan-biopsy-fixed-genes
+          path: outputs/
+          if-no-files-found: error
+  hpa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: curl -fLsS --connect-timeout 15 --max-time 120 --max-filesize 100000000 "https://v22.proteinatlas.org/download/rna_single_cell_type_tissue.tsv.zip" -o "$RUNNER_TEMP/hpa.zip"
+      - run: python3 scripts/ckd_filtration_tissue.py hpa --root "$RUNNER_TEMP" --out outputs/hpa.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-hpa22-kidney-clusters
+          path: outputs/
+          if-no-files-found: error
