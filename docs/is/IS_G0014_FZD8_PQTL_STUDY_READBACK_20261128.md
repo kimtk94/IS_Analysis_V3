@@ -1,0 +1,5 @@
+# FZD8 public pQTL study metadata readback — 2026-11-28
+
+Study search run 46140344580, exact ID UKB_PPP_EUR_FZD8_Q9H461_OID30818_v1. Initial detail request HTTP 400; corrected schema-based retrieval run 46140394601 job 140964807090 SUCCESS, source commit 2d34488fc64743e22c16387cd3199298ed596b87. Actual stdout: id UKB_PPP_EUR_FZD8_Q9H461_OID30818_v1, studyType pqtl, traitFromSource FZD8:Q9H461:OID30818:v1, nSamples 32867, projectId UKB_PPP_EUR, nCases/nControls/condition null. Response SHA256 b057b7c3a82bc86f9dcee7dbb32a7f41f07608bd9de3fb4c60f9910ba5b4455c. GraphQL study schema exposes credibleSets, hasSumstats and summarystatsLocation. No SNP-specific pQTL effects verified. EUR study, not EAS. No inference of sample N per SNP.
+
+Next: bounded public credible-set inventory and exact lead rsID overlap with the 55 fixed Phase3 proxies. Workflow commit 3251a88e462ec878be9039d156458497c53f6e29. No formal Coloc or MR, no claim of shared causality, no restricted access. Full regional summary statistics remain unverified. Main and schedules unchanged.
