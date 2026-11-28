@@ -1,0 +1,32 @@
+name: HCC Gao processed external cohort qualification
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/publication/hcc_gao_processed_inventory.py'
+      - '.github/workflows/early-track-external-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
+          path: prior
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/publication/hcc_gao_processed_inventory.py selftest
+      - run: python -u scripts/publication/hcc_gao_processed_inventory.py inventory --out evidence/hcc_gao.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcc-gao-processed-inventory
+          path: evidence/hcc_gao.json
+          if-no-files-found: error
+          retention-days: 30

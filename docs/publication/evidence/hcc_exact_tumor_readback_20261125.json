@@ -1,0 +1,175 @@
+{
+  "run_id": 45613227417,
+  "job_id": 139201877743,
+  "head_sha": "a0684a4ba232b3d700d0aede793d92dc67e029dc",
+  "source": "Actual stdout; artifact ZIP not independently downloaded",
+  "aggregate": {
+    "status": "HCC_MANIFEST_TUMOR_ONLY_LINK",
+    "sources": {
+      "Transcriptomics_Tums_NTL_Normals.xlsx": {
+        "url": "https://zenodo.org/records/16992982/files/Transcriptomics_Tums_NTL_Normals.xlsx?download=1",
+        "bytes": 59825342,
+        "sha256": "ebf7abcde8e5a053032b458fb4fd75a0b0675fed753f38210c942b3ae7c249d6",
+        "content_range": null,
+        "etag": null,
+        "published_md5": "9012a374588a273bcb930b83643bf1b0"
+      },
+      "Proteomics_Tums_NTL_Normals.xlsx": {
+        "url": "https://zenodo.org/records/16992982/files/Proteomics_Tums_NTL_Normals.xlsx?download=1",
+        "bytes": 6751340,
+        "sha256": "2687a8ac7497f20802a4991cd0cf3ab2939a03aebccc5a5bcf367ecd2bb448c0",
+        "content_range": null,
+        "etag": null,
+        "published_md5": "aee43ad590214e713b395c4f60d827a1"
+      }
+    },
+    "manifest_source": {
+      "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1186%2Fs12943-026-02604-x/MediaObjects/12943_2026_2604_MOESM3_ESM.xlsx",
+      "bytes": 30810,
+      "sha256": "1b7aa84bc224adb25cba9f01f628f8e6bf29b383b0891817bc1dabd555e23989",
+      "content_range": null,
+      "etag": "\"de238265d94120efc9af9f7342bafefd\""
+    },
+    "mapping": {
+      "SOAT1": {
+        "status": "EXACT_HGNC_ENSEMBL",
+        "ensembl": "ENSG00000057252",
+        "hgnc": "HGNC:11177",
+        "source": "https://rest.genenames.org/fetch/symbol/SOAT1",
+        "sha256": "dd1b6f94c652ad9005a48e5865c6a6eb4248f72cefc1cc07730353d7979889ef"
+      },
+      "HMGCR": {
+        "status": "EXACT_HGNC_ENSEMBL",
+        "ensembl": "ENSG00000113161",
+        "hgnc": "HGNC:5006",
+        "source": "https://rest.genenames.org/fetch/symbol/HMGCR",
+        "sha256": "64187bd15e55aaf08d233c042a9d1a7addf107f5ed521603b11a70db3a8ce585"
+      },
+      "SQLE": {
+        "status": "EXACT_HGNC_ENSEMBL",
+        "ensembl": "ENSG00000104549",
+        "hgnc": "HGNC:11279",
+        "source": "https://rest.genenames.org/fetch/symbol/SQLE",
+        "sha256": "47662cf7befb59528bd25f8fb1dcbf8cb66d0abf36fe8036d9202abf1cd72dda"
+      },
+      "LDLR": {
+        "status": "EXACT_HGNC_ENSEMBL",
+        "ensembl": "ENSG00000130164",
+        "hgnc": "HGNC:6547",
+        "source": "https://rest.genenames.org/fetch/symbol/LDLR",
+        "sha256": "35d747c341042c4a1b0b2d3b7767d69521f24c0fb09be5dd11f8e2c170335b8a"
+      },
+      "FASN": {
+        "status": "EXACT_HGNC_ENSEMBL",
+        "ensembl": "ENSG00000169710",
+        "hgnc": "HGNC:3594",
+        "source": "https://rest.genenames.org/fetch/symbol/FASN",
+        "sha256": "7a66bf845bdb4b73ee9b468065a9bb881348c6f23a323bd40628d9a50ad4e97f"
+      },
+      "ACACA": {
+        "status": "EXACT_HGNC_ENSEMBL",
+        "ensembl": "ENSG00000278540",
+        "hgnc": "HGNC:84",
+        "source": "https://rest.genenames.org/fetch/symbol/ACACA",
+        "sha256": "395f345cffe52b99846a406ecf1460ada42f728775fcc3eb7fe6d4b8425c272e"
+      },
+      "ACLY": {
+        "status": "EXACT_HGNC_ENSEMBL",
+        "ensembl": "ENSG00000131473",
+        "hgnc": "HGNC:115",
+        "source": "https://rest.genenames.org/fetch/symbol/ACLY",
+        "sha256": "2b36c2014c678ab6c3dc9b5354039a70aa8967c8e82afbb178ba1ac5b428cde1"
+      },
+      "SREBF2": {
+        "status": "EXACT_HGNC_ENSEMBL",
+        "ensembl": "ENSG00000198911",
+        "hgnc": "HGNC:11290",
+        "source": "https://rest.genenames.org/fetch/symbol/SREBF2",
+        "sha256": "14ec74436c0a7cd172ab4f34e5831b159601a73c66b9bacfcb6db95bb2767eef"
+      }
+    },
+    "candidate_intersections": [
+      {
+        "rna_sheet": 2,
+        "protein_sheet": 2,
+        "manifest_tumor_keys": 22
+      }
+    ],
+    "matched_tumor_biopsies": 22,
+    "patients": 9,
+    "results": {
+      "SOAT1": {
+        "RNA_rows": 1,
+        "protein_rows": 1,
+        "status": "DESCRIPTIVE_TUMOR_PATIENT_MEDIAN_CONCORDANCE",
+        "complete_biopsies": 22,
+        "patients": 9,
+        "spearman_rho": 0.7,
+        "loo_rho_range": [
+          0.5714285714285715,
+          0.880952380952381
+        ]
+      },
+      "HMGCR": {
+        "RNA_rows": 1,
+        "protein_rows": 0,
+        "status": "HOLD_MISSING_OR_NONUNIQUE_FEATURE"
+      },
+      "SQLE": {
+        "RNA_rows": 1,
+        "protein_rows": 1,
+        "status": "DESCRIPTIVE_TUMOR_PATIENT_MEDIAN_CONCORDANCE",
+        "complete_biopsies": 22,
+        "patients": 9,
+        "spearman_rho": 0.6,
+        "loo_rho_range": [
+          0.4285714285714286,
+          0.7857142857142858
+        ]
+      },
+      "LDLR": {
+        "RNA_rows": 1,
+        "protein_rows": 0,
+        "status": "HOLD_MISSING_OR_NONUNIQUE_FEATURE"
+      },
+      "FASN": {
+        "RNA_rows": 1,
+        "protein_rows": 1,
+        "status": "DESCRIPTIVE_TUMOR_PATIENT_MEDIAN_CONCORDANCE",
+        "complete_biopsies": 22,
+        "patients": 9,
+        "spearman_rho": -0.09999999999999999,
+        "loo_rho_range": [
+          -0.3333333333333334,
+          0.14285714285714288
+        ]
+      },
+      "ACACA": {
+        "RNA_rows": 0,
+        "protein_rows": 1,
+        "status": "HOLD_MISSING_OR_NONUNIQUE_FEATURE"
+      },
+      "ACLY": {
+        "RNA_rows": 1,
+        "protein_rows": 1,
+        "status": "DESCRIPTIVE_TUMOR_PATIENT_MEDIAN_CONCORDANCE",
+        "complete_biopsies": 22,
+        "patients": 9,
+        "spearman_rho": 0.8166666666666667,
+        "loo_rho_range": [
+          0.7380952380952381,
+          0.9047619047619048
+        ]
+      },
+      "SREBF2": {
+        "RNA_rows": 1,
+        "protein_rows": 0,
+        "status": "HOLD_MISSING_OR_NONUNIQUE_FEATURE"
+      }
+    },
+    "limits": [
+      "Multifocal HCC tumor only; 22 exact biopsies of nine patients, within-patient medians of published assay values. Spearman across patients, no raw scale subtraction, p-values, clinical outcome or independent validation. Normal/NTL columns withheld because manifest provenance unavailable. Existing Ng 2022 cohort reused. No patient or specimen keys emitted."
+    ],
+    "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+  }
+}

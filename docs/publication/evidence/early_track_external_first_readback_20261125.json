@@ -1,0 +1,288 @@
+{
+  "run_id": 45607898177,
+  "head_sha": "d037ee80f6508a85186d739a93acfcf499e355a7",
+  "source": "Actual Actions stdout; reported artifact digests, no independent ZIP download",
+  "records": [
+    {
+      "job_id": 139183449399,
+      "aggregate": {
+        "status": "HOLD_SOURCE_OR_CONTRACT",
+        "reason": "empty/oversize transfer",
+        "mode": "swiss",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is ba4fec0e5ec013df059ff85b8e65fb7e1c7c6d011a9c6fa00cf629581593b2dd",
+        "Artifact early-external-swiss.zip successfully finalized. Artifact ID 15019580059"
+      ]
+    },
+    {
+      "job_id": 139183449922,
+      "aggregate": {
+        "status": "KOREAN_HCC_METADATA_QUALIFICATION",
+        "source": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE36nnn/GSE36376/matrix/",
+            "bytes": 590,
+            "sha256": "675efff09a6827cb581f04ec9448aeb31c755c64fa11b5e3c1396daf6f985da2",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE36nnn/GSE36376/matrix/GSE36376_series_matrix.txt.gz",
+            "bytes": 1048576,
+            "sha256": "eea1866384cbf257adb7593909019bc76c1bd840090a92427a5032c42ce4402d",
+            "content_range": "bytes 0-1048575/106947688",
+            "etag": null
+          },
+          "mode": "bounded_compressed_prefix"
+        },
+        "samples": 433,
+        "tissue_counts": {
+          "adjacent non-tumor liver": 193,
+          "liver tumor": 240
+        },
+        "characteristic_fields": {
+          "tissue": {
+            "covered": 433,
+            "numeric": 0,
+            "distinct_values": 2
+          },
+          "ajcc stage": {
+            "covered": 433,
+            "numeric": 363,
+            "distinct_values": 5
+          }
+        },
+        "limits": [
+          "Samsung Medical Center GEO GSE36376; 240 tumor/193 adjacent reported, check actual count. Illumina chip identifiers and SAMPLE numbers do not prove patient linkage. No unpaired significance tests with possible within-patient overlap."
+        ],
+        "mode": "korea",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 5f3092d868ccfda03f39fe828e4aef35c63ea707d7fe277582b6f54e1bf0aebe",
+        "Artifact early-external-korea.zip successfully finalized. Artifact ID 15017674827"
+      ]
+    },
+    {
+      "job_id": 139183449931,
+      "aggregate": {
+        "status": "HCC_EXTENDED_FIG9_SOURCE_READ",
+        "source": {
+          "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41586-019-0987-8/MediaObjects/41586_2019_987_MOESM17_ESM.xlsx",
+          "bytes": 37465,
+          "sha256": "6cf2b41039ad59e71a6c2b4bb588040c4fe0b3cc538d5fad1254848f6a701b2f",
+          "content_range": null,
+          "etag": "\"8a8d728bf01376c9ddc67cd2aa3d8a5e\""
+        },
+        "sheets": [
+          {
+            "sheet_index": 1,
+            "dimensions": [
+              255,
+              3
+            ],
+            "known_terms": {},
+            "fixed_gene_labels": {},
+            "gene_header_rows": []
+          },
+          {
+            "sheet_index": 2,
+            "dimensions": [
+              51,
+              4
+            ],
+            "known_terms": {},
+            "fixed_gene_labels": {},
+            "gene_header_rows": []
+          },
+          {
+            "sheet_index": 3,
+            "dimensions": [
+              88,
+              20
+            ],
+            "known_terms": {},
+            "fixed_gene_labels": {
+              "LDLR": 1,
+              "SREBF2": 1,
+              "HMGCR": 1,
+              "SOAT1": 1
+            },
+            "gene_header_rows": [
+              {
+                "fixed_gene_labels": [
+                  "LDLR",
+                  "SREBF2",
+                  "HMGCR",
+                  "SOAT1"
+                ]
+              }
+            ]
+          },
+          {
+            "sheet_index": 4,
+            "dimensions": [
+              32,
+              64
+            ],
+            "known_terms": {},
+            "fixed_gene_labels": {},
+            "gene_header_rows": []
+          }
+        ],
+        "limits": [
+          "Exact original Extended Data Fig9 source; already published cholesterol protein/mRNA comparisons. Gene labels and measurement schema only; no inferred paired identifiers or reuse as independent validation."
+        ],
+        "mode": "protein_source",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is fd0d4b89343fa302fa2633f3ecde4387f05487a1880ccaed8da128bf2c81714b",
+        "Artifact early-external-protein_source.zip successfully finalized. Artifact ID 15018381741"
+      ]
+    },
+    {
+      "job_id": 139183449943,
+      "aggregate": {
+        "status": "HCC_PUBLIC_PROTEIN_EFFECT_TABLE_GATE",
+        "source": {
+          "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41586-019-0987-8/MediaObjects/41586_2019_987_MOESM4_ESM.zip",
+          "bytes": 16291367,
+          "sha256": "71d411dd235baa050605ae208810042f55c417a16b4e79dc0922c779ec13b3f3",
+          "content_range": null,
+          "etag": "\"ef879f3d89104fefc162264baa73ec82\""
+        },
+        "tables": [
+          {
+            "table": 6,
+            "sheets": [
+              {
+                "sheet": 1,
+                "dimensions": [
+                  2009,
+                  6
+                ],
+                "profiles": [
+                  {
+                    "header_row": 1,
+                    "statistic_labels": [
+                      {
+                        "column": 2,
+                        "label": "Gene symbol"
+                      },
+                      {
+                        "column": 3,
+                        "label": "logFC"
+                      },
+                      {
+                        "column": 4,
+                        "label": "P-value"
+                      }
+                    ],
+                    "fixed_gene_row_counts": {
+                      "SOAT1": 1,
+                      "LDLR": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "sheet": 2,
+                "dimensions": [
+                  7,
+                  2
+                ],
+                "profiles": []
+              }
+            ]
+          },
+          {
+            "table": 7,
+            "sheets": [
+              {
+                "sheet": 1,
+                "dimensions": [
+                  2758,
+                  8
+                ],
+                "profiles": [
+                  {
+                    "header_row": 1,
+                    "statistic_labels": [
+                      {
+                        "column": 2,
+                        "label": "Gene symbol"
+                      },
+                      {
+                        "column": 5,
+                        "label": "logFC"
+                      },
+                      {
+                        "column": 6,
+                        "label": "P-value"
+                      }
+                    ],
+                    "fixed_gene_row_counts": {
+                      "FASN": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "sheet": 2,
+                "dimensions": [
+                  7,
+                  2
+                ],
+                "profiles": []
+              }
+            ]
+          },
+          {
+            "table": 9,
+            "sheets": [
+              {
+                "sheet": 1,
+                "dimensions": [
+                  2689,
+                  8
+                ],
+                "profiles": [
+                  {
+                    "header_row": 1,
+                    "statistic_labels": [
+                      {
+                        "column": 2,
+                        "label": "Gene symbol"
+                      }
+                    ],
+                    "fixed_gene_row_counts": {}
+                  }
+                ]
+              },
+              {
+                "sheet": 2,
+                "dimensions": [
+                  7,
+                  2
+                ],
+                "profiles": []
+              }
+            ]
+          }
+        ],
+        "limits": [
+          "Original publisher tables only; no inferred signed logFC or direction. Missing fixed genes may reflect selected lists, not no effect. Do not treat original effect tables as independent validation."
+        ],
+        "mode": "supplement_effects",
+        "scientific_status": "HOLD_NOVELTY_AND_INDEPENDENT_VALIDATION"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is b5b0f99db69f6bf9d918e4595866e08aab673eba4a96d90c0c04e1789d83ae6d",
+        "Artifact early-external-supplement_effects.zip successfully finalized. Artifact ID 15018447055"
+      ]
+    }
+  ]
+}
