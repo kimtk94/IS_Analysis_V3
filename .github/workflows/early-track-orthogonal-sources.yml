@@ -1,0 +1,69 @@
+name: Early Oral author-labelled node controls
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/publication/oral_node_control.py'
+      - '.github/workflows/early-track-orthogonal-sources.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pairs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        patient: ['4','6','7']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
+          path: prior
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6 scipy==1.15.3 openpyxl==3.1.5
+      - run: python scripts/publication/oral_node_control.py selftest
+      - name: Verify author-coded node pairs; quantify eligible samples
+        env:
+          STUDY_PATIENT: ${{ matrix.patient }}
+          OMP_NUM_THREADS: '2'
+        run: python -u scripts/publication/oral_node_control.py "$STUDY_PATIENT" --out "evidence/$STUDY_PATIENT.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: node-control-${{ matrix.patient }}
+          path: evidence/${{ matrix.patient }}.json
+          if-no-files-found: error
+          retention-days: 30
+  combine:
+    needs: pairs
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 9703492179f0a29ecb7a332a24d474c49a7c10f7
+          path: prior
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.2.6 scipy==1.15.3 openpyxl==3.1.5
+      - run: python scripts/publication/oral_node_control.py selftest
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: node-control-*
+          merge-multiple: true
+          path: inputs
+      - run: python -u scripts/publication/oral_node_control.py combine --root inputs --out evidence/combine.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: node-control-combine
+          path: evidence/combine.json
+          if-no-files-found: error
+          retention-days: 30
