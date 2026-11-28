@@ -1,0 +1,84 @@
+name: TOP3 public source metadata audit
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/top3-public-source-metadata-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [PRJNA781014, PRJNA729873, BBJ, skin]
+    env:
+      SOURCE: ${{ matrix.source }}
+    steps:
+      - name: Retrieve bounded public metadata, never sequence or GWAS archives
+        run: |
+          python3 - <<'PY'
+          import csv, hashlib, io, json, os, re, urllib.parse, urllib.request
+          from html.parser import HTMLParser
+          from pathlib import Path
+          source = os.environ["SOURCE"]
+          cap = 3_000_000
+          fields = "run_accession,experiment_accession,sample_accession,study_accession,experiment_title,sample_title,library_layout,fastq_ftp,fastq_md5,fastq_bytes"
+          if source.startswith("PRJNA"):
+              url = "https://www.ebi.ac.uk/ena/portal/api/filereport?" + urllib.parse.urlencode({"accession":source,"result":"read_run","fields":fields,"format":"tsv","limit":100})
+          elif source == "BBJ":
+              url = "https://pheweb.jp/downloads"
+          else:
+              url = "https://zenodo.org/api/records/19638349"
+          result = {"source":source,"url":url,"status":"HOLD_NOT_QUALIFIED","scientific_validation":False}
+          class Rows(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.rows=[]; self.parts=None
+              def handle_starttag(self,tag,attrs):
+                  if tag=="tr": self.parts=[]
+              def handle_data(self,data):
+                  if self.parts is not None and data.strip(): self.parts.append(data.strip())
+              def handle_endtag(self,tag):
+                  if tag=="tr" and self.parts is not None:
+                      self.rows.append(" | ".join(self.parts)); self.parts=None
+          try:
+              with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"IS-Analysis-public-metadata/1.0","Accept":"*/*"}),timeout=25) as response:
+                  raw = response.read(cap+1)
+                  if len(raw)>cap: raise ValueError("response exceeds metadata cap")
+                  result.update(http_status=response.status,bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest())
+              if source.startswith("PRJNA"):
+                  reader=csv.DictReader(io.StringIO(raw.decode("utf-8-sig")),delimiter="\t")
+                  if not set(fields.split(",")).issubset(reader.fieldnames or []): raise ValueError("ENA schema mismatch")
+                  rows=list(reader)
+                  ids=[x["run_accession"] for x in rows]
+                  if not ids or len(ids)!=len(set(ids)) or not all(re.fullmatch(r"[SED]RR\d+", x) for x in ids): raise ValueError("invalid or duplicate run IDs")
+                  def manifest_ok(row):
+                      files=row["fastq_ftp"].split(";"); md5=row["fastq_md5"].split(";"); sizes=row["fastq_bytes"].split(";")
+                      return len(files)==len(md5)==len(sizes) and all(files) and all(re.fullmatch(r"[a-fA-F0-9]{32}", x) for x in md5) and all(x.isdigit() and int(x)>0 for x in sizes)
+                  ok=[x for x in rows if manifest_ok(x)]
+                  result.update(run_count=len(rows),unique_samples=len({x["sample_accession"] for x in rows}),manifest_complete=len(ok),declared_fastq_bytes=sum(int(v) for x in ok for v in x["fastq_bytes"].split(";")),runs=[{k:x[k] for k in ("run_accession","experiment_accession","sample_accession","study_accession","library_layout","fastq_md5","fastq_bytes")} for x in rows],status="METADATA_RETRIEVED_PAIRING_UNVERIFIED")
+                  # Depositor titles are not used to infer donor pairs automatically. No raw reads fetched.
+              elif source=="skin":
+                  data=json.loads(raw)
+                  if str(data.get("id"))!="19638349": raise ValueError("record identity mismatch")
+                  files=data.get("files",[])
+                  if not isinstance(files,list) or not files: raise ValueError("no file list")
+                  result.update(title=data.get("metadata",{}).get("title"),files=[{"name":x.get("key"),"size":x.get("size"),"checksum":x.get("checksum")} for x in files],status="RECORD_INVENTORY_ONLY_REGIONAL_COVERAGE_UNVERIFIED")
+              else:
+                  parser=Rows(); parser.feed(raw.decode("utf-8",errors="replace"))
+                  hits=[x for x in parser.rows if re.search(r"stroke|cerebrovascular|cardioembol",x,re.I)]
+                  result.update(matching_rows=hits[:100],total_rows=len(parser.rows),status="CATALOG_INVENTORY_ONLY_OVERLAP_UNVERIFIED")
+          except Exception as e:
+              result.update(error=type(e).__name__+": "+str(e)[:300])
+          path=Path("metadata-audit.json")
+          path.write_text(json.dumps(result,indent=2)+"\n",encoding="utf-8")
+          print(json.dumps(result,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: top3-metadata-${{ matrix.source }}
+          path: metadata-audit.json
+          if-no-files-found: error
+          retention-days: 30
