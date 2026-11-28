@@ -1,0 +1,321 @@
+{
+  "run_id": 46123878528,
+  "source_commit": "5d64fabffe2b85c5d3c80439b5456803bf39f070",
+  "note": "Exact JSON read back from Actions job logs; uploaded artifact ZIP digests reported by GitHub, not separately downloaded. Metadata only; no raw FASTQ or GWAS/QTL data; no donor pairing, independent replication or scientific promotion.",
+  "jobs": [
+    {
+      "job_id": 140914036274,
+      "result": {
+        "source": "PRJNA729873",
+        "url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA729873&result=read_run&fields=run_accession%2Cexperiment_accession%2Csample_accession%2Cstudy_accession%2Cexperiment_title%2Csample_title%2Clibrary_layout%2Cfastq_ftp%2Cfastq_md5%2Cfastq_bytes&format=tsv&limit=100",
+        "status": "METADATA_RETRIEVED_PAIRING_UNVERIFIED",
+        "scientific_validation": false,
+        "http_status": 200,
+        "bytes": 7766,
+        "sha256": "6eb29504ed450417b844a06b721b4de689273d9a3e636c6c68b721eeba611e23",
+        "run_count": 16,
+        "unique_samples": 16,
+        "manifest_complete": 16,
+        "declared_fastq_bytes": 74886339370,
+        "runs": [
+          {
+            "run_accession": "SRR14535079",
+            "experiment_accession": "SRX10879288",
+            "sample_accession": "SAMN19184910",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "7d4e8884b09cfb39332497d1ba1c0fc3;caf8b9da45775bf987ab3eaccc762031;e76abc652bacb6e2279968132ad63900",
+            "fastq_bytes": "360532;2460742592;2844247300"
+          },
+          {
+            "run_accession": "SRR14535088",
+            "experiment_accession": "SRX10879279",
+            "sample_accession": "SAMN19184915",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "0f279d47ed202073af1ce00282095dc3;f689ddbaa53fd1db6d741c7272ff1240;1840409df25725bd764bd2b533630c00",
+            "fastq_bytes": "125156;1996781661;2265227793"
+          },
+          {
+            "run_accession": "SRR14535080",
+            "experiment_accession": "SRX10879287",
+            "sample_accession": "SAMN19184909",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "e88e6c5fb23e9cfbfbc0e07801893d0a;3798b7c6d287ce2eae8484f8ddf027e5;7b834be4564b2bae9e3845aaec1e81ae",
+            "fastq_bytes": "88823;1735778242;1975776452"
+          },
+          {
+            "run_accession": "SRR14535089",
+            "experiment_accession": "SRX10879278",
+            "sample_accession": "SAMN19184914",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "aad0e126df74928e86a5ae7dbe9e79f3;76482da96904d96f7e0c431e72131ff8;49e8b8c9144a6de39fa91c4aafc86315",
+            "fastq_bytes": "240513;2285056495;2589068572"
+          },
+          {
+            "run_accession": "SRR14535090",
+            "experiment_accession": "SRX10879277",
+            "sample_accession": "SAMN19184913",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "3b9783f1d5c11aa2331498c159c63742;6eb297e39e5040764b19bdacdb266e4a;aaf879bc6faf88ccc7c0ff2ee5e0f85b",
+            "fastq_bytes": "169777;1847574875;2098201480"
+          },
+          {
+            "run_accession": "SRR14535091",
+            "experiment_accession": "SRX10879276",
+            "sample_accession": "SAMN19184904",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "d84fa9edd41b6664719969b249fc195c;fd3a8a8d5333cfcabce247db4174d547;531cb8f1f125bf0d8255313fb9e5953d",
+            "fastq_bytes": "359501;2375037365;2679039184"
+          },
+          {
+            "run_accession": "SRR14535077",
+            "experiment_accession": "SRX10879290",
+            "sample_accession": "SAMN19184912",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "f96e8aec2f95bad84577f9bbc50f1969;8fd9443f5b09f9b5f7d3e00cc32681ad;bba0b8373ca831920343ad26f08f1932",
+            "fastq_bytes": "254716;2441160574;2747693339"
+          },
+          {
+            "run_accession": "SRR14535081",
+            "experiment_accession": "SRX10879286",
+            "sample_accession": "SAMN19184908",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "665045b4fe412bd217e4568ec729860c;09585498d715a3e92af2bd3b46ecd597;81817ade8e572591d007c50d18eb2e36",
+            "fastq_bytes": "122001;2464639375;2796332823"
+          },
+          {
+            "run_accession": "SRR14535082",
+            "experiment_accession": "SRX10879285",
+            "sample_accession": "SAMN19184907",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "20c8d6b5860176189af789fa510ce3a8;0259a58331f1a79bf6c86604797b8fa7;02a6efb11f1d6c82b849e027bb5e82aa",
+            "fastq_bytes": "73633;1886988384;2124973552"
+          },
+          {
+            "run_accession": "SRR14535087",
+            "experiment_accession": "SRX10879280",
+            "sample_accession": "SAMN19184916",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "4c53ab9291f2f92fc663fab024da462d;3507abe2578e3176ec34b862d1a6dc62;d9eb7fe79ea1208911712753f41c5fe0",
+            "fastq_bytes": "234166;2908129146;3297790111"
+          },
+          {
+            "run_accession": "SRR14535078",
+            "experiment_accession": "SRX10879289",
+            "sample_accession": "SAMN19184911",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "862b7d801d707aefec85a519df33f041;43783a5587a1ccaa603922ab05cdb3bf;d72732f80af930b1b8359a600c13151e",
+            "fastq_bytes": "143193;2165135931;2452072811"
+          },
+          {
+            "run_accession": "SRR14535083",
+            "experiment_accession": "SRX10879284",
+            "sample_accession": "SAMN19184906",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "1fc8b2bd064d36d26ec71aee72d9f943;a72ed41217fa9e60d7fb6e53eb329e9c;1de26830265fbd6578b065c778e518f8",
+            "fastq_bytes": "344732;2412918923;2802985051"
+          },
+          {
+            "run_accession": "SRR14535084",
+            "experiment_accession": "SRX10879283",
+            "sample_accession": "SAMN19184905",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "afc79c9b38bfe154d08e1d55bd53eb7d;f9ae590917cf4e2e9189547897f3cb4c;a38f52a759e11235c2a38fca215ed0ea",
+            "fastq_bytes": "253909;1816137404;2065017803"
+          },
+          {
+            "run_accession": "SRR14535085",
+            "experiment_accession": "SRX10879282",
+            "sample_accession": "SAMN19184918",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "db9f068ca2066c117542c8f6e4f435cc;df457591a9c2b6246df18f92827ca596;e433da2646831bd5b808dd4f84784635",
+            "fastq_bytes": "45968;2634652046;2987303985"
+          },
+          {
+            "run_accession": "SRR14535086",
+            "experiment_accession": "SRX10879281",
+            "sample_accession": "SAMN19184917",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "0d9880ef99ae2c4035cb41f0dbe4eeb9;a372a3d606422a9b2e9d6b841c1337c2;57ed6a6c1954e1d959b6ad55bc68729d",
+            "fastq_bytes": "122928;1901147778;2206359922"
+          },
+          {
+            "run_accession": "SRR14535092",
+            "experiment_accession": "SRX10879275",
+            "sample_accession": "SAMN19184903",
+            "study_accession": "PRJNA729873",
+            "library_layout": "PAIRED",
+            "fastq_md5": "8744ab282f89379a113225fa73d50213;7d9031d84bada779ad2ebf93a9fda73f;577a98301de622b639d341781ede3cfb",
+            "fastq_bytes": "142615;1697203198;1922083040"
+          }
+        ]
+      }
+    },
+    {
+      "job_id": 140914036441,
+      "result": {
+        "source": "PRJNA781014",
+        "url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA781014&result=read_run&fields=run_accession%2Cexperiment_accession%2Csample_accession%2Cstudy_accession%2Cexperiment_title%2Csample_title%2Clibrary_layout%2Cfastq_ftp%2Cfastq_md5%2Cfastq_bytes&format=tsv&limit=100",
+        "status": "METADATA_RETRIEVED_PAIRING_UNVERIFIED",
+        "scientific_validation": false,
+        "http_status": 200,
+        "bytes": 3963,
+        "sha256": "894adabd9901d5a4a1ad8667bc75a39e56a543269b0a126dd2a7704cedd399dc",
+        "run_count": 10,
+        "unique_samples": 10,
+        "manifest_complete": 10,
+        "declared_fastq_bytes": 27470338436,
+        "runs": [
+          {
+            "run_accession": "SRR16961561",
+            "experiment_accession": "SRX13153063",
+            "sample_accession": "SAMN23226928",
+            "study_accession": "PRJNA781014",
+            "library_layout": "PAIRED",
+            "fastq_md5": "50257dc809fa11fe2974db1a442d2bd2;79586f9cbc771ae8ea8f4fef3d586771",
+            "fastq_bytes": "1347569080;1418512881"
+          },
+          {
+            "run_accession": "SRR16961562",
+            "experiment_accession": "SRX13153062",
+            "sample_accession": "SAMN23226927",
+            "study_accession": "PRJNA781014",
+            "library_layout": "PAIRED",
+            "fastq_md5": "f81b49f81ab106f5366bb3b2df82cfd9;943b0f73ce941e34e8ee8102f8d6ce38",
+            "fastq_bytes": "1254961480;1318312160"
+          },
+          {
+            "run_accession": "SRR16961558",
+            "experiment_accession": "SRX13153066",
+            "sample_accession": "SAMN23226931",
+            "study_accession": "PRJNA781014",
+            "library_layout": "PAIRED",
+            "fastq_md5": "b1ce19ba1b6dae1e6768f94f21f4ab43;9ff23e886a59d30fb318035305431e3b",
+            "fastq_bytes": "1589042238;1663509978"
+          },
+          {
+            "run_accession": "SRR16961565",
+            "experiment_accession": "SRX13153059",
+            "sample_accession": "SAMN23226924",
+            "study_accession": "PRJNA781014",
+            "library_layout": "PAIRED",
+            "fastq_md5": "0f6c82e063cf9e3c86b083afc4f5a6a4;c8e36f19f69df57e26ec1d9301b40ec4",
+            "fastq_bytes": "742136061;786750742"
+          },
+          {
+            "run_accession": "SRR16961559",
+            "experiment_accession": "SRX13153065",
+            "sample_accession": "SAMN23226930",
+            "study_accession": "PRJNA781014",
+            "library_layout": "PAIRED",
+            "fastq_md5": "af7cba9546326eaaf3a48c5b0a56626d;d3054ebd38ce54363abb49e73c29f9a0",
+            "fastq_bytes": "1597386676;1671704324"
+          },
+          {
+            "run_accession": "SRR16961564",
+            "experiment_accession": "SRX13153060",
+            "sample_accession": "SAMN23226925",
+            "study_accession": "PRJNA781014",
+            "library_layout": "PAIRED",
+            "fastq_md5": "01bed36087f6a6db9730881db6937f62;638ff4a46cd1b1e789053fa9645c2323",
+            "fastq_bytes": "1455380088;1526786270"
+          },
+          {
+            "run_accession": "SRR16961566",
+            "experiment_accession": "SRX13153058",
+            "sample_accession": "SAMN23226923",
+            "study_accession": "PRJNA781014",
+            "library_layout": "PAIRED",
+            "fastq_md5": "ab031bb983f3afaabf4d6e0050f6e456;b381da531da2a8f420734b4a63836f32",
+            "fastq_bytes": "1448756084;1539917959"
+          },
+          {
+            "run_accession": "SRR16961557",
+            "experiment_accession": "SRX13153067",
+            "sample_accession": "SAMN23226932",
+            "study_accession": "PRJNA781014",
+            "library_layout": "PAIRED",
+            "fastq_md5": "4c0bec8592dcd760f111e405b96bd447;073dde71f829ffa2a8ba920c6a6f4bc3",
+            "fastq_bytes": "1256481221;1322682687"
+          },
+          {
+            "run_accession": "SRR16961560",
+            "experiment_accession": "SRX13153064",
+            "sample_accession": "SAMN23226929",
+            "study_accession": "PRJNA781014",
+            "library_layout": "PAIRED",
+            "fastq_md5": "cabb1a7551b514de13858bbe17d19cc3;6c23f77beb547892ab9a540f27f2fcba",
+            "fastq_bytes": "1465497830;1547545272"
+          },
+          {
+            "run_accession": "SRR16961563",
+            "experiment_accession": "SRX13153061",
+            "sample_accession": "SAMN23226926",
+            "study_accession": "PRJNA781014",
+            "library_layout": "PAIRED",
+            "fastq_md5": "79200661ccf571a6ca49f6274988cdb3;0849cc69cc5d68aae10b67c5d11a2e53",
+            "fastq_bytes": "1229154352;1288251053"
+          }
+        ]
+      }
+    },
+    {
+      "job_id": 140914036498,
+      "result": {
+        "source": "skin",
+        "url": "https://zenodo.org/api/records/19638349",
+        "status": "RECORD_INVENTORY_ONLY_REGIONAL_COVERAGE_UNVERIFIED",
+        "scientific_validation": false,
+        "http_status": 200,
+        "bytes": 3761,
+        "sha256": "1b59ee90aaad7904ab3b0e56b13c40472cf626e8635b33779456536345e2514f",
+        "title": "skin pQTL and eQTL summary statistics",
+        "files": [
+          {
+            "name": "skin pQTL summary statistics.txt",
+            "size": 8085897,
+            "checksum": "md5:5ed66ce34705c8aeff36b68162c73b64"
+          },
+          {
+            "name": "skin eQTL summary statistics.txt",
+            "size": 70906052,
+            "checksum": "md5:caca80b5a56f3fd9ceeb3b03b9b4cc07"
+          }
+        ]
+      }
+    },
+    {
+      "job_id": 140914036591,
+      "result": {
+        "source": "BBJ",
+        "url": "https://pheweb.jp/downloads",
+        "status": "CATALOG_INVENTORY_ONLY_OVERLAP_UNVERIFIED",
+        "scientific_validation": false,
+        "http_status": 200,
+        "bytes": 369992,
+        "sha256": "0a5cf006a3fe2ffcdeb40d35068d4cd78aebe21cb6933a8f4f756e1c5fc132ae",
+        "matching_rows": [
+          "ICD10 I | Ischemic stroke | BBJ | 174,686 | 22,664 | 152,022 | Download",
+          "ICD10 I | Ischemic stroke | UKB+FG | 433.1/433.2 | I9_STR_EXH | 484,121 | 11,929 | 472,192 | Download",
+          "ICD10 I | Ischemic stroke | BBJ+UKB+FG | 433.1/433.2 | I9_STR_EXH | 658,807 | 34,593 | 624,214 | Download",
+          "ICD10 I | Ischemic stroke | BBJ | 174,686 | 22,664 | 152,022 | Download"
+        ],
+        "total_rows": 751
+      }
+    }
+  ]
+}
