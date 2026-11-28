@@ -1,0 +1,30 @@
+{
+  "run_id": 46125262816,
+  "job_id": 140918347221,
+  "source_commit": "e7e9ee9f6be92281b1820c016a9a7d576d6735db",
+  "note": "Actual failed job stdout. No reference or FASTQ retrieved; timeout in ENA metadata stage. Retried using frozen manifest without relaxing checksum requirements.",
+  "result": {
+    "run": "SRR16961557",
+    "project": "PRJNA781014",
+    "selection": "lexicographically first DEX run in existing fixed isolate crosswalk; technical pilot only",
+    "status": "HOLD",
+    "scientific_validation": false,
+    "reference": "GENCODE human v44 GRCh38.p14 all transcripts",
+    "commands": [
+      [
+        "kallisto",
+        "version"
+      ]
+    ],
+    "files": [],
+    "runner_free_bytes": 93068853248,
+    "runner_memory_kb": 16366632,
+    "kallisto_version": {
+      "seconds": 0,
+      "stdout_tail": "kallisto, version 0.48.0\n",
+      "stderr_tail": ""
+    },
+    "error": "TimeoutError: The read operation timed out",
+    "seconds": 25.47
+  }
+}
