@@ -1,0 +1,78 @@
+name: Ocular public quantification coverage
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-public-quant-coverage-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Query recount3 public project indexes and ARCHS4 study metadata availability
+        run: |
+          python3 - <<'PY'
+          import gzip,hashlib,io,json,re,urllib.request
+          from pathlib import Path
+          d=json.loads(Path('docs/publication/evidence/top3_fixed_marker_isolate_readback_20261128.json').read_text())
+          assert d['run_id']==46124756300
+          projects=next(x['result']['projects'] for x in d['jobs'] if 'projects' in x['result'])
+          expected={}
+          for p,x in projects.items():
+              runs={r for a in x['pairs'] for r in a.values()}|{r for a in x['unpaired'] for r in a['runs']}
+              assert len(runs)==x['expected_public_runs']
+              expected[p]=runs
+          out={'status':'PUBLIC_QUANT_SOURCE_INVENTORY_ONLY','scientific_validation':False,'projects':{},'notes':['No expression values read. Presence of metadata is not expression matrix coverage. No mixing quantification pipelines.']}
+          def fetch(url,cap):
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'IS-Analysis-source-audit/1.0'}),timeout=30) as r:
+                  raw=r.read(cap+1)
+              if len(raw)>cap: raise ValueError('metadata cap exceeded')
+              return raw
+          for p,runs in expected.items():
+              # ENA provides study accession aliases (SRP) needed for recount3 SRA path.
+              q={'expected_runs':sorted(runs),'sources':[]}
+              out['projects'][p]=q
+              try:
+                  import urllib.parse,csv
+                  url='https://www.ebi.ac.uk/ena/portal/api/filereport?'+urllib.parse.urlencode({'accession':p,'result':'read_run','fields':'run_accession,study_accession,secondary_study_accession','format':'tsv','limit':100})
+                  raw=fetch(url,200000)
+                  rows=list(csv.DictReader(io.StringIO(raw.decode('utf-8-sig')),delimiter='\t'))
+                  if {r['run_accession'] for r in rows}!=runs: raise ValueError('run set mismatch')
+                  aliases={r['secondary_study_accession'] for r in rows}
+                  if len(aliases)!=1 or not re.fullmatch(r'SRP\d+',next(iter(aliases))): raise ValueError('SRP ambiguity')
+                  srp=aliases.pop();q.update(srp=srp,ena_sha256=hashlib.sha256(raw).hexdigest())
+              except Exception as e:
+                  q['error']=type(e).__name__+': '+str(e)[:160];continue
+              base='https://duffel.rail.bio/recount3/human/data_sources/sra'
+              key=srp[-2:]
+              for kind in ('sra','recount_qc','recount_pred'):
+                  url=f'{base}/metadata/{key}/{srp}/sra.{srp}.{kind}.MD.gz'
+                  item={'kind':kind,'url':url}
+                  try:
+                      raw=fetch(url,5_000_000)
+                      with gzip.GzipFile(fileobj=io.BytesIO(raw)) as z: data=z.read(15_000_001)
+                      if len(data)>15_000_000: raise ValueError('decompressed cap exceeded')
+                      found=set(re.findall(rb'\bSRR\d+\b',data))
+                      matched=sorted(r for r in runs if r.encode() in found)
+                      item.update(status='METADATA_FOUND',sha256=hashlib.sha256(raw).hexdigest(),header=data.splitlines()[0].decode(errors='replace')[:500],matched_runs=matched,missing_runs=sorted(runs-set(matched)))
+                  except Exception as e: item.update(status='HOLD',error=type(e).__name__+': '+str(e)[:160])
+                  q['sources'].append(item)
+              # Only HEAD the known public count matrix paths. No count or sequence transfer.
+              for annotation in ('gencode_v26','gencode_v29'):
+                  url=f'{base}/gene_sums/{key}/{srp}/sra.gene_sums.{srp}.{annotation}.gz'
+                  item={'kind':'count_matrix_head','annotation':annotation,'url':url}
+                  try:
+                      with urllib.request.urlopen(urllib.request.Request(url,method='HEAD'),timeout=20) as r:
+                          item.update(status='HEAD_FOUND',http=r.status,bytes=r.headers.get('Content-Length'))
+                  except Exception as e: item.update(status='HOLD',error=type(e).__name__+': '+str(e)[:160])
+                  q['sources'].append(item)
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-public-quant-coverage
+          path: result.json
