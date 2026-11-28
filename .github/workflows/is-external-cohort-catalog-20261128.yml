@@ -60,8 +60,10 @@ jobs:
                   studies=d.get('studies')
                   if not isinstance(studies,list):
                       studies=d.get('_embedded',{}).get('studies')
-                  if not isinstance(studies,list):raise ValueError('unexpected v2 envelope keys '+str(list(d)))
                   count=page.get('total_elements',page.get('totalElements'))
+                  # HAL may omit _embedded when the explicitly reported total is zero.
+                  if studies is None and count==0 and '_embedded' not in d and page_number==0:studies=[]
+                  if not isinstance(studies,list):raise ValueError('unexpected v2 envelope keys '+str(list(d)))
                   if not isinstance(count,int) or (total is not None and count!=total):raise ValueError('v2 pagination total absent or drift')
                   total=count
                   if not isinstance(page.get('number'),int) or page['number']!=page_number:raise ValueError('page number mismatch')
