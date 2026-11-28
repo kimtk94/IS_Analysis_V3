@@ -1,0 +1,750 @@
+{
+  "date": "2026-11-28",
+  "status": "HOLD_SITE_SCALE_COVARIANCE_AND_KOREAN_LD",
+  "scientific_validation": false,
+  "note": "Actual JSON parsed from Actions job stdout, not independent ZIP extraction; counts derived without additional GWAS downloads.",
+  "sources": [
+    {
+      "run_id": 46132588542,
+      "job_id": 140940807152,
+      "head": "ecf8f229199a87ac72c7e922e6ae5e0ee9bf9ae3",
+      "result": {
+        "status": "DESCRIPTIVE_EXTERNAL_CONTEXT_COMPLETE",
+        "scientific_validation": false,
+        "accession": "GCST90502802",
+        "source_metadata_run": 46132165733,
+        "sample_size": 2424,
+        "phenotype": "Facial wrinkles; site not established",
+        "ancestry": "Korean, Thai, Vietnamese, Indonesian; pooled women",
+        "variants": {
+          "rs115957039": {
+            "status": "HOLD_MISSING_OR_AMBIGUOUS",
+            "position_grch38": 108947058,
+            "effect_allele": "C",
+            "other_allele": "T",
+            "rows_at_position": 0,
+            "exact_rows": 0
+          },
+          "rs144918519": {
+            "status": "HOLD_MISSING_OR_AMBIGUOUS",
+            "position_grch38": 108901888,
+            "effect_allele": "A",
+            "other_allele": "G",
+            "rows_at_position": 0,
+            "exact_rows": 0
+          },
+          "rs260643": {
+            "status": "EXACT_COORDINATE_ALLELE_CONTEXT",
+            "position_grch38": 108923197,
+            "effect_allele": "G",
+            "other_allele": "A",
+            "rows_at_position": 1,
+            "exact_rows": 1,
+            "hm_code": "10",
+            "hm_coordinate_conversion": "lo",
+            "marker_n": 2417,
+            "rsid_source": "rs260643",
+            "beta_alt": -0.0525465,
+            "se": 0.0283099,
+            "p": 0.0635597,
+            "eaf_alt": 0.15784,
+            "bonferroni_6": 0.3813582,
+            "discovery_direction_concordant": true
+          },
+          "rs3827760": {
+            "status": "EXACT_COORDINATE_ALLELE_CONTEXT",
+            "position_grch38": 108897145,
+            "effect_allele": "G",
+            "other_allele": "A",
+            "rows_at_position": 1,
+            "exact_rows": 1,
+            "hm_code": "11",
+            "hm_coordinate_conversion": "lo",
+            "marker_n": 2422,
+            "rsid_source": "rs3827760",
+            "beta_alt": 0.0450662,
+            "se": 0.0248627,
+            "p": 0.0700176,
+            "eaf_alt": 0.714699,
+            "bonferroni_6": 0.42010559999999997,
+            "discovery_direction_concordant": true
+          },
+          "rs4584990": {
+            "status": "EXACT_COORDINATE_ALLELE_CONTEXT",
+            "position_grch38": 108872562,
+            "effect_allele": "T",
+            "other_allele": "C",
+            "rows_at_position": 1,
+            "exact_rows": 1,
+            "hm_code": "11",
+            "hm_coordinate_conversion": "lo",
+            "marker_n": 2423,
+            "rsid_source": "rs4584990",
+            "beta_alt": 0.0901266,
+            "se": 0.0326262,
+            "p": 0.00578159,
+            "eaf_alt": 0.894139,
+            "bonferroni_6": 0.03468954,
+            "discovery_direction_concordant": true
+          },
+          "rs6542772": {
+            "status": "EXACT_COORDINATE_ALLELE_CONTEXT",
+            "position_grch38": 108558159,
+            "effect_allele": "T",
+            "other_allele": "C",
+            "rows_at_position": 1,
+            "exact_rows": 1,
+            "hm_code": "11",
+            "hm_coordinate_conversion": "lo",
+            "marker_n": 2424,
+            "rsid_source": "rs6542772",
+            "beta_alt": 0.133559,
+            "se": 0.0416083,
+            "p": 0.00134527,
+            "eaf_alt": 0.9395627,
+            "bonferroni_6": 0.00807162,
+            "discovery_direction_concordant": null
+          }
+        },
+        "limits": "Post-readout fixed six-marker external context only. Not same-site or Korean-specific replication; overlap and phenotype scale unverified. No meta-analysis or conditional association. Missing variants not zero; source MAF cutoff .05.",
+        "source_bytes": 191075888,
+        "source": {
+          "url": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90502001-GCST90503000/GCST90502802/harmonised/GCST90502802.h.tsv.gz",
+          "md5": "c7042f922e9457487aa070226cd05429",
+          "sha256": "a5aaf58d29651c787ad841d2d1f5b6883d68e88277617c7f82259fbeaddc7900",
+          "bytes": 191075888
+        },
+        "header": [
+          "chromosome",
+          "base_pair_location",
+          "effect_allele",
+          "other_allele",
+          "beta",
+          "standard_error",
+          "effect_allele_frequency",
+          "p_value",
+          "rsid",
+          "n",
+          "hm_coordinate_conversion",
+          "hm_code",
+          "variant_id"
+        ],
+        "rows_scanned": 6020167,
+        "verified_rows": 4
+      }
+    },
+    {
+      "run_id": 46132757365,
+      "job_id": 140941335152,
+      "head": "9fee6efb6a2afd21506dcda869a7886e17d4f73e",
+      "result": {
+        "status": "DESIGN_SENSITIVITY_ONLY",
+        "scientific_validation": false,
+        "scale_gate": "HOLD",
+        "covariance_gate": "HOLD",
+        "family": 6,
+        "critical_z": 2.638257273476751,
+        "note": "Only hypothetical arithmetic assuming equal phenotype coefficient scale and compatible models; these are not verified. Correlation is between estimated coefficients, not LD or phenotype correlation. Post-readout descriptive family; no new confirmatory claim. Bounds apply per SNP, not an estimate of covariance. Missing markers retained in denominator.",
+        "variants": {
+          "rs115957039": {
+            "status": "HYPOTHETICAL_EQUAL_SCALE_ONLY",
+            "delta": -1.3955,
+            "minimum_rho_for_bonferroni_significance": -0.48777095041143437,
+            "all_covariance_bound": {
+              "status": "HYPOTHETICAL_ONLY",
+              "rho": -1,
+              "se_delta": 0.6123,
+              "z": -2.2791115466274703,
+              "p": 0.022660435307904115,
+              "bonferroni_6": 0.1359626118474247,
+              "interval": [
+                -3.0109049285498144,
+                0.21990492854981447
+              ]
+            },
+            "grid": [
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": -1,
+                "se_delta": 0.6123,
+                "z": -2.2791115466274703,
+                "p": 0.022660435307904115,
+                "bonferroni_6": 0.1359626118474247,
+                "interval": [
+                  -3.0109049285498144,
+                  0.21990492854981447
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": -0.5,
+                "se_delta": 0.5310900771055698,
+                "z": -2.6276145237083828,
+                "p": 0.008598589251293936,
+                "bonferroni_6": 0.05159153550776362,
+                "interval": [
+                  -2.796652258795098,
+                  0.0056522587950980085
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0,
+                "se_delta": 0.43497361988975836,
+                "z": -3.2082405373311644,
+                "p": 0.0013354975162380145,
+                "bonferroni_6": 0.008012985097428087,
+                "interval": [
+                  -2.5430723164446665,
+                  -0.24792768355533346
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.25,
+                "se_delta": 0.37785544855142683,
+                "z": -3.6932112672978166,
+                "p": 0.00022143990571026146,
+                "bonferroni_6": 0.0013286394342615687,
+                "interval": [
+                  -2.392379885463622,
+                  -0.3986201145363779
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.5,
+                "se_delta": 0.3103988240957108,
+                "z": -4.495828887449975,
+                "p": 0.000006929945086050388,
+                "bonferroni_6": 0.00004157967051630233,
+                "interval": [
+                  -2.2144119553491395,
+                  -0.5765880446508604
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.75,
+                "se_delta": 0.22342810924321943,
+                "z": -6.245856909977635,
+                "p": 4.2148290297216636e-10,
+                "bonferroni_6": 2.528897417832998e-9,
+                "interval": [
+                  -1.9849608343100817,
+                  -0.8060391656899182
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.9,
+                "se_delta": 0.14853866163393284,
+                "z": -9.394860466961456,
+                "p": 5.729371204201702e-21,
+                "bonferroni_6": 3.437622722521021e-20,
+                "interval": [
+                  -1.7873832044482252,
+                  -1.0036167955517747
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 1,
+                "se_delta": 0.059099999999999986,
+                "z": -23.612521150592222,
+                "p": 2.866336770573196e-123,
+                "bonferroni_6": 1.7198020623439176e-122,
+                "interval": [
+                  -1.551421004862476,
+                  -1.239578995137524
+                ]
+              }
+            ]
+          },
+          "rs144918519": {
+            "status": "HYPOTHETICAL_EQUAL_SCALE_ONLY",
+            "delta": -1.4205999999999999,
+            "minimum_rho_for_bonferroni_significance": -0.5078471921185207,
+            "all_covariance_bound": {
+              "status": "HYPOTHETICAL_ONLY",
+              "rho": -1,
+              "se_delta": 0.6192,
+              "z": -2.2942506459948317,
+              "p": 0.02177610570120595,
+              "bonferroni_6": 0.13065663420723572,
+              "interval": [
+                -3.0542089037368036,
+                0.21300890373680414
+              ]
+            },
+            "grid": [
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": -1,
+                "se_delta": 0.6192,
+                "z": -2.2942506459948317,
+                "p": 0.02177610570120595,
+                "bonferroni_6": 0.13065663420723572,
+                "interval": [
+                  -3.0542089037368036,
+                  0.21300890373680414
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": -0.5,
+                "se_delta": 0.5370758698731493,
+                "z": -2.6450639093793735,
+                "p": 0.008167548936267071,
+                "bonferroni_6": 0.049005293617602426,
+                "interval": [
+                  -2.8375443201016886,
+                  -0.0036556798983109484
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0,
+                "se_delta": 0.4398776420778851,
+                "z": -3.229534452556848,
+                "p": 0.0012399194093445918,
+                "bonferroni_6": 0.00743951645606755,
+                "interval": [
+                  -2.5811103886517834,
+                  -0.2600896113482165
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.25,
+                "se_delta": 0.38211682114243545,
+                "z": -3.717711237502591,
+                "p": 0.00020103587135222886,
+                "bonferroni_6": 0.001206215228113373,
+                "interval": [
+                  -2.4287224826968448,
+                  -0.41247751730315474
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.5,
+                "se_delta": 0.31390156100280864,
+                "z": -4.5256226043020185,
+                "p": 0.000006021795800168979,
+                "bonferroni_6": 0.000036130774801013876,
+                "interval": [
+                  -2.248753076471366,
+                  -0.5924469235286339
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.75,
+                "se_delta": 0.2259537895234333,
+                "z": -6.287126243805138,
+                "p": 3.2339638875185067e-10,
+                "bonferroni_6": 1.940378332511104e-9,
+                "interval": [
+                  -2.016724228679833,
+                  -0.824475771320167
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.9,
+                "se_delta": 0.15022539732016021,
+                "z": -9.45645693299395,
+                "p": 3.1855436999346957e-21,
+                "bonferroni_6": 1.9113262199608176e-20,
+                "interval": [
+                  -1.8169332471408475,
+                  -1.0242667528591523
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 1,
+                "se_delta": 0.05980000000000002,
+                "z": -23.755852842809354,
+                "p": 9.558970124448126e-125,
+                "bonferroni_6": 5.7353820746688755e-124,
+                "interval": [
+                  -1.5783677849539095,
+                  -1.2628322150460902
+                ]
+              }
+            ]
+          },
+          "rs260643": {
+            "status": "HYPOTHETICAL_EQUAL_SCALE_ONLY",
+            "delta": -1.1192000000000002,
+            "minimum_rho_for_bonferroni_significance": -0.5023841697334008,
+            "all_covariance_bound": {
+              "status": "HYPOTHETICAL_ONLY",
+              "rho": -1,
+              "se_delta": 0.4887,
+              "z": -2.290157560875793,
+              "p": 0.02201218459942461,
+              "bonferroni_6": 0.13207310759654767,
+              "interval": [
+                -2.4085163295480885,
+                0.17011632954808809
+              ]
+            },
+            "grid": [
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": -1,
+                "se_delta": 0.4887,
+                "z": -2.290157560875793,
+                "p": 0.02201218459942461,
+                "bonferroni_6": 0.13207310759654767,
+                "interval": [
+                  -2.4085163295480885,
+                  0.17011632954808809
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": -0.5,
+                "se_delta": 0.42388688349605724,
+                "z": -2.6403270390658604,
+                "p": 0.008282605801010878,
+                "bonferroni_6": 0.049695634806065266,
+                "interval": [
+                  -2.2375226535148656,
+                  -0.0008773464851350443
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0,
+                "se_delta": 0.34717789388150855,
+                "z": -3.223707556627963,
+                "p": 0.0012654255724740744,
+                "bonferroni_6": 0.007592553434844446,
+                "interval": [
+                  -2.0351446037232295,
+                  -0.2032553962767707
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.25,
+                "se_delta": 0.30159358414926535,
+                "z": -3.710954273636283,
+                "p": 0.00020647940281739158,
+                "bonferroni_6": 0.0012388764169043495,
+                "interval": [
+                  -1.914881467015722,
+                  -0.32351853298427835
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.5,
+                "se_delta": 0.2477597424926011,
+                "z": -4.517279477045885,
+                "p": 0.000006263920760339122,
+                "bonferroni_6": 0.00003758352456203473,
+                "interval": [
+                  -1.7728539427058319,
+                  -0.46554605729416854
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.75,
+                "se_delta": 0.17835663710666896,
+                "z": -6.275067853688255,
+                "p": 3.4948184847927605e-10,
+                "bonferroni_6": 2.096891090875656e-9,
+                "interval": [
+                  -1.5897506951195228,
+                  -0.6486493048804775
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.9,
+                "se_delta": 0.1186035834197264,
+                "z": -9.436477109121245,
+                "p": 3.855234516687725e-21,
+                "bonferroni_6": 2.3131407100126352e-20,
+                "interval": [
+                  -1.4321067666175,
+                  -0.8062932333825004
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 1,
+                "se_delta": 0.04730000000000001,
+                "z": -23.661733615221987,
+                "p": 8.93792995195739e-124,
+                "bonferroni_6": 5.362757971174434e-123,
+                "interval": [
+                  -1.2439895690354505,
+                  -0.9944104309645498
+                ]
+              }
+            ]
+          },
+          "rs3827760": {
+            "status": "HYPOTHETICAL_EQUAL_SCALE_ONLY",
+            "delta": 1.0701999999999998,
+            "minimum_rho_for_bonferroni_significance": -0.5228237506510768,
+            "all_covariance_bound": {
+              "status": "HYPOTHETICAL_ONLY",
+              "rho": -1,
+              "se_delta": 0.4642,
+              "z": 2.3054717794054285,
+              "p": 0.021140165495353372,
+              "bonferroni_6": 0.12684099297212023,
+              "interval": [
+                -0.1544790263479079,
+                2.2948790263479077
+              ]
+            },
+            "grid": [
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": -1,
+                "se_delta": 0.4642,
+                "z": 2.3054717794054285,
+                "p": 0.021140165495353372,
+                "bonferroni_6": 0.12684099297212023,
+                "interval": [
+                  -0.1544790263479079,
+                  2.2948790263479077
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": -0.5,
+                "se_delta": 0.4026325744397738,
+                "z": 2.658006500067921,
+                "p": 0.007860437697575521,
+                "bonferroni_6": 0.047162626185453124,
+                "interval": [
+                  0.007951681945597366,
+                  2.1324483180544025
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0,
+                "se_delta": 0.32976406717530643,
+                "z": 3.2453505597717807,
+                "p": 0.0011730611653193784,
+                "bonferroni_6": 0.00703836699191627,
+                "interval": [
+                  0.20019755124347172,
+                  1.940202448756528
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.25,
+                "se_delta": 0.28646119283421273,
+                "z": 3.7359336160391194,
+                "p": 0.00018702000532636192,
+                "bonferroni_6": 0.0011221200319581715,
+                "interval": [
+                  0.314441674436312,
+                  1.8259583255636875
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.5,
+                "se_delta": 0.23532039860581574,
+                "z": 4.547842032992166,
+                "p": 0.000005419879145218244,
+                "bonferroni_6": 0.00003251927487130946,
+                "interval": [
+                  0.44936424678075815,
+                  1.6910357532192415
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.75,
+                "se_delta": 0.1693852561470449,
+                "z": 6.318141403469907,
+                "p": 2.647277374802598e-10,
+                "bonferroni_6": 1.5883664248815586e-9,
+                "interval": [
+                  0.623318115950336,
+                  1.5170818840496636
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.9,
+                "se_delta": 0.11260892504593052,
+                "z": 9.503687203864974,
+                "p": 2.025870944284511e-21,
+                "bonferroni_6": 1.2155225665707065e-20,
+                "interval": [
+                  0.7731086844391754,
+                  1.3672913155608244
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 1,
+                "se_delta": 0.044800000000000006,
+                "z": 23.88839285714285,
+                "p": 4.043603580230844e-126,
+                "bonferroni_6": 2.426162148138506e-125,
+                "interval": [
+                  0.9520060741482413,
+                  1.1883939258517582
+                ]
+              }
+            ]
+          },
+          "rs4584990": {
+            "status": "HYPOTHETICAL_EQUAL_SCALE_ONLY",
+            "delta": 1.2196,
+            "minimum_rho_for_bonferroni_significance": -0.49920631815790406,
+            "all_covariance_bound": {
+              "status": "HYPOTHETICAL_ONLY",
+              "rho": -1,
+              "se_delta": 0.5331,
+              "z": 2.2877508910148188,
+              "p": 0.022152032193614248,
+              "bonferroni_6": 0.13291219316168548,
+              "interval": [
+                -0.18685495249045592,
+                2.626054952490456
+              ]
+            },
+            "grid": [
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": -1,
+                "se_delta": 0.5331,
+                "z": 2.2877508910148188,
+                "p": 0.022152032193614248,
+                "bonferroni_6": 0.13291219316168548,
+                "interval": [
+                  -0.18685495249045592,
+                  2.626054952490456
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": -0.5,
+                "se_delta": 0.4623956855335049,
+                "z": 2.6375678626690573,
+                "p": 0.008350291588366466,
+                "bonferroni_6": 0.050101749530198796,
+                "interval": [
+                  -0.0003187805830378032,
+                  2.439518780583038
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0,
+                "se_delta": 0.3787135196952968,
+                "z": 3.2203761856224697,
+                "p": 0.0012802248044737777,
+                "bonferroni_6": 0.0076813488268426666,
+                "interval": [
+                  0.2204563020999024,
+                  2.2187436979000976
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.25,
+                "se_delta": 0.32898481727885254,
+                "z": 3.7071619598975247,
+                "p": 0.00020959490960618338,
+                "bonferroni_6": 0.0012575694576371004,
+                "interval": [
+                  0.35165341295064745,
+                  2.087546587049353
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.5,
+                "se_delta": 0.27025560123705117,
+                "z": 4.512764932225193,
+                "p": 0.00000639879290867084,
+                "bonferroni_6": 0.00003839275745202504,
+                "interval": [
+                  0.5065961943385174,
+                  1.9326038056614827
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.75,
+                "se_delta": 0.1945383509748142,
+                "z": 6.269200874216801,
+                "p": 3.6290572112479265e-10,
+                "bonferroni_6": 2.177434326748756e-9,
+                "interval": [
+                  0.7063577805705235,
+                  1.7328422194294766
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 0.9,
+                "se_delta": 0.12934225141074357,
+                "z": 9.429246720988315,
+                "p": 4.130445495283909e-21,
+                "bonferroni_6": 2.4782672971703458e-20,
+                "interval": [
+                  0.8783618644477473,
+                  1.5608381355522527
+                ]
+              },
+              {
+                "status": "HYPOTHETICAL_ONLY",
+                "rho": 1,
+                "se_delta": 0.05150000000000002,
+                "z": 23.681553398058245,
+                "p": 5.5862200631180636e-124,
+                "bonferroni_6": 3.351732037870838e-123,
+                "interval": [
+                  1.0837297504159473,
+                  1.3554702495840527
+                ]
+              }
+            ]
+          },
+          "rs6542772": {
+            "status": "HOLD_MISSING"
+          }
+        }
+      }
+    }
+  ],
+  "counts": {
+    "external_fixed_family": 6,
+    "external_exact": 4,
+    "external_bonferroni_hits": [
+      "rs4584990",
+      "rs6542772"
+    ],
+    "external_direction_comparable": 3,
+    "external_concordant": 3,
+    "site_contrast_evaluable": 5,
+    "site_contrast_significant_rho_zero": 5,
+    "site_contrast_significant_worst_case": 0
+  },
+  "interpretation": [
+    "rs4584990 and rs6542772 are externally significant in a pooled periocular roughness phenotype, not same-site replication. rs6542772 discovery direction unavailable; do not label concordant.",
+    "rs4584990 vs EDAR rs3827760 reference LD r2 CHB 0.44538461538461666 and JPT 0.607600053901091 (run 46131440858). rs6542772 vs rs4584990 r2 CHB 0.12099834162520608 and JPT 0.3003243935744543. Neither low nor moderate reference LD proves independent Korean signals. No Korean study-specific LD or conditional association.",
+    "All five evaluable site contrasts significant at hypothetical rho=0; zero under maximal variance bound. Scale equivalence and sampling covariance remain unverified. No site-specific association claim, no MR/Coloc, no novelty promotion.",
+    "Prioritize matched phenotype model documentation, original cohort covariance and signed dosage LD, and complete skin regional QTL. Stop repeated point queries. Keep fixed six-marker denominator and existing 16-marker regional protocol."
+  ]
+}
