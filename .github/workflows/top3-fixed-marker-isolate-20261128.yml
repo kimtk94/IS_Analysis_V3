@@ -1,0 +1,111 @@
+name: TOP3 fixed marker and isolate pairing
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/top3-fixed-marker-isolate-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  skin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        assay: [eQTL,pQTL]
+    env:
+      ASSAY: ${{ matrix.assay }}
+    steps:
+      - name: Exact frozen panel replay
+        run: |
+          python3 - <<'PY'
+          import csv,hashlib,io,json,math,os,re,urllib.parse,urllib.request
+          from collections import defaultdict
+          from pathlib import Path
+          assay=os.environ['ASSAY']
+          panel=dict(zip('12:88716633:A:C 15:27953421:T:C 15:27983407:C:T 15:27988767:C:T 15:27989264:G:T 19:3548233:A:G 2:108872562:C:T 2:108901888:G:A 2:108923197:A:G 2:108947058:T:C 3:139286078:G:A 3:139302337:A:G 4:123254257:G:A 9:16794420:C:A 9:20311336:C:A 9:20312794:A:G'.split(),'rs72620727 rs921221 rs74653330 rs10775263 rs730502 rs2240751 rs4584990 rs144918519 rs260643 rs115957039 rs10212419 rs10460843 rs4833267 rs12376135 rs170374 rs1456966'.split()))
+          assert len(panel)==16 and len(set(panel.values()))==16
+          source={'eQTL':(70906052,'165264e5ef824098f70249261836eb40f08c9e0d99cecde3c257902ee60ca28c',870843,282),'pQTL':(8085897,'03084fb65d91708fbc3588076a4a25b94b19adff36079e87aa72344f11ee8b6a',108872,36)}
+          size,sha,nrows,ntargets=source[assay]
+          out={'assay':assay,'status':'HOLD','scientific_validation':False,'panel_source_commit':'53e652f78a5c348d1403c9ee23355bb11c50331b','panel_source_blob':'2b5149aea77c890d0562518023e6b63aac0dd72f','denominator':16,'markers':{v:{'variant':k,'exact_rows':[],'position_only_rows':0} for k,v in panel.items()}}
+          try:
+              url='https://zenodo.org/records/19638349/files/'+urllib.parse.quote('skin '+assay+' summary statistics.txt')+'?download=1'
+              with urllib.request.urlopen(url,timeout=60) as res: raw=res.read(size+1)
+              if len(raw)!=size or hashlib.sha256(raw).hexdigest()!=sha: raise ValueError('source mismatch')
+              f=io.StringIO(raw.decode('utf-8-sig'))
+              if f.readline().split()!='gene_id variant_id tss_distance ma_samples ma_count maf pval_nominal slope slope_se'.split(): raise ValueError('schema mismatch')
+              pos={':'.join(k.split(':')[:2]):v for k,v in panel.items()}
+              n=0; targets=set()
+              for line in f:
+                  if not line.strip(): continue
+                  a=line.split();n+=1
+                  if len(a)!=9: raise ValueError('ragged')
+                  g,v=a[:2];targets.add(g)
+                  if v in panel:
+                      vals=list(map(float,a[5:9]))
+                      if not all(math.isfinite(x) for x in vals) or not 0<vals[0]<=.5 or not 0<=vals[1]<=1 or vals[3]<=0: raise ValueError('invalid matched stats')
+                      out['markers'][panel[v]]['exact_rows'].append(dict(target=g,maf=vals[0],p=vals[1],source_slope=vals[2],se=vals[3]))
+                  elif ':'.join(v.split(':')[:2]) in pos:
+                      out['markers'][pos[':'.join(v.split(':')[:2])]]['position_only_rows']+=1
+              if n!=nrows or len(targets)!=ntargets: raise ValueError('source census mismatch')
+              for v in out['markers'].values():
+                  ids=[x['target'] for x in v['exact_rows']]
+                  if len(ids)!=len(set(ids)): raise ValueError('duplicate target-marker')
+              out.update(status='SELECTED_TARGET_POINT_INVENTORY_ONLY',matched_markers=sum(bool(v['exact_rows']) for v in out['markers'].values()),matched_pairs=sum(len(v['exact_rows']) for v in out['markers'].values()),source_sha256=sha,source_rows=n,selected_targets=ntargets)
+              # Source slopes are not assumed ALT-oriented. Selected target file is not full cis for all genes.
+          except Exception as e: out['error']=type(e).__name__+': '+str(e)[:300]
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: skin-fixed16-${{ matrix.assay }}
+          path: result.json
+  ocular:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exact public study-coded isolate pairing, no raw identifiers exported
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,re,time,urllib.request,xml.etree.ElementTree as ET
+          from collections import defaultdict,Counter
+          from pathlib import Path
+          d=json.loads(Path('docs/publication/evidence/top3_identity_pairing_readback_20261128.json').read_text())
+          assert d['run_id']==46124641076
+          records=next(x['result']['records'] for x in d['jobs'] if 'records' in x['result'])
+          assert len(records)==26 and len({r['sample'] for r in records})==26
+          out={'status':'HOLD','scientific_validation':False,'projects':{}}
+          for project,expected in [('PRJNA781014',10),('PRJNA729873',16)]:
+              group=defaultdict(list);errors=[]
+              rows=[r for r in records if r['project']==project]
+              assert len(rows)==expected
+              for r in rows:
+                  try:
+                      acc=r['sample'];assert re.fullmatch(r'SAMN\d+',acc)
+                      with urllib.request.urlopen('https://www.ebi.ac.uk/ena/browser/api/xml/'+acc,timeout=6) as res: raw=res.read(150001)
+                      if len(raw)>150000 or hashlib.sha256(raw).hexdigest()!=r['sha256']: raise ValueError('XML identity mismatch')
+                      root=ET.fromstring(raw);a=defaultdict(list)
+                      for e in root.findall('.//SAMPLE_ATTRIBUTE'):
+                          a[(e.findtext('TAG') or '').strip().lower()].append((e.findtext('VALUE') or '').strip())
+                      if len(a['isolate'])!=1 or not a['isolate'][0] or len(a['treatment'])!=1 or a['treatment'][0] not in ('DEX','ETH'): raise ValueError('isolate/treatment ambiguity')
+                      if a['treatment']!=r['treatment_attributes']['treatment']: raise ValueError('treatment mismatch')
+                      group[a['isolate'][0]].append({'run':r['run'],'treatment':a['treatment'][0],'title':r['title']})
+                  except Exception as e: errors.append({'sample':r['sample'],'error':type(e).__name__+': '+str(e)[:120]})
+                  time.sleep(.25)
+              pairs=[];unpaired=[]
+              for _,rr in group.items():
+                  if Counter(x['treatment'] for x in rr)=={'DEX':1,'ETH':1}:
+                      pairs.append({x['treatment']:x['run'] for x in rr})
+                  else: unpaired.append({'runs':[x['run'] for x in rr],'arms':dict(Counter(x['treatment'] for x in rr))})
+              out['projects'][project]={'expected_public_runs':expected,'verified_runs':sum(map(len,group.values())),'unique_isolates':len(group),'exact_two_arm_isolate_pairs':len(pairs),'pairs':sorted(pairs,key=lambda p:p['DEX']),'unpaired':unpaired,'errors':errors}
+          out['status']='ISOLATE_PAIRING_METADATA_ONLY' if all(not x['errors'] for x in out['projects'].values()) else 'HOLD_METADATA_ERRORS'
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-isolate-pairs
+          path: result.json
