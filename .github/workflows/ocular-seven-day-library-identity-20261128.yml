@@ -1,0 +1,55 @@
+name: Ocular seven-day public library identity audit
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-seven-day-library-identity-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read submitter library identifiers without inferring pairs
+        run: |
+          python3 - <<'PY'
+          import csv,hashlib,io,json,re,urllib.parse,urllib.request,xml.etree.ElementTree as ET
+          from pathlib import Path
+          d=json.loads(Path('docs/publication/evidence/top3_source_qualification_readback_20261128.json').read_text())
+          rows=next(j['result']['runs'] for j in d['jobs'] if j['result'].get('project')=='PRJNA729873')
+          assert len(rows)==16
+          out={'status':'LIBRARY_METADATA_INVENTORY_ONLY','scientific_validation':False,'project':'PRJNA729873','records':[]}
+          for row in rows:
+              acc=row['experiment_accession'];assert re.fullmatch(r'SRX\d+',acc)
+              item={'run':row['run_accession'],'experiment':acc}
+              try:
+                  with urllib.request.urlopen('https://www.ebi.ac.uk/ena/browser/api/xml/'+acc,timeout=7) as res: raw=res.read(200001)
+                  if len(raw)>200000: raise ValueError('XML cap')
+                  root=ET.fromstring(raw)
+                  ex=root.find('.//EXPERIMENT')
+                  if ex is None:raise ValueError('missing experiment')
+                  if ex.get('accession')!=acc:raise ValueError('experiment identity')
+                  item.update(sha256=hashlib.sha256(raw).hexdigest(),library_name=ex.findtext('.//LIBRARY_NAME'),library_strategy=ex.findtext('.//LIBRARY_STRATEGY'),library_source=ex.findtext('.//LIBRARY_SOURCE'),library_selection=ex.findtext('.//LIBRARY_SELECTION'),alias=ex.get('alias'),title=ex.findtext('TITLE'))
+              except Exception as e: item['error']=type(e).__name__+': '+str(e)[:120]
+              out['records'].append(item)
+          out['retrieved']=sum('sha256' in x for x in out['records'])
+          # Article supplementary inventory, not donor identity inference.
+          for url in ('https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9140469/fullTextXML',):
+              try:
+                  with urllib.request.urlopen(url,timeout=25) as r: raw=r.read(5000001)
+                  if len(raw)>5000000: raise ValueError('XML cap')
+                  root=ET.fromstring(raw)
+                  out['article']={'sha256':hashlib.sha256(raw).hexdigest(),'supplements':[{'id':e.get('id'),'hrefs':[v for n in e.iter() for k,v in n.attrib.items() if k.endswith('}href') or k=='href'],'caption':' '.join(' '.join(e.itertext()).split())[:800]} for e in root.findall('.//supplementary-material')]}
+              except Exception as e: out['article']={'error':type(e).__name__+': '+str(e)[:120]}
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-seven-day-library-identity
+          path: result.json
+          retention-days: 90
