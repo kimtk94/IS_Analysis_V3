@@ -139,7 +139,9 @@ jobs:
                   idx=get(candidate+'.tbi',20000000)
                   assert idx[:2]==b'\x1f\x8b'
                   probe.update(range=cr,header_range_sha256=sha(first),index_sha256=sha(idx))
-                  total=int(cr.rsplit('/',1)[1]);assert total>65536
+                  total=int(cr.rsplit('/',1)[1]);assert total==495134005
+                  assert sha(first)=='f6ff64a1ff7a902b2881ef284cc5c9d7e26002471b1a3bd984944ee95dc2edcc'
+                  assert sha(idx)=='7407cd5dd354f6d54128863f7fba1a64a6a36b47322ca39457549d10111e68e4'
                   index=index_parse(idx);assert '16' in index
                   hdr=b''.join(bgzf(first).values())
                   assert b'#CHROM\t' in hdr and b'\n' in hdr.split(b'#CHROM\t',1)[1]
@@ -163,10 +165,16 @@ jobs:
           matches=[m for m in mapping['mappings'] if m.get('assembly_name')=='GRCh37' and str(m.get('seq_region_name'))=='16' and m.get('start')==m.get('end')==anchor_pos and m.get('strand')==1]
           assert len(matches)==1 and {'C','T'}<=set(matches[0]['allele_string'].split('/'))
           raw,transferred=indexed_query(index,vcf,total,'16',lower,upper)
-          rows=[line.split(b'\t') for line in raw.splitlines()]
-          assert 0<len(rows)<=30000
-          anchors=[r for r in rows if int(r[1])==anchor_pos and b'rs7203740' in r[2].split(b';')]
-          assert len(anchors)==1
+          # Keep a diagnostic artifact even when the region exceeds the row budget.
+          # Avoid materializing 2504 genotype fields for every row simultaneously.
+          lines=raw.splitlines()
+          diagnostic={'status':'HOLD_REGIONAL_ROW_OR_ANCHOR_GATE','scientific_validation':False,'region_grch37':[lower,upper],'variant_rows':len(lines),'range_bytes':transferred,'regional_stream_sha256':sha(raw),'source_probes':probes,'mapping_sha256':sha(mapping_raw)}
+          Path('result.json').write_text(json.dumps(diagnostic,indent=2)+'\n')
+          print(json.dumps(diagnostic,indent=2))
+          assert 0<len(lines)<=60000, 'regional row count outside bounded range: '+str(len(lines))
+          rows=lines
+          anchors=[r.split(b'\t') for r in rows if int(r.split(b'\t',3)[1])==anchor_pos and b'rs7203740' in r.split(b'\t',3)[2].split(b';')]
+          assert len(anchors)==1, 'exact anchor rows: '+str(len(anchors))
           ar=anchors[0];assert ar[3]==b'C' and b'T' in ar[4].split(b',') and ar[6]==b'PASS'
           def genotypes(r):
               assert len(r)==2504+9 and r[8].split(b':')[0]==b'GT'
@@ -183,7 +191,8 @@ jobs:
           out={'status':'ALLELE_RESOLVED_REFERENCE_LD_ONLY','scientific_validation':False,'anchor':'rs7203740','anchor_ref':'C','anchor_alt':'T','observed_alts':ar[4].decode().split(','),'region_grch37':[lower,upper],'source_probes':probes,'panel_sha256':sha(panelraw),'mapping_sha256':sha(mapping_raw),'regional_stream_sha256':sha(raw),'range_bytes':transferred,'variant_rows':len(rows),'anchor_population_counts':info,'proxies':{},'excluded':{},'notes':['Reference phased haplotype LD, not GWAS-matched LD or conditional association.','All PASS biallelic SNVs in fixed GRCh37 region; rsID-missing and multiallelic partners are counted as excluded, not absent.','C/T restricted analysis excludes non-C/T anchor haplotypes; all-haplotype T versus non-T is separate. Small allele counts reported; no novelty or independence claim.']}
           import collections
           excluded=collections.Counter();tested=collections.Counter();results={p:[] for p in pops}
-          for r in rows:
+          for line in rows:
+              r=line.split(b'\t')
               if r==ar:continue
               if r[6]!=b'PASS' or r[3] not in (b'A',b'C',b'G',b'T') or r[4] not in (b'A',b'C',b'G',b'T') or r[3]==r[4]:
                   excluded['not_PASS_biallelic_SNV']+=1;continue
