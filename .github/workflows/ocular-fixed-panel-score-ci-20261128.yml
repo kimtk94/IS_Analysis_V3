@@ -1,0 +1,17 @@
+name: Ocular fixed panel score synthetic CI
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-fixed-panel-score-ci-20261128.yml','scripts/ocular_fixed_panel_score_preflight.py','docs/publication/evidence/ocular_frozen_241_panel.tsv']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  score-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify canonical panel bytes and synthetic paired statistics
+        run: |
+          python3 scripts/ocular_fixed_panel_score_preflight.py --panel docs/publication/evidence/ocular_frozen_241_panel.tsv --selftest
