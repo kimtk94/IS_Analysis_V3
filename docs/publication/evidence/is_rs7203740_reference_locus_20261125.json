@@ -1,0 +1,513 @@
+{
+  "provenance": {
+    "run_id": 45538441727,
+    "job_id": 138950736376,
+    "artifact_id": 14987503698,
+    "reported_artifact_zip_sha256": "5cfadc423d192a4e4ee8d2dc0a6d95de3373d7150666ab3c060022ea11034f6b",
+    "source_commit": "cbf740c0dd1ceccf438e3f84e54697354acb6810",
+    "readback": "Actual aggregate JSON stdout; reported artifact digest not independently downloaded. Full artifact may contain additional detail."
+  },
+  "result": {
+    "status": "POST_READOUT_REGIONAL_ANNOTATION",
+    "rsid": "rs7203740",
+    "GRCh38_chr": "16",
+    "GRCh38_pos": 81775211,
+    "historical_ref": "C",
+    "historical_alt": "T",
+    "source_run": 45534891070,
+    "sources": {
+      "variation": {
+        "url": "https://rest.ensembl.org/variation/human/rs7203740",
+        "http_status": 200,
+        "sha256": "ea490f00857cb9f78eaf539aa0df0a10e77386f3e61e40d93c43ee3d7ac464dc",
+        "bytes": 527
+      },
+      "vep": {
+        "url": "https://rest.ensembl.org/vep/human/id/rs7203740?canonical=1",
+        "http_status": 200,
+        "sha256": "06caa9d404e63ff402534ad6da7e1c732cd3d427897710f3e9bfa9f09134112e",
+        "bytes": 14671
+      },
+      "regional_genes": {
+        "url": "https://rest.ensembl.org/overlap/region/human/16:81525211..82025211?feature=gene",
+        "http_status": 200,
+        "sha256": "43e975d80dcdb2fd1db75e42c542736d0bc15a62ebae268b8662a12f4c98860e",
+        "bytes": 5264
+      },
+      "ld_1000GENOMES:phase_3:CHB": {
+        "url": "https://rest.ensembl.org/ld/human/rs7203740/1000GENOMES:phase_3:CHB?window_size=500&r2=0.8&attribs=1",
+        "http_status": 200,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "bytes": 2
+      },
+      "ld_1000GENOMES:phase_3:JPT": {
+        "url": "https://rest.ensembl.org/ld/human/rs7203740/1000GENOMES:phase_3:JPT?window_size=500&r2=0.8&attribs=1",
+        "http_status": 200,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "bytes": 2
+      },
+      "ld_1000GENOMES:phase_3:CEU": {
+        "url": "https://rest.ensembl.org/ld/human/rs7203740/1000GENOMES:phase_3:CEU?window_size=500&r2=0.8&attribs=1",
+        "http_status": 200,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "bytes": 2
+      },
+      "catalog_exact_variant": {
+        "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs7203740",
+        "status": "HOLD_SOURCE",
+        "reason": "HTTP Error 404: ",
+        "http_status": 404
+      }
+    },
+    "identity_verified": true,
+    "limits": [
+      "Variant selected for follow-up after the expanded-family result, not independent discovery. No inferred causal gene, colocalization, or independent replication.",
+      "LD is population-specific 1000 Genomes Phase 3 CHB/JPT/CEU reference evidence, not matched GWAS individual-level LD; no claim that an unreturned proxy is independent.",
+      "Catalog is literature-curated, not full GWAS summary statistics. Absence of exact rsID or regional association is not evidence of novelty."
+    ],
+    "genome_reference": "C",
+    "ensembl_allele_string": "C/A/T",
+    "most_severe_consequence": "intergenic_variant",
+    "minor_allele": "C",
+    "MAF": 0.334969,
+    "vep": {
+      "most_severe_consequence": "intron_variant",
+      "transcript_consequences": [
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000563193",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000564138",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": 1,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000565054",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "intron_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000569929",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "nonsense_mediated_decay",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000697561",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "nonsense_mediated_decay",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000697562",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "nonsense_mediated_decay",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000697563",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "nonsense_mediated_decay",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000697564",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000697580",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "intron_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000697581",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "nonsense_mediated_decay",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000697599",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "intron_variant",
+            "non_coding_transcript_variant"
+          ],
+          "biotype": "protein_coding_CDS_not_defined",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000697600",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "intron_variant",
+            "non_coding_transcript_variant"
+          ],
+          "biotype": "protein_coding_CDS_not_defined",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000902425",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "intron_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000902426",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000902427",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000902428",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000902429",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000902430",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000917143",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00000947323",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00001001734",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "nonsense_mediated_decay",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00001031333",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "nonsense_mediated_decay",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00001031334",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00001031335",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "nonsense_mediated_decay",
+          "canonical": null,
+          "impact": "MODIFIER"
+        },
+        {
+          "gene_id": "ENSG00000197943",
+          "gene_symbol": "PLCG2",
+          "transcript_id": "ENST00001133739",
+          "variant_allele": "T",
+          "consequence_terms": [
+            "upstream_gene_variant"
+          ],
+          "biotype": "protein_coding",
+          "canonical": null,
+          "impact": "MODIFIER"
+        }
+      ],
+      "regulatory_consequences": []
+    },
+    "regional_genes": [
+      {
+        "id": "ENSG00000197943",
+        "symbol": "PLCG2",
+        "biotype": "protein_coding",
+        "start": 81738248,
+        "end": 81962685,
+        "distance_bp": 0
+      },
+      {
+        "id": "ENSG00000303013",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 81829584,
+        "end": 81831870,
+        "distance_bp": 54373
+      },
+      {
+        "id": "ENSG00000295517",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 81718311,
+        "end": 81719358,
+        "distance_bp": 55853
+      },
+      {
+        "id": "ENSG00000153815",
+        "symbol": "CMIP",
+        "biotype": "protein_coding",
+        "start": 81444800,
+        "end": 81711762,
+        "distance_bp": 63449
+      },
+      {
+        "id": "ENSG00000299389",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 81629883,
+        "end": 81632990,
+        "distance_bp": 142221
+      },
+      {
+        "id": "ENSG00000279841",
+        "symbol": null,
+        "biotype": "TEC",
+        "start": 81630193,
+        "end": 81632038,
+        "distance_bp": 143173
+      },
+      {
+        "id": "ENSG00000279294",
+        "symbol": null,
+        "biotype": "TEC",
+        "start": 81618505,
+        "end": 81620563,
+        "distance_bp": 154648
+      },
+      {
+        "id": "ENSG00000279681",
+        "symbol": null,
+        "biotype": "TEC",
+        "start": 81617038,
+        "end": 81617543,
+        "distance_bp": 157668
+      },
+      {
+        "id": "ENSG00000275109",
+        "symbol": "MIR6504",
+        "biotype": "miRNA",
+        "start": 81611348,
+        "end": 81611408,
+        "distance_bp": 163803
+      },
+      {
+        "id": "ENSG00000260682",
+        "symbol": "RN7SKP176",
+        "biotype": "misc_RNA",
+        "start": 81961926,
+        "end": 81962243,
+        "distance_bp": 186715
+      },
+      {
+        "id": "ENSG00000276519",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 81987948,
+        "end": 81989016,
+        "distance_bp": 212737
+      },
+      {
+        "id": "ENSG00000184860",
+        "symbol": "SDR42E1",
+        "biotype": "protein_coding",
+        "start": 81988855,
+        "end": 82011500,
+        "distance_bp": 213644
+      },
+      {
+        "id": "ENSG00000086696",
+        "symbol": "HSD17B2",
+        "biotype": "protein_coding",
+        "start": 82008119,
+        "end": 82098534,
+        "distance_bp": 232908
+      },
+      {
+        "id": "ENSG00000277255",
+        "symbol": "MIR7854",
+        "biotype": "miRNA",
+        "start": 81533902,
+        "end": 81533966,
+        "distance_bp": 241245
+      }
+    ],
+    "ld": {
+      "1000GENOMES:phase_3:CHB": {
+        "status": "REFERENCE_LD_RETRIEVED",
+        "n": 0,
+        "first_10": []
+      },
+      "1000GENOMES:phase_3:JPT": {
+        "status": "REFERENCE_LD_RETRIEVED",
+        "n": 0,
+        "first_10": []
+      },
+      "1000GENOMES:phase_3:CEU": {
+        "status": "REFERENCE_LD_RETRIEVED",
+        "n": 0,
+        "first_10": []
+      }
+    }
+  }
+}

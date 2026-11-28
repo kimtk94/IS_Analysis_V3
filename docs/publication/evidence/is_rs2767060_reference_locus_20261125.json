@@ -1,0 +1,218 @@
+{
+  "provenance": {
+    "run_id": 45539259361,
+    "job_id": 138953456813,
+    "artifact_id": 14987549405,
+    "reported_artifact_zip_sha256": "efec82bb1f7a260eab4d589f2e7c98bb680938b618513f96062ab2ee072b9962",
+    "source_commit": "69b601e27bd87178e134631403786aa724a02912",
+    "readback": "Actual aggregate stdout, not independently downloaded ZIP. LD responses nonempty but parser schema HOLD."
+  },
+  "result": {
+    "status": "POST_READOUT_REGIONAL_ANNOTATION",
+    "rsid": "rs2767060",
+    "GRCh38_chr": "10",
+    "GRCh38_pos": 35833363,
+    "historical_ref": "C",
+    "historical_alt": "T",
+    "source_run": 45534891070,
+    "sources": {
+      "variation": {
+        "url": "https://rest.ensembl.org/variation/human/rs2767060",
+        "http_status": 200,
+        "sha256": "55a2fdfdaeba9c6ac0b5a37d90d253ffcdc6688021b07c23f09c1bb4b1f5b87a",
+        "bytes": 499
+      },
+      "vep": {
+        "url": "https://rest.ensembl.org/vep/human/id/rs2767060?canonical=1",
+        "http_status": 200,
+        "sha256": "98802c712eb4602ec0a51078f15a438ed0f968f81ba622f188cabaff9b234691",
+        "bytes": 776
+      },
+      "regional_genes": {
+        "url": "https://rest.ensembl.org/overlap/region/human/10:35583363..36083363?feature=gene",
+        "http_status": 200,
+        "sha256": "b0d3c8df6cec8256c6cb7b9a1af223e30f7e37a2fa6b69e9cf0fc39ce0883f20",
+        "bytes": 5605
+      },
+      "ld_1000GENOMES:phase_3:CHB": {
+        "url": "https://rest.ensembl.org/ld/human/rs2767060/1000GENOMES:phase_3:CHB?window_size=500&r2=0.8&attribs=1",
+        "http_status": 200,
+        "sha256": "c5a134d1e802955b41a8f28dfa6e262758e11ab2ba096a53f1ef3ae09c3e3835",
+        "bytes": 5471
+      },
+      "ld_1000GENOMES:phase_3:JPT": {
+        "url": "https://rest.ensembl.org/ld/human/rs2767060/1000GENOMES:phase_3:JPT?window_size=500&r2=0.8&attribs=1",
+        "http_status": 200,
+        "sha256": "8d711ef0f479b4c46545bb10092fa9cb9f25972fbcb6ef33d501e4d99787c528",
+        "bytes": 7750
+      },
+      "ld_1000GENOMES:phase_3:CEU": {
+        "url": "https://rest.ensembl.org/ld/human/rs2767060/1000GENOMES:phase_3:CEU?window_size=500&r2=0.8&attribs=1",
+        "http_status": 200,
+        "sha256": "c642d54161a64e4146ccb43276c1fdfcb7eed3b0ea63ae5a001226d0b18a0007",
+        "bytes": 13499
+      },
+      "catalog_exact_variant": {
+        "url": "https://www.ebi.ac.uk/gwas/rest/api/v2/single-nucleotide-polymorphisms/rs2767060",
+        "status": "HOLD_SOURCE",
+        "reason": "HTTP Error 404: ",
+        "http_status": 404
+      }
+    },
+    "identity_verified": true,
+    "limits": [
+      "Variant selected for follow-up after the expanded-family result, not independent discovery. No inferred causal gene, colocalization, or independent replication.",
+      "LD is population-specific 1000 Genomes Phase 3 CHB/JPT/CEU reference evidence, not matched GWAS individual-level LD; no claim that an unreturned proxy is independent.",
+      "Catalog is literature-curated, not full GWAS summary statistics. Absence of exact rsID or regional association is not evidence of novelty."
+    ],
+    "genome_reference": "C",
+    "ensembl_allele_string": "C/T",
+    "most_severe_consequence": "intergenic_variant",
+    "minor_allele": "T",
+    "MAF": 0.194466,
+    "vep": {
+      "most_severe_consequence": "intergenic_variant",
+      "transcript_consequences": [],
+      "regulatory_consequences": []
+    },
+    "regional_genes": [
+      {
+        "id": "ENSG00000294862",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 35847091,
+        "end": 35848428,
+        "distance_bp": 13728
+      },
+      {
+        "id": "ENSG00000280719",
+        "symbol": "PCAT5",
+        "biotype": "lncRNA",
+        "start": 35778302,
+        "end": 35800920,
+        "distance_bp": 32443
+      },
+      {
+        "id": "ENSG00000309863",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 35887818,
+        "end": 35898053,
+        "distance_bp": 54455
+      },
+      {
+        "id": "ENSG00000227313",
+        "symbol": "LINC02630",
+        "biotype": "lncRNA",
+        "start": 35890050,
+        "end": 35899258,
+        "distance_bp": 56687
+      },
+      {
+        "id": "ENSG00000301879",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 35729669,
+        "end": 35753321,
+        "distance_bp": 80042
+      },
+      {
+        "id": "ENSG00000299958",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 35928122,
+        "end": 36072494,
+        "distance_bp": 94759
+      },
+      {
+        "id": "ENSG00000299999",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 35934232,
+        "end": 35938090,
+        "distance_bp": 100869
+      },
+      {
+        "id": "ENSG00000226646",
+        "symbol": "RPL7P37",
+        "biotype": "processed_pseudogene",
+        "start": 35697300,
+        "end": 35698037,
+        "distance_bp": 135326
+      },
+      {
+        "id": "ENSG00000287528",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 35641097,
+        "end": 35647828,
+        "distance_bp": 185535
+      },
+      {
+        "id": "ENSG00000288893",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 35643844,
+        "end": 35644674,
+        "distance_bp": 188689
+      },
+      {
+        "id": "ENSG00000177283",
+        "symbol": "FZD8",
+        "biotype": "protein_coding",
+        "start": 35638247,
+        "end": 35642296,
+        "distance_bp": 191067
+      },
+      {
+        "id": "ENSG00000284265",
+        "symbol": "MIR4683",
+        "biotype": "miRNA",
+        "start": 35641172,
+        "end": 35641252,
+        "distance_bp": 192111
+      },
+      {
+        "id": "ENSG00000177291",
+        "symbol": "GJD4",
+        "biotype": "protein_coding",
+        "start": 35605341,
+        "end": 35608935,
+        "distance_bp": 224428
+      },
+      {
+        "id": "ENSG00000273312",
+        "symbol": "GJD4-AS1",
+        "biotype": "lncRNA",
+        "start": 35604485,
+        "end": 35608153,
+        "distance_bp": 225210
+      },
+      {
+        "id": "ENSG00000227475",
+        "symbol": null,
+        "biotype": "lncRNA",
+        "start": 36071643,
+        "end": 36118419,
+        "distance_bp": 238280
+      }
+    ],
+    "ld": {
+      "1000GENOMES:phase_3:CHB": {
+        "status": "HOLD_SCHEMA",
+        "reason": "'variation1'",
+        "first_10": []
+      },
+      "1000GENOMES:phase_3:JPT": {
+        "status": "HOLD_SCHEMA",
+        "reason": "'variation1'",
+        "first_10": []
+      },
+      "1000GENOMES:phase_3:CEU": {
+        "status": "HOLD_SCHEMA",
+        "reason": "'variation1'",
+        "first_10": []
+      }
+    }
+  }
+}

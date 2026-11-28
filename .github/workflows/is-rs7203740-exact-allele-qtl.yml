@@ -1,0 +1,30 @@
+name: IS rs7203740 exact allele QTL screen
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/rs7203740_exact_allele_qtl.py','.github/workflows/is-rs7203740-exact-allele-qtl.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qtl-screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read pinned nominal sources at exact position
+        run: |
+          python -m pip install 'pysam==0.23.3'
+          python -m py_compile scripts/is/rs7203740_exact_allele_qtl.py
+          python -m scripts.is.rs7203740_exact_allele_qtl --out outputs/exact-allele-qtl.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-rs7203740-exact-allele-qtl
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

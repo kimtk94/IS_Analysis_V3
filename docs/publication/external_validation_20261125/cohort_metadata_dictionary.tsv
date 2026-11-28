@@ -1,0 +1,12 @@
+field	requested_metadata
+cohort_id	Name/version for each approved summary source
+recruitment	Recruitment years and sites; incident/prevalent; sample consent/approval
+overlap	Document overlap with GIGASTROKE and other external cohorts; unknown != independent
+phenotype	AIS/LAS/CES/SVS, ICD criteria or TOAST adjudication; case/control definitions and ICAS/ECAS where available
+controls	Stroke-free control ascertainment, ancestry, age, control reuse across subtypes; case-only not equivalent
+model	Additive coding, beta units, covariates, PCs, relatedness, imputation/genotyping and missingness QC; separate model IDs
+variant	Returned build/chr/pos and actual effect/other allele; retain C/T distinct from C/A for rs7203740
+effect	Signed beta, SE, two-sided P, effect allele frequency and its denominator, per-marker N/cases/controls, imputation metric and value; no individual records
+status	NOT_RETURNED initially; OK, NOT_AVAILABLE, QC_FAIL or SUPPRESSED; include reason; no substitution
+authorization	Data owner confirms permitted sharing and aggregate analysis; no direct patient-level extracts
+covariance	If provided for paired model/contrast, report estimation method and scale; otherwise no direct heterogeneity inference

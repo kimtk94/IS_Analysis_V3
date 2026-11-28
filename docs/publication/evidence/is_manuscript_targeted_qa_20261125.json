@@ -1,0 +1,39 @@
+{
+  "status": "TARGETED_MANUSCRIPT_EVIDENCE_READBACK_NOT_FINAL_QA",
+  "checks_passed": 35,
+  "checks_total": 35,
+  "accession_map": {
+    "EUR_AIS": "GCST90104540",
+    "EUR_CES": "GCST90104541",
+    "EUR_LAS": "GCST90104542",
+    "EUR_SVS": "GCST90104543",
+    "EAS_AIS": "GCST90104545",
+    "EAS_CES": "GCST90104546",
+    "EAS_LAS": "GCST90104547",
+    "EAS_SVS": "GCST90104548"
+  },
+  "source_mapping_commit": "81c9a0760c185f8c6f357a70e7c199f172df1015",
+  "source_mapping_blob": "f5293fc003eb7f6437956f8dcec7383c089e6335",
+  "evidence_blobs": {
+    "docs/publication/evidence/is_fixed24_subtype_contrasts_20261125.json": "e505329c7325c9778088ad426a635a57c4748c3b",
+    "docs/publication/evidence/is_fixed24_subtype_cohort_audit_20261125.json": "780ace416f05ce104f1427ff476d723e59c60cae",
+    "docs/publication/evidence/is_external_aggregate_qc_20261125.json": "11688db9c0b884e5799e7e040e08c89be357db7e"
+  },
+  "references_checked": [
+    {
+      "pmid": 38744227,
+      "doi": "10.1016/j.compbiolchem.2024.108086"
+    },
+    {
+      "pmid": 42003665,
+      "doi": "10.1161/JAHA.125.046208"
+    },
+    {
+      "pmid": 28869584,
+      "doi": "10.1038/nn.4632"
+    }
+  ],
+  "limits": [
+    "Targeted numerical and source mapping checks, not independent replication, full manuscript audit or visual figure QA. All 96 external template rows remain NOT_RETURNED."
+  ]
+}

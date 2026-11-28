@@ -1,0 +1,33 @@
+name: IS molecular and curated source schema audits
+on:
+  push:
+    branches: [research/is-fixed-24-subtype-extension-20261125]
+    paths: ['scripts/is/plcg2_source_schema_audits.py','.github/workflows/is-plcg2-source-schema-audits.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-audit:
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [identifiers, catalog]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate original source schema without inferring absent data
+        run: |
+          python -m py_compile scripts/is/plcg2_source_schema_audits.py
+          python -m scripts.is.plcg2_source_schema_audits "${{ matrix.mode }}" --work "$RUNNER_TEMP/schema" --out "outputs/${{ matrix.mode }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-source-schema-${{ matrix.mode }}
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

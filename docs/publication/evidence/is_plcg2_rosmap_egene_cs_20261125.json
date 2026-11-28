@@ -1,0 +1,67 @@
+{
+  "provenance": {
+    "run_id": 45550125894,
+    "job_id": 138989043574,
+    "artifact_id": 14992544735,
+    "reported_artifact_zip_sha256": "55f6dae00034917343beaaf226806098a62aa4a85d5c19de8d621e0655302ec6",
+    "readback": "Actual stdout; artifact hash reported by upload step."
+  },
+  "result": {
+    "status": "POST_READOUT_OFFICIAL_PLCG2_EGENE_CS_AUDIT",
+    "dataset": "QTD000434",
+    "gene_id": "ENSG00000197943",
+    "target_variant": "chr16_81775211_C_T",
+    "nominal_qtl": {
+      "gene": "PLCG2",
+      "gene_id": "ENSG00000197943",
+      "molecular_trait_id": "ENSG00000197943",
+      "ref": "C",
+      "alt": "T",
+      "variant": "chr16_81775211_C_T",
+      "beta_ALT": 0.279006,
+      "se": 0.068636,
+      "p": 0.0000551034,
+      "maf": 0.172321,
+      "ac": 938,
+      "an": 1120,
+      "alt_frequency": 0.8375,
+      "genotyped_alleles_half_not_model_N": 560
+    },
+    "sources": {
+      "permutation": {
+        "source": {
+          "url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000025/QTD000434/QTD000434.permuted.tsv.gz",
+          "compressed_bytes": 841205,
+          "sha256": "adf13cbe9f784cd56a832700b710ffd6abe76a962a38918667a1d80c51413091",
+          "complete_file_retrieved": true
+        },
+        "status": "COMPLETE_OFFICIAL_PERMUTATION_READ",
+        "tested_gene_count": 23076,
+        "BH_lt_0.05_gene_count": 9527,
+        "PLCG2": {
+          "molecular_trait_id": "ENSG00000197943",
+          "n_variants": "11248",
+          "variant": "chr16_81878856_T_G",
+          "chromosome": "16",
+          "position": "81878856",
+          "pvalue": "7.86674e-11",
+          "p_beta": "9.57778e-07",
+          "p_perm": "0.000999001",
+          "beta": "-0.246995",
+          "BH_across_complete_source_genes": 0.000004532749205906481,
+          "passes_BH_0.05": true
+        }
+      },
+      "credible_sets": {
+        "status": "HOLD_SOURCE_OR_SCHEMA",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/susie/QTS000025/QTD000434/QTD000434.credible_sets.tsv.gz",
+        "reason": "Official credible-set schema"
+      }
+    },
+    "limits": [
+      "Official gene-level permutation/FDR and SuSiE credible-set evidence, not independent replication; same ROSMAP QTL dataset as nominal result.",
+      "Exact C/T not rsID alone. Presence in QTL credible set does not imply shared causal variant with stroke GWAS. Absence can reflect no published set or signal structure; not absence of all regulation.",
+      "No regional GWAS/QTL comparison, MR or colocalization. Nominal N/AN not automatically model N; ancestry and overlap not certified. Source failure remains HOLD."
+    ]
+  }
+}

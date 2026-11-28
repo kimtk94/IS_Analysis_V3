@@ -1,0 +1,104 @@
+{
+  "provenance": {
+    "run_id": 45558846009,
+    "job_id": 139017372922,
+    "artifact_id": 14997196781,
+    "reported_artifact_zip_sha256": "b67291fed4cdd52d9c9ae8d837f528a5156a6f3c0db270d7baa79b87e4367f4c",
+    "source_commit": "5d709fec0ff43d8d109fbc5c238ee0ea2f6b3c1d",
+    "readback": "Actual JSON stdout. Full publisher credible-set source hash computed in CI; upload-reported artifact ZIP hash not independently downloaded. Exact ID absence; version suffix audit separately needed."
+  },
+  "result": {
+    "status": "POST_READOUT_OFFICIAL_PLCG2_EGENE_CS_AUDIT",
+    "dataset": "QTD000434",
+    "gene_id": "ENSG00000197943",
+    "target_variant": "chr16_81775211_C_T",
+    "nominal_qtl": {
+      "gene": "PLCG2",
+      "gene_id": "ENSG00000197943",
+      "molecular_trait_id": "ENSG00000197943",
+      "ref": "C",
+      "alt": "T",
+      "variant": "chr16_81775211_C_T",
+      "beta_ALT": 0.279006,
+      "se": 0.068636,
+      "p": 0.0000551034,
+      "maf": 0.172321,
+      "ac": 938,
+      "an": 1120,
+      "alt_frequency": 0.8375,
+      "genotyped_alleles_half_not_model_N": 560
+    },
+    "sources": {
+      "permutation": {
+        "source": {
+          "url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/QTS000025/QTD000434/QTD000434.permuted.tsv.gz",
+          "compressed_bytes": 841205,
+          "sha256": "adf13cbe9f784cd56a832700b710ffd6abe76a962a38918667a1d80c51413091",
+          "complete_file_retrieved": true
+        },
+        "status": "COMPLETE_OFFICIAL_PERMUTATION_READ",
+        "tested_gene_count": 23076,
+        "BH_lt_0.05_gene_count": 9527,
+        "PLCG2": {
+          "molecular_trait_id": "ENSG00000197943",
+          "n_variants": "11248",
+          "variant": "chr16_81878856_T_G",
+          "chromosome": "16",
+          "position": "81878856",
+          "pvalue": "7.86674e-11",
+          "p_beta": "9.57778e-07",
+          "p_perm": "0.000999001",
+          "beta": "-0.246995",
+          "BH_across_complete_source_genes": 0.000004532749205906481,
+          "passes_BH_0.05": true
+        },
+        "reused_verified_run": 45550125894
+      },
+      "credible_sets": {
+        "source": {
+          "url": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/susie/QTS000025/QTD000434/QTD000434.credible_sets.tsv.gz",
+          "compressed_bytes": 12466333,
+          "sha256": "e21efac4551ae7e3558699111481053dcf05deb6557f236fbecb9f330264c360",
+          "complete_file_retrieved": true
+        },
+        "status": "COMPLETE_OFFICIAL_CREDIBLE_SET_READ",
+        "actual_header": [
+          "molecular_trait_id",
+          "gene_id",
+          "cs_id",
+          "variant",
+          "rsid",
+          "cs_size",
+          "pip",
+          "pvalue",
+          "beta",
+          "se",
+          "z",
+          "cs_min_r2",
+          "region"
+        ],
+        "total_source_rows": 377180,
+        "other_gene_rows": 377180,
+        "target_gene_rows": 0,
+        "PLCG2_credible_sets": [],
+        "PLCG2_credible_set_count": 0,
+        "target_CT_in_any_CS": false,
+        "unavailable_in_release": [
+          "cs_avg_r2",
+          "cs_log10bf",
+          "cs_index",
+          "posterior_mean",
+          "posterior_sd"
+        ],
+        "limits": [
+          "Coordinates and alleles parsed from official GRCh38 variant key; no inferred missing CS statistics. PIP and LD purity are source-reported. Absence from a published CS is not proof of no molecular effect."
+        ]
+      }
+    },
+    "limits": [
+      "Official gene-level permutation/FDR and SuSiE credible-set evidence, not independent replication; same ROSMAP QTL dataset as nominal result.",
+      "Exact C/T not rsID alone. Presence in QTL credible set does not imply shared causal variant with stroke GWAS. Absence can reflect no published set or signal structure; not absence of all regulation.",
+      "No regional GWAS/QTL comparison, MR or colocalization. Nominal N/AN not automatically model N; ancestry and overlap not certified. Source failure remains HOLD."
+    ]
+  }
+}
