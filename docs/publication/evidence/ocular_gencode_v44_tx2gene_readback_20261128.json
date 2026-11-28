@@ -1,0 +1,37 @@
+{
+  "run_id": 46125833980,
+  "job_id": 140920107045,
+  "artifact_id": 15255173704,
+  "artifact_reported_sha256": "eb3b619fa72020e1ada66813c608eaa9f0d10899845b99d501ef2a827deb6b13",
+  "source_commit": "23ce8587fa669417ad909f7ee4d60d738b8cca7d",
+  "note": "Actual job log JSON. ZIP not independently downloaded. Reference coverage, not expression or scientific validation.",
+  "result": {
+    "status": "REFERENCE_MAPPING_VERIFIED",
+    "scientific_validation": false,
+    "reference_md5": "a30369535731a2fdaa6add9b3530756a",
+    "reference_sha256": "50a4143885523829c2fc8b1399b97c136ead8f313457165b855d63751a4e63f4",
+    "panel_sha256": "d4b266d833853d66f9990e4b00c1d96c0cd0d9db166202cfdf6a4ffd59379d79",
+    "transcripts": 252835,
+    "genes": 62700,
+    "tx2gene_sha256": "cb7305d9d6c0d3f336c388554a801513c4004d163cc7035ea448a3476fdc111e",
+    "groups": {
+      "all241": {
+        "frozen": 241,
+        "mapped": 241,
+        "positive": 117,
+        "negative": 124,
+        "unmapped": [],
+        "reference_coverage_gate": true
+      },
+      "ECM16": {
+        "frozen": 16,
+        "mapped": 16,
+        "positive": 7,
+        "negative": 9,
+        "unmapped": [],
+        "reference_coverage_gate": true
+      }
+    },
+    "note": "Reference ID coverage only; no expression, detectable-gene or sample QC. Mapping keys retain versioned transcript ID, and PAR_Y copies are separate."
+  }
+}
