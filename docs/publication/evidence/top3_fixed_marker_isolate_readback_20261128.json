@@ -1,0 +1,292 @@
+{
+  "run_id": 46124756300,
+  "source_commit": "d52efbf214695bd5617b9e07a8b29eec9ab04059",
+  "note": "Actual job JSON; ZIP not independently downloaded. Skin selected-target inventory, not null QTL result. Ocular isolate pairing only; 7d isolate not donor specific.",
+  "jobs": [
+    {
+      "job_id": 140916801078,
+      "result": {
+        "status": "ISOLATE_PAIRING_METADATA_ONLY",
+        "scientific_validation": false,
+        "projects": {
+          "PRJNA781014": {
+            "expected_public_runs": 10,
+            "verified_runs": 10,
+            "unique_isolates": 5,
+            "exact_two_arm_isolate_pairs": 5,
+            "pairs": [
+              {
+                "ETH": "SRR16961562",
+                "DEX": "SRR16961557"
+              },
+              {
+                "DEX": "SRR16961558",
+                "ETH": "SRR16961563"
+              },
+              {
+                "DEX": "SRR16961559",
+                "ETH": "SRR16961564"
+              },
+              {
+                "ETH": "SRR16961565",
+                "DEX": "SRR16961560"
+              },
+              {
+                "DEX": "SRR16961561",
+                "ETH": "SRR16961566"
+              }
+            ],
+            "unpaired": [],
+            "errors": []
+          },
+          "PRJNA729873": {
+            "expected_public_runs": 16,
+            "verified_runs": 16,
+            "unique_isolates": 2,
+            "exact_two_arm_isolate_pairs": 0,
+            "pairs": [],
+            "unpaired": [
+              {
+                "runs": [
+                  "SRR14535079",
+                  "SRR14535081",
+                  "SRR14535082",
+                  "SRR14535080",
+                  "SRR14535091",
+                  "SRR14535083",
+                  "SRR14535084",
+                  "SRR14535092"
+                ],
+                "arms": {
+                  "DEX": 4,
+                  "ETH": 4
+                }
+              },
+              {
+                "runs": [
+                  "SRR14535088",
+                  "SRR14535077",
+                  "SRR14535087",
+                  "SRR14535089",
+                  "SRR14535090",
+                  "SRR14535078",
+                  "SRR14535085",
+                  "SRR14535086"
+                ],
+                "arms": {
+                  "ETH": 4,
+                  "DEX": 4
+                }
+              }
+            ],
+            "errors": []
+          }
+        }
+      }
+    },
+    {
+      "job_id": 140916801230,
+      "result": {
+        "assay": "pQTL",
+        "status": "SELECTED_TARGET_POINT_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "panel_source_commit": "53e652f78a5c348d1403c9ee23355bb11c50331b",
+        "panel_source_blob": "2b5149aea77c890d0562518023e6b63aac0dd72f",
+        "denominator": 16,
+        "markers": {
+          "rs72620727": {
+            "variant": "12:88716633:A:C",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs921221": {
+            "variant": "15:27953421:T:C",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs74653330": {
+            "variant": "15:27983407:C:T",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs10775263": {
+            "variant": "15:27988767:C:T",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs730502": {
+            "variant": "15:27989264:G:T",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs2240751": {
+            "variant": "19:3548233:A:G",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs4584990": {
+            "variant": "2:108872562:C:T",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs144918519": {
+            "variant": "2:108901888:G:A",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs260643": {
+            "variant": "2:108923197:A:G",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs115957039": {
+            "variant": "2:108947058:T:C",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs10212419": {
+            "variant": "3:139286078:G:A",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs10460843": {
+            "variant": "3:139302337:A:G",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs4833267": {
+            "variant": "4:123254257:G:A",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs12376135": {
+            "variant": "9:16794420:C:A",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs170374": {
+            "variant": "9:20311336:C:A",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs1456966": {
+            "variant": "9:20312794:A:G",
+            "exact_rows": [],
+            "position_only_rows": 0
+          }
+        },
+        "matched_markers": 0,
+        "matched_pairs": 0,
+        "source_sha256": "03084fb65d91708fbc3588076a4a25b94b19adff36079e87aa72344f11ee8b6a",
+        "source_rows": 108872,
+        "selected_targets": 36
+      }
+    },
+    {
+      "job_id": 140916801245,
+      "result": {
+        "assay": "eQTL",
+        "status": "SELECTED_TARGET_POINT_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "panel_source_commit": "53e652f78a5c348d1403c9ee23355bb11c50331b",
+        "panel_source_blob": "2b5149aea77c890d0562518023e6b63aac0dd72f",
+        "denominator": 16,
+        "markers": {
+          "rs72620727": {
+            "variant": "12:88716633:A:C",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs921221": {
+            "variant": "15:27953421:T:C",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs74653330": {
+            "variant": "15:27983407:C:T",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs10775263": {
+            "variant": "15:27988767:C:T",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs730502": {
+            "variant": "15:27989264:G:T",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs2240751": {
+            "variant": "19:3548233:A:G",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs4584990": {
+            "variant": "2:108872562:C:T",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs144918519": {
+            "variant": "2:108901888:G:A",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs260643": {
+            "variant": "2:108923197:A:G",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs115957039": {
+            "variant": "2:108947058:T:C",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs10212419": {
+            "variant": "3:139286078:G:A",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs10460843": {
+            "variant": "3:139302337:A:G",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs4833267": {
+            "variant": "4:123254257:G:A",
+            "exact_rows": [
+              {
+                "target": "ENSG00000138685",
+                "maf": 0.473333,
+                "p": 0.404752,
+                "source_slope": 0.0527222,
+                "se": 0.0630581
+              }
+            ],
+            "position_only_rows": 0
+          },
+          "rs12376135": {
+            "variant": "9:16794420:C:A",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs170374": {
+            "variant": "9:20311336:C:A",
+            "exact_rows": [],
+            "position_only_rows": 0
+          },
+          "rs1456966": {
+            "variant": "9:20312794:A:G",
+            "exact_rows": [],
+            "position_only_rows": 0
+          }
+        },
+        "matched_markers": 1,
+        "matched_pairs": 1,
+        "source_sha256": "165264e5ef824098f70249261836eb40f08c9e0d99cecde3c257902ee60ca28c",
+        "source_rows": 870843,
+        "selected_targets": 282
+      }
+    }
+  ]
+}
