@@ -1,0 +1,24 @@
+name: Ocular new 74-donor single-cell public design gate
+on:
+  push:
+    branches: [research/publication-ocular-ckd-source-20261124]
+    paths: ['scripts/ocular_gse313736_design_gate.py','.github/workflows/ocular-gse313736-design.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  design:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m py_compile scripts/ocular_gse313736_design_gate.py
+      - run: python3 scripts/ocular_gse313736_design_gate.py --root "$RUNNER_TEMP" --out outputs/design.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gse313736-aggregate-design
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,65 @@
+name: Ocular GSE313736 fixed-panel pool C expression pilot
+on:
+  push:
+    branches: [research/publication-ocular-ckd-source-20261124]
+    paths: ['scripts/ocular_gse313736_pool_pilot.py','.github/workflows/ocular-gse313736-pilot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned binary numerical dependencies
+        run: |
+          python -m pip install --only-binary=:all: numpy==2.2.6 scipy==1.15.3 threadpoolctl==3.6.0
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python scripts/ocular_gse313736_pool_pilot.py selftest
+      - name: Retrieve pinned frozen panel only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 4000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o "$RUNNER_TEMP/panel.zip"
+          echo "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606  $RUNNER_TEMP/panel.zip" | sha256sum -c -
+      - name: Retrieve exact public cell metadata and small Cell Ranger tables
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 10000000 "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE313nnn/GSE313736/suppl/GSE313736_HTMC_scRNA_cell_metadata.tsv.gz" -o "$RUNNER_TEMP/metadata.gz"
+          for arm in no-dex dex; do
+            if [ "$arm" = no-dex ]; then gsm=GSM9373278; stem=pool_C; else gsm=GSM9373287; stem=pool_dexC; fi
+            base="https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9373nnn/$gsm/suppl/${gsm}_${stem}"
+            for x in barcodes features; do
+              curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 3000000 "${base}_${x}.tsv.gz" -o "$RUNNER_TEMP/${arm}_${x}.tsv.gz"
+            done
+          done
+      - name: Retrieve two original public count matrices in parallel
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 20 --max-time 480 --max-filesize 450000000 "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9373nnn/GSM9373278/suppl/GSM9373278_pool_C_matrix.mtx.gz" -o "$RUNNER_TEMP/no-dex_matrix.mtx.gz" &
+          p1=$!
+          curl -fLsS --connect-timeout 20 --max-time 480 --max-filesize 450000000 "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM9373nnn/GSM9373287/suppl/GSM9373287_pool_dexC_matrix.mtx.gz" -o "$RUNNER_TEMP/dex_matrix.mtx.gz" &
+          p2=$!
+          rc=0
+          wait "$p1" || rc=1
+          wait "$p2" || rc=1
+          test "$rc" = 0
+      - name: Exact cell alignment and donor pseudobulk pilot
+        run: PYTHONPATH="$PWD/pinned-ocular/scripts" python scripts/ocular_gse313736_pool_pilot.py pilot --root "$RUNNER_TEMP" --out outputs/pilot.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-gse313736-pool-C-aggregate-pilot
+          path: outputs/pilot.json
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,35 @@
+name: Ocular independent 16-hour explicit-label count audit
+on:
+  push:
+    branches: [research/publication-ocular-ckd-source-20261124]
+    paths: ['scripts/ocular_16h_holdout_source.py','.github/workflows/ocular-16h-holdout-source.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - name: Retrieve exact frozen panel archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 4000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o "$RUNNER_TEMP/panel.zip"
+          echo "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606  $RUNNER_TEMP/panel.zip" | sha256sum -c -
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python3 scripts/ocular_16h_holdout_source.py --root "$RUNNER_TEMP" --out outputs/source.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-16h-explicit-label-count-audit
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

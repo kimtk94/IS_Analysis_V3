@@ -1,0 +1,29 @@
+name: Ocular GSE313736 all-library barcode and feature preflight
+on:
+  push:
+    branches: [research/publication-ocular-ckd-source-20261124]
+    paths: ['scripts/ocular_gse313736_all_library_preflight.py','.github/workflows/ocular-gse313736-preflight.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python3 scripts/ocular_gse313736_all_library_preflight.py --root "$RUNNER_TEMP" --out outputs/preflight.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-gse313736-all-library-preflight
+          path: outputs/
+          if-no-files-found: ignore
+          retention-days: 90

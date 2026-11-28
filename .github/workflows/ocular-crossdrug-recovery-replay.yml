@@ -1,0 +1,69 @@
+name: Ocular fixed panel cross-drug and recovery source replay
+on:
+  push:
+    branches: [research/publication-ocular-ckd-source-20261124]
+    paths: ['scripts/ocular_crossdrug_recovery_replay.py','.github/workflows/ocular-crossdrug-recovery-replay.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  compact-crossdrug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve exact panel and compact platform-only public data
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 4000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o "$RUNNER_TEMP/panel.zip"
+          curl -fLsS --connect-timeout 15 --max-time 80 --max-filesize 100000000 "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE16nnn/GSE16643/matrix/GSE16643_series_matrix.txt.gz" -o "$RUNNER_TEMP/matrix.gz"
+          curl -fLsS --connect-timeout 15 --max-time 90 --max-filesize 80000000 "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL6480&targ=self&form=text&view=full" -o "$RUNNER_TEMP/platform.txt"
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python scripts/ocular_crossdrug_recovery_replay.py crossdrug --root "$RUNNER_TEMP" --out outputs/crossdrug.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-crossdrug-compact-source
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
+  recovery-manifest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve reviewed ENA and DEE2 public manifests
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 100000 "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA729873&result=read_run&fields=secondary_study_accession,study_accession,experiment_accession,run_accession,sample_accession,sample_alias,library_name,experiment_title&format=tsv" -o "$RUNNER_TEMP/ena.tsv"
+          curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 100000 "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJNA729873&result=read_run&fields=run_accession,library_layout,fastq_ftp,fastq_md5,fastq_bytes&format=tsv" -o "$RUNNER_TEMP/fastq.tsv"
+          curl -fLsS --connect-timeout 15 --max-time 80 --max-filesize 30000000 "https://dee2.io/huge/hsapiens/SRP319815_NA.zip" -o "$RUNNER_TEMP/counts.zip"
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python scripts/ocular_crossdrug_recovery_replay.py recovery --root "$RUNNER_TEMP" --out outputs/manifest.json
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python scripts/ocular_crossdrug_recovery_replay.py recount --out outputs/recount.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-full-run-layout-and-alternative-count-catalog
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

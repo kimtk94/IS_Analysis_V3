@@ -1,0 +1,138 @@
+name: Ocular GSE313736 exact-intersection nine-pool validation
+on:
+  push:
+    branches: [research/publication-ocular-ckd-source-20261124]
+    paths: ['scripts/ocular_gse313736_exact_intersection.py','.github/workflows/ocular-gse313736-exact-intersection.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python scripts/ocular_gse313736_exact_intersection.py selftest
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python scripts/ocular_gse313736_exact_intersection.py preflight --root "$RUNNER_TEMP" --out outputs/preflight.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ocular-exact-intersection-preflight
+          path: outputs/
+          if-no-files-found: ignore
+          retention-days: 90
+  pilot-C:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned numerical wheels
+        run: |
+          python -m pip install --only-binary=:all: numpy==2.2.6 scipy==1.15.3 threadpoolctl==3.6.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-exact-intersection-preflight
+          path: gate
+      - name: Retrieve original frozen panel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 4000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o "$RUNNER_TEMP/panel.zip"
+          echo "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606  $RUNNER_TEMP/panel.zip" | sha256sum -c -
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python scripts/ocular_gse313736_exact_intersection.py score --root "$RUNNER_TEMP" --gate gate/preflight.json --pool C --out outputs/pool-C.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-exact-pool-C
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
+  remaining:
+    needs: [preflight, pilot-C]
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        pool: [A, B, D, E, F, G, H, I]
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned numerical wheels
+        run: |
+          python -m pip install --only-binary=:all: numpy==2.2.6 scipy==1.15.3 threadpoolctl==3.6.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-exact-intersection-preflight
+          path: gate
+      - name: Retrieve original frozen panel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 4000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o "$RUNNER_TEMP/panel.zip"
+          echo "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606  $RUNNER_TEMP/panel.zip" | sha256sum -c -
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python scripts/ocular_gse313736_exact_intersection.py score --root "$RUNNER_TEMP" --gate gate/preflight.json --pool ${{ matrix.pool }} --out outputs/pool-${{ matrix.pool }}.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-exact-pool-${{ matrix.pool }}
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
+  combine:
+    needs: [pilot-C, remaining]
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: pinned-ocular
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ocular-exact-pool-*
+          path: inputs
+      - run: PYTHONPATH="$PWD/pinned-ocular/scripts" python scripts/ocular_gse313736_exact_intersection.py combine --root inputs --out outputs/validation.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-exact-nine-pool-validation
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
