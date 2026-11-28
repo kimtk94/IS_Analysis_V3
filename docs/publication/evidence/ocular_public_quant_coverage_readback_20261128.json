@@ -1,0 +1,121 @@
+{
+  "run_id": 46124866065,
+  "job_id": 140917136873,
+  "source_commit": "ecc262cb53359e769b5166df253f49954edbea82",
+  "note": "Actual JSON from Actions logs. IMPORTANT: queried paths did not use documented recount3 filename order and G026 extension; 404s cannot establish absence. Superseded by corrected source audit.",
+  "result": {
+    "status": "PUBLIC_QUANT_SOURCE_INVENTORY_ONLY",
+    "scientific_validation": false,
+    "projects": {
+      "PRJNA781014": {
+        "expected_runs": [
+          "SRR16961557",
+          "SRR16961558",
+          "SRR16961559",
+          "SRR16961560",
+          "SRR16961561",
+          "SRR16961562",
+          "SRR16961563",
+          "SRR16961564",
+          "SRR16961565",
+          "SRR16961566"
+        ],
+        "sources": [
+          {
+            "kind": "sra",
+            "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/61/SRP346461/sra.SRP346461.sra.MD.gz",
+            "status": "HOLD",
+            "error": "HTTPError: HTTP Error 404: Not Found"
+          },
+          {
+            "kind": "recount_qc",
+            "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/61/SRP346461/sra.SRP346461.recount_qc.MD.gz",
+            "status": "HOLD",
+            "error": "HTTPError: HTTP Error 404: Not Found"
+          },
+          {
+            "kind": "recount_pred",
+            "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/61/SRP346461/sra.SRP346461.recount_pred.MD.gz",
+            "status": "HOLD",
+            "error": "HTTPError: HTTP Error 404: Not Found"
+          },
+          {
+            "kind": "count_matrix_head",
+            "annotation": "gencode_v26",
+            "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/gene_sums/61/SRP346461/sra.gene_sums.SRP346461.gencode_v26.gz",
+            "status": "HOLD",
+            "error": "HTTPError: HTTP Error 404: Not Found"
+          },
+          {
+            "kind": "count_matrix_head",
+            "annotation": "gencode_v29",
+            "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/gene_sums/61/SRP346461/sra.gene_sums.SRP346461.gencode_v29.gz",
+            "status": "HOLD",
+            "error": "HTTPError: HTTP Error 404: Not Found"
+          }
+        ],
+        "srp": "SRP346461",
+        "ena_sha256": "16676e70afb922bd2f65c108af4038b8fd494a6a7eff92fb848eaae2590fd767"
+      },
+      "PRJNA729873": {
+        "expected_runs": [
+          "SRR14535077",
+          "SRR14535078",
+          "SRR14535079",
+          "SRR14535080",
+          "SRR14535081",
+          "SRR14535082",
+          "SRR14535083",
+          "SRR14535084",
+          "SRR14535085",
+          "SRR14535086",
+          "SRR14535087",
+          "SRR14535088",
+          "SRR14535089",
+          "SRR14535090",
+          "SRR14535091",
+          "SRR14535092"
+        ],
+        "sources": [
+          {
+            "kind": "sra",
+            "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/15/SRP319815/sra.SRP319815.sra.MD.gz",
+            "status": "HOLD",
+            "error": "HTTPError: HTTP Error 404: Not Found"
+          },
+          {
+            "kind": "recount_qc",
+            "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/15/SRP319815/sra.SRP319815.recount_qc.MD.gz",
+            "status": "HOLD",
+            "error": "HTTPError: HTTP Error 404: Not Found"
+          },
+          {
+            "kind": "recount_pred",
+            "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/15/SRP319815/sra.SRP319815.recount_pred.MD.gz",
+            "status": "HOLD",
+            "error": "HTTPError: HTTP Error 404: Not Found"
+          },
+          {
+            "kind": "count_matrix_head",
+            "annotation": "gencode_v26",
+            "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/gene_sums/15/SRP319815/sra.gene_sums.SRP319815.gencode_v26.gz",
+            "status": "HOLD",
+            "error": "HTTPError: HTTP Error 404: Not Found"
+          },
+          {
+            "kind": "count_matrix_head",
+            "annotation": "gencode_v29",
+            "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/gene_sums/15/SRP319815/sra.gene_sums.SRP319815.gencode_v29.gz",
+            "status": "HOLD",
+            "error": "HTTPError: HTTP Error 404: Not Found"
+          }
+        ],
+        "srp": "SRP319815",
+        "ena_sha256": "d766191b3163a2689a959b6c43efbb3942ed85150f4b3c66c116d43d076df568"
+      }
+    },
+    "notes": [
+      "No expression values read. Presence of metadata is not expression matrix coverage. No mixing quantification pipelines."
+    ]
+  }
+}
