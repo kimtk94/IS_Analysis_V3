@@ -1,0 +1,30 @@
+{
+  "run_id": 46125546911,
+  "job_id": 140919221701,
+  "artifact_id": 15255890475,
+  "source_commit": "a9fef02edbf8e2bb325aa395d3f60a8f9cf5e1d7",
+  "note": "Canonical TSV reconstructed from verified Actions stdout; byte-level SHA parity to be checked by CI. Original artifact hash validated by existing read_panel. No biological test.",
+  "status": "FROZEN_PANEL_VERIFIED_NO_EXPRESSION_ANALYSIS",
+  "scientific_validation": false,
+  "original_archive_id": 14912728421,
+  "original_archive_sha256": "5ad39d6fb293130492e66c713ff7d155d03d752f31cac84c98f78c42671bd606",
+  "canonical_tsv_sha256": "d4b266d833853d66f9990e4b00c1d96c0cd0d9db166202cfdf6a4ffd59379d79",
+  "groups": {
+    "all241": {
+      "total": 241,
+      "positive": 117,
+      "negative": 124,
+      "minimum_total": 181,
+      "minimum_positive": 82,
+      "minimum_negative": 87
+    },
+    "ECM16": {
+      "total": 16,
+      "positive": 7,
+      "negative": 9,
+      "minimum_total": 12,
+      "minimum_positive": 5,
+      "minimum_negative": 7
+    }
+  }
+}
