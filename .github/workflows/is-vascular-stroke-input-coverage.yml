@@ -1,0 +1,39 @@
+name: IS vascular stroke input coverage
+on:
+  push:
+    branches: [research/is-vascular-prior-evidence-20261125]
+    paths: ['scripts/is/vascular_stroke_input_coverage.py','.github/workflows/is-vascular-stroke-input-coverage.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  input-coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Focused checks
+        run: |
+          python -m pip install 'openpyxl==3.1.5'
+          python -m py_compile scripts/is/vascular_stroke_input_coverage.py
+          python scripts/is/vascular_stroke_input_coverage.py --selftest
+      - name: Retrieve exact official publisher workbooks
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 20 --max-time 120 --max-filesize 30000000 'https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-026-69273-8/MediaObjects/41467_2026_69273_MOESM3_ESM.xlsx' -o "$RUNNER_TEMP/data1.xlsx"
+          curl -fLsS --connect-timeout 20 --max-time 120 --max-filesize 30000000 'https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-026-69273-8/MediaObjects/41467_2026_69273_MOESM5_ESM.xlsx' -o "$RUNNER_TEMP/data2.xlsx"
+          sha256sum "$RUNNER_TEMP/data1.xlsx" "$RUNNER_TEMP/data2.xlsx"
+      - name: Resolve published tag, eQTL and tissue trait rows
+        run: |
+          python scripts/is/vascular_stroke_input_coverage.py --first "$RUNNER_TEMP/data1.xlsx" --second "$RUNNER_TEMP/data2.xlsx" --out outputs/stroke-input-coverage.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-vascular-stroke-input-coverage
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
