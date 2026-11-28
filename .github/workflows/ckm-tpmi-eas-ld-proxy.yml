@@ -1,9 +1,6 @@
 name: CKM TPMI GRCh37 EAS LD and lead presence gate
 
 on:
-  push:
-    paths:
-      - '.github/workflows/ckm-tpmi-eas-ld-proxy.yml'
   issue_comment:
     types: [created]
   workflow_dispatch:
@@ -14,13 +11,13 @@ permissions:
 
 jobs:
   eas-reference-ld:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && github.event.issue.number == 284 && github.event.comment.user.login == 'kimtk94' && github.event.comment.body == '/tpmi-run-eas-ld-20261121')
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && github.event.issue.number == 284 && github.event.comment.user.login == 'kimtk94' && github.event.comment.body == '/tpmi-run-eas-ld-20261121')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: research/ckm-stroke-staged-actions-20261111
+          ref: 4aff051003c6a65421516e69956c905498848a76
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'

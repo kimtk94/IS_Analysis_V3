@@ -1,0 +1,7 @@
+gene	ancestry	source_url	source_file
+ACE	EUR	tests/fixtures/ukb_ppp_raw_ace.txt	ACE_EUR.tsv
+ACE	EAS	tests/fixtures/ukb_ppp_raw_ace.txt	ACE_EAS.tsv
+IDO1	EUR	tests/fixtures/ukb_ppp_raw_ido1_assay_a.txt	IDO1_EUR_assay_a.tsv
+IDO1	EUR	tests/fixtures/ukb_ppp_raw_ido1_assay_b.txt	IDO1_EUR_assay_b.tsv
+IDO1	EAS	tests/fixtures/ukb_ppp_raw_ido1_assay_a.txt	IDO1_EAS_assay_a.tsv
+IDO1	EAS	tests/fixtures/ukb_ppp_raw_ido1_assay_b.txt	IDO1_EAS_assay_b.tsv

@@ -1,0 +1,10 @@
+{
+  "sample_columns": 4,
+  "gene_count": 3,
+  "group_for_column": [0, 0, 1, -1],
+  "group_count": 2,
+  "pooled_counts": [[5, 0], [1, 0], [0, 4]],
+  "nnz": 5,
+  "selected_nnz": 4,
+  "selected_umis": 10
+}

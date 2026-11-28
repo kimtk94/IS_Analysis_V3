@@ -117,15 +117,39 @@ def download(url: str, dest: Path):
 
 
 def parse_related_ids(path: Path):
+    """Read PLINK IID-only or FID/IID lists, respecting an optional IID header."""
     out = set()
-    with path.open("r", encoding="utf-8", errors="replace") as fh:
-        for line in fh:
+    iid_column = None
+    expected_columns = None
+    seen_data = False
+    with path.open("r", encoding="utf-8-sig") as fh:
+        for line_number, line in enumerate(fh, start=1):
             line = line.strip()
-            if not line or line.startswith("#"):
+            if not line:
                 continue
-            vals = re.split(r"\\s+", line)
-            if vals:
-                out.add(vals[-1])
+            commented = line.startswith("#")
+            vals = line.lstrip("#").split() if commented else line.split()
+            names = [value.upper() for value in vals]
+            if not seen_data and names and names[0] in {"FID", "IID", "SID"}:
+                if names.count("IID") != 1 or len(names) != len(set(names)):
+                    raise ValueError(f"{path}:{line_number}: invalid sample ID header")
+                iid_column = names.index("IID")
+                expected_columns = len(names)
+                continue
+            if commented:
+                continue
+            if expected_columns is None:
+                if len(vals) not in (1, 2):
+                    raise ValueError(
+                        f"{path}:{line_number}: require IID or FID/IID columns, "
+                        "or a header naming IID"
+                    )
+                expected_columns = len(vals)
+                iid_column = len(vals) - 1
+            if len(vals) != expected_columns:
+                raise ValueError(f"{path}:{line_number}: inconsistent sample ID columns")
+            out.add(vals[iid_column])
+            seen_data = True
     return out
 
 

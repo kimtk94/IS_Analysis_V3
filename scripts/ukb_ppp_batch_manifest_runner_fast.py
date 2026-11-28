@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -146,6 +147,27 @@ def test_sample_name(row: dict[str, str]) -> str:
     if not identifier:
         raise ValueError(f"cannot derive sample name for {row['gene']} {row['ancestry']}")
     return f"{identifier}.tsv"
+
+
+def preparation_source_id(row: dict[str, str]) -> str:
+    """Keep assay names readable while making distinct manifest sources unique."""
+    name = row.get("source_file") or Path(
+        urllib.parse.urlsplit(row.get("source_url", "")).path
+    ).name
+    stem = safe_source_stem(name) or safe_source_stem(row["gene"])
+    digest = hashlib.sha256(row["source_key"].encode()).hexdigest()[:16]
+    return f"{stem[:80]}__{digest}"
+
+
+def preparation_paths(task: dict[str, object], args: argparse.Namespace) -> dict[str, str]:
+    """Match the R preparation layout, including ancestry, batch, gene and assay."""
+    relative = (Path(str(task["ancestry"])) / str(task["batch_id"]) /
+                str(task["gene"]) / f"{task['source_id']}.tsv")
+    return {"standardized_path": str(args.standardized_dir / relative),
+            "instrument_path": str(args.instrument_dir / relative),
+            "legacy_path": str(args.outdir / relative),
+            "qc_path": str((args.standardized_dir / relative).with_suffix(".qc.tsv")),
+            "failed_qc_path": str((args.standardized_dir / relative).with_suffix(".failed.qc.tsv"))}
 
 
 def validation_error(row: dict[str, str], path: Path) -> str | None:
@@ -337,17 +359,21 @@ def main(argv: list[str] | None = None) -> int:
                              else args.focus_max_file_lines)
                 else:
                     limit = args.other_max_file_lines
-                plan.append({"batch_id": f"batch_{batch_number:03d}", "gene": row["gene"],
+                task = {"batch_id": f"batch_{batch_number:03d}", "gene": row["gene"],
                              "ancestry": row["ancestry"], "source_key": row["source_key"],
+                             "source_id": preparation_source_id(row),
                              "source_file": row.get("source_file", ""),
                              "synapse_id": row.get("synapse_id", ""),
                              "source_url": row["source_url"],
                              "size_bytes": row.get("size_bytes", ""),
                              "sha256": row.get("sha256", ""), "md5": row.get("md5", ""),
-                             "limit_type": limit_type, "limit": limit, "status": "planned"})
-    plan_fields = ["batch_id", "gene", "ancestry", "source_key", "source_file",
+                             "limit_type": limit_type, "limit": limit, "status": "planned"}
+                task.update(preparation_paths(task, args))
+                plan.append(task)
+    plan_fields = ["batch_id", "gene", "ancestry", "source_key", "source_id", "source_file",
                    "synapse_id", "source_url", "size_bytes", "sha256", "md5",
-                   "limit_type", "limit", "status"]
+                   "limit_type", "limit", "standardized_path", "instrument_path",
+                   "legacy_path", "qc_path", "failed_qc_path", "status"]
     write_tsv(args.qc_dir / "execution_plan.tsv",
               plan_fields, plan)
     base_parents = args.base.resolve().parents
@@ -361,6 +387,7 @@ def main(argv: list[str] | None = None) -> int:
                 "focus_max_file_lines": args.focus_max_file_lines,
                 "focus_max_bytes": args.focus_max_bytes,
                 "other_max_file_lines": args.other_max_file_lines,
+                "preparation_output_layout": "ancestry/batch/gene/source_id.tsv",
                 "download_manifest_sha256": file_digests(
                     args.download_manifest, ["sha256"])["sha256"],
                 "gene_coordinates_sha256": file_digests(
@@ -436,6 +463,7 @@ def main(argv: list[str] | None = None) -> int:
                 continue
             command = ["Rscript", str(args.prepare_script), "--archive", str(archive),
                        "--gene", row["gene"], "--ancestry", row["ancestry"],
+                       "--batch-id", task["batch_id"], "--source-id", task["source_id"],
                        "--coordinates", str(args.gene_coordinate_file),
                        "--standardized-dir", str(args.standardized_dir),
                        "--instrument-dir", str(args.instrument_dir), "--legacy-dir", str(args.outdir),

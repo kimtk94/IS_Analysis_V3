@@ -1,8 +1,5 @@
 name: CKM TPMI 43321 PLINK versus SAIGE effective N evidence
 on:
-  push:
-    paths:
-      - '.github/workflows/ckm-tpmi-43321-observed-n-methods.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -13,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: research/ckm-stroke-staged-actions-20261111
+          ref: 4aff051003c6a65421516e69956c905498848a76
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'

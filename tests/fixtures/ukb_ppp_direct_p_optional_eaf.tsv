@@ -1,0 +1,3 @@
+CHROM	GENPOS	ID	ALLELE0	ALLELE1	BETA	SE	P	LOG10P
+8	39910000	rs_direct_valid	G	A	0.2	0.05	1e-9	Inf
+8	39910010	rs_direct_invalid	G	A	0.2	0.05	2	10

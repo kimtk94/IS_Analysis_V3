@@ -1,0 +1,12 @@
+[
+  {"name": "commented_fid_iid", "text": "# Related individuals\n#FID\tIID\n0\tSYNTH_A\nF2 SYNTH_B\n", "expected": ["SYNTH_A", "SYNTH_B"]},
+  {"name": "uncommented_fid_iid", "text": "FID IID\n0 SYNTH_A\nF2\tSYNTH_B\n", "expected": ["SYNTH_A", "SYNTH_B"]},
+  {"name": "iid_only", "text": "#IID\nSYNTH_A\nSYNTH_B\n", "expected": ["SYNTH_A", "SYNTH_B"]},
+  {"name": "headerless_iid", "text": "SYNTH_A\nSYNTH_B\n", "expected": ["SYNTH_A", "SYNTH_B"]},
+  {"name": "headerless_fid_iid", "text": "0 SYNTH_A\nF2\tSYNTH_B\n", "expected": ["SYNTH_A", "SYNTH_B"]},
+  {"name": "iid_before_sid", "text": "#FID IID SID\nF1 SYNTH_A replicate1\nF2 SYNTH_B replicate2\n", "expected": ["SYNTH_A", "SYNTH_B"]},
+  {"name": "missing_iid_header", "text": "#FID SID\nF1 replicate1\n", "error": true},
+  {"name": "duplicate_iid_header", "text": "#FID IID IID\n0 SYNTH_A SYNTH_B\n", "error": true},
+  {"name": "ambiguous_headerless_columns", "text": "F1 SYNTH_A replicate1\n", "error": true},
+  {"name": "truncated_row", "text": "#FID IID\nF1 SYNTH_A\nSYNTH_B\n", "error": true}
+]
