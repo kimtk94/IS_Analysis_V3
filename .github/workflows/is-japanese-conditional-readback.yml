@@ -1,0 +1,29 @@
+name: IS Japanese fixed conditional QTL readback
+on:
+  push:
+    branches: [research/is-cross-ancestry-effect-20261124]
+    paths: ['scripts/is/japanese_conditional_readback.py','.github/workflows/is-japanese-conditional-readback.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  conditional-readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download pinned derived public summary artifact only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 1000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14925039883/zip" -o "$RUNNER_TEMP/conditional.zip"
+      - run: python3 scripts/is/japanese_conditional_readback.py --archive "$RUNNER_TEMP/conditional.zip" --out outputs/readback.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-japanese-conditional-schema-readback
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90

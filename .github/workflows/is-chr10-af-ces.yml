@@ -1,0 +1,47 @@
+name: IS chr10 AF and cardioembolic locus comparison
+on:
+  push:
+    branches: [research/is-cross-ancestry-effect-20261124]
+    paths: ['scripts/is/chr10_af_ces_context.py','.github/workflows/is-chr10-af-ces.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  published-af:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install openpyxl==3.1.5
+      - name: Retrieve exact publisher AF supplementary workbooks
+        run: |
+          set -eu
+          curl -fLsS --connect-timeout 15 --max-time 90 --max-filesize 30000000 "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41588-022-01284-9/MediaObjects/41588_2022_1284_MOESM4_ESM.xlsx" -o "$RUNNER_TEMP/af2023.xlsx"
+          curl -fLsS --connect-timeout 15 --max-time 90 --max-filesize 30000000 "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41588-024-02072-3/MediaObjects/41588_2024_2072_MOESM3_ESM.xlsx" -o "$RUNNER_TEMP/af2025.xlsx"
+      - run: python scripts/is/chr10_af_ces_context.py workbook --root "$RUNNER_TEMP" --out outputs/af.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-chr10-published-af-context
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
+  reference-context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m py_compile scripts/is/chr10_af_ces_context.py
+      - run: python3 scripts/is/chr10_af_ces_context.py reference --out outputs/reference.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-chr10-af-ces-reference-context
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
