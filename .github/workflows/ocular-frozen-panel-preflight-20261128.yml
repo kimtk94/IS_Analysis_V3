@@ -1,0 +1,55 @@
+name: Ocular frozen panel scoring preflight
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-frozen-panel-preflight-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 6941039ae9d9de79793048d433536f7c7437d744
+          path: frozen
+          persist-credentials: false
+      - name: Fetch exact historical candidate artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 60 --max-filesize 4000000 --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14912728421/zip" -o panel.zip
+      - name: Verify original archive and export canonical fixed panel
+        run: |
+          PYTHONPATH="$PWD/frozen/scripts" python3 - <<'PY'
+          import csv,hashlib,json,math
+          from collections import Counter
+          from pathlib import Path
+          from ocular_frozen_241_external import read_panel,PIN
+          panel=read_panel(Path('panel.zip'))
+          assert len(panel)==241
+          assert sum(x['ecm_member'] for x in panel.values())==16
+          rows=[{'gene_id':g,'symbol':v['symbol'],'direction':1 if v['acute_log2fc']>0 else -1,'ecm_member':int(v['ecm_member'])} for g,v in sorted(panel.items())]
+          path=Path('fixed-panel.tsv')
+          with path.open('w',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=['gene_id','symbol','direction','ecm_member'],delimiter='\t',lineterminator='\n')
+              w.writeheader();w.writerows(rows)
+          def coverage(rs):
+              return {'total':len(rs),'positive':sum(r['direction']==1 for r in rs),'negative':sum(r['direction']==-1 for r in rs)}
+          groups={'all241':rows,'ECM16':[r for r in rows if r['ecm_member']]}
+          result={'status':'FROZEN_PANEL_VERIFIED_NO_EXPRESSION_ANALYSIS','scientific_validation':False,'original_archive_id':14912728421,'original_archive_sha256':PIN,'canonical_tsv_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'groups':{k:{**coverage(v),'minimum_total':math.ceil(.75*len(v)),'minimum_positive':math.ceil(.7*sum(r['direction']==1 for r in v)),'minimum_negative':math.ceil(.7*sum(r['direction']==-1 for r in v))} for k,v in groups.items()},'rows':rows}
+          # Preserve source sign and ECM membership, never reselect from new data.
+          Path('preflight.json').write_text(json.dumps(result,indent=2)+'\n')
+          print(json.dumps(result,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-canonical-frozen-panel
+          path: |
+            fixed-panel.tsv
+            preflight.json
+          if-no-files-found: error
+          retention-days: 90
