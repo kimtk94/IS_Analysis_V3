@@ -1,0 +1,79 @@
+name: IS external LAS aggregate response contract
+on:
+  push:
+    branches: [research/is-g0014-qtl-pilot-20261128]
+    paths: ['.github/workflows/is-external-las-response-contract.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: dea5733170cebab70946721e4d599ddff91c13bd
+          path: frozen
+          persist-credentials: false
+      - name: Validate immutable 24-marker primary LAS response family
+        run: |
+          python3 - <<'PY'
+          import csv,math,json,subprocess,copy
+          from pathlib import Path
+          marker=Path('frozen/docs/publication/external_validation_20261125/marker_request.tsv')
+          assert subprocess.check_output(['git','hash-object',str(marker)],text=True).strip()=='3035e008ddc29133c5f72008977c0dfe8a07551e'
+          def read(p):
+              with p.open(newline='') as f:return list(csv.DictReader(f,delimiter='\t'))
+          frozen=read(marker); assert len(frozen)==len({x['marker_id'] for x in frozen})==24
+          keys={(m['marker_id'],a):m for m in frozen for a in ('EAS','EUR')}
+          fields=('cohort_id','beta','se','p','eaf','case_n','control_n','marker_n','info','model_scale','overlap_status','qc_reason')
+          def require(ok,msg):
+              if not ok:raise ValueError(msg)
+          def validate(rows):
+              seen=set();ok={};missing=0
+              for row in rows:
+                  require(None not in row and all(v is not None for v in row.values()),'row width')
+                  k=(row['marker_id'],row['ancestry']);require(k in keys and k not in seen,'unknown or duplicate cell');seen.add(k)
+                  require(all(row[f]==v for f,v in keys[k].items()) and row['phenotype']=='LAS','marker or endpoint drift')
+                  if row['status']=='NOT_RECEIVED':
+                      require(not any(row[f] for f in fields),'missing cell contains statistics');missing+=1;continue
+                  if row['status'] in ('UNAVAILABLE','QC_FAIL'):
+                      require(bool(row['qc_reason']) and not any(row[f] for f in ('beta','se','p')),'failed cell has effect or lacks reason');missing+=1;continue
+                  require(row['status']=='RECEIVED_QC_ELIGIBLE','unknown status')
+                  require(row['model_scale']=='LOG_ODDS' and row['overlap_status']=='DOCUMENTED_NO_OVERLAP' and bool(row['cohort_id']),'model or overlap not qualified')
+                  beta,se,p,eaf,info=map(float,[row[f] for f in ('beta','se','p','eaf','info')])
+                  cases,controls,n=map(int,[row[f] for f in ('case_n','control_n','marker_n')])
+                  require(all(math.isfinite(v) for v in (beta,se,p,eaf,info)) and se>0 and 0<=p<=1 and 0<eaf<1 and .8<=info<=1,'invalid effects or INFO')
+                  require(cases>0 and controls>0 and 0<n<=cases+controls,'invalid sample counts')
+                  ok[k]=(beta,se)
+              require(seen==set(keys),'missing fixed cells')
+              return {'eligible':len(ok),'missing_or_failed':missing,'paired_markers':sum((m['marker_id'],'EAS') in ok and (m['marker_id'],'EUR') in ok for m in frozen)}
+          template=read(Path('docs/is/external_las/aggregate_response_template.tsv'))
+          actual=validate(template);assert actual=={'eligible':0,'missing_or_failed':48,'paired_markers':0}
+          def bad(rows):
+              try:validate(rows)
+              except (ValueError,KeyError):return
+              raise AssertionError('negative fixture accepted')
+          tests=0
+          for field,value in [('position','0'),('phenotype','AIS'),('ancestry','AFR'),('beta','0.5')]:
+              a=copy.deepcopy(template);a[0][field]=value;bad(a);tests+=1
+          bad(template[:-1]);tests+=1
+          bad(template+[template[0]]);tests+=1
+          synthetic=copy.deepcopy(template)
+          synthetic[0].update(status='RECEIVED_QC_ELIGIBLE',cohort_id='SYNTHETIC_ONLY',beta='0.2',se='0.1',p='0.0455',eaf='0.1',case_n='100',control_n='400',marker_n='500',info='0.9',model_scale='LOG_ODDS',overlap_status='DOCUMENTED_NO_OVERLAP')
+          assert validate(synthetic)['eligible']==1;tests+=1
+          for field,value in [('overlap_status','UNKNOWN'),('model_scale','LINEAR'),('se','0'),('p','nan'),('info','0.7'),('marker_n','501')]:
+              a=copy.deepcopy(synthetic);a[0][field]=value;bad(a);tests+=1
+          out={'status':'HOLD_EXTERNAL_DATA_NOT_RECEIVED','scientific_validation':False,'template_cells':48,'primary_marker_family':24,'actual':actual,'synthetic_contract_checks':tests,'limits':['Primary LAS EAS/EUR response template only, not the separate subtype endpoints.','Requested effect alleles fixed; submitters must harmonize or mark unavailable; no auto strand rescue.','INFO >= 0.8 is proposed screening policy, not validated cohort-specific QC. No independent cohort qualification from self-reported flags alone. Governance, TOAST, overlap documentation and model equivalence must be independently reviewed before inference.','No real external statistics, no replication, no hypothesis test.']}
+          Path('contract.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-external-las-contract
+          path: contract.json
+          retention-days: 90
