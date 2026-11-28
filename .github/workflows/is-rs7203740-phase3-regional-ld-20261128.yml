@@ -165,6 +165,7 @@ jobs:
           matches=[m for m in mapping['mappings'] if m.get('assembly_name')=='GRCh37' and str(m.get('seq_region_name'))=='16' and m.get('start')==m.get('end')==anchor_pos and m.get('strand')==1]
           assert len(matches)==1 and {'C','T'}<=set(matches[0]['allele_string'].split('/'))
           raw,transferred=indexed_query(index,vcf,total,'16',lower,upper)
+          assert sha(raw)=='58d64ad84faa4579516e466f406cf3f7b51938045d341002ec9ec61867499432','regional source drift'
           # Keep a diagnostic artifact even when the region exceeds the row budget.
           # Avoid materializing 2504 genotype fields for every row simultaneously.
           lines=raw.splitlines()
@@ -191,6 +192,17 @@ jobs:
           out={'status':'ALLELE_RESOLVED_REFERENCE_LD_ONLY','scientific_validation':False,'anchor':'rs7203740','anchor_ref':'C','anchor_alt':'T','observed_alts':ar[4].decode().split(','),'region_grch37':[lower,upper],'source_probes':probes,'panel_sha256':sha(panelraw),'mapping_sha256':sha(mapping_raw),'regional_stream_sha256':sha(raw),'range_bytes':transferred,'variant_rows':len(rows),'anchor_population_counts':info,'proxies':{},'excluded':{},'notes':['Reference phased haplotype LD, not GWAS-matched LD or conditional association.','All PASS biallelic SNVs in fixed GRCh37 region; rsID-missing and multiallelic partners are counted as excluded, not absent.','C/T restricted analysis excludes non-C/T anchor haplotypes; all-haplotype T versus non-T is separate. Small allele counts reported; no novelty or independence claim.']}
           import collections
           excluded=collections.Counter();tested=collections.Counter();results={p:[] for p in pops}
+          # Independent integer 2x2 haplotype table phi-squared, cross-check every finite pair.
+          def phi2(x,y):
+              assert len(x)==len(y) and all(v in (0,1) for v in x+y)
+              c=collections.Counter(zip(x,y));a,b,d,e=[c[k] for k in ((0,0),(0,1),(1,0),(1,1))]
+              den=(a+b)*(d+e)*(a+d)*(b+e)
+              return (a*e-b*d)**2/den if den else None
+          assert phi2([0,0,1,1],[1,1,0,0])==1
+          assert phi2([0,0,1,1],[0,1,0,1])==0
+          assert phi2([0,0],[0,1]) is None
+          stats={p:{'finite':0,'monomorphic':0,'max_abs_error':0.,'bins':collections.Counter(),'top':[]} for p in pops}
+          import heapq
           for line in rows:
               r=line.split(b'\t')
               if r==ar:continue
@@ -208,12 +220,35 @@ jobs:
                   if not z:continue
                   restricted=ld([a for a,b in z],[b for a,b in z]);all_hap=ld([int(a==ti) for a in x],y)
                   tested[pop]+=1
+                  xx=[a for a,b in z];yy=[b for a,b in z]
+                  independent=phi2(xx,yy)
+                  st=stats[pop]
+                  if independent is None:
+                      assert restricted['status']=='MONOMORPHIC';st['monomorphic']+=1
+                  else:
+                      val=restricted['r2'];err=abs(val-independent);assert err<=1e-10
+                      st['finite']+=1;st['max_abs_error']=max(st['max_abs_error'],err)
+                      assert abs(val-all_hap['r2'])<=1e-10,'unexpected other anchor allele'
+                      band='[0,.1)' if val<.1 else '[.1,.2)' if val<.2 else '[.2,.5)' if val<.5 else '[.5,.8)' if val<.8 else '[.8,1]'
+                      st['bins'][band]+=1
+                      item=(val,ids[0],int(r[1]),r[3].decode(),r[4].decode(),restricted['signed_d_prime'],restricted['allele_frequency_second'])
+                      if len(st['top'])<10:heapq.heappush(st['top'],item)
+                      elif item>st['top'][0]:heapq.heapreplace(st['top'],item)
                   if restricted.get('r2',0)>=.8 or all_hap.get('r2',0)>=.8:
                       results[pop].append({'rsid':ids[0],'position_grch37':int(r[1]),'ref':r[3].decode(),'alt':r[4].decode(),'restricted_CT':restricted,'all_T_vs_nonT':all_hap,'restricted_high_ld':restricted.get('r2',0)>=.8})
           for pop,items in results.items():
               assert len({x['rsid'] for x in items})==len(items)
               out['proxies'][pop]=sorted(items,key=lambda x:(-x['restricted_CT'].get('r2',0),x['rsid']))
           out['excluded']=dict(excluded);out['tested_by_population']=dict(tested)
+          assert len(rows)==44207 and all(tested[p]==42616 for p in pops)
+          assert all(info[p]['other']==0 for p in pops)
+          for p,st in stats.items():
+              assert st['finite']+st['monomorphic']==tested[p] and sum(st['bins'].values())==st['finite']
+              assert st['bins'].get('[.8,1]',0)==len(results[p])
+              st['top']=[dict(zip(('r2','rsid','position_grch37','ref','alt','signed_d_prime','alt_frequency'),x)) for x in sorted(st['top'],reverse=True)]
+              st['max_r2']=st['top'][0]['r2'] if st['top'] else None
+          out['distribution']=stats
+          out['notes'].append('Independent integer contingency-table phi-squared agrees with phased LD formula for all finite pairs; pinned source stream repeated. Counts are per reference population, not independent tests.')
           sets={p:{x['rsid'] for x in v if x['restricted_high_ld']} for p,v in results.items()}
           out['restricted_proxy_union']=len(set().union(*sets.values()))
           out['restricted_proxy_shared']=len(set.intersection(*sets.values()))
