@@ -6,12 +6,12 @@ on:
   workflow_dispatch:
     inputs:
       scope:
-        description: 'pilot (fixed smallest pair) or full (all 16, explicit budget approval)'
+        description: 'pilot (fixed smallest pair) or full (reuse verified pilot; quantify remaining 14)'
         type: choice
         options: [pilot, full]
         default: pilot
       approve_full_75gb:
-        description: 'Approve approximately 75 GB public FASTQ transfer for full cohort'
+        description: 'Approve up to 75 GB nominal public FASTQ transfer (approximately 66.21 GB new)'
         type: boolean
         default: false
 permissions:
@@ -37,14 +37,22 @@ jobs:
           run-id: 46130181827
           github-token: ${{ github.token }}
           path: source
+      - uses: actions/download-artifact@v4
+        if: github.event_name == 'push' || inputs.scope == 'full'
+        with:
+          pattern: ocular-seven-day-gene-*
+          run-id: 46130367058
+          github-token: ${{ github.token }}
+          path: reused
       - name: Freeze all run identities and resource-only pilot selection
         id: plan
         env:
-          SCOPE: ${{ inputs.scope || 'pilot' }}
+          SCOPE: ${{ inputs.scope || 'audit' }}
+          GH_TOKEN: ${{ github.token }}
           APPROVE: ${{ inputs.approve_full_75gb || false }}
         run: |
           python3 - <<'PY'
-          import json,os,subprocess,re,urllib.parse
+          import json,os,subprocess,re,urllib.parse,hashlib
           from pathlib import Path
           root=Path('docs/publication/evidence')
           def pin(name,sha):
@@ -73,18 +81,71 @@ jobs:
           total=lambda p:sum(records[p[k]][role]['bytes'] for k in ('DEX','ETH') for role in ('R1','R2'))
           pilot=min(pairing['pairs'],key=lambda p:(total(p),sorted([p['DEX'],p['ETH']])))
           scope=os.environ['SCOPE']
-          assert scope in ('pilot','full')
+          assert scope in ('pilot','full','audit')
           if scope=='full':
               assert os.environ['APPROVE'].lower()=='true', 'full transfer requires explicit approval'
-          selected=sorted(runs if scope=='full' else [pilot['DEX'],pilot['ETH']])
+          reused={}
+          pilot_runs=sorted([pilot['DEX'],pilot['ETH']])
+          assert pilot_runs==['SRR14535091','SRR14535092']
+          if scope in ('full','audit'):
+              sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+              assert subprocess.check_output(['git','hash-object','scripts/ocular_gene_tpm_aggregation.py'],text=True).strip()=='5f2062dd73573d4abd10548e6a043399467457f8'
+              api='repos/'+os.environ['GITHUB_REPOSITORY']+'/actions/runs/46130367058'
+              get=lambda suffix:json.loads(subprocess.check_output(['gh','api',api+suffix],text=True))
+              q=get('')
+              assert q['conclusion']=='success' and q['head_sha']=='ac15290f4a93185d1917cbe820034915059221c0'
+              assert q['path'].split('@')[0]=='.github/workflows/ocular-seven-day-uniform-quant-20261128.yml'
+              assert q['head_branch']=='research/top3-publication-protocol-20261128'
+              artifacts={a['name']:a for a in get('/artifacts')['artifacts']}
+              pins={
+                  'SRR14535091':(15259542715,'23f5db1ffa4cc969dd652964e2ef9433b8825ebd0df3f15ffb68f72ecb01bbe8','13ab69af8ea76dac33e45d03664333502e2e3c03a6844c2e58fb0796c93ba8c5'),
+                  'SRR14535092':(15258743594,'ab23f9859d0605c5f8f8a73f373a5d706ef8bb00c51bec73d9cf7e2deecd9595','e9339bb061a55921c9e61ae4f7ef5f42609daea2ba5349eb3e9ce699be5d5585')}
+              for r,(aid,digest,gene_sha) in pins.items():
+                  name='ocular-seven-day-gene-'+r
+                  a=artifacts[name]; assert a['id']==aid and not a['expired'] and a['digest']=='sha256:'+digest
+                  d=Path('reused')/name
+                  qc=json.loads((d/'qc.json').read_text()); summary=json.loads((d/'summary.json').read_text())
+                  assert qc['run']==r and qc['status']=='TECHNICAL_COMPLETE_QC_REVIEW_REQUIRED' and qc['scientific_validation'] is False
+                  assert qc['gene_summary']==summary and summary['genes']==62700
+                  assert summary['tx2gene_sha256']=='cb7305d9d6c0d3f336c388554a801513c4004d163cc7035ea448a3476fdc111e'
+                  assert sha(d/'gene_tpm.tsv')==summary['gene_table_sha256']==gene_sha
+                  assert 'uniformly excluded' in qc['orphan_policy']
+                  assert qc['unpaired_bytes_excluded']==records[r]['UNPAIRED']['bytes']
+                  files={x['name']:x for x in qc['files']}
+                  assert set(files)=={'reference.fa.gz','R1.fastq.gz','R2.fastq.gz'}
+                  assert files['reference.fa.gz']['sha256']=='50a4143885523829c2fc8b1399b97c136ead8f313457165b855d63751a4e63f4'
+                  for mate in ('R1','R2'):
+                      x=files[mate+'.fastq.gz']; orig=records[r][mate]
+                      assert (x['md5'],x['bytes'])==(orig['md5'],orig['bytes'])
+                  assert qc['run_info']['kallisto_version']=='0.48.0'
+                  reused[r]={'source_run':46130367058,'artifact_id':aid,'artifact_digest':digest,'gene_table_sha256':gene_sha,'qc_sha256':sha(d/'qc.json'),'summary_sha256':sha(d/'summary.json')}
+          selected=sorted(runs if scope in ('full','audit') else pilot_runs)
+          pending=sorted(set(selected)-set(reused))
+          assert len(pending)==(14 if scope in ('full','audit') else 2)
           n=sum(records[r][k]['bytes'] for r in selected for k in ('R1','R2'))
-          assert n<=(75_000_000_000 if scope=='full' else 9_000_000_000)
-          plan={'scope':scope,'runs':selected,'paired_bytes':n,'orphan_policy':'Exclude ENA unpaired singleton FASTQ consistently; paired-end technical protocol only; no treatment scores.','scientific_validation':False,'selection':'minimum combined compressed paired FASTQ size, independent of expression; full scope always all 16'}
+          new_bytes=sum(records[r][k]['bytes'] for r in pending for k in ('R1','R2'))
+          assert n<=(75_000_000_000 if scope in ('full','audit') else 9_000_000_000)
+          if scope in ('full','audit'): assert n==74883257207 and new_bytes==66209894420
+          plan={'scope':scope,'runs':selected,'paired_bytes':n,'new_paired_bytes':new_bytes,'pending_runs':pending,'reused':reused,'orphan_policy':'Exclude ENA unpaired singleton FASTQ consistently; paired-end technical protocol only; no treatment scores.','scientific_validation':False,'selection':'minimum combined compressed paired FASTQ size, independent of expression; full scope always all 16'}
           Path('plan.json').write_text(json.dumps(plan,indent=2)+'\n')
           print(json.dumps(plan,indent=2))
           with open(os.environ['GITHUB_OUTPUT'],'a') as f:
-              f.write('matrix='+json.dumps({'run':selected})+'\nscope='+scope+'\n')
+              f.write('matrix='+json.dumps({'run':pending})+'\nscope='+scope+'\n')
           PY
+      - uses: actions/upload-artifact@v4
+        if: inputs.scope == 'full'
+        with:
+          name: ocular-seven-day-gene-SRR14535091
+          path: reused/ocular-seven-day-gene-SRR14535091/
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: inputs.scope == 'full'
+        with:
+          name: ocular-seven-day-gene-SRR14535092
+          path: reused/ocular-seven-day-gene-SRR14535092/
+          if-no-files-found: error
+          retention-days: 90
       - uses: actions/upload-artifact@v4
         with:
           name: ocular-seven-day-quant-plan
@@ -92,6 +153,7 @@ jobs:
           retention-days: 90
   quantify:
     needs: plan
+    if: github.event_name == 'workflow_dispatch'
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -206,7 +268,7 @@ jobs:
           retention-days: 90
   inventory:
     needs: [plan, quantify]
-    if: always() && needs.plan.result == 'success'
+    if: always() && needs.plan.result == 'success' && github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -231,7 +293,12 @@ jobs:
                   assert q['run']==r
                   if q['status']=='TECHNICAL_COMPLETE_QC_REVIEW_REQUIRED':
                       assert hashlib.sha256((d/'gene_tpm.tsv').read_bytes()).hexdigest()==q['gene_summary']['gene_table_sha256']
-                  rows.append({'run':r,'status':q['status'],'pseudoaligned_pct':q.get('run_info',{}).get('p_pseudoaligned'),'gene_table_sha256':q.get('gene_summary',{}).get('gene_table_sha256')})
+                  old=p['reused'].get(r)
+                  if old:
+                      assert hashlib.sha256((d/'qc.json').read_bytes()).hexdigest()==old['qc_sha256']
+                      assert hashlib.sha256((d/'summary.json').read_bytes()).hexdigest()==old['summary_sha256']
+                      assert q['gene_summary']['gene_table_sha256']==old['gene_table_sha256']
+                  rows.append({'run':r,'status':q['status'],'pseudoaligned_pct':q.get('run_info',{}).get('p_pseudoaligned'),'gene_table_sha256':q.get('gene_summary',{}).get('gene_table_sha256'),'reused_from':old})
               except Exception as e: rows.append({'run':r,'status':'HOLD_MISSING_OR_INVALID','error':str(e)[:150]})
           complete=sum(r['status']=='TECHNICAL_COMPLETE_QC_REVIEW_REQUIRED' for r in rows)
           result={'scope':p['scope'],'expected':len(rows),'technical_complete':complete,'cohort_denominator':16,'scientific_validation':False,'results':rows,'note':'No expression scores; never infer biological outcomes from partial or technical data.'}
