@@ -1,0 +1,659 @@
+{
+  "date": "2026-11-28",
+  "provenance": {
+    "run": 46136846871,
+    "job": 140953940029,
+    "source_commit": "5136115e8eb082c41883a354f9e58026d2884967",
+    "marker_blob": "3035e008ddc29133c5f72008977c0dfe8a07551e",
+    "artifacts": [
+      {
+        "id": 15259923956,
+        "name": "is-fixed24-exact-curated-inventory",
+        "digest": "sha256:4e1e1256dbcf36d9a1c05f2cf8bc3d00d22feb219a882d86b50ad63d7ff13e8a",
+        "expired": false
+      }
+    ],
+    "readback": "Aggregate JSON from actual Actions job stdout, not independently extracted artifact; full artifact contains complete curated records, not only text flags."
+  },
+  "result": {
+    "status": "EXACT_CURATED_INVENTORY_COMPLETE_NOT_NOVELTY",
+    "scientific_validation": false,
+    "marker_family": 24,
+    "complete": 24,
+    "release_stable": true,
+    "positive_control_pass": true,
+    "summary": [
+      {
+        "rsid": "rs880315",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 172,
+        "stroke_text_flag_count": 5,
+        "flagged_records": [
+          {
+            "association_id": 134135344,
+            "reported_trait": [
+              "Stroke"
+            ],
+            "p_value": 4e-10,
+            "accession_id": "GCST005838",
+            "pubmed_id": "29531354",
+            "first_author": "Malik R",
+            "mapped_genes": [
+              "CASZ1"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs880315",
+                "effect_allele": "?"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 134135701,
+            "reported_trait": [
+              "Ischemic stroke"
+            ],
+            "p_value": 6.000000000000001e-9,
+            "accession_id": "GCST005843",
+            "pubmed_id": "29531354",
+            "first_author": "Malik R",
+            "mapped_genes": [
+              "CASZ1"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs880315",
+                "effect_allele": "?"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 134135840,
+            "reported_trait": [
+              "Stroke"
+            ],
+            "p_value": 7e-8,
+            "accession_id": "GCST006906",
+            "pubmed_id": "29531354",
+            "first_author": "Malik R",
+            "mapped_genes": [
+              "CASZ1"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs880315",
+                "effect_allele": "?"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 134136023,
+            "reported_trait": [
+              "Ischemic stroke"
+            ],
+            "p_value": 0.000001,
+            "accession_id": "GCST006908",
+            "pubmed_id": "29531354",
+            "first_author": "Malik R",
+            "mapped_genes": [
+              "CASZ1"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs880315",
+                "effect_allele": "?"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 134135448,
+            "reported_trait": [
+              "Ischemic stroke (small-vessel)"
+            ],
+            "p_value": 0.000003,
+            "accession_id": "GCST005841",
+            "pubmed_id": "29531354",
+            "first_author": "Malik R",
+            "mapped_genes": [
+              "CASZ1"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs880315",
+                "effect_allele": "?"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          }
+        ]
+      },
+      {
+        "rsid": "rs12037987",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 9,
+        "stroke_text_flag_count": 3,
+        "flagged_records": [
+          {
+            "association_id": 134135210,
+            "reported_trait": [
+              "Stroke"
+            ],
+            "p_value": 3.0000000000000004e-8,
+            "accession_id": "GCST005838",
+            "pubmed_id": "29531354",
+            "first_author": "Malik R",
+            "mapped_genes": [
+              "WNT2B"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs12037987",
+                "effect_allele": "?"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 134135754,
+            "reported_trait": [
+              "Stroke"
+            ],
+            "p_value": 9e-7,
+            "accession_id": "GCST006906",
+            "pubmed_id": "29531354",
+            "first_author": "Malik R",
+            "mapped_genes": [
+              "WNT2B"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs12037987",
+                "effect_allele": "?"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 134135589,
+            "reported_trait": [
+              "Ischemic stroke"
+            ],
+            "p_value": 0.000002,
+            "accession_id": "GCST005843",
+            "pubmed_id": "29531354",
+            "first_author": "Malik R",
+            "mapped_genes": [
+              "WNT2B"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs12037987",
+                "effect_allele": "?"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          }
+        ]
+      },
+      {
+        "rsid": "rs13026829",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs13394970",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 12,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs58447744",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs7649237",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs2129981",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 1,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs7800053",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs480",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs4744059",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 1,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs2258457",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs2767060",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs60401382",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 3,
+        "stroke_text_flag_count": 2,
+        "flagged_records": [
+          {
+            "association_id": 103945282,
+            "reported_trait": [
+              "Small vessel stroke"
+            ],
+            "p_value": 4e-8,
+            "accession_id": "GCST90104537",
+            "pubmed_id": "36180795",
+            "first_author": "Mishra A",
+            "mapped_genes": [
+              "HTRA1"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs60401382",
+                "effect_allele": "C"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": 1.08,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 134135302,
+            "reported_trait": [
+              "Stroke"
+            ],
+            "p_value": 7e-8,
+            "accession_id": "GCST005838",
+            "pubmed_id": "29531354",
+            "first_author": "Malik R",
+            "mapped_genes": [
+              "HTRA1"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs60401382",
+                "effect_allele": "C"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": 1.05,
+            "stroke_text_review_flag": true
+          }
+        ]
+      },
+      {
+        "rsid": "rs1973765",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 9,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs11045241",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 1,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs671",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 144,
+        "stroke_text_flag_count": 4,
+        "flagged_records": [
+          {
+            "association_id": 93482757,
+            "reported_trait": [
+              "Ischemic stroke"
+            ],
+            "p_value": 2e-18,
+            "accession_id": "GCST90018864",
+            "pubmed_id": "34594039",
+            "first_author": "Sakaue S",
+            "mapped_genes": [
+              "ALDH2"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs671",
+                "effect_allele": "A"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 64718843,
+            "reported_trait": [
+              "Ischemic stroke"
+            ],
+            "p_value": 2e-18,
+            "accession_id": "GCST90013688",
+            "pubmed_id": "32514122",
+            "first_author": "Ishigaki K",
+            "mapped_genes": [
+              "ALDH2"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs671",
+                "effect_allele": "A"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": 0.8884053,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 93463230,
+            "reported_trait": [
+              "Ischemic stroke"
+            ],
+            "p_value": 2e-18,
+            "accession_id": "GCST90018644",
+            "pubmed_id": "34594039",
+            "first_author": "Sakaue S",
+            "mapped_genes": [
+              "ALDH2"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs671",
+                "effect_allele": "A"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 131517458,
+            "reported_trait": [
+              "Stroke"
+            ],
+            "p_value": 5e-18,
+            "accession_id": "GCST90399733",
+            "pubmed_id": "36777996",
+            "first_author": "Zhou W",
+            "mapped_genes": [
+              "ALDH2"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs671",
+                "effect_allele": "A"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          }
+        ]
+      },
+      {
+        "rsid": "rs7989823",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 10,
+        "stroke_text_flag_count": 2,
+        "flagged_records": [
+          {
+            "association_id": 93463235,
+            "reported_trait": [
+              "Ischemic stroke"
+            ],
+            "p_value": 4e-10,
+            "accession_id": "GCST90018644",
+            "pubmed_id": "34594039",
+            "first_author": "Sakaue S",
+            "mapped_genes": [
+              "COL4A2"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs7989823",
+                "effect_allele": "C"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          },
+          {
+            "association_id": 93482772,
+            "reported_trait": [
+              "Ischemic stroke"
+            ],
+            "p_value": 4e-9,
+            "accession_id": "GCST90018864",
+            "pubmed_id": "34594039",
+            "first_author": "Sakaue S",
+            "mapped_genes": [
+              "COL4A2"
+            ],
+            "snp_allele": [
+              {
+                "rs_id": "rs7989823",
+                "effect_allele": "C"
+              }
+            ],
+            "multi_snp_haplotype": false,
+            "snp_interaction": false,
+            "beta_num": null,
+            "beta_unit": null,
+            "or_per_copy_num": null,
+            "stroke_text_review_flag": true
+          }
+        ]
+      },
+      {
+        "rsid": "rs7203740",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs1054280",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 3,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs34864700",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs76892135",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs12610411",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs6021246",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      },
+      {
+        "rsid": "rs5748761",
+        "status": "COMPLETE_EXACT_CURATED_ASSOCIATIONS",
+        "curated_count": 0,
+        "stroke_text_flag_count": 0,
+        "flagged_records": []
+      }
+    ]
+  },
+  "counts": {
+    "total_curated_records": 365,
+    "stroke_flagged_records": 16,
+    "stroke_text_flag": 5,
+    "other_curated_only": 6,
+    "no_exact_curated_record": 13
+  },
+  "groups": {
+    "stroke_text_flag": [
+      "rs880315",
+      "rs12037987",
+      "rs60401382",
+      "rs671",
+      "rs7989823"
+    ],
+    "other_curated_only": [
+      "rs13394970",
+      "rs2129981",
+      "rs4744059",
+      "rs1973765",
+      "rs11045241",
+      "rs1054280"
+    ],
+    "no_exact_curated_record": [
+      "rs13026829",
+      "rs58447744",
+      "rs7649237",
+      "rs7800053",
+      "rs480",
+      "rs2258457",
+      "rs2767060",
+      "rs7203740",
+      "rs34864700",
+      "rs76892135",
+      "rs12610411",
+      "rs6021246",
+      "rs5748761"
+    ]
+  },
+  "decision": {
+    "scientific_validation": false,
+    "status": "HOLD_NOVELTY_AND_INDEPENDENT_REPLICATION",
+    "priority": [
+      "rs2767060: prior conditional LAS ancestry contrast, exact curated records zero; regional/proxy/paper qualification required.",
+      "rs2129981: prior conditional SVS-CES contrast in both ancestries, known CHF association; PITX2 locus not novel by inference.",
+      "rs7203740: prior conditional EAS SVS-CES contrast, exact curated records zero, ROSMAP PLCG2 nominal point context only."
+    ],
+    "limits": [
+      "Text flag not ontology classification, no negative claim for no flag or no record. Curated association records not distinct publications or independent studies. GIGASTROKE and overlapping sources are not replication.",
+      "No new candidate selection or change to frozen 24-marker family. Exact rsID absence not novelty; LD proxy and regional prior publication audit incomplete.",
+      "No causal gene assignment, external outcome or formal coloc."
+    ],
+    "next": [
+      "Review original stroke papers and phenotype definitions for the five flagged SNPs, including study overlap and allele orientation.",
+      "Expand prior publication checks to LD/region for prespecified candidates without altering the family; distinguish known loci from new contrast hypotheses.",
+      "Obtain eligible independent outcome and complete regional QTL before confirmatory claims."
+    ]
+  }
+}
