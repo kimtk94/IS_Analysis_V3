@@ -1,0 +1,234 @@
+{
+  "run_id": 45601731870,
+  "head_sha": "3010014477b97dd9182f8eafded1897d51ceb0b4",
+  "source": "Actual workflow stdout, artifact digests not independently downloaded",
+  "records": [
+    {
+      "job_id": 139162089653,
+      "aggregate": {
+        "status": "ORAL_SINGLE_CELL_FIRST_PAIR_PILOT",
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/",
+            "bytes": 603,
+            "sha256": "4667612422cf8b2170fd45d552a9494af8fda884b7f625c505e049879a226c1e",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/GSE198315_series_matrix.txt.gz",
+            "bytes": 3680,
+            "sha256": "0c1fc954d1abc4d942a2e1facb8dc0c32f8bfbc5268db377d0b51e6ce1086339",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "records": [
+          {
+            "site": "TC",
+            "status": "HOLD_PILOT",
+            "reason": "empty/oversize transfer"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_PILOT",
+            "reason": "matrix header contract"
+          }
+        ],
+        "limits": [
+          "Exactly first author-coded pair, not representative evidence. No test or cell-level export. Original SoupX processed values, marker gates only, not malignant cell annotations or proof of independence."
+        ],
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY",
+        "mode": "sc_pilot"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 9585d5844685ab880e2403c302ea53465e805933d5eabb8cdf49f6d45f28fb67",
+        "Artifact early-paired-sc_pilot.zip successfully finalized. Artifact ID 15014984466"
+      ]
+    },
+    {
+      "job_id": 139162089750,
+      "aggregate": {
+        "status": "HOLD_SOURCE_OR_CONTRACT",
+        "reason": "GEO tissue/title conflict",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY",
+        "mode": "bulk"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is f276afd4f6b36875af60d4945e9f9876298d566980c2478acbc66d9ac071a6ba",
+        "Artifact early-paired-bulk.zip successfully finalized. Artifact ID 15016270949"
+      ]
+    },
+    {
+      "job_id": 139162089799,
+      "aggregate": {
+        "status": "ORAL_SINGLE_CELL_PAIR_SOURCE_GATE",
+        "metadata": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/",
+            "bytes": 603,
+            "sha256": "4667612422cf8b2170fd45d552a9494af8fda884b7f625c505e049879a226c1e",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE198nnn/GSE198315/matrix/GSE198315_series_matrix.txt.gz",
+            "bytes": 3680,
+            "sha256": "0c1fc954d1abc4d942a2e1facb8dc0c32f8bfbc5268db377d0b51e6ce1086339",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "patients": 10,
+        "total_samples": 36,
+        "site_counts": {
+          "NT": 7,
+          "TC": 10,
+          "mLN": 10,
+          "TP": 9
+        },
+        "target_matrices": 20,
+        "header_verified": 0,
+        "records": [
+          {
+            "site": "TC",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "TC",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          },
+          {
+            "site": "mLN",
+            "status": "HOLD_FILE",
+            "reason": "dense source header truncated"
+          }
+        ],
+        "limits": [
+          "Exact author-coded patient and tissue title, not clinical records. Original GSE198315 DOI 10.1016/j.isci.2025.112988 already analyzes pEMT and immune states; no new novelty claim. Header only, no expression-body or cell-type validation."
+        ],
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY",
+        "mode": "sc_meta"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 781922c971b2decff26a04c6c86b8380475375c1b39c87016e8ec7c439ec3530",
+        "Artifact early-paired-sc_meta.zip successfully finalized. Artifact ID 15015991568"
+      ]
+    },
+    {
+      "job_id": 139162089807,
+      "aggregate": {
+        "status": "HOLD_SOURCE_OR_CONTRACT",
+        "reason": "tissue classes not consistent",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY",
+        "mode": "hcc_protein"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 1164a3f3c231dfd3abb89557193526f2d213986a63fe8ede2d4c2a377e842443",
+        "Artifact early-paired-hcc_protein.zip successfully finalized. Artifact ID 15015463234"
+      ]
+    },
+    {
+      "job_id": 139162089879,
+      "aggregate": {
+        "status": "HOLD_SOURCE_OR_CONTRACT",
+        "reason": "tissue classes not consistent",
+        "scientific_status": "HOLD_INDEPENDENT_VALIDATION_AND_NOVELTY",
+        "mode": "hcc_rna"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 6b0aec159f82ed0f39d4b70766038223fea5227556c2d46958dbb3e8279274da",
+        "Artifact early-paired-hcc_rna.zip successfully finalized. Artifact ID 15016245768"
+      ]
+    }
+  ]
+}
