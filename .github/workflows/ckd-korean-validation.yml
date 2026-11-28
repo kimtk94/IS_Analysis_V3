@@ -1,0 +1,42 @@
+name: CKD Korean outcome replication sources
+on:
+  push:
+    branches: [research/ckd-korean-validation-20261124]
+    paths: ['scripts/ckd_korean_validation.py','.github/workflows/ckd-korean-validation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  koges-public-variant:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/ckd_korean_validation.py selftest
+      - name: Retrieve fixed previous discovery archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 2000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14922713044/zip" -o "$RUNNER_TEMP/egfr.zip"
+      - run: python3 scripts/ckd_korean_validation.py pheweb --root "$RUNNER_TEMP" --out outputs/koges_variant.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: koges-2022-renal-variant-followup
+          path: outputs/
+          if-no-files-found: error
+  koges-egfr-record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 scripts/ckd_korean_validation.py zenodo --root "$RUNNER_TEMP" --out outputs/zenodo.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: koges-2026-egfr-source-metadata
+          path: outputs/
+          if-no-files-found: error

@@ -1,0 +1,28 @@
+name: CKD fixed candidate allele-specific VEP audit
+on:
+  push:
+    branches: [research/ckd-korean-validation-20261124]
+    paths: ['scripts/ckd_candidate_vep_audit.py','.github/workflows/ckd-candidate-vep-audit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  variant-consequence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Retrieve fixed public derived discovery archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fLsS --connect-timeout 15 --max-time 45 --max-filesize 2000000 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/14922713044/zip" -o "$RUNNER_TEMP/egfr.zip"
+      - run: python3 scripts/ckd_candidate_vep_audit.py --root "$RUNNER_TEMP" --out outputs/vep.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckd-candidate-allele-specific-vep
+          path: outputs/
+          if-no-files-found: error
