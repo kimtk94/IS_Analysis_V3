@@ -1,0 +1,67 @@
+name: Skin ASTAGR wrinkle source qualification
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/skin-astagr-source-qualification-20261128.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify public GWAS metadata and bounded file inventory
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,re,urllib.request,urllib.parse,urllib.error
+          from pathlib import Path
+          from html.parser import HTMLParser
+          acc='GCST90502802'
+          base='https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90502001-GCST90503000/'+acc+'/'
+          out={'accession':acc,'publication_doi':'10.1016/j.jid.2025.02.130','pmid':'40010489','reported_cohort_total':2762,'status':'HOLD_METADATA_QUALIFICATION','scientific_validation':False,'sources':{},'files':{},'limits':['Published overall cohort size is not wrinkle GWAS sample size.','Generic transethnic wrinkle phenotype is not verified as under-eye or crow feet.','Sex, measurement scale, ancestry, recruitment and overlap require qualification before effect replication.','No effect readout and no selection on P.']}
+          def get(url,cap=2000000):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json, text/plain, text/html'}),timeout=35) as res:
+                      raw=res.read(cap+1)
+                      if len(raw)>cap:raise ValueError('response cap')
+                      assert urllib.parse.urlparse(res.url).hostname in ('www.ebi.ac.uk','ftp.ebi.ac.uk','www.ebi.ac.uk')
+                      return raw,{'url':url,'final_url':res.url,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+              except Exception as e:return None,{'url':url,'error':type(e).__name__+': '+str(e)[:300]}
+          class Links(HTMLParser):
+              def __init__(self):super().__init__();self.links=[]
+              def handle_starttag(self,tag,attrs):
+                  if tag=='a':
+                      href=dict(attrs).get('href','')
+                      if re.fullmatch(r'[A-Za-z0-9_.-]+/?',href) and href not in ('../','./'):self.links.append(href)
+          for route in ('studies/'+acc,'studies/'+acc+'/ancestries','studies/'+acc+'/efoTraits'):
+              raw,s=get('https://www.ebi.ac.uk/gwas/rest/api/'+route)
+              out['sources'][route]=s
+              if raw is not None:
+                  try:out['sources'][route]['metadata']=json.loads(raw)
+                  except ValueError:s['error']='not JSON'
+          for folder in ('','harmonised/'):
+              raw,s=get(base+folder)
+              out['sources']['directory:'+folder]=s
+              if raw is None:continue
+              p=Links();p.feed(raw.decode(errors='replace'))
+              files=sorted(set(x for x in p.links if x!='harmonised/'))
+              out['sources']['directory:'+folder]['files']=files
+              for name in files:
+                  if name.endswith(('-meta.yaml','.yaml','md5sum.txt')) and len(out['files'])<12:
+                      data,ss=get(base+folder+name,100000)
+                      if data is not None:ss['text']=data.decode(errors='replace')
+                      out['files'][folder+name]=ss
+          if any('files' in v for k,v in out['sources'].items() if k.startswith('directory:')):
+              out['status']='SOURCE_DIRECTORY_OBSERVED_NOT_REPLICATION_QUALIFIED'
+          Path('result.json').write_text(json.dumps(out,indent=2)+'\n')
+          # Public source metadata only; no summary effect rows.
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: skin-astagr-wrinkle-metadata
+          path: result.json
+          if-no-files-found: error
+          retention-days: 90
