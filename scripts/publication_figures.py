@@ -161,6 +161,15 @@ def plot(ax, p):
         ax.axvline(1 if p["scale"] == "ratio" else 0, color=GRAY, ls="--", lw=.8)
         if p["scale"] == "ratio":
             ax.set_xscale("log")
+            from matplotlib.ticker import MaxNLocator, FixedLocator, FuncFormatter, NullLocator
+            # Select a small number of readable ratio ticks on the log axis.
+            lo, hi = ax.get_xlim()
+            ticks = [float(t) for t in MaxNLocator(nbins=4).tick_values(lo, hi) if lo <= t <= hi and t > 0]
+            if lo <= 1 <= hi and not any(abs(t - 1) < 1e-9 for t in ticks):
+                ticks.append(1.0)
+            ax.xaxis.set_major_locator(FixedLocator(sorted(ticks)))
+            ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:.3g}"))
+            ax.xaxis.set_minor_locator(NullLocator())
         ax.set_yticks(range(len(rows)), [r["label"] for r in rows])
         ax.invert_yaxis()
         ax.set_xlabel(p["effect_label"])
