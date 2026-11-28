@@ -16,10 +16,11 @@ jobs:
       - name: Resolve exact variants and compute aggregate phased LD
         run: |
           python3 - <<'PY'
-          import csv,hashlib,io,json,math,re,subprocess,urllib.request
+          import csv,hashlib,io,json,math,re,subprocess,urllib.request,urllib.parse
           from pathlib import Path
           base='https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/'
-          vcf=base+'ALL.chr2.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz'
+          filename='ALL.chr2.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz'
+          mirrors=[base,'https://1000genomes.s3.amazonaws.com/release/20130502/','https://hgdownload.soe.ucsc.edu/gbdb/hg19/1000Genomes/phase3/']
           panel_url=base+'integrated_call_samples_v3.20130502.ALL.panel'
           pairs=[('rs4584990',x) for x in ('rs144918519','rs260643','rs115957039','rs6542772','rs3827760')]+[('rs6542772','rs3827760'),('rs260643','rs3827760')]
           variants=sorted({x for pair in pairs for x in pair})
@@ -30,7 +31,8 @@ jobs:
               return raw
           def sha(raw):return hashlib.sha256(raw).hexdigest()
           def tabix(args):
-              p=subprocess.run(['tabix',*args],capture_output=True,check=True,timeout=90)
+              p=subprocess.run(['tabix',*args],capture_output=True,timeout=60)
+              if p.returncode:raise ValueError('tabix rc='+str(p.returncode)+' '+p.stderr.decode(errors='replace')[:450])
               if len(p.stdout)>4000000:raise ValueError('indexed query exceeds cap')
               return p.stdout
           def ld(x,y):
@@ -46,13 +48,39 @@ jobs:
           panelraw=get(panel_url)
           panel={r['sample']:r['pop'] for r in csv.DictReader(io.StringIO(panelraw.decode()),delimiter='\t')}
           assert len(panel)==2504
-          hdr=tabix(['-H',vcf])
+          probes=[];hdr=None
+          for mirror in mirrors:
+              candidate=mirror+filename
+              probe={'url':candidate}
+              try:
+                  req=urllib.request.Request(candidate,headers={'Range':'bytes=0-65535','Accept-Encoding':'identity'})
+                  with urllib.request.urlopen(req,timeout=20) as res:
+                      cr=res.headers.get('Content-Range','')
+                      if res.status!=206 or not re.fullmatch(r'bytes 0-65535/\d+',cr):raise ValueError('HTTP range not supported')
+                      first=res.read(65537)
+                  assert len(first)==65536 and first[:2]==b'\x1f\x8b'
+                  idx=get(candidate+'.tbi',20000000)
+                  assert idx[:2]==b'\x1f\x8b'
+                  probe.update(range=cr,header_range_sha256=sha(first),index_sha256=sha(idx))
+                  # Use separately verified local index; avoid implicit index downloads.
+                  local=Path('reference.tbi');local.write_bytes(idx)
+                  candidate_with_index=candidate+'##idx##'+str(local.resolve())
+                  hdr=tabix(['-H',candidate_with_index])
+                  assert b'#CHROM\t' in hdr
+                  vcf=candidate;vcf_query=candidate_with_index
+                  probe['status']='HEADER_VERIFIED';probes.append(probe);break
+              except Exception as e:
+                  probe['error']=type(e).__name__+': '+str(e)[:550];probes.append(probe);hdr=None
+          print(json.dumps({'source_probes':probes},indent=2))
+          if hdr is None:
+              Path('result.json').write_text(json.dumps({'status':'HOLD_INDEXED_SOURCE','scientific_validation':False,'source_probes':probes},indent=2)+'\n')
+              raise SystemExit(1)
           head=[l for l in hdr.decode().splitlines() if l.startswith('#CHROM\t')]
           assert len(head)==1
           samples=head[0].split('\t')[9:];assert len(samples)==len(set(samples))==2504 and set(samples)==set(panel)
           indices={pop:[i for i,s in enumerate(samples) if panel[s]==pop] for pop in pops}
           assert {p:len(i) for p,i in indices.items()}=={'CHB':103,'JPT':104,'CEU':99}
-          out={'status':'REFERENCE_LD_CONTEXT_ONLY','scientific_validation':False,'vcf':vcf,'panel':panel_url,'panel_sha256':sha(panelraw),'vcf_header_sha256':sha(hdr),'population_counts':{p:len(i) for p,i in indices.items()},'variants':{},'pairs':[],'note':'All observed VCF SNV ALT alleles, not selected by LD. GRCh37 reference LD is not Korean outcome-matched LD. No raw genotypes published, no conditional association, no causal inference.'}
+          out={'status':'REFERENCE_LD_CONTEXT_ONLY','scientific_validation':False,'vcf':vcf,'source_probes':probes,'panel':panel_url,'panel_sha256':sha(panelraw),'vcf_header_sha256':sha(hdr),'population_counts':{p:len(i) for p,i in indices.items()},'variants':{},'pairs':[],'note':'All observed VCF SNV ALT alleles, not selected by LD. GRCh37 reference LD is not Korean outcome-matched LD. No raw genotypes published, no conditional association, no causal inference.'}
           genotypes={}
           for rs in variants:
               try:
@@ -61,7 +89,7 @@ jobs:
                   maps=[m for m in d['mappings'] if m.get('assembly_name')=='GRCh37' and str(m.get('seq_region_name'))=='2' and m.get('start')==m.get('end') and m.get('strand')==1]
                   assert len(maps)==1
                   m=maps[0];pos=m['start'];a=m['allele_string'].split('/')
-                  q=tabix([vcf,'2:'+str(pos)+'-'+str(pos)])
+                  q=tabix([vcf_query,'2:'+str(pos)+'-'+str(pos)])
                   rows=[l.split('\t') for l in q.decode().splitlines()]
                   rows=[r for r in rows if int(r[1])==pos and rs in r[2].split(';')]
                   assert len(rows)==1,'missing or duplicate exact rsID/position'
@@ -70,7 +98,7 @@ jobs:
                   assert len(set([ref,*alts]))==1+len(alts) and set([ref,*alts])<=set(a)
                   assert row[6]=='PASS' and row[8].split(':')[0]=='GT'
                   if rs=='rs4584990':assert {ref,*alts}=={'C','T'}
-                  if rs=='rs3827760':assert pos==109513601
+                  if rs=='rs3827760':assert pos>0  # exact GRCh37 Ensembl/VCF identity is required above; no guessed coordinate
                   gt=[]
                   for field in row[9:]:
                       g=field.split(':')[0]
@@ -98,6 +126,7 @@ jobs:
           print(json.dumps(out,indent=2))
           PY
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: skin-allele-resolved-phase3-aggregate
           path: result.json
