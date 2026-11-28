@@ -1,0 +1,262 @@
+{
+  "run_id": 46126356934,
+  "job_id": 140921705798,
+  "source_commit": "b876ddf3e0e2445a222e07caab398267c682dddc",
+  "prior_treatment_readback_blob": "f8ac01d9f13fc6b42d21efc3690c9ea495320476",
+  "status": "LIBRARY_PAIRING_METADATA_VERIFIED",
+  "scientific_validation": false,
+  "pairs": [
+    {
+      "library_pair_code": "18-49",
+      "group": "GC-nonResponder",
+      "DEX": "SRR14535077",
+      "ETH": "SRR14535078"
+    },
+    {
+      "library_pair_code": "18-52",
+      "group": "GC-nonResponder",
+      "DEX": "SRR14535089",
+      "ETH": "SRR14535090"
+    },
+    {
+      "library_pair_code": "18-56",
+      "group": "GC-nonResponder",
+      "ETH": "SRR14535088",
+      "DEX": "SRR14535087"
+    },
+    {
+      "library_pair_code": "19-02",
+      "group": "GC-nonResponder",
+      "DEX": "SRR14535085",
+      "ETH": "SRR14535086"
+    },
+    {
+      "library_pair_code": "18-39",
+      "group": "GC-Responder",
+      "DEX": "SRR14535091",
+      "ETH": "SRR14535092"
+    },
+    {
+      "library_pair_code": "18-53",
+      "group": "GC-Responder",
+      "DEX": "SRR14535083",
+      "ETH": "SRR14535084"
+    },
+    {
+      "library_pair_code": "19-03",
+      "group": "GC-Responder",
+      "DEX": "SRR14535081",
+      "ETH": "SRR14535082"
+    },
+    {
+      "library_pair_code": "19-04",
+      "group": "GC-Responder",
+      "DEX": "SRR14535079",
+      "ETH": "SRR14535080"
+    }
+  ],
+  "source": {
+    "status": "LIBRARY_METADATA_INVENTORY_ONLY",
+    "scientific_validation": false,
+    "project": "PRJNA729873",
+    "records": [
+      {
+        "run": "SRR14535079",
+        "experiment": "SRX10879288",
+        "sha256": "ddfcc70725f2b984f7ab76abcf7e8f4a168d7e2dcd6a3141fd87d195d024ed49",
+        "library_name": "19-04DEX",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "19-04DEX",
+        "title": "GC-Responder"
+      },
+      {
+        "run": "SRR14535088",
+        "experiment": "SRX10879279",
+        "sha256": "24148905cc64a342d3743490168e241630602032d213a9d7d509a86077ba9685",
+        "library_name": "18-56ETH",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "18-56ETH",
+        "title": "GC-nonResponder"
+      },
+      {
+        "run": "SRR14535077",
+        "experiment": "SRX10879290",
+        "sha256": "ed487987660c231d013448ef8f64f1b15ba8c52788fd9032ae2b1cb3457ffb3e",
+        "library_name": "18-49DEX",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "18-49DEX",
+        "title": "GC-nonResponder"
+      },
+      {
+        "run": "SRR14535081",
+        "experiment": "SRX10879286",
+        "sha256": "6cc1ab6c09e8d82747512ebc5ce6b5859d16826476518a9bcc1b8e25951e72fc",
+        "library_name": "19-03DEX",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "19-03DEX",
+        "title": "GC-Responder"
+      },
+      {
+        "run": "SRR14535082",
+        "experiment": "SRX10879285",
+        "sha256": "390d2cf6b817dafcfb6ba385b6a9fa1e32740e2f30357a5b8c06dba5ef44554f",
+        "library_name": "19-03ETH",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "19-03ETH",
+        "title": "GC-Responder"
+      },
+      {
+        "run": "SRR14535087",
+        "experiment": "SRX10879280",
+        "sha256": "b10b9be720945c7c6523c36acf956c21e17a0165811e25fe1796efe757bae2b5",
+        "library_name": "18-56DEX",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "18-56DEX",
+        "title": "GC-nonResponder"
+      },
+      {
+        "run": "SRR14535080",
+        "experiment": "SRX10879287",
+        "sha256": "14fc43da9174770811e55a674f75ad518ed0f206b2485124cfcb1992217ec06f",
+        "library_name": "19-04ETH",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "19-04ETH",
+        "title": "GC-Responder"
+      },
+      {
+        "run": "SRR14535089",
+        "experiment": "SRX10879278",
+        "sha256": "b76e65f526e49e5968ec95558b1e2733ea6156119819c1c77a659d436f676739",
+        "library_name": "18-52DEX",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "18-52DEX",
+        "title": "GC-nonResponder"
+      },
+      {
+        "run": "SRR14535090",
+        "experiment": "SRX10879277",
+        "sha256": "7a3b3208ca63a8c3e14b9581144439d545cc3a3d2d58296cc427f633aecdea05",
+        "library_name": "18-52ETH",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "18-52ETH",
+        "title": "GC-nonResponder"
+      },
+      {
+        "run": "SRR14535091",
+        "experiment": "SRX10879276",
+        "sha256": "0d4da5df2b7e05f59939cfc9b375b7c9977919c6043d4299efddb3cc273e2241",
+        "library_name": "18-39DEX",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "18-39DEX",
+        "title": "GC-Responder"
+      },
+      {
+        "run": "SRR14535078",
+        "experiment": "SRX10879289",
+        "sha256": "b668fe574accfbcedeb635a7581669d3eb4dd9b1aeea5a1544ce56070a82c1c9",
+        "library_name": "18-49ETH",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "18-49ETH",
+        "title": "GC-nonResponder"
+      },
+      {
+        "run": "SRR14535083",
+        "experiment": "SRX10879284",
+        "sha256": "91e7679621969074ea4744dfbcdfdbca9247f6a7b9b2a5cc4e5cff009ed0fc74",
+        "library_name": "18-53DEX",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "18-53DEX",
+        "title": "GC-Responder"
+      },
+      {
+        "run": "SRR14535084",
+        "experiment": "SRX10879283",
+        "sha256": "c8a9826ad423310a666397514683b326be99d326d8e343e5b2e2a587ad3a3524",
+        "library_name": "18-53ETH",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "18-53ETH",
+        "title": "GC-Responder"
+      },
+      {
+        "run": "SRR14535085",
+        "experiment": "SRX10879282",
+        "sha256": "a53f53064dcccb00d830df8244221b1e982b3ebc71bbce6d7eca956577cfb071",
+        "library_name": "19-02DEX",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "19-02DEX",
+        "title": "GC-nonResponder"
+      },
+      {
+        "run": "SRR14535086",
+        "experiment": "SRX10879281",
+        "sha256": "929ec464ab21621bf96e912385b8aa47cc4461f8a63f43717056aeb273bf8db7",
+        "library_name": "19-02ETH",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "19-02ETH",
+        "title": "GC-nonResponder"
+      },
+      {
+        "run": "SRR14535092",
+        "experiment": "SRX10879275",
+        "sha256": "fded0f3d32f42f152f59a28ef1351c488ec83da3cc6c4ead5a6558bc3eb27289",
+        "library_name": "18-39ETH",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "PCR",
+        "alias": "18-39ETH",
+        "title": "GC-Responder"
+      }
+    ],
+    "retrieved": 16,
+    "article": {
+      "sha256": "985a53a13cce0ded9a43d2d978c2de19034f1995edc76b347bf8487f75477d0c",
+      "supplements": [
+        {
+          "id": "genes-13-00882-s001",
+          "hrefs": [
+            "genes-13-00882-s001.zip"
+          ],
+          "caption": "Click here for additional data file."
+        },
+        {
+          "id": "db_ds_supplementary-material1_reqid_",
+          "hrefs": [
+            "genes-13-00882-s001.zip"
+          ],
+          "caption": "Click here for additional data file."
+        }
+      ]
+    }
+  },
+  "note": "SRA library code and alias match; independently read BioSample treatment agrees for all 16. No expression or clinical validation. Article supplement ZIP listed, not yet read."
+}
