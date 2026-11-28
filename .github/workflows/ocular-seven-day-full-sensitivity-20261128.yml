@@ -1,0 +1,75 @@
+name: Ocular seven-day full-cohort sensitivity gate
+on:
+  push:
+    branches: [research/top3-publication-protocol-20261128]
+    paths: ['.github/workflows/ocular-seven-day-full-sensitivity-20261128.yml','scripts/ocular_seven_day_full_sensitivity.py']
+  workflow_dispatch:
+    inputs:
+      source_run:
+        description: Successful full 16-run quantification workflow run ID
+        type: string
+        required: true
+      reviewed_qc_and_protocol:
+        description: Confirm review of all sample QC and separate exploratory TPM protocol
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  actions: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate fixed-pair and statistics contracts
+        run: |
+          python3 scripts/ocular_fixed_panel_score_preflight.py --panel docs/publication/evidence/ocular_frozen_241_panel.tsv --selftest
+          python3 scripts/ocular_seven_day_full_sensitivity.py --panel docs/publication/evidence/ocular_frozen_241_panel.tsv --pairs docs/publication/evidence/ocular_seven_day_library_pairing_20261128.json --selftest
+  full-sensitivity:
+    needs: contract
+    if: github.event_name == 'workflow_dispatch' && inputs.reviewed_qc_and_protocol == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Require successful full quantification source workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ inputs.source_run }}
+        run: |
+          python3 - <<'PY'
+          import os,re,json,subprocess
+          r=os.environ['SOURCE_RUN']; assert re.fullmatch(r'[0-9]+',r)
+          q=json.loads(subprocess.check_output(['gh','api','repos/'+os.environ['GITHUB_REPOSITORY']+'/actions/runs/'+r],text=True))
+          assert q['conclusion']=='success' and q['event']=='workflow_dispatch'
+          assert q['path'].split('@')[0]=='.github/workflows/ocular-seven-day-uniform-quant-20261128.yml'
+          assert q['head_branch']=='research/top3-publication-protocol-20261128'
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: ocular-seven-day-technical-inventory
+          run-id: ${{ inputs.source_run }}
+          github-token: ${{ github.token }}
+          path: inventory
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ocular-seven-day-gene-*
+          run-id: ${{ inputs.source_run }}
+          github-token: ${{ github.token }}
+          path: results
+      - name: Analyze only complete eight pairs using separate exploratory scales
+        env:
+          SOURCE_RUN: ${{ inputs.source_run }}
+        run: |
+          python3 scripts/ocular_seven_day_full_sensitivity.py --panel docs/publication/evidence/ocular_frozen_241_panel.tsv --pairs docs/publication/evidence/ocular_seven_day_library_pairing_20261128.json --root results --inventory inventory/inventory.json --source-run "$SOURCE_RUN" --out sensitivity.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ocular-full-cohort-sensitivity-aggregate
+          path: sensitivity.json
+          if-no-files-found: error
+          retention-days: 90
