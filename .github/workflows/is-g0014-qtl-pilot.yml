@@ -1,0 +1,81 @@
+name: IS G0014 bounded QTL source pilot
+on:
+  push:
+    branches: [research/is-g0014-qtl-pilot-20261128]
+    paths: ['.github/workflows/is-g0014-qtl-pilot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Scan three established QTL sources without full downloads
+        run: |
+          python3 - <<'PY'
+          import json, math, time
+          from pathlib import Path
+          from scripts.is.qtl_original_indexed_http_range import source_indexed_range
+          from scripts.is.audit_p3a_indexed_qtl_real_chr10 import OFFICIAL_COLUMN_ORDER
+          genes=dict(zip(('ENSG00000108100','ENSG00000177283','ENSG00000177291','ENSG00000226646','ENSG00000227313','ENSG00000227475','ENSG00000264780','ENSG00000271335','ENSG00000273312'),('CCNY','FZD8','GJD4','RP11-382K22.1','RP11-309N24.1','RP11-810B23.1','MIR4683','RP11-324I22.4','RP11-425A6.5')))
+          assert len(genes)==9
+          anchor=35833363
+          region={'start':anchor-500000,'end':anchor+500000}
+          sources=[('QTS000015','QTD000131','GTEx Aorta'),('QTS000015','QTD000171','GTEx Cortex'),('QTS000025','QTD000434','ROSMAP DLPFC')]
+          result={'status':'HOLD_SOURCE_PILOT_ONLY','scientific_validation':False,'region_grch38':region,'anchor':'rs2767060','genes':genes,'sources':[],'formal_coloc':0,'full_cis_verified':False,'note':'Fixed anchor window, not gene-specific full cis. Official release column order reused; no per-SNP outputs or causal claims.'}
+          def collect(lines):
+              counts={g:{'rows':0,'valid_numeric_rows':0,'anchor_rows':0} for g in genes}
+              total=0
+              for line in lines:
+                  if not line.strip() or line.startswith('#'):continue
+                  c=line.rstrip('\r\n').split('\t')
+                  if tuple(c)==OFFICIAL_COLUMN_ORDER:continue
+                  if len(c)!=len(OFFICIAL_COLUMN_ORDER):raise ValueError('unexpected row schema')
+                  x=dict(zip(OFFICIAL_COLUMN_ORDER,c))
+                  if x['chromosome'].removeprefix('chr')!='10':continue
+                  pos=int(x['position'])
+                  if not region['start']<=pos<=region['end']:continue
+                  total+=1
+                  if total>2000000:raise ValueError('row cap')
+                  g=x['gene_id'].split('.')[0]
+                  if g not in counts:continue
+                  a=counts[g];a['rows']+=1
+                  try:
+                      beta,se,maf,p=map(float,(x['beta'],x['se'],x['maf'],x['pvalue']))
+                      valid=all(math.isfinite(v) for v in (beta,se,maf,p)) and se>0 and 0<=maf<=.5 and 0<=p<=1
+                  except ValueError:valid=False
+                  if valid:a['valid_numeric_rows']+=1
+                  if pos==anchor and x['ref']=='C' and x['alt']=='T':a['anchor_rows']+=1
+              return total,counts
+          c=['0']*len(OFFICIAL_COLUMN_ORDER)
+          for key,value in {'chromosome':'10','position':str(anchor),'ref':'C','alt':'T','gene_id':'ENSG00000177283','beta':'.2','se':'.1','maf':'.1','pvalue':'.05'}.items():c[OFFICIAL_COLUMN_ORDER.index(key)]=value
+          assert collect(['\t'.join(c)])[1]['ENSG00000177283']['anchor_rows']==1
+          assert collect(['\t'.join(c)])[1]['ENSG00000177283']['valid_numeric_rows']==1
+          try:collect(['bad'])
+          except ValueError:pass
+          else:raise AssertionError('malformed row accepted')
+          for study,ds,tissue in sources:
+              row={'dataset':ds,'tissue':tissue,'status':'HOLD'}
+              try:
+                  url=f'https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/{study}/{ds}/{ds}.all.tsv.gz'
+                  lines,meta=source_indexed_range(url,region)
+                  total,counts=collect(lines)
+                  row.update(status='REGIONAL_INVENTORY_ONLY' if total else 'HOLD_EMPTY_WINDOW',regional_rows=total,counts=counts,provenance=meta)
+              except Exception as exc:row.update(error=type(exc).__name__+': '+str(exc)[:400])
+              result['sources'].append(row)
+              Path('g0014-qtl.json').write_text(json.dumps(result,indent=2)+'\n')
+              time.sleep(3)
+          print(json.dumps(result,indent=2))
+          if not all(x['status']=='REGIONAL_INVENTORY_ONLY' for x in result['sources']):raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-g0014-qtl-source-pilot
+          path: g0014-qtl.json
+          if-no-files-found: warn
+          retention-days: 30
