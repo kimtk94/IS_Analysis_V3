@@ -1,0 +1,2369 @@
+{
+  "run_id": 45600817403,
+  "source_head": "e91793a69cabc06861bc1e31d80c903389e885d0",
+  "source": "parsed actual stdout, no independent ZIP readback",
+  "records": [
+    {
+      "job_id": 139158935969,
+      "aggregate": {
+        "status": "HCC_PUBLISHED_EFFECT_SOURCE_REPLAY_GATE",
+        "sheets": [
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 1,
+            "dimensions": [
+              172,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": [
+              {
+                "row": 3,
+                "terms": [
+                  {
+                    "column": 2,
+                    "label": "Processing of Capped Intron-Containing Pre-mRNA"
+                  }
+                ]
+              },
+              {
+                "row": 4,
+                "terms": [
+                  {
+                    "column": 2,
+                    "label": "mRNA Splicing"
+                  }
+                ]
+              },
+              {
+                "row": 5,
+                "terms": [
+                  {
+                    "column": 2,
+                    "label": "mRNA Splicing - Major Pathway"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 2,
+            "dimensions": [
+              40,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 3,
+            "dimensions": [
+              230,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": [
+              {
+                "row": 3,
+                "terms": [
+                  {
+                    "column": 2,
+                    "label": "SRP-dependent cotranslational protein targeting to membrane"
+                  }
+                ]
+              },
+              {
+                "row": 8,
+                "terms": [
+                  {
+                    "column": 2,
+                    "label": "Viral mRNA Translation"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 4,
+            "dimensions": [
+              17,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 5,
+            "dimensions": [
+              19,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 6,
+            "dimensions": [
+              49,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 7,
+            "dimensions": [
+              18,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 8,
+            "dimensions": [
+              4,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 9,
+            "dimensions": [
+              65,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 10,
+            "dimensions": [
+              90,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 11,
+            "dimensions": [
+              62,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": [
+              {
+                "row": 2,
+                "terms": [
+                  {
+                    "column": 2,
+                    "label": "SRP-dependent cotranslational protein targeting to membrane"
+                  }
+                ]
+              },
+              {
+                "row": 3,
+                "terms": [
+                  {
+                    "column": 2,
+                    "label": "cotranslational protein targeting to membrane"
+                  }
+                ]
+              },
+              {
+                "row": 4,
+                "terms": [
+                  {
+                    "column": 2,
+                    "label": "nuclear-transcribed mRNA catabolic process, nonsense-mediated decay"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "workbook": "Supplementary Data 2",
+            "sheet_index": 12,
+            "dimensions": [
+              41,
+              9
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": [
+              {
+                "row": 5,
+                "terms": [
+                  {
+                    "column": 2,
+                    "label": "negative regulation of protein metabolic process"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "workbook": "Supplementary Data 6",
+            "sheet_index": 1,
+            "dimensions": [
+              1341,
+              14
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": [
+              {
+                "row": 1,
+                "terms": [
+                  {
+                    "column": 3,
+                    "label": "uniprot"
+                  },
+                  {
+                    "column": 9,
+                    "label": "logFC"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "workbook": "Supplementary Data 6",
+            "sheet_index": 2,
+            "dimensions": [
+              658,
+              14
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": [
+              {
+                "row": 1,
+                "terms": [
+                  {
+                    "column": 3,
+                    "label": "uniprot"
+                  },
+                  {
+                    "column": 9,
+                    "label": "logFC"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 1,
+            "dimensions": [
+              138,
+              3
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 2,
+            "dimensions": [
+              63,
+              3
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 3,
+            "dimensions": [
+              62,
+              3
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 4,
+            "dimensions": [
+              3015,
+              27
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 5,
+            "dimensions": [
+              123,
+              11
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 6,
+            "dimensions": [
+              1,
+              1
+            ],
+            "figure_1f_exact_title": true,
+            "aggregate_header_candidates": [],
+            "effect_hold": "no unique explicit signed RNA/protein effect header; no guessing"
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 7,
+            "dimensions": [
+              15273,
+              4
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 8,
+            "dimensions": [
+              5482,
+              4
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 9,
+            "dimensions": [
+              1,
+              1
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 10,
+            "dimensions": [
+              1,
+              1
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 11,
+            "dimensions": [
+              1,
+              1
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 12,
+            "dimensions": [
+              1,
+              1
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 13,
+            "dimensions": [
+              1,
+              1
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 14,
+            "dimensions": [
+              1,
+              1
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 15,
+            "dimensions": [
+              5407,
+              8
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": [
+              {
+                "row": 1,
+                "terms": [
+                  {
+                    "column": 3,
+                    "label": "Protein differences"
+                  }
+                ]
+              },
+              {
+                "row": 2,
+                "terms": [
+                  {
+                    "column": 1,
+                    "label": "Uniprot"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 16,
+            "dimensions": [
+              1,
+              1
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 17,
+            "dimensions": [
+              127,
+              15
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": [
+              {
+                "row": 2,
+                "terms": [
+                  {
+                    "column": 7,
+                    "label": "FDR"
+                  },
+                  {
+                    "column": 15,
+                    "label": "FDR"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 18,
+            "dimensions": [
+              1,
+              1
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 19,
+            "dimensions": [
+              5407,
+              8
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": [
+              {
+                "row": 1,
+                "terms": [
+                  {
+                    "column": 3,
+                    "label": "Protein differences"
+                  }
+                ]
+              },
+              {
+                "row": 2,
+                "terms": [
+                  {
+                    "column": 1,
+                    "label": "Uniprot"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 20,
+            "dimensions": [
+              1,
+              1
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 21,
+            "dimensions": [
+              127,
+              15
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": [
+              {
+                "row": 2,
+                "terms": [
+                  {
+                    "column": 7,
+                    "label": "FDR"
+                  },
+                  {
+                    "column": 15,
+                    "label": "FDR"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 22,
+            "dimensions": [
+              52,
+              4
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 23,
+            "dimensions": [
+              52,
+              4
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 24,
+            "dimensions": [
+              52,
+              4
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 25,
+            "dimensions": [
+              15,
+              6
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 26,
+            "dimensions": [
+              14,
+              13
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 27,
+            "dimensions": [
+              123,
+              4
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 28,
+            "dimensions": [
+              118,
+              4
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          },
+          {
+            "workbook": "Source Data",
+            "sheet_index": 29,
+            "dimensions": [
+              123,
+              4
+            ],
+            "figure_1f_exact_title": false,
+            "aggregate_header_candidates": []
+          }
+        ],
+        "replayed": 0,
+        "limits": [
+          "Ng et al. DOI 10.1038/s41467-022-29960-8 Fig 1f already reports rho 0.33 and four directional quadrants. Only exact labeled figure source with explicit signed columns can be replayed; no substitute sheet, no patient values or clinical association. Header inspection is not paired RNA-protein individual data. Independent cohort and matched sample provenance remain required."
+        ],
+        "scientific_status": "HOLD_NO_INDEPENDENT_INFERENCE"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 88134171ee681096e641c5bf7735e0399a53daff2d0dc0ff474d688dba18fd70",
+        "Artifact early-specificity-hcc.zip successfully finalized. Artifact ID 15015337590"
+      ]
+    },
+    {
+      "job_id": 139158936445,
+      "aggregate": {
+        "status": "ORAL_MARKER_DEFINED_COMPARTMENT_SENSITIVITY",
+        "group": "MET",
+        "gates": {
+          "epithelial": [
+            "EPCAM",
+            "KRT5",
+            "KRT14",
+            "KRT8",
+            "KRT18",
+            "KRT19"
+          ],
+          "myeloid": [
+            "LST1",
+            "TYROBP",
+            "FCER1G",
+            "CD68"
+          ],
+          "T_cell": [
+            "CD3D",
+            "CD3E",
+            "TRAC"
+          ],
+          "B_cell": [
+            "MS4A1",
+            "CD79A",
+            "CD79B",
+            "CD19"
+          ],
+          "fibroblast": [
+            "COL1A1",
+            "COL1A2",
+            "DCN",
+            "LUM"
+          ],
+          "endothelial": [
+            "PECAM1",
+            "VWF",
+            "KDR",
+            "EMCN"
+          ]
+        },
+        "pemt_context": [
+          "SERPINE1",
+          "TGFBI",
+          "MMP10",
+          "LAMC2",
+          "P4HA2",
+          "PDPN",
+          "ITGA5",
+          "LAMA3",
+          "CDH13",
+          "TNC",
+          "MMP2",
+          "EMP3",
+          "INHBA",
+          "LAMB3",
+          "VIM"
+        ],
+        "context": [
+          "SPP1",
+          "CXCR4"
+        ],
+        "records": [
+          {
+            "status": "EXACT_MATRIX_REPLAY_AND_MARKER_GATES",
+            "specimen": "MET1",
+            "group": "MET",
+            "matrix_sha256": "a4b3a76fe9e96e3f3394e4965eac33e3ab1d48f90030fd666d5f24fcd147f9cf",
+            "thresholds": {
+              "2": {
+                "summary": {
+                  "qc_cells": 10770,
+                  "assigned": 6682,
+                  "mixed": 190,
+                  "unassigned": 4088
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 2,
+                    "fraction_qc": 0.00018570102135561745,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "myeloid": {
+                    "cells": 128,
+                    "fraction_qc": 0.011884865366759517,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1455360,
+                    "cpm": {
+                      "SPP1": 2.061345646437995,
+                      "CXCR4": 1607.849604221636
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 3757,
+                    "fraction_qc": 0.34883936861652737,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 20116389,
+                    "cpm": {
+                      "SPP1": 0.04971071100285444,
+                      "CXCR4": 1807.630584196796
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 2734,
+                    "fraction_qc": 0.2538532961931291,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 15370758,
+                    "cpm": {
+                      "SPP1": 1.2361134044267694,
+                      "CXCR4": 1909.7301512391257
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 22,
+                    "fraction_qc": 0.002042711234911792,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "endothelial": {
+                    "cells": 39,
+                    "fraction_qc": 0.0036211699164345403,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  }
+                }
+              },
+              "3": {
+                "summary": {
+                  "qc_cells": 10770,
+                  "assigned": 2703,
+                  "mixed": 25,
+                  "unassigned": 8067
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 0,
+                    "fraction_qc": 0,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "myeloid": {
+                    "cells": 75,
+                    "fraction_qc": 0.006963788300835654,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1015533,
+                    "cpm": {
+                      "SPP1": 2.9541137511041,
+                      "CXCR4": 1361.8464392589901
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 1363,
+                    "fraction_qc": 0.1265552460538533,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 8963002,
+                    "cpm": {
+                      "SPP1": 0.11156976200607788,
+                      "CXCR4": 1684.5918365297698
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 1213,
+                    "fraction_qc": 0.11262766945218199,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 9012158,
+                    "cpm": {
+                      "SPP1": 1.88634065226109,
+                      "CXCR4": 1728.7757271898695
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 21,
+                    "fraction_qc": 0.0019498607242339832,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "endothelial": {
+                    "cells": 31,
+                    "fraction_qc": 0.0028783658310120707,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "status": "EXACT_MATRIX_REPLAY_AND_MARKER_GATES",
+            "specimen": "MET2",
+            "group": "MET",
+            "matrix_sha256": "99ffbb9fd42821bae73983330bf285e84cb21b2eb422172dac3cb6d234e38294",
+            "thresholds": {
+              "2": {
+                "summary": {
+                  "qc_cells": 11405,
+                  "assigned": 6453,
+                  "mixed": 376,
+                  "unassigned": 4952
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 27,
+                    "fraction_qc": 0.002367382726874178,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "myeloid": {
+                    "cells": 242,
+                    "fraction_qc": 0.02121876370013152,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2584985,
+                    "cpm": {
+                      "SPP1": 4383.391006137366,
+                      "CXCR4": 1363.644276465821
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 4067,
+                    "fraction_qc": 0.3565979833406401,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 15887344,
+                    "cpm": {
+                      "SPP1": 0.566488646560432,
+                      "CXCR4": 2336.702723878831
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 1950,
+                    "fraction_qc": 0.1709776413853573,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 13713991,
+                    "cpm": {
+                      "SPP1": 0.7291823364912519,
+                      "CXCR4": 1440.426787504819
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 130,
+                    "fraction_qc": 0.011398509425690487,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2018433,
+                    "cpm": {
+                      "SPP1": 0,
+                      "CXCR4": 28.735162375961945
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 37,
+                    "fraction_qc": 0.0032441911442349846,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  }
+                }
+              },
+              "3": {
+                "summary": {
+                  "qc_cells": 11405,
+                  "assigned": 2763,
+                  "mixed": 55,
+                  "unassigned": 8642
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 29,
+                    "fraction_qc": 0.0025427444103463394,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "myeloid": {
+                    "cells": 165,
+                    "fraction_qc": 0.01446733888645331,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2451430,
+                    "cpm": {
+                      "SPP1": 4506.757280444475,
+                      "CXCR4": 1088.7522792818886
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 1383,
+                    "fraction_qc": 0.12126260412099957,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 6924734,
+                    "cpm": {
+                      "SPP1": 0.7220493956879788,
+                      "CXCR4": 2166.581416701349
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 1028,
+                    "fraction_qc": 0.09013590530469093,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 7800655,
+                    "cpm": {
+                      "SPP1": 1.6665267211535442,
+                      "CXCR4": 1551.0235999412869
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 123,
+                    "fraction_qc": 0.010784743533537922,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2145309,
+                    "cpm": {
+                      "SPP1": 0,
+                      "CXCR4": 15.382399458539538
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 35,
+                    "fraction_qc": 0.003068829460762823,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "status": "EXACT_MATRIX_REPLAY_AND_MARKER_GATES",
+            "specimen": "MET3",
+            "group": "MET",
+            "matrix_sha256": "07076c6b881493338563517e648c585b0cb899a586e5baf9bb525652fae031ec",
+            "thresholds": {
+              "2": {
+                "summary": {
+                  "qc_cells": 8147,
+                  "assigned": 3672,
+                  "mixed": 1074,
+                  "unassigned": 4475
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 8,
+                    "fraction_qc": 0.0009819565484227323,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "myeloid": {
+                    "cells": 1532,
+                    "fraction_qc": 0.18804467902295324,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 6726679,
+                    "cpm": {
+                      "SPP1": 22.150603589081626,
+                      "CXCR4": 420.56414465444243
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 327,
+                    "fraction_qc": 0.04013747391677918,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1440288,
+                    "cpm": {
+                      "SPP1": 0.6943055833277789,
+                      "CXCR4": 2287.7368970650314
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 42,
+                    "fraction_qc": 0.005155271879219344,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "fibroblast": {
+                    "cells": 1647,
+                    "fraction_qc": 0.20216030440653002,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 42886155,
+                    "cpm": {
+                      "SPP1": 0.3497632277829523,
+                      "CXCR4": 2.9846462104145264
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 116,
+                    "fraction_qc": 0.014238369952129619,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1147687,
+                    "cpm": {
+                      "SPP1": 4.356588512373147,
+                      "CXCR4": 6.099223917322406
+                    }
+                  }
+                }
+              },
+              "3": {
+                "summary": {
+                  "qc_cells": 8147,
+                  "assigned": 3015,
+                  "mixed": 205,
+                  "unassigned": 5132
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 9,
+                    "fraction_qc": 0.0011047011169755738,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "myeloid": {
+                    "cells": 1085,
+                    "fraction_qc": 0.13317785687983308,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 8744271,
+                    "cpm": {
+                      "SPP1": 55.464886666938845,
+                      "CXCR4": 268.40430723155765
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 88,
+                    "fraction_qc": 0.010801522032650055,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 628820,
+                    "cpm": {
+                      "SPP1": 0,
+                      "CXCR4": 1730.2248656213226
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 12,
+                    "fraction_qc": 0.0014729348226340984,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "fibroblast": {
+                    "cells": 1647,
+                    "fraction_qc": 0.20216030440653002,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 47220355,
+                    "cpm": {
+                      "SPP1": 0.36001423538641336,
+                      "CXCR4": 1.2494611698704934
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 174,
+                    "fraction_qc": 0.02135755492819443,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2611445,
+                    "cpm": {
+                      "SPP1": 11.104962961119227,
+                      "CXCR4": 5.7439463591996
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "status": "EXACT_MATRIX_REPLAY_AND_MARKER_GATES",
+            "specimen": "MET4",
+            "group": "MET",
+            "matrix_sha256": "cf01275f761e8b5463c4a362125f02a682f6e864c6674af724f0a2c7c87850b3",
+            "thresholds": {
+              "2": {
+                "summary": {
+                  "qc_cells": 11383,
+                  "assigned": 6055,
+                  "mixed": 841,
+                  "unassigned": 5328
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 69,
+                    "fraction_qc": 0.006061670912764649,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 752661,
+                    "cpm": {
+                      "SERPINE1": 33.215484793286755,
+                      "TGFBI": 45.17305931886998,
+                      "MMP10": 0,
+                      "LAMC2": 298.9393631395808,
+                      "P4HA2": 65.10235019484203,
+                      "PDPN": 18.600671484240582,
+                      "ITGA5": 42.515820535407045,
+                      "LAMA3": 453.0592125804313,
+                      "CDH13": 522.1474209504678,
+                      "TNC": 366.69895211788577,
+                      "MMP2": 3.9858581751944104,
+                      "EMP3": 6.643096958657351,
+                      "INHBA": 124.89022282275819,
+                      "LAMB3": 577.9494354031895,
+                      "VIM": 11.957574525583231,
+                      "SPP1": 0,
+                      "CXCR4": 9.300335742120291
+                    },
+                    "pemt_mean_log2_cpm_plus1": 5.741216230709108
+                  },
+                  "myeloid": {
+                    "cells": 129,
+                    "fraction_qc": 0.011332689097777387,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1424697,
+                    "cpm": {
+                      "SPP1": 43.51802523624322,
+                      "CXCR4": 1351.1644932220677
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 3883,
+                    "fraction_qc": 0.3411227268734077,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 23307736,
+                    "cpm": {
+                      "SPP1": 0.12871263000404673,
+                      "CXCR4": 2843.261996789392
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 1567,
+                    "fraction_qc": 0.13766142493191602,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 10686189,
+                    "cpm": {
+                      "SPP1": 0.09357873045292386,
+                      "CXCR4": 2741.1081724270457
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 353,
+                    "fraction_qc": 0.03101115698849161,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2599219,
+                    "cpm": {
+                      "SPP1": 0.7694619037487799,
+                      "CXCR4": 143.11991409727307
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 54,
+                    "fraction_qc": 0.004743916366511464,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 615869,
+                    "cpm": {
+                      "SPP1": 212.70757255195505,
+                      "CXCR4": 21.108385062407752
+                    }
+                  }
+                }
+              },
+              "3": {
+                "summary": {
+                  "qc_cells": 11383,
+                  "assigned": 2983,
+                  "mixed": 78,
+                  "unassigned": 8400
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 31,
+                    "fraction_qc": 0.002723359395589915,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "myeloid": {
+                    "cells": 81,
+                    "fraction_qc": 0.0071158745497671965,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1282023,
+                    "cpm": {
+                      "SPP1": 939.9207346514064,
+                      "CXCR4": 1134.925036446304
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 1437,
+                    "fraction_qc": 0.12624088553105509,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 10807770,
+                    "cpm": {
+                      "SPP1": 0.2775780757732631,
+                      "CXCR4": 2548.259261623813
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 1113,
+                    "fraction_qc": 0.09777738733198629,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 8580861,
+                    "cpm": {
+                      "SPP1": 0.11653842196022055,
+                      "CXCR4": 2721.52176803703
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 268,
+                    "fraction_qc": 0.023543881226390232,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2580140,
+                    "cpm": {
+                      "SPP1": 1.162727603928469,
+                      "CXCR4": 106.97093956141914
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 53,
+                    "fraction_qc": 0.004656066063427919,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 743431,
+                    "cpm": {
+                      "SPP1": 277.0936374727446,
+                      "CXCR4": 17.486491685173203
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "status": "EXACT_MATRIX_REPLAY_AND_MARKER_GATES",
+            "specimen": "MET5",
+            "group": "MET",
+            "matrix_sha256": "fe6c1bd2bfe806b0d0719377bed332865ffc98b8429bef083cd34601baa1b675",
+            "thresholds": {
+              "2": {
+                "summary": {
+                  "qc_cells": 6573,
+                  "assigned": 5389,
+                  "mixed": 218,
+                  "unassigned": 1184
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 1,
+                    "fraction_qc": 0.00015213753232922562,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "myeloid": {
+                    "cells": 126,
+                    "fraction_qc": 0.019169329073482427,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1305073,
+                    "cpm": {
+                      "SPP1": 8.428647286397005,
+                      "CXCR4": 2835.090450878993
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 3379,
+                    "fraction_qc": 0.5140727217404534,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 21292562,
+                    "cpm": {
+                      "SPP1": 0,
+                      "CXCR4": 2802.1991904966626
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 1856,
+                    "fraction_qc": 0.28236726000304274,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 18443852,
+                    "cpm": {
+                      "SPP1": 6.235140034738947,
+                      "CXCR4": 2053.312941353032
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 19,
+                    "fraction_qc": 0.002890613114255287,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "endothelial": {
+                    "cells": 8,
+                    "fraction_qc": 0.001217100258633805,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  }
+                }
+              },
+              "3": {
+                "summary": {
+                  "qc_cells": 6573,
+                  "assigned": 3427,
+                  "mixed": 46,
+                  "unassigned": 3146
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 1,
+                    "fraction_qc": 0.00015213753232922562,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "myeloid": {
+                    "cells": 71,
+                    "fraction_qc": 0.01080176479537502,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1158969,
+                    "cpm": {
+                      "SPP1": 6.039850936478888,
+                      "CXCR4": 2800.765162830067
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 1770,
+                    "fraction_qc": 0.2692834322227293,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 12943045,
+                    "cpm": {
+                      "SPP1": 0,
+                      "CXCR4": 2648.2948950575387
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 1559,
+                    "fraction_qc": 0.23718241290126274,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 15701677,
+                    "cpm": {
+                      "SPP1": 7.5788083018138765,
+                      "CXCR4": 2176.455419379726
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 19,
+                    "fraction_qc": 0.002890613114255287,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "endothelial": {
+                    "cells": 7,
+                    "fraction_qc": 0.0010649627263045794,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "limits": [
+          "GEO design wording ambiguous; no donor pairing or independence claim. Exclusive detected-lineage markers, not validated clustering, malignant CNV or cell-type reference label transfer. Mixed/unknown cells excluded; dropout and tissue composition remain. Fixed 2-marker primary and 3-marker sensitivity, 50 cells minimum; a 3-marker gate for T cells is stricter than others. No cell-level exports, patient-level inference, tests, ligand-receptor claims, or newly discovered signature. pEMT context already published (PMC13081553, Puram 2017)."
+        ],
+        "scientific_status": "HOLD_NO_INDEPENDENT_INFERENCE"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is 05638aa891392a99444b13d9f70f5580d782cb81d7b42ef09154854336a1ee14",
+        "Artifact early-specificity-MET.zip successfully finalized. Artifact ID 15015651614"
+      ]
+    },
+    {
+      "job_id": 139158936493,
+      "aggregate": {
+        "status": "HCC_JIANG_INDEPENDENT_CANDIDATE_SOURCE",
+        "geo": {
+          "directory": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/matrix/",
+            "bytes": 603,
+            "sha256": "56ed7bcc81944b7edfa326a8b06e2755253c1dcb3c6440afac5924f29c48a1da",
+            "content_range": null,
+            "etag": null
+          },
+          "matrix": {
+            "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/matrix/GSE124535_series_matrix.txt.gz",
+            "bytes": 5239,
+            "sha256": "b38f3760685f18c97dfe7571c33837ea5fe2661db822ca97c941d4878bb0352b",
+            "content_range": null,
+            "etag": null
+          },
+          "mode": "bounded_complete_gzip"
+        },
+        "samples": 70,
+        "characteristic_fields": {
+          "tissue": {
+            "covered": 70,
+            "numeric": 0,
+            "distinct_values": 2
+          },
+          "tumor stage": {
+            "covered": 70,
+            "numeric": 0,
+            "distinct_values": 1
+          }
+        },
+        "supplement_filenames": [
+          "GSE124535_HCC.RNA-seq.35.samples.fpkm.txt.gz",
+          "GSE124535_RAW.tar"
+        ],
+        "supplement_directory": {
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124535/suppl/",
+          "bytes": 850,
+          "sha256": "2b2d3e8fd0eb776cd4d36fd0402da910b46336b92d541d9e68f87c73aeabf651",
+          "content_range": null,
+          "etag": null
+        },
+        "limits": [
+          "Jiang 2019 Nature DOI 10.1038/s41586-019-0987-8 lists GSE124535 and PRIDE PXD006512/PXD008373. RNA metadata does not establish protein pairing or independence from other Chinese cohorts; no full RNA/protein files or patient data exported."
+        ],
+        "scientific_status": "HOLD_NO_INDEPENDENT_INFERENCE"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is b85d0e31490471024e026ddd80c9e19381e781456846f7de6b0e04cda81d71aa",
+        "Artifact early-specificity-external_hcc.zip successfully finalized. Artifact ID 15015287266"
+      ]
+    },
+    {
+      "job_id": 139158936677,
+      "aggregate": {
+        "status": "ORAL_MARKER_DEFINED_COMPARTMENT_SENSITIVITY",
+        "group": "PT",
+        "gates": {
+          "epithelial": [
+            "EPCAM",
+            "KRT5",
+            "KRT14",
+            "KRT8",
+            "KRT18",
+            "KRT19"
+          ],
+          "myeloid": [
+            "LST1",
+            "TYROBP",
+            "FCER1G",
+            "CD68"
+          ],
+          "T_cell": [
+            "CD3D",
+            "CD3E",
+            "TRAC"
+          ],
+          "B_cell": [
+            "MS4A1",
+            "CD79A",
+            "CD79B",
+            "CD19"
+          ],
+          "fibroblast": [
+            "COL1A1",
+            "COL1A2",
+            "DCN",
+            "LUM"
+          ],
+          "endothelial": [
+            "PECAM1",
+            "VWF",
+            "KDR",
+            "EMCN"
+          ]
+        },
+        "pemt_context": [
+          "SERPINE1",
+          "TGFBI",
+          "MMP10",
+          "LAMC2",
+          "P4HA2",
+          "PDPN",
+          "ITGA5",
+          "LAMA3",
+          "CDH13",
+          "TNC",
+          "MMP2",
+          "EMP3",
+          "INHBA",
+          "LAMB3",
+          "VIM"
+        ],
+        "context": [
+          "SPP1",
+          "CXCR4"
+        ],
+        "records": [
+          {
+            "status": "EXACT_MATRIX_REPLAY_AND_MARKER_GATES",
+            "specimen": "PT1",
+            "group": "PT",
+            "matrix_sha256": "da40cd299ff05c5a9b3612df4eac798e1d2316cec8b5bbd2be836bde42daa8e8",
+            "thresholds": {
+              "2": {
+                "summary": {
+                  "qc_cells": 8898,
+                  "assigned": 3951,
+                  "mixed": 1247,
+                  "unassigned": 4947
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 490,
+                    "fraction_qc": 0.055068554731400314,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 5450397,
+                    "cpm": {
+                      "SERPINE1": 596.4703121625819,
+                      "TGFBI": 1846.6544730594853,
+                      "MMP10": 130.81615889631527,
+                      "LAMC2": 1976.7367404612912,
+                      "P4HA2": 126.22933705563099,
+                      "PDPN": 146.044407407387,
+                      "ITGA5": 156.50236120414715,
+                      "LAMA3": 1403.5674832493853,
+                      "CDH13": 236.86347985293548,
+                      "TNC": 1279.9067664245374,
+                      "MMP2": 77.24207979712304,
+                      "EMP3": 15.778667131953874,
+                      "INHBA": 191.72915294060232,
+                      "LAMB3": 493.542030057627,
+                      "VIM": 1042.49286795072,
+                      "SPP1": 6.238077703330601,
+                      "CXCR4": 11.74226391215172
+                    },
+                    "pemt_mean_log2_cpm_plus1": 8.343714016670924
+                  },
+                  "myeloid": {
+                    "cells": 1194,
+                    "fraction_qc": 0.1341874578556979,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 13012069,
+                    "cpm": {
+                      "SPP1": 4815.990447022683,
+                      "CXCR4": 690.7433398946778
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 682,
+                    "fraction_qc": 0.0766464374016633,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 3427951,
+                    "cpm": {
+                      "SPP1": 11.668778229327081,
+                      "CXCR4": 2082.876913934884
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 162,
+                    "fraction_qc": 0.01820633850303439,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 914052,
+                    "cpm": {
+                      "SPP1": 15.316415258650492,
+                      "CXCR4": 1944.0907081872804
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 1170,
+                    "fraction_qc": 0.13149022252191503,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 15066597,
+                    "cpm": {
+                      "SPP1": 3.9823192987772886,
+                      "CXCR4": 16.062021171735065
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 253,
+                    "fraction_qc": 0.028433355810294447,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1682731,
+                    "cpm": {
+                      "SPP1": 8.914080741366266,
+                      "CXCR4": 61.80429314013945
+                    }
+                  }
+                }
+              },
+              "3": {
+                "summary": {
+                  "qc_cells": 8898,
+                  "assigned": 3133,
+                  "mixed": 167,
+                  "unassigned": 5765
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 326,
+                    "fraction_qc": 0.03663744661721735,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 10159197,
+                    "cpm": {
+                      "SERPINE1": 1190.8421502211247,
+                      "TGFBI": 3624.794361207879,
+                      "MMP10": 288.01488936576385,
+                      "LAMC2": 4694.3670843276295,
+                      "P4HA2": 197.45655094590646,
+                      "PDPN": 247.75580195954464,
+                      "ITGA5": 290.3772808028036,
+                      "LAMA3": 3041.4805422121453,
+                      "CDH13": 322.5648641324703,
+                      "TNC": 2871.5852246983695,
+                      "MMP2": 141.25132133966886,
+                      "EMP3": 20.474059121011237,
+                      "INHBA": 383.3964436362441,
+                      "LAMB3": 1063.0761466678912,
+                      "VIM": 1630.7391223932364,
+                      "SPP1": 3.7404531086462836,
+                      "CXCR4": 1.7717935777798186
+                    },
+                    "pemt_mean_log2_cpm_plus1": 9.232068112511419
+                  },
+                  "myeloid": {
+                    "cells": 1150,
+                    "fraction_qc": 0.1292425264104293,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 15649144,
+                    "cpm": {
+                      "SPP1": 4889.46871471053,
+                      "CXCR4": 650.0675052897462
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 199,
+                    "fraction_qc": 0.022364576309282985,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1384498,
+                    "cpm": {
+                      "SPP1": 13.723385660362094,
+                      "CXCR4": 1538.4637608721716
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 42,
+                    "fraction_qc": 0.004720161834120027,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "fibroblast": {
+                    "cells": 1195,
+                    "fraction_qc": 0.1342998426612722,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 18063971,
+                    "cpm": {
+                      "SPP1": 4.0411933787980505,
+                      "CXCR4": 13.286115217966193
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 221,
+                    "fraction_qc": 0.024837042031917285,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2070773,
+                    "cpm": {
+                      "SPP1": 5.312025992226092,
+                      "CXCR4": 67.12469208358425
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "status": "EXACT_MATRIX_REPLAY_AND_MARKER_GATES",
+            "specimen": "PT2",
+            "group": "PT",
+            "matrix_sha256": "35e8628528d6c617a6de9f165ee5724879b6a120d9c3992ec21af71fcb51770b",
+            "thresholds": {
+              "2": {
+                "summary": {
+                  "qc_cells": 6941,
+                  "assigned": 3529,
+                  "mixed": 880,
+                  "unassigned": 3412
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 466,
+                    "fraction_qc": 0.06713730010085002,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 9087693,
+                    "cpm": {
+                      "SERPINE1": 814.2880706907682,
+                      "TGFBI": 642.6273422748766,
+                      "MMP10": 228.99101014966064,
+                      "LAMC2": 3152.7253396434057,
+                      "P4HA2": 82.41915742532235,
+                      "PDPN": 114.33044668212274,
+                      "ITGA5": 159.33636842705843,
+                      "LAMA3": 1764.9143737580043,
+                      "CDH13": 230.20143836284961,
+                      "TNC": 1113.814033990805,
+                      "MMP2": 23.43829176447752,
+                      "EMP3": 37.303196751914925,
+                      "INHBA": 475.9183656402125,
+                      "LAMB3": 856.3229413669674,
+                      "VIM": 265.74401225921696,
+                      "SPP1": 7.5926860645490555,
+                      "CXCR4": 5.611985352057998
+                    },
+                    "pemt_mean_log2_cpm_plus1": 8.290618719117
+                  },
+                  "myeloid": {
+                    "cells": 734,
+                    "fraction_qc": 0.10574845123181098,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 6488125,
+                    "cpm": {
+                      "SPP1": 4661.130912243521,
+                      "CXCR4": 400.4238512667373
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 1045,
+                    "fraction_qc": 0.15055467511885895,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 4320670,
+                    "cpm": {
+                      "SPP1": 12.035170471246358,
+                      "CXCR4": 1622.2021121724176
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 180,
+                    "fraction_qc": 0.02593286269989915,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 3220807,
+                    "cpm": {
+                      "SPP1": 1.241924772269807,
+                      "CXCR4": 620.651904941836
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 868,
+                    "fraction_qc": 0.12505402679729147,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 11486482,
+                    "cpm": {
+                      "SPP1": 10.708239476630007,
+                      "CXCR4": 4.962354879413906
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 236,
+                    "fraction_qc": 0.03400086442875666,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2267832,
+                    "cpm": {
+                      "SPP1": 4.409497705297394,
+                      "CXCR4": 15.43324196854088
+                    }
+                  }
+                }
+              },
+              "3": {
+                "summary": {
+                  "qc_cells": 6941,
+                  "assigned": 2547,
+                  "mixed": 216,
+                  "unassigned": 4394
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 367,
+                    "fraction_qc": 0.05287422561590549,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 13239821,
+                    "cpm": {
+                      "SERPINE1": 1036.0411972337088,
+                      "TGFBI": 813.4551063794594,
+                      "MMP10": 298.4934615052575,
+                      "LAMC2": 3681.5452414349106,
+                      "P4HA2": 91.8441420016177,
+                      "PDPN": 141.46716938242594,
+                      "ITGA5": 175.68213346691016,
+                      "LAMA3": 2244.1391012763693,
+                      "CDH13": 258.08506021342737,
+                      "TNC": 1434.9891890532356,
+                      "MMP2": 27.492818822852666,
+                      "EMP3": 42.29664434285026,
+                      "INHBA": 551.2159114537877,
+                      "LAMB3": 998.1252767692253,
+                      "VIM": 296.90733734240064,
+                      "SPP1": 5.211550820815478,
+                      "CXCR4": 2.1903619391833167
+                    },
+                    "pemt_mean_log2_cpm_plus1": 8.541052962825773
+                  },
+                  "myeloid": {
+                    "cells": 554,
+                    "fraction_qc": 0.07981558853191183,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 6631693,
+                    "cpm": {
+                      "SPP1": 4337.806348997156,
+                      "CXCR4": 268.5588732771556
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 377,
+                    "fraction_qc": 0.05431494021034433,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2259745,
+                    "cpm": {
+                      "SPP1": 17.701112293643753,
+                      "CXCR4": 1266.0720568028694
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 68,
+                    "fraction_qc": 0.009796859242184123,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1178492,
+                    "cpm": {
+                      "SPP1": 2.5456261052260007,
+                      "CXCR4": 639.8006944468015
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 934,
+                    "fraction_qc": 0.1345627431205878,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 13491215,
+                    "cpm": {
+                      "SPP1": 10.747734729599966,
+                      "CXCR4": 3.18725926463999
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 247,
+                    "fraction_qc": 0.03558565048263939,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2959381,
+                    "cpm": {
+                      "SPP1": 3.7169935199286606,
+                      "CXCR4": 12.502614567032769
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "status": "EXACT_MATRIX_REPLAY_AND_MARKER_GATES",
+            "specimen": "PT3",
+            "group": "PT",
+            "matrix_sha256": "8c030febd3d1ba641a49e29f97370207f9b342fec4800c485b2c619e6be6a17d",
+            "thresholds": {
+              "2": {
+                "summary": {
+                  "qc_cells": 9788,
+                  "assigned": 4013,
+                  "mixed": 2712,
+                  "unassigned": 5775
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 970,
+                    "fraction_qc": 0.09910093992644053,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 11631872,
+                    "cpm": {
+                      "SERPINE1": 1622.6966734159384,
+                      "TGFBI": 2851.9055230318904,
+                      "MMP10": 736.5108556902965,
+                      "LAMC2": 2910.7954420406277,
+                      "P4HA2": 187.58803398111672,
+                      "PDPN": 480.3182153311178,
+                      "ITGA5": 303.6484583049057,
+                      "LAMA3": 2198.872202170038,
+                      "CDH13": 629.8212359970948,
+                      "TNC": 2015.0668783150295,
+                      "MMP2": 115.9744536391047,
+                      "EMP3": 14.78695776569756,
+                      "INHBA": 675.5576402491362,
+                      "LAMB3": 1783.032000352136,
+                      "VIM": 897.8778308427053,
+                      "SPP1": 2.2352378017914916,
+                      "CXCR4": 21.23475911701917
+                    },
+                    "pemt_mean_log2_cpm_plus1": 9.343049722511463
+                  },
+                  "myeloid": {
+                    "cells": 1334,
+                    "fraction_qc": 0.13628933387821823,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 11219677,
+                    "cpm": {
+                      "SPP1": 1173.563196159747,
+                      "CXCR4": 363.46857400618575
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 650,
+                    "fraction_qc": 0.06640784634246015,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2786504,
+                    "cpm": {
+                      "SPP1": 3.5887262318661666,
+                      "CXCR4": 1499.0109470504976
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 54,
+                    "fraction_qc": 0.005516959542296689,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 549013,
+                    "cpm": {
+                      "SPP1": 5.4643514816589045,
+                      "CXCR4": 619.2931679213425
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 799,
+                    "fraction_qc": 0.08163056804250102,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 10386705,
+                    "cpm": {
+                      "SPP1": 2.6957538507158914,
+                      "CXCR4": 3.2734153901550105
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 206,
+                    "fraction_qc": 0.021046178994687373,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1648355,
+                    "cpm": {
+                      "SPP1": 1.819996299340858,
+                      "CXCR4": 32.153267955021825
+                    }
+                  }
+                }
+              },
+              "3": {
+                "summary": {
+                  "qc_cells": 9788,
+                  "assigned": 4225,
+                  "mixed": 369,
+                  "unassigned": 5563
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 995,
+                    "fraction_qc": 0.10165508786268901,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 22092291,
+                    "cpm": {
+                      "SERPINE1": 2027.7208914186401,
+                      "TGFBI": 3686.9422007885014,
+                      "MMP10": 1203.90411297769,
+                      "LAMC2": 3471.0750460420786,
+                      "P4HA2": 218.13038765422743,
+                      "PDPN": 547.1591877908905,
+                      "ITGA5": 336.18061612532625,
+                      "LAMA3": 2510.2421473626255,
+                      "CDH13": 602.6083940321083,
+                      "TNC": 2636.711602250758,
+                      "MMP2": 156.66098187824883,
+                      "EMP3": 15.25418979860441,
+                      "INHBA": 749.1753571415477,
+                      "LAMB3": 1950.49938460434,
+                      "VIM": 1030.9025895050902,
+                      "SPP1": 1.8105863262438469,
+                      "CXCR4": 3.213790729082828
+                    },
+                    "pemt_mean_log2_cpm_plus1": 9.587693622209098
+                  },
+                  "myeloid": {
+                    "cells": 1616,
+                    "fraction_qc": 0.16510012259910095,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 17875623,
+                    "cpm": {
+                      "SPP1": 1331.5340114299793,
+                      "CXCR4": 348.2396110054458
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 279,
+                    "fraction_qc": 0.028504290968532898,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1696019,
+                    "cpm": {
+                      "SPP1": 3.5376962168466273,
+                      "CXCR4": 1252.9340767998472
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 14,
+                    "fraction_qc": 0.0014303228442991418,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "fibroblast": {
+                    "cells": 1049,
+                    "fraction_qc": 0.10717204740498569,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 15205523,
+                    "cpm": {
+                      "SPP1": 1.3153115483104396,
+                      "CXCR4": 3.156747715945055
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 272,
+                    "fraction_qc": 0.027789129546383327,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2728019,
+                    "cpm": {
+                      "SPP1": 4.03222998080292,
+                      "CXCR4": 31.158140760749834
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "status": "EXACT_MATRIX_REPLAY_AND_MARKER_GATES",
+            "specimen": "PT4",
+            "group": "PT",
+            "matrix_sha256": "f2383452dd0f40325095cf771011ac8182b2fd7887fe92218235499606b88490",
+            "thresholds": {
+              "2": {
+                "summary": {
+                  "qc_cells": 6376,
+                  "assigned": 3826,
+                  "mixed": 635,
+                  "unassigned": 2550
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 2001,
+                    "fraction_qc": 0.3138331242158093,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 41198325,
+                    "cpm": {
+                      "SERPINE1": 87.18801067761856,
+                      "TGFBI": 71.41067021535463,
+                      "MMP10": 0.4369109666473091,
+                      "LAMC2": 272.4382605360776,
+                      "P4HA2": 49.85639586075405,
+                      "PDPN": 7.937215894092781,
+                      "ITGA5": 22.30673213049317,
+                      "LAMA3": 387.3701175958003,
+                      "CDH13": 511.69556043844017,
+                      "TNC": 107.28591514339479,
+                      "MMP2": 2.2331004961973577,
+                      "EMP3": 7.88867023113197,
+                      "INHBA": 55.463419932727845,
+                      "LAMB3": 609.1509788322705,
+                      "VIM": 12.039324414281406,
+                      "SPP1": 9.636314097721206,
+                      "CXCR4": 3.1797409239331937
+                    },
+                    "pemt_mean_log2_cpm_plus1": 5.507562644168109
+                  },
+                  "myeloid": {
+                    "cells": 274,
+                    "fraction_qc": 0.042973651191969886,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2849834,
+                    "cpm": {
+                      "SPP1": 891.630880956575,
+                      "CXCR4": 477.22077847341285
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 902,
+                    "fraction_qc": 0.14146800501882056,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 3881716,
+                    "cpm": {
+                      "SPP1": 0.25761802254466837,
+                      "CXCR4": 3087.0367641527614
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 110,
+                    "fraction_qc": 0.01725219573400251,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 894910,
+                    "cpm": {
+                      "SPP1": 0,
+                      "CXCR4": 1690.672805086545
+                    }
+                  },
+                  "fibroblast": {
+                    "cells": 155,
+                    "fraction_qc": 0.0243099121706399,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1503543,
+                    "cpm": {
+                      "SPP1": 0,
+                      "CXCR4": 4.655669974187635
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 384,
+                    "fraction_qc": 0.060225846925972396,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2800534,
+                    "cpm": {
+                      "SPP1": 4.641971852510985,
+                      "CXCR4": 23.92400877832585
+                    }
+                  }
+                }
+              },
+              "3": {
+                "summary": {
+                  "qc_cells": 6376,
+                  "assigned": 2886,
+                  "mixed": 110,
+                  "unassigned": 3490
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 1689,
+                    "fraction_qc": 0.2648996235884567,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 43511222,
+                    "cpm": {
+                      "SERPINE1": 91.60855100782966,
+                      "TGFBI": 81.70306041967748,
+                      "MMP10": 4.596515354130942,
+                      "LAMC2": 296.0615539595739,
+                      "P4HA2": 49.78026128523809,
+                      "PDPN": 10.89374138929033,
+                      "ITGA5": 24.84416548907774,
+                      "LAMA3": 401.71245937427364,
+                      "CDH13": 499.98595764559315,
+                      "TNC": 123.96801910091149,
+                      "MMP2": 2.436153137689399,
+                      "EMP3": 8.434605674830276,
+                      "INHBA": 58.536623034857534,
+                      "LAMB3": 623.8160812858807,
+                      "VIM": 24.499426837517916,
+                      "SPP1": 11.445323231786043,
+                      "CXCR4": 2.73492663570791
+                    },
+                    "pemt_mean_log2_cpm_plus1": 5.799598205031447
+                  },
+                  "myeloid": {
+                    "cells": 269,
+                    "fraction_qc": 0.042189460476787954,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 3663743,
+                    "cpm": {
+                      "SPP1": 1163.8370922851302,
+                      "CXCR4": 530.0590134187905
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 305,
+                    "fraction_qc": 0.04783563362609787,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 1606960,
+                    "cpm": {
+                      "SPP1": 0,
+                      "CXCR4": 2761.736446457908
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 46,
+                    "fraction_qc": 0.007214554579673777,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "fibroblast": {
+                    "cells": 171,
+                    "fraction_qc": 0.026819322459222084,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2084936,
+                    "cpm": {
+                      "SPP1": 0,
+                      "CXCR4": 4.7963102944167115
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 406,
+                    "fraction_qc": 0.0636762860727729,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 3802744,
+                    "cpm": {
+                      "SPP1": 3.681552058197975,
+                      "CXCR4": 36.81552058197975
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "status": "EXACT_MATRIX_REPLAY_AND_MARKER_GATES",
+            "specimen": "PT5",
+            "group": "PT",
+            "matrix_sha256": "d7c2b0902c23998e5cf0c79c4187de2d150286c5584eb975ae6fdc8b36451590",
+            "thresholds": {
+              "2": {
+                "summary": {
+                  "qc_cells": 5274,
+                  "assigned": 2868,
+                  "mixed": 866,
+                  "unassigned": 2406
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 561,
+                    "fraction_qc": 0.10637087599544938,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 4496326,
+                    "cpm": {
+                      "SERPINE1": 292.68340418377136,
+                      "TGFBI": 382.97934802770084,
+                      "MMP10": 19.126727021127916,
+                      "LAMC2": 1270.3705202870076,
+                      "P4HA2": 51.15287459138862,
+                      "PDPN": 51.597682196531125,
+                      "ITGA5": 45.59277952710724,
+                      "LAMA3": 427.68251234452305,
+                      "CDH13": 237.08245354095766,
+                      "TNC": 820.8924352905016,
+                      "MMP2": 63.60748753537889,
+                      "EMP3": 8.896152102850193,
+                      "INHBA": 96.5232503159246,
+                      "LAMB3": 487.9539428413331,
+                      "VIM": 58.04739247109752,
+                      "SPP1": 19.34913082369917,
+                      "CXCR4": 4.4480760514250965
+                    },
+                    "pemt_mean_log2_cpm_plus1": 7.0304843810095266
+                  },
+                  "myeloid": {
+                    "cells": 1100,
+                    "fraction_qc": 0.20857034508911643,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 8449119,
+                    "cpm": {
+                      "SPP1": 10486.182050459936,
+                      "CXCR4": 373.64842417298183
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 701,
+                    "fraction_qc": 0.1329161926431551,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 3331697,
+                    "cpm": {
+                      "SPP1": 9.604714954571199,
+                      "CXCR4": 2147.2540870313237
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 36,
+                    "fraction_qc": 0.006825938566552901,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "fibroblast": {
+                    "cells": 264,
+                    "fraction_qc": 0.05005688282138794,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 4460412,
+                    "cpm": {
+                      "SPP1": 5.60486340723682,
+                      "CXCR4": 1.120972681447364
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 206,
+                    "fraction_qc": 0.03905953735305271,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2173512,
+                    "cpm": {
+                      "SPP1": 21.623989193526423,
+                      "CXCR4": 27.605092587480538
+                    }
+                  }
+                }
+              },
+              "3": {
+                "summary": {
+                  "qc_cells": 5274,
+                  "assigned": 1990,
+                  "mixed": 263,
+                  "unassigned": 3284
+                },
+                "compartments": {
+                  "epithelial": {
+                    "cells": 397,
+                    "fraction_qc": 0.07527493363670838,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 8157591,
+                    "cpm": {
+                      "SERPINE1": 334.0446953028167,
+                      "TGFBI": 542.5621362973457,
+                      "MMP10": 9.929401952120424,
+                      "LAMC2": 1523.4889809994152,
+                      "P4HA2": 75.38990371054396,
+                      "PDPN": 69.13805803698665,
+                      "ITGA5": 62.3958715262876,
+                      "LAMA3": 547.9558855059049,
+                      "CDH13": 258.89996201084364,
+                      "TNC": 994.9015585606094,
+                      "MMP2": 89.60978798765468,
+                      "EMP3": 10.664913207833047,
+                      "INHBA": 100.51987161405862,
+                      "LAMB3": 588.6541749886701,
+                      "VIM": 101.99089412548386,
+                      "SPP1": 17.161929299961226,
+                      "CXCR4": 4.16789711570487
+                    },
+                    "pemt_mean_log2_cpm_plus1": 7.303743314258372
+                  },
+                  "myeloid": {
+                    "cells": 683,
+                    "fraction_qc": 0.12950322335987866,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 9853695,
+                    "cpm": {
+                      "SPP1": 14792.21753869995,
+                      "CXCR4": 229.5585564602923
+                    }
+                  },
+                  "T_cell": {
+                    "cells": 384,
+                    "fraction_qc": 0.07281001137656427,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 2373664,
+                    "cpm": {
+                      "SPP1": 32.43930059182765,
+                      "CXCR4": 1752.143521576769
+                    }
+                  },
+                  "B_cell": {
+                    "cells": 16,
+                    "fraction_qc": 0.0030337504740235114,
+                    "status": "HOLD_FEWER_THAN_50_CELLS"
+                  },
+                  "fibroblast": {
+                    "cells": 272,
+                    "fraction_qc": 0.0515737580583997,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 5297027,
+                    "cpm": {
+                      "SPP1": 6.0411245779944105,
+                      "CXCR4": 3.964488004308832
+                    }
+                  },
+                  "endothelial": {
+                    "cells": 238,
+                    "fraction_qc": 0.04512703830109974,
+                    "status": "DESCRIPTIVE_MARKER_GATE_PSEUDOBULK",
+                    "umis": 3137349,
+                    "cpm": {
+                      "SPP1": 121.75884799555293,
+                      "CXCR4": 28.686639580104096
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "limits": [
+          "GEO design wording ambiguous; no donor pairing or independence claim. Exclusive detected-lineage markers, not validated clustering, malignant CNV or cell-type reference label transfer. Mixed/unknown cells excluded; dropout and tissue composition remain. Fixed 2-marker primary and 3-marker sensitivity, 50 cells minimum; a 3-marker gate for T cells is stricter than others. No cell-level exports, patient-level inference, tests, ligand-receptor claims, or newly discovered signature. pEMT context already published (PMC13081553, Puram 2017)."
+        ],
+        "scientific_status": "HOLD_NO_INDEPENDENT_INFERENCE"
+      },
+      "artifact_log": [
+        "SHA256 digest of uploaded artifact zip is e46a65f62ad07d23ad86c6dd17dbbc4811d2536cc2f6411cdef42d5df4eaa212",
+        "Artifact early-specificity-PT.zip successfully finalized. Artifact ID 15014968499"
+      ]
+    }
+  ]
+}
