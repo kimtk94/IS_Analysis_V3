@@ -1,0 +1,367 @@
+{
+  "status": "ANCHOR_CONTEXT_ONLY_NO_ADJUSTED_SIGNIFICANCE",
+  "scientific_validation": false,
+  "source_run": 46139159621,
+  "source_job": 140961040597,
+  "source_commit": "513e864f7cd9648b5d4a3dbd4b262da3dd63b41e",
+  "artifact_id": 15261006434,
+  "artifact_sha256": "8f2cc50c4690bb504a529f13e504219f3a0983de6905d4d4501c9a80fcd2fdb6",
+  "provenance": "Actual aggregate stdout; artifact ZIP not independently downloaded; source index and range hashes matched preceding pilot.",
+  "family": 27,
+  "observed": 14,
+  "missing": 13,
+  "nominal_significant": 1,
+  "bonferroni_significant": 0,
+  "genes": {
+    "ENSG00000108100": "CCNY",
+    "ENSG00000177283": "FZD8",
+    "ENSG00000177291": "GJD4",
+    "ENSG00000226646": "RP11-382K22.1",
+    "ENSG00000227313": "RP11-309N24.1",
+    "ENSG00000227475": "RP11-810B23.1",
+    "ENSG00000264780": "MIR4683",
+    "ENSG00000271335": "RP11-324I22.4",
+    "ENSG00000273312": "RP11-425A6.5"
+  },
+  "sources": [
+    {
+      "dataset": "QTD000131",
+      "tissue": "GTEx Aorta",
+      "counts": {
+        "ENSG00000108100": {
+          "rows": 3070,
+          "valid_numeric_rows": 3070,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": -0.0379704,
+            "se": 0.073042,
+            "maf_not_eaf": 0.156331,
+            "source_p": 0.603482,
+            "normal_wald_p_diagnostic": 0.6031727428790913,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.18113008935877067,
+              0.10518928935877069
+            ]
+          }
+        },
+        "ENSG00000177283": {
+          "rows": 3407,
+          "valid_numeric_rows": 3407,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": 0.0993244,
+            "se": 0.068981,
+            "maf_not_eaf": 0.156331,
+            "source_p": 0.150742,
+            "normal_wald_p_diagnostic": 0.14990119766154067,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.035875875617553746,
+              0.23452467561755375
+            ]
+          }
+        },
+        "ENSG00000177291": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000226646": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000227313": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000227475": {
+          "rows": 3407,
+          "valid_numeric_rows": 3407,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": 0.0501378,
+            "se": 0.0642278,
+            "maf_not_eaf": 0.156331,
+            "source_p": 0.43552,
+            "normal_wald_p_diagnostic": 0.43502332515823494,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.07574637480623822,
+              0.17602197480623824
+            ]
+          }
+        },
+        "ENSG00000264780": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000271335": {
+          "rows": 3407,
+          "valid_numeric_rows": 3407,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": -0.178344,
+            "se": 0.0749417,
+            "maf_not_eaf": 0.156331,
+            "source_p": 0.0178269,
+            "normal_wald_p_diagnostic": 0.017323452764164884,
+            "bonferroni_27": 0.4813263,
+            "ci95_normal": [
+              -0.32522703294020133,
+              -0.03146096705979867
+            ]
+          }
+        },
+        "ENSG00000273312": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        }
+      }
+    },
+    {
+      "dataset": "QTD000171",
+      "tissue": "GTEx Cortex",
+      "counts": {
+        "ENSG00000108100": {
+          "rows": 2826,
+          "valid_numeric_rows": 2826,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": -0.0786205,
+            "se": 0.0650387,
+            "maf_not_eaf": 0.168293,
+            "source_p": 0.228232,
+            "normal_wald_p_diagnostic": 0.22672953255282374,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.2060940096013017,
+              0.04885300960130172
+            ]
+          }
+        },
+        "ENSG00000177283": {
+          "rows": 3149,
+          "valid_numeric_rows": 3149,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": -0.00218152,
+            "se": 0.0927002,
+            "maf_not_eaf": 0.168293,
+            "source_p": 0.98125,
+            "normal_wald_p_diagnostic": 0.9812250622822218,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.1838705733596549,
+              0.1795075333596549
+            ]
+          }
+        },
+        "ENSG00000177291": {
+          "rows": 3149,
+          "valid_numeric_rows": 3149,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": -0.0349707,
+            "se": 0.0988758,
+            "maf_not_eaf": 0.168293,
+            "source_p": 0.723968,
+            "normal_wald_p_diagnostic": 0.7235763851591162,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.22876370694258014,
+              0.15882230694258015
+            ]
+          }
+        },
+        "ENSG00000226646": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000227313": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000227475": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000264780": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000271335": {
+          "rows": 3149,
+          "valid_numeric_rows": 3149,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": -0.0699322,
+            "se": 0.0847842,
+            "maf_not_eaf": 0.168293,
+            "source_p": 0.410505,
+            "normal_wald_p_diagnostic": 0.4094704673894967,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.23610617845803628,
+              0.09624177845803628
+            ]
+          }
+        },
+        "ENSG00000273312": {
+          "rows": 3149,
+          "valid_numeric_rows": 3149,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": -0.0855418,
+            "se": 0.080958,
+            "maf_not_eaf": 0.168293,
+            "source_p": 0.292027,
+            "normal_wald_p_diagnostic": 0.2906852856635632,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.24421656426038935,
+              0.07313296426038934
+            ]
+          }
+        }
+      }
+    },
+    {
+      "dataset": "QTD000434",
+      "tissue": "ROSMAP DLPFC",
+      "counts": {
+        "ENSG00000108100": {
+          "rows": 3257,
+          "valid_numeric_rows": 3257,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": 0.082735,
+            "se": 0.0741193,
+            "maf_not_eaf": 0.153571,
+            "source_p": 0.264811,
+            "normal_wald_p_diagnostic": 0.2643189978066393,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.06253615855931563,
+              0.22800615855931564
+            ]
+          }
+        },
+        "ENSG00000177283": {
+          "rows": 3630,
+          "valid_numeric_rows": 3630,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": -0.0529117,
+            "se": 0.0626774,
+            "maf_not_eaf": 0.153571,
+            "source_p": 0.398933,
+            "normal_wald_p_diagnostic": 0.398562656058034,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.1757571466446074,
+              0.06993374664460739
+            ]
+          }
+        },
+        "ENSG00000177291": {
+          "rows": 3630,
+          "valid_numeric_rows": 3630,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": 0.0202825,
+            "se": 0.0679008,
+            "maf_not_eaf": 0.153571,
+            "source_p": 0.765276,
+            "normal_wald_p_diagnostic": 0.7651629892050282,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.11280062252145363,
+              0.15336562252145364
+            ]
+          }
+        },
+        "ENSG00000226646": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000227313": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000227475": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000264780": {
+          "rows": 0,
+          "valid_numeric_rows": 0,
+          "anchor_rows": 0,
+          "anchor_effect": null
+        },
+        "ENSG00000271335": {
+          "rows": 3630,
+          "valid_numeric_rows": 3630,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": -0.05855,
+            "se": 0.0609697,
+            "maf_not_eaf": 0.153571,
+            "source_p": 0.337323,
+            "normal_wald_p_diagnostic": 0.3368976722412797,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.17804841614820843,
+              0.060948416148208444
+            ]
+          }
+        },
+        "ENSG00000273312": {
+          "rows": 3630,
+          "valid_numeric_rows": 3630,
+          "anchor_rows": 1,
+          "anchor_effect": {
+            "beta_ALT_T": 0.05064,
+            "se": 0.0531104,
+            "maf_not_eaf": 0.153571,
+            "source_p": 0.340766,
+            "normal_wald_p_diagnostic": 0.3403441041540437,
+            "bonferroni_27": 1,
+            "ci95_normal": [
+              -0.05345447120451322,
+              0.15473447120451322
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Anchor-only QTL, no formal colocalization or tissue-level eGene significance.",
+    "Absence of significance does not exclude alternative regional variants or cell-specific effects.",
+    "Source MAF is not effect allele frequency. No cross-tissue pooled estimate or causal interpretation."
+  ]
+}
