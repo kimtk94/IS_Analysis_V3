@@ -1,0 +1,130 @@
+{
+  "run_id": 46125042935,
+  "source_commit": "1cea374195110d947bd9ec2687640e63a426e213",
+  "note": "Actual job log JSON; positive control works, both target project paths 404; global index cap exceeded and one article timed out. No expression data or scientific inference.",
+  "jobs": [
+    {
+      "job_id": 140917673105,
+      "result": {
+        "status": "CORRECTED_SOURCE_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "source_documentation": "https://rna.recount.bio/docs/quick-access.html",
+        "projects": {
+          "SRP009615": {
+            "sra": {
+              "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/15/SRP009615/sra.sra.SRP009615.MD.gz",
+              "status": "FOUND",
+              "sha256": "cde49acb52c199f42d9d24c74d47a641b97f839a410d618c488c2e4f9b59d597",
+              "run_ids": [
+                "SRR387777",
+                "SRR387778",
+                "SRR387779",
+                "SRR387780",
+                "SRR389077",
+                "SRR389078",
+                "SRR389079",
+                "SRR389080",
+                "SRR389081",
+                "SRR389082",
+                "SRR389083",
+                "SRR389084"
+              ]
+            },
+            "recount_project": {
+              "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/15/SRP009615/sra.recount_project.SRP009615.MD.gz",
+              "status": "FOUND",
+              "sha256": "52cc783ce6a2e4c1f4cf77f1506f2fa7d9ce7658e4850a5c488ade103a7cc8f5",
+              "run_ids": [
+                "SRR387777",
+                "SRR387778",
+                "SRR387779",
+                "SRR387780",
+                "SRR389077",
+                "SRR389078",
+                "SRR389079",
+                "SRR389080",
+                "SRR389081",
+                "SRR389082",
+                "SRR389083",
+                "SRR389084"
+              ]
+            },
+            "matrix": {
+              "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/gene_sums/15/SRP009615/sra.gene_sums.SRP009615.G026.gz",
+              "http": 200,
+              "bytes": "1515567"
+            }
+          },
+          "SRP346461": {
+            "sra": {
+              "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/61/SRP346461/sra.sra.SRP346461.MD.gz",
+              "status": "HOLD",
+              "error": "HTTPError: HTTP Error 404: Not Found"
+            },
+            "recount_project": {
+              "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/61/SRP346461/sra.recount_project.SRP346461.MD.gz",
+              "status": "HOLD",
+              "error": "HTTPError: HTTP Error 404: Not Found"
+            },
+            "matrix": {
+              "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/gene_sums/61/SRP346461/sra.gene_sums.SRP346461.G026.gz",
+              "error": "HTTPError: HTTP Error 404: Not Found"
+            }
+          },
+          "SRP319815": {
+            "sra": {
+              "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/15/SRP319815/sra.sra.SRP319815.MD.gz",
+              "status": "HOLD",
+              "error": "HTTPError: HTTP Error 404: Not Found"
+            },
+            "recount_project": {
+              "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/metadata/15/SRP319815/sra.recount_project.SRP319815.MD.gz",
+              "status": "HOLD",
+              "error": "HTTPError: HTTP Error 404: Not Found"
+            },
+            "matrix": {
+              "url": "https://duffel.rail.bio/recount3/human/data_sources/sra/gene_sums/15/SRP319815/sra.gene_sums.SRP319815.G026.gz",
+              "error": "HTTPError: HTTP Error 404: Not Found"
+            }
+          }
+        },
+        "previous_404_invalid": "wrong filename convention",
+        "global_index": {
+          "error": "ValueError: decompression cap"
+        },
+        "positive_control_metadata_pass": true
+      }
+    },
+    {
+      "job_id": 140917673300,
+      "result": {
+        "status": "ARTICLE_INVENTORY_ONLY",
+        "scientific_validation": false,
+        "articles": {
+          "PMC9117214": {
+            "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9117214/fullTextXML",
+            "sha256": "9a8a35b726d85f6ede9fde2e2c7c0e29f48d8d9e6197c005ae2beb220251b55e",
+            "title": "Short and long-term effect of dexamethasone on the transcriptome profile of primary human trabecular meshwork cells in vitro",
+            "supplements": [
+              {
+                "id": "MOESM1",
+                "refs": [
+                  "41598_2022_12443_MOESM1_ESM.pdf"
+                ],
+                "caption": ""
+              }
+            ],
+            "project_mentions": [
+              "PRJNA729873",
+              "PRJNA781014"
+            ]
+          },
+          "PMC9140469": {
+            "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9140469/fullTextXML",
+            "error": "TimeoutError: The read operation timed out"
+          }
+        }
+      }
+    }
+  ]
+}
