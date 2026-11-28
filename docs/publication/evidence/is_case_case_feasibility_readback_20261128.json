@@ -1,0 +1,137 @@
+{
+  "date": "2026-11-28",
+  "provenance": {
+    "run": 46136554213,
+    "job": 140953039282,
+    "source_commit": "147523350c555818dfadea1b8acdd7f0e08b9fa3",
+    "readback": "Aggregate JSON parsed from actual job stdout, not independent artifact extraction.",
+    "regression_run": 46136558443,
+    "regression_job": 140953052684,
+    "tests": 626,
+    "passed": 625,
+    "skipped": 1
+  },
+  "result": {
+    "status": "CASE_CASE_DESIGN_ONLY",
+    "scientific_validation": false,
+    "scenario_count": 96,
+    "registry_count": 96,
+    "selected": [
+      {
+        "ancestry": "EAS",
+        "family": 48,
+        "assumed_eaf": 0.2,
+        "retained": 1,
+        "target_power": 0.8,
+        "delta": -0.3118,
+        "svs": 1100,
+        "ces": 1100,
+        "achieved_power": 0.8044074450646076
+      },
+      {
+        "ancestry": "EAS",
+        "family": 48,
+        "assumed_eaf": 0.2,
+        "retained": 0.75,
+        "target_power": 0.8,
+        "delta": -0.23385,
+        "svs": 2000,
+        "ces": 2000,
+        "achieved_power": 0.8170584145727021
+      },
+      {
+        "ancestry": "EAS",
+        "family": 48,
+        "assumed_eaf": 0.2,
+        "retained": 0.5,
+        "target_power": 0.8,
+        "delta": -0.1559,
+        "svs": 4400,
+        "ces": 4400,
+        "achieved_power": 0.8044074450646076
+      },
+      {
+        "ancestry": "EUR",
+        "family": 48,
+        "assumed_eaf": 0.2,
+        "retained": 1,
+        "target_power": 0.8,
+        "delta": -0.2983,
+        "svs": 1200,
+        "ces": 1200,
+        "achieved_power": 0.8035421694639558
+      },
+      {
+        "ancestry": "EUR",
+        "family": 48,
+        "assumed_eaf": 0.2,
+        "retained": 0.75,
+        "target_power": 0.8,
+        "delta": -0.223725,
+        "svs": 2200,
+        "ces": 2200,
+        "achieved_power": 0.8208027816991239
+      },
+      {
+        "ancestry": "EUR",
+        "family": 48,
+        "assumed_eaf": 0.2,
+        "retained": 0.5,
+        "target_power": 0.8,
+        "delta": -0.14915,
+        "svs": 4800,
+        "ces": 4800,
+        "achieved_power": 0.8035421694639558
+      }
+    ],
+    "registry_example": [
+      {
+        "family": 48,
+        "assumed_eaf": 0.2,
+        "retained": 1,
+        "svs_fraction": 0.25,
+        "ces_fraction": 0.15,
+        "svs": 1332,
+        "ces": 799,
+        "power": 0.7462346705448085
+      },
+      {
+        "family": 48,
+        "assumed_eaf": 0.2,
+        "retained": 0.75,
+        "svs_fraction": 0.25,
+        "ces_fraction": 0.15,
+        "svs": 1332,
+        "ces": 799,
+        "power": 0.37344593393002135
+      },
+      {
+        "family": 48,
+        "assumed_eaf": 0.2,
+        "retained": 0.5,
+        "svs_fraction": 0.25,
+        "ces_fraction": 0.15,
+        "svs": 1332,
+        "ces": 799,
+        "power": 0.09540818279851648
+      }
+    ]
+  },
+  "decision": {
+    "status": "HOLD_EXTERNAL_INPUT_AND_PROTOCOL_REVIEW",
+    "external_inputs_received": 0,
+    "priority": "Retain LAS ancestry contrast and SVS-CES case-case as distinct estimands; neither replaces the other without explicit protocol review.",
+    "limits": [
+      "Hypothetical EAF .20 and subtype fractions, no verified case-case allele frequency or actual eligible N.",
+      "Discovery marginal logOR differences are planning effects, not observed independent case-case effects; ascertainment, ancestry, TOAST definitions, covariates and sample overlap must be reviewed.",
+      "Joint 48 tests only covers 24 markers by two ancestry-specific SVS-CES comparisons; additional tested families require appropriate multiplicity control.",
+      "GENESIS-K 5328 enrollment is not an eligible genotyped analytic sample. Registry scenario uses hypothetical 1332 SVS and 799 CES cases.",
+      "Case-case contrast does not identify absolute stroke risk, causal molecular effect, or replicate EAS-EUR LAS contrast."
+    ],
+    "next": [
+      "Request aggregate eligible subtype counts, marker EAF, genotype QC and overlap attestation; no individual records required.",
+      "Compare exact 24-marker prior published subtype associations before protocol freeze; do not select based on unseen validation outcomes.",
+      "Obtain independent eligible summary estimates, then run separately reviewed frozen analysis."
+    ]
+  }
+}
