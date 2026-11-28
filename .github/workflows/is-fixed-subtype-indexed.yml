@@ -1,0 +1,87 @@
+name: IS fixed five variant indexed subtype contrasts
+on:
+  push:
+    branches: [research/is-fixed-subtype-indexed-20261125]
+    paths: ['scripts/is/fixed_subtype_indexed.py','.github/workflows/is-fixed-subtype-indexed.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          python -m pip install 'PyYAML==6.0.2'
+          python scripts/is/fixed_subtype_indexed.py selftest
+          python scripts/is/fixed_subtype_indexed.py reference --out outputs/reference.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fixed-is-reference
+          path: outputs/reference.json
+          if-no-files-found: error
+          retention-days: 90
+  extract:
+    needs: reference
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        study: [EUR_AIS, EUR_CES, EUR_LAS, EUR_SVS, EAS_AIS, EAS_CES, EAS_LAS, EAS_SVS]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: fixed-is-reference
+          path: inputs/
+      - run: |
+          python -m pip install 'PyYAML==6.0.2'
+          python scripts/is/fixed_subtype_indexed.py extract --study "${{ matrix.study }}" --ref inputs/reference.json --out "outputs/${{ matrix.study }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fixed-is-${{ matrix.study }}
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
+  contrasts:
+    if: ${{ always() && needs.reference.result == 'success' }}
+    needs: [reference, extract]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: fixed-is-*
+          path: inputs/
+      - run: |
+          python -m pip install 'PyYAML==6.0.2'
+          mkdir -p studies
+          for study in EUR_AIS EUR_CES EUR_LAS EUR_SVS EAS_AIS EAS_CES EAS_LAS EAS_SVS; do
+            if [ -d "inputs/fixed-is-$study" ]; then mv "inputs/fixed-is-$study" "studies/$study"; fi
+          done
+          python scripts/is/fixed_subtype_indexed.py combine --root studies --out outputs/contrasts.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fixed-is-indexed-contrasts
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 90
