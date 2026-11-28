@@ -1,0 +1,676 @@
+{
+  "provenance": {
+    "run_id": 46139563419,
+    "job_id": 140962256088,
+    "commit": "adf6fc3180e9f44b1655123ce10b6cd3fddb5f4a",
+    "artifacts": [
+      {
+        "id": 15260872320,
+        "digest": "sha256:87ee1eeca0a436ee8a08b70effea80a31d7627a9aef2dc76126becc90b124256",
+        "name": "is-g0014-common-las-qtl-profiles"
+      }
+    ],
+    "readback": "Actual job stdout; input GWAS ZIP digest and QTL index/range hashes verified by CI; output ZIP not independently downloaded."
+  },
+  "result": {
+    "status": "HOLD_DESCRIPTIVE_COMMON_REGION_ONLY",
+    "scientific_validation": false,
+    "formal_coloc": 0,
+    "family": 27,
+    "gwas_common_denominator": 1099,
+    "region_GRCh38": {
+      "start": 35333363,
+      "end": 36333363
+    },
+    "cells": [
+      {
+        "dataset": "QTD000131",
+        "gene_id": "ENSG00000108100",
+        "gene": "CCNY",
+        "regional_rows": 3070,
+        "strict_unique_pairs": 2365,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 705,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 992,
+        "qtl_coverage": 0.41945031712473574,
+        "common_gwas_coverage": 0.902638762511374,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": 0.03221061999114948,
+            "spearman_signed_z": 0.00007350588811739342,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs603817",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": -0.11059245307546943,
+            "spearman_signed_z": -0.09672030889727301,
+            "top10_overlap": 0,
+            "top50_overlap": 1,
+            "best_qtl_rsid": "rs603817",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000131",
+        "gene_id": "ENSG00000177283",
+        "gene": "FZD8",
+        "regional_rows": 3407,
+        "strict_unique_pairs": 2629,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 778,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1092,
+        "qtl_coverage": 0.41536705971852417,
+        "common_gwas_coverage": 0.9936305732484076,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": 0.16249301256667528,
+            "spearman_signed_z": -0.03736216703895363,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs315646",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": -0.08844413470735596,
+            "spearman_signed_z": -0.1193997698632383,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs315646",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000131",
+        "gene_id": "ENSG00000177291",
+        "gene": "GJD4",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000131",
+        "gene_id": "ENSG00000226646",
+        "gene": "RP11-382K22.1",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000131",
+        "gene_id": "ENSG00000227313",
+        "gene": "RP11-309N24.1",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000131",
+        "gene_id": "ENSG00000227475",
+        "gene": "RP11-810B23.1",
+        "regional_rows": 3407,
+        "strict_unique_pairs": 2629,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 778,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1092,
+        "qtl_coverage": 0.41536705971852417,
+        "common_gwas_coverage": 0.9936305732484076,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": 0.1620658137710773,
+            "spearman_signed_z": 0.3110477514909084,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs10827602",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": -0.080952184998122,
+            "spearman_signed_z": 0.24175180663250764,
+            "top10_overlap": 0,
+            "top50_overlap": 1,
+            "best_qtl_rsid": "rs10827602",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000131",
+        "gene_id": "ENSG00000264780",
+        "gene": "MIR4683",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000131",
+        "gene_id": "ENSG00000271335",
+        "gene": "RP11-324I22.4",
+        "regional_rows": 3407,
+        "strict_unique_pairs": 2629,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 778,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1092,
+        "qtl_coverage": 0.41536705971852417,
+        "common_gwas_coverage": 0.9936305732484076,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": 0.1349392899985563,
+            "spearman_signed_z": 0.07083085564129399,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs12781229",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": -0.1523289333668929,
+            "spearman_signed_z": 0.3379086130282042,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs12781229",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000131",
+        "gene_id": "ENSG00000273312",
+        "gene": "RP11-425A6.5",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000171",
+        "gene_id": "ENSG00000108100",
+        "gene": "CCNY",
+        "regional_rows": 2826,
+        "strict_unique_pairs": 2179,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 647,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 992,
+        "qtl_coverage": 0.45525470399265716,
+        "common_gwas_coverage": 0.902638762511374,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": -0.043171725929844855,
+            "spearman_signed_z": -0.2914462229740611,
+            "top10_overlap": 0,
+            "top50_overlap": 5,
+            "best_qtl_rsid": "rs12775190",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": -0.04053328305167103,
+            "spearman_signed_z": -0.25417240458481966,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs12775190",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000171",
+        "gene_id": "ENSG00000177283",
+        "gene": "FZD8",
+        "regional_rows": 3149,
+        "strict_unique_pairs": 2429,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 720,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1092,
+        "qtl_coverage": 0.4495677233429395,
+        "common_gwas_coverage": 0.9936305732484076,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": -0.1145469118075983,
+            "spearman_signed_z": -0.13839626593189136,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs72783007",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": 0.10880473105215469,
+            "spearman_signed_z": 0.052431642443352085,
+            "top10_overlap": 0,
+            "top50_overlap": 2,
+            "best_qtl_rsid": "rs72783007",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000171",
+        "gene_id": "ENSG00000177291",
+        "gene": "GJD4",
+        "regional_rows": 3149,
+        "strict_unique_pairs": 2429,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 720,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1092,
+        "qtl_coverage": 0.4495677233429395,
+        "common_gwas_coverage": 0.9936305732484076,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": -0.06796396440946378,
+            "spearman_signed_z": -0.1832835141732932,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs7906681",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": 0.06061320587720436,
+            "spearman_signed_z": -0.28683536731880777,
+            "top10_overlap": 0,
+            "top50_overlap": 18,
+            "best_qtl_rsid": "rs7906681",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000171",
+        "gene_id": "ENSG00000226646",
+        "gene": "RP11-382K22.1",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000171",
+        "gene_id": "ENSG00000227313",
+        "gene": "RP11-309N24.1",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000171",
+        "gene_id": "ENSG00000227475",
+        "gene": "RP11-810B23.1",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000171",
+        "gene_id": "ENSG00000264780",
+        "gene": "MIR4683",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000171",
+        "gene_id": "ENSG00000271335",
+        "gene": "RP11-324I22.4",
+        "regional_rows": 3149,
+        "strict_unique_pairs": 2429,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 720,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1092,
+        "qtl_coverage": 0.4495677233429395,
+        "common_gwas_coverage": 0.9936305732484076,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": -0.31844189161072217,
+            "spearman_signed_z": 0.046642676256142344,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs10764044",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": 0.2344980146912099,
+            "spearman_signed_z": 0.5259197104775329,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs10764044",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000171",
+        "gene_id": "ENSG00000273312",
+        "gene": "RP11-425A6.5",
+        "regional_rows": 3149,
+        "strict_unique_pairs": 2429,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 720,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1092,
+        "qtl_coverage": 0.4495677233429395,
+        "common_gwas_coverage": 0.9936305732484076,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": 0.08961434342277708,
+            "spearman_signed_z": -0.3625013603814826,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs1107425",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": -0.12170680796924005,
+            "spearman_signed_z": -0.09081969977347762,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs1107425",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000434",
+        "gene_id": "ENSG00000108100",
+        "gene": "CCNY",
+        "regional_rows": 3257,
+        "strict_unique_pairs": 2014,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 1243,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 995,
+        "qtl_coverage": 0.4940417080436941,
+        "common_gwas_coverage": 0.905368516833485,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": 0.17846157342344354,
+            "spearman_signed_z": 0.31517713239443584,
+            "top10_overlap": 0,
+            "top50_overlap": 19,
+            "best_qtl_rsid": "rs16936389",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": -0.18446040341214284,
+            "spearman_signed_z": -0.20166479329273573,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs16936389",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000434",
+        "gene_id": "ENSG00000177283",
+        "gene": "FZD8",
+        "regional_rows": 3630,
+        "strict_unique_pairs": 2251,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 1379,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1095,
+        "qtl_coverage": 0.4864504664593514,
+        "common_gwas_coverage": 0.9963603275705186,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": 0.09081156708286243,
+            "spearman_signed_z": -0.03903597786700754,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs12354495",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": 0.010847865697128957,
+            "spearman_signed_z": 0.14222002406546128,
+            "top10_overlap": 0,
+            "top50_overlap": 11,
+            "best_qtl_rsid": "rs12354495",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000434",
+        "gene_id": "ENSG00000177291",
+        "gene": "GJD4",
+        "regional_rows": 3630,
+        "strict_unique_pairs": 2251,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 1379,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1095,
+        "qtl_coverage": 0.4864504664593514,
+        "common_gwas_coverage": 0.9963603275705186,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": -0.1666361848321229,
+            "spearman_signed_z": 0.21651507741718495,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs10764084",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": -0.0025195969131183533,
+            "spearman_signed_z": -0.28333494301516776,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs10764084",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000434",
+        "gene_id": "ENSG00000226646",
+        "gene": "RP11-382K22.1",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000434",
+        "gene_id": "ENSG00000227313",
+        "gene": "RP11-309N24.1",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000434",
+        "gene_id": "ENSG00000227475",
+        "gene": "RP11-810B23.1",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000434",
+        "gene_id": "ENSG00000264780",
+        "gene": "MIR4683",
+        "regional_rows": 0,
+        "strict_unique_pairs": 0,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 0,
+        "status": "NO_MATCH_OR_NO_RECORD",
+        "matched": 0,
+        "qtl_coverage": null,
+        "common_gwas_coverage": 0,
+        "anchor_matched": false,
+        "profiles": {}
+      },
+      {
+        "dataset": "QTD000434",
+        "gene_id": "ENSG00000271335",
+        "gene": "RP11-324I22.4",
+        "regional_rows": 3630,
+        "strict_unique_pairs": 2251,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 1379,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1095,
+        "qtl_coverage": 0.4864504664593514,
+        "common_gwas_coverage": 0.9963603275705186,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": 0.032445690858148205,
+            "spearman_signed_z": 0.04445462149251441,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs12770412",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": -0.10474747984157858,
+            "spearman_signed_z": 0.16262534324863667,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs12770412",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      },
+      {
+        "dataset": "QTD000434",
+        "gene_id": "ENSG00000273312",
+        "gene": "RP11-425A6.5",
+        "regional_rows": 3630,
+        "strict_unique_pairs": 2251,
+        "conflicting_pairs": 0,
+        "excluded_non_strict_rows": 1379,
+        "status": "DESCRIPTIVE_COMMON_MATCH",
+        "matched": 1095,
+        "qtl_coverage": 0.4864504664593514,
+        "common_gwas_coverage": 0.9963603275705186,
+        "anchor_matched": true,
+        "profiles": {
+          "EAS": {
+            "spearman_strength": -0.1784959353986948,
+            "spearman_signed_z": 0.25695606890612627,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs657039",
+            "best_gwas_rsid": "rs2767060"
+          },
+          "EUR": {
+            "spearman_strength": 0.1957277675674788,
+            "spearman_signed_z": -0.46619761023911843,
+            "top10_overlap": 0,
+            "top50_overlap": 0,
+            "best_qtl_rsid": "rs657039",
+            "best_gwas_rsid": "rs994544"
+          }
+        }
+      }
+    ],
+    "limits": [
+      "Common two-ancestry GWAS subset only; not pairwise maximum coverage or complete cis. No FASTA confirmation or matched LD, model N/sdY or formal coloc. Rank associations are descriptive; no correlation P-values because LD-dependent variants. Missing cells not negative."
+    ],
+    "matched_cells": 14,
+    "hold_cells": 0
+  }
+}
