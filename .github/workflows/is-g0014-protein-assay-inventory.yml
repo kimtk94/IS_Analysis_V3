@@ -1,0 +1,41 @@
+name: IS G0014 public protein assay inventory
+on:
+  push:
+    branches: [research/is-g0014-qtl-pilot-20261128]
+    paths: ['.github/workflows/is-g0014-protein-assay-inventory.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read official UKB Showcase assay dictionary only
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,re,urllib.request,urllib.parse
+          from pathlib import Path
+          url='https://biobank.ndph.ox.ac.uk/ukb/ukb/auxdata/olink_assay.dat'
+          targets=('FZD8','CCNY','GJD4')
+          out={'status':'HOLD_ASSAY_DICTIONARY_ONLY','scientific_validation':False,'source':url,'targets':targets,'limits':['Public assay dictionary is not ancestry-specific pQTL availability or an exact study assay manifest. No association result or nonmeasurement inference from absent token. No controlled-access data, credentials or downloads.']}
+          try:
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'IS-public-assay-inventory/1.0'}),timeout=40) as res:
+                  assert res.status==200 and urllib.parse.urlparse(res.geturl()).hostname=='biobank.ndph.ox.ac.uk'
+                  raw=res.read(2000001)
+              assert 0<len(raw)<=2000000
+              lines=raw.decode('utf-8-sig').splitlines()
+              assert len(lines)>100 and not any('<html' in x.lower() for x in lines[:5])
+              out.update(status='PUBLIC_DICTIONARY_TOKEN_INVENTORY',sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw),lines=len(lines),header_or_first_record=lines[0][:300],hits={g:[x[:500] for x in lines if re.search(r'(?<![A-Za-z0-9])'+g+r'(?![A-Za-z0-9])',x,re.I)] for g in targets})
+          except Exception as e:out['error']=type(e).__name__+': '+str(e)[:400]
+          Path('assays.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          if out['status'].startswith('HOLD'):raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-g0014-public-protein-assay-inventory
+          path: assays.json
+          if-no-files-found: warn
+          retention-days: 90

@@ -1,0 +1,52 @@
+name: IS G0014 FZD8 public credible-set schema and study audit
+on:
+  push:
+    branches: [research/is-g0014-qtl-pilot-20261128]
+    paths: ['.github/workflows/is-g0014-fzd8-study-detail.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Resolve live schema before querying exact study
+        run: |
+          python3 - <<'PY'
+          import json,hashlib,urllib.request,urllib.error
+          from pathlib import Path
+          url='https://api.platform.opentargets.org/api/v4/graphql'
+          sid='UKB_PPP_EUR_FZD8_Q9H461_OID30818_v1'
+          out={'status':'HOLD_PUBLIC_STUDY_DETAIL','scientific_validation':False,'study_id':sid,'prior_search_run':46140344580,'limits':['Public fine-mapped context, not complete regional summary statistics.']}
+          def save():Path('study.json').write_text(json.dumps(out,indent=2,allow_nan=False)+'\n')
+          def query(q):
+              req=urllib.request.Request(url,data=json.dumps({'query':q}).encode(),headers={'Content-Type':'application/json','Accept':'application/json'})
+              with urllib.request.urlopen(req,timeout=35) as res:
+                  raw=res.read(4000001)
+              assert len(raw)<=4000000
+              x=json.loads(raw)
+              if x.get('errors'):raise ValueError(str(x['errors'])[:500])
+              return x['data'],hashlib.sha256(raw).hexdigest()
+          try:
+              d,h=query('{__type(name:"Study"){fields{name args{name} type{kind name ofType{kind name ofType{kind name}}}}}}')
+              fields=d['__type']['fields'];out['schema_sha256']=h;out['study_fields']=fields
+              scalar=[f['name'] for f in fields if not f['args'] and (f['type']['kind'] in ('SCALAR','ENUM') or f['type']['kind']=='NON_NULL' and f['type']['ofType']['kind'] in ('SCALAR','ENUM'))]
+              keep=[s for s in ('id','studyId','studyType','traitFromSource','nSamples','nCases','nControls','projectId','geneId','condition','biosampleId') if s in scalar]
+              assert keep
+              d,h=query('{study(studyId:'+json.dumps(sid)+'){'+ ' '.join(keep)+'}}')
+              assert d['study'] is not None
+              for k in ('id','studyId'):
+                  if k in d['study']:assert d['study'][k]==sid
+              out.update(status='PUBLIC_STUDY_METADATA_ONLY',study=d['study'],response_sha256=h)
+          except urllib.error.HTTPError as e:out['error']=str(e);out['http_error_body']=e.read(4000).decode(errors='replace')
+          except Exception as e:out['error']=type(e).__name__+': '+str(e)[:500]
+          save();print(json.dumps(out,indent=2))
+          if out['status'].startswith('HOLD'):raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-g0014-fzd8-study-detail
+          path: study.json
+          if-no-files-found: warn
+          retention-days: 90

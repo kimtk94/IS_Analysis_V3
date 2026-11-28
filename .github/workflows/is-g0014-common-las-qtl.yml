@@ -1,0 +1,131 @@
+name: IS G0014 common LAS QTL regional profiles
+on:
+  push:
+    branches: [research/is-g0014-qtl-pilot-20261128]
+    paths: ['.github/workflows/is-g0014-common-las-qtl.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  profiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Retrieve verified prior two-ancestry regional GWAS artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/kimtk94/IS_Analysis_V3/actions/artifacts/14998202102/zip > las.zip
+          echo '6553d594e883a5edc57a8533ff8e6b37432b3df8d6227e7838d22afd90874226  las.zip' | sha256sum -c -
+      - name: Compare fixed common SNP profiles across all gene-source cells
+        run: |
+          python3 - <<'PY'
+          import json, math, time, re, zipfile, collections, statistics
+          from pathlib import Path
+          from importlib import import_module
+          get=import_module('scripts.is.qtl_original_indexed_http_range').source_indexed_range
+          cols=import_module('scripts.is.audit_p3a_indexed_qtl_real_chr10').OFFICIAL_COLUMN_ORDER
+          prior=json.loads(Path('docs/is/evidence/IS_G0014_ANCHOR_QTL_READBACK_20261128.json').read_text())
+          assert prior['family']==27 and prior['observed']==14
+          genes=prior['genes']; anchor=35833363
+          region={'start':anchor-500000,'end':anchor+500000}
+          with zipfile.ZipFile('las.zip') as z:
+              assert z.namelist()==['las-region.json'] and z.getinfo('las-region.json').file_size<10000000
+              g=json.loads(z.read('las-region.json'))
+          assert g['status']=='DESCRIPTIVE_POST_READOUT_LAS_REGION' and g['exact_matched']==len(g['rows'])==1099
+          assert g['region']=='10:35333363-36333363'
+          def strict(a,b):return len(a)==len(b)==1 and a in 'ACGT' and b in 'ACGT' and a!=b and {a,b} not in ({'A','T'},{'C','G'})
+          def key(pos,a,b):return (int(pos),''.join(sorted(a+b)))
+          gw={}
+          for x in g['rows']:
+              a,b=x['effect_allele'],x['other_allele'];assert strict(a,b)
+              k=key(x['pos'],a,b);assert k not in gw
+              assert re.fullmatch(r'rs[0-9]+',x['rsid'])
+              for pop in ('EAS','EUR'):
+                  assert all(math.isfinite(x[pop+'_'+f]) for f in ('beta','se','p')) and x[pop+'_se']>0 and 0<=x[pop+'_p']<=1
+              gw[k]=x
+          assert gw[(anchor,'CT')]['rsid']=='rs2767060'
+          assert gw[(anchor,'CT')]['EAS_beta']==.3582 and gw[(anchor,'CT')]['EUR_beta']==-.009
+          pins={'QTD000131':('QTS000015','7cc0d7e4707f4b7864b82de230778439c58574bdfbf367158098ad9a2c105013','9e6e47f4593d5b4b158058acab3fa9cf589a5ea67eb83f7d7ce89ecfb5b120fc',33328),'QTD000171':('QTS000015','51033716008ef1460b68698ec84aecb70b9eb7ebd157ebc96d6f11b44f3ad6bd','e48a07b70d4b30fde200ff230848f914d9ee0631a0af946f443fcca76ed5fa15',36291),'QTD000434':('QTS000025','6cbf12826e19a61594662972a1205ba38cdd3071984e51c24261bff8ace9806a','40a152b7abb00f17095e763f1e67080be276fb36b20a3bb53341223caea3607f',37796)}
+          def ranks(v):
+              order=sorted(range(len(v)),key=lambda i:v[i]);out=[0.]*len(v);i=0
+              while i<len(v):
+                  j=i+1
+                  while j<len(v) and v[order[j]]==v[order[i]]:j+=1
+                  for k in order[i:j]:out[k]=(i+1+j)/2
+                  i=j
+              return out
+          def rho(a,b):
+              if len(a)<3 or len(set(a))<2 or len(set(b))<2:return None
+              return statistics.correlation(ranks(a),ranks(b))
+          assert abs(rho([1,2,3],[3,2,1])+1)<1e-12 and ranks([2,2,3])==[1.5,1.5,3]
+          out={'status':'HOLD_DESCRIPTIVE_COMMON_REGION_ONLY','scientific_validation':False,'formal_coloc':0,'family':27,'gwas_common_denominator':1099,'region_GRCh38':region,'cells':[],'limits':['Common two-ancestry GWAS subset only; not pairwise maximum coverage or complete cis. No FASTA confirmation or matched LD, model N/sdY or formal coloc. Rank associations are descriptive; no correlation P-values because LD-dependent variants. Missing cells not negative.']}
+          def save():Path('profiles.json').write_text(json.dumps(out,indent=2,allow_nan=False)+'\n')
+          save()
+          for src in prior['sources']:
+              ds=src['dataset'];study,idx,span,n=pins[ds]
+              records={g:{} for g in genes};conflicts={g:set() for g in genes};counts=collections.Counter();excluded=collections.Counter()
+              try:
+                  lines,meta=get(f'https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/sumstats/{study}/{ds}/{ds}.all.tsv.gz',region)
+                  assert meta['tabix_index_SHA256']==idx and meta['raw_source_metadata']['publisher_compressed_range_SHA256']==span
+                  total=0
+                  for line in lines:
+                      if not line.strip() or line.startswith('#'):continue
+                      c=line.rstrip('\r\n').split('\t')
+                      if tuple(c)==cols:continue
+                      assert len(c)==len(cols)
+                      x=dict(zip(cols,c));pos=int(x['position'])
+                      if x['chromosome'].removeprefix('chr')!='10' or not region['start']<=pos<=region['end']:continue
+                      total+=1;gid=x['gene_id'].split('.')[0]
+                      if gid not in genes:continue
+                      counts[gid]+=1
+                      a,b=x['ref'],x['alt']
+                      if not strict(a,b) or x['type']!='SNP' or x['variant']!=f'chr10_{pos}_{a}_{b}':
+                          excluded[gid]+=1;continue
+                      beta,se,p=map(float,(x['beta'],x['se'],x['pvalue']))
+                      assert all(math.isfinite(v) for v in (beta,se,p)) and se>0 and 0<=p<=1
+                      k=key(pos,a,b);v=(a,b,beta,se,p,x['rsid'])
+                      if k in records[gid] and records[gid][k]!=v:conflicts[gid].add(k)
+                      records[gid][k]=v
+                  assert total==n and all(counts[g]==src['counts'][g]['rows'] for g in genes)
+                  for gid in genes:
+                      for k in conflicts[gid]:records[gid].pop(k,None)
+                      rec=records[gid];old=src['counts'][gid]['anchor_effect'];matched=[]
+                      cell={'dataset':ds,'gene_id':gid,'gene':genes[gid],'regional_rows':counts[gid],'strict_unique_pairs':len(rec),'conflicting_pairs':len(conflicts[gid]),'excluded_non_strict_rows':excluded[gid]}
+                      if old:
+                          a=rec[(anchor,'CT')]
+                          assert a[:5]==('C','T',old['beta_ALT_T'],old['se'],old['source_p']) and a[5]=='rs2767060'
+                      for k in sorted(rec.keys() & gw.keys()):
+                          a,b,beta,se,p,rs=rec[k];v=gw[k]
+                          if v['rsid']!=rs:continue
+                          sign=1 if v['effect_allele']==b else -1
+                          matched.append({'rsid':rs,'q':p,'qz':beta/se,**{pop+'_p':v[pop+'_p'] for pop in ('EAS','EUR')},**{pop+'_z':sign*v[pop+'_beta']/v[pop+'_se'] for pop in ('EAS','EUR')}})
+                      cell.update(status='DESCRIPTIVE_COMMON_MATCH' if matched else 'NO_MATCH_OR_NO_RECORD',matched=len(matched),qtl_coverage=len(matched)/len(rec) if rec else None,common_gwas_coverage=len(matched)/1099,anchor_matched=any(x['rsid']=='rs2767060' for x in matched),profiles={})
+                      for pop in ('EAS','EUR'):
+                          if matched:
+                              q=[x['q'] for x in matched];p=[x[pop+'_p'] for x in matched]
+                              # Negating both p ranks yields the same Spearman as -log10(p).
+                              top=lambda f,k:{x['rsid'] for x in sorted(matched,key=lambda x:(x[f],x['rsid']))[:k]}
+                              cell['profiles'][pop]={'spearman_strength':rho(q,p),'spearman_signed_z':rho([x['qz'] for x in matched],[x[pop+'_z'] for x in matched]),'top10_overlap':len(top('q',10)&top(pop+'_p',10)),'top50_overlap':len(top('q',50)&top(pop+'_p',50)),'best_qtl_rsid':min(matched,key=lambda x:(x['q'],x['rsid']))['rsid'],'best_gwas_rsid':min(matched,key=lambda x:(x[pop+'_p'],x['rsid']))['rsid']}
+                      out['cells'].append(cell)
+              except Exception as e:
+                  out['cells']=[x for x in out['cells'] if x['dataset']!=ds]
+                  out['cells'].extend({'dataset':ds,'gene_id':gid,'gene':genes[gid],'status':'HOLD_SOURCE_OR_SCHEMA','error':type(e).__name__+': '+str(e)[:300]} for gid in genes)
+              save();time.sleep(3)
+          assert len(out['cells'])==27
+          out['matched_cells']=sum(x['status']=='DESCRIPTIVE_COMMON_MATCH' for x in out['cells'])
+          out['hold_cells']=sum(x['status'].startswith('HOLD') for x in out['cells'])
+          save();print(json.dumps(out,indent=2,allow_nan=False))
+          if out['hold_cells'] or out['matched_cells']!=14:raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-g0014-common-las-qtl-profiles
+          path: profiles.json
+          if-no-files-found: warn
+          retention-days: 90

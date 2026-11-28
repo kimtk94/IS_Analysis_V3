@@ -1,0 +1,91 @@
+name: IS G0014 verified LD proxy curated inventory
+on:
+  push:
+    branches: [research/is-g0014-qtl-pilot-20261128]
+    paths: ['.github/workflows/is-g0014-proxy-catalog.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: is-g0014-proxy-catalog
+  cancel-in-progress: false
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dea5733170cebab70946721e4d599ddff91c13bd
+          persist-credentials: false
+      - name: Download exact prior LD ZIP and check SHA256 before parsing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/kimtk94/IS_Analysis_V3/actions/artifacts/15261171566/zip > ld.zip
+          echo '5180b4c2e629b02fa858b822f00fa9acaac50241856d11298a733da8888bb37c  ld.zip' | sha256sum -c -
+      - name: Verify all proxy identities and bounded curated association inventory
+        run: |
+          python3 - <<'PY'
+          import json,math,re,sys,zipfile
+          from pathlib import Path
+          sys.path.insert(0,'scripts/is')
+          import fixed24_two_locus_catalog_audit as api
+          with zipfile.ZipFile('ld.zip') as z:
+              assert z.namelist()==['result.json'] and z.getinfo('result.json').file_size<2000000
+              d=json.loads(z.read('result.json'))
+          assert d['anchor']=='rs2767060' and d['region_grch37']==[35622291,36622291]
+          assert d['regional_stream_sha256']=='fe8eebbdf045a6122d81a5ae5418021ae23f6f71206e164c9cd7335ca77129eb'
+          assert d['scientific_validation'] is False
+          proxy={}
+          for pop,n in {'CHB':22,'JPT':31,'CEU':37}.items():
+              rows=d['proxies'][pop]
+              assert len(rows)==len({x['rsid'] for x in rows})==n
+              for x in rows:
+                  rs=x['rsid']; assert re.fullmatch(r'rs[0-9]+',rs) and x['restricted_high_ld']
+                  assert .8<=x['restricted_CT']['r2']<=1
+                  assert 35622291<=x['position_grch37']<=36622291
+                  v=proxy.setdefault(rs,{'position_grch37':x['position_grch37'],'ref':x['ref'],'alt':x['alt'],'populations':{}})
+                  assert (v['position_grch37'],v['ref'],v['alt'])==(x['position_grch37'],x['ref'],x['alt'])
+                  v['populations'][pop]=x['restricted_CT']['r2']
+          assert len(proxy)==55 and sum(len(v['populations'])==3 for v in proxy.values())==13
+          assert 'rs2767060' not in proxy
+          out={'status':'HOLD_CURATED_INVENTORY_ONLY','scientific_validation':False,'proxy_family':55,'anchor':'rs2767060','proxy':proxy,'rows':{},'limits':['Exact curated records only; no publication novelty or causal inference.','Earlier API proxy family 78 is a separate reference/method result and has not been reconciled.','No VEP or literature supplement completeness claim.']}
+          def save():Path('inventory.json').write_text(json.dumps(out,indent=2,allow_nan=False)+'\n')
+          save()
+          pattern=re.compile(r'\b(stroke|cerebrovascular|cerebral infarct\w*|brain infarct\w*|cardioembolic|small vessel disease|large artery atherosclero\w*)\b',re.I)
+          md,src=api.fetch('metadata')
+          assert md.get('version')=='2.0' and md.get('gene_build','').startswith('GRCh38')
+          out['metadata']=md;out['metadata_source']=src
+          for rs in ['rs2129981','rs2767060']+sorted(proxy):
+              try:
+                  rr,pg=api.paged('associations',{'rs_id':rs,'sort':'p_value','direction':'asc'})
+                  seen=set();records=[]
+                  for a in rr:
+                      assert any(x.get('rs_id')==rs for x in a['snp_allele'] if isinstance(x,dict))
+                      aid=a['association_id'];assert aid not in seen;seen.add(aid)
+                      pv=a['p_value'];assert isinstance(pv,(int,float)) and math.isfinite(pv) and 0<=pv<=1
+                      traits=a['reported_trait'];assert isinstance(traits,list) and all(isinstance(t,str) for t in traits)
+                      records.append({**{k:a.get(k) for k in ('association_id','reported_trait','p_value','accession_id','pubmed_id','first_author','mapped_genes','snp_allele','multi_snp_haplotype','snp_interaction')},'stroke_text_review_flag':bool(pattern.search(' '.join(traits)))})
+                  out['rows'][rs]={'status':'COMPLETE' if pg['complete'] else 'HOLD_PAGE_CAP','pagination':pg,'records':records}
+              except (OSError,ValueError,KeyError,TypeError,IndexError,AssertionError) as exc:
+                  out['rows'][rs]={'status':'HOLD_SOURCE_OR_SCHEMA','error':str(exc)[:240]}
+              save()
+          after,_=api.fetch('metadata')
+          out['release_stable']=all(md.get(k)==after.get(k) for k in ('version','data_release_date','gene_build'))
+          control=out['rows']['rs2129981']
+          out['control_pass']=control['status']=='COMPLETE' and any(a['association_id']==64718801 and a['pubmed_id']=='32514122' for a in control['records'])
+          out['complete_proxy']=sum(out['rows'][r]['status']=='COMPLETE' for r in proxy)
+          out['status']='CURATED_INVENTORY_COMPLETE_NOT_NOVELTY' if out['complete_proxy']==55 and out['rows']['rs2767060']['status']=='COMPLETE' and out['control_pass'] and out['release_stable'] else 'HOLD_INCOMPLETE'
+          save()
+          print(json.dumps({'status':out['status'],'complete_proxy':out['complete_proxy'],'control_pass':out['control_pass'],'release_stable':out['release_stable'],'proxy_ids':sorted(proxy),'summary':[{ 'rsid':r,'status':x['status'],'records':len(x.get('records',[])),'stroke_flags':[a for a in x.get('records',[]) if a['stroke_text_review_flag']]} for r,x in out['rows'].items()]},indent=2))
+          if out['status'].startswith('HOLD'):raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-g0014-verified-proxy-curated-inventory
+          path: inventory.json
+          if-no-files-found: warn
+          retention-days: 90

@@ -1,0 +1,87 @@
+name: IS G0014 filtered splicing QTL context audit
+on:
+  push:
+    branches: [research/is-g0014-qtl-pilot-20261128]
+    paths: ['.github/workflows/is-g0014-sqtl-filtered.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate release metadata and query five exact positions in official selected-trait sQTL files
+        run: |
+          python3 - <<'PY'
+          import json,math,time,collections
+          from pathlib import Path
+          from importlib import import_module
+          meta=import_module('scripts.is.audit_official_p3a_qtl_catalogue_provenance')
+          q=import_module('scripts.is.qtl_original_indexed_http_range')
+          cols=import_module('scripts.is.audit_p3a_indexed_qtl_real_chr10').OFFICIAL_COLUMN_ORDER
+          scope=json.loads(Path('docs/is/evidence/IS_G0014_GENE_SCOPE_RECONCILIATION_20261128.json').read_text())
+          genes=set(scope['legacy_symbols'])|set(scope['newer_genes'])
+          assert len(genes)==18
+          src=meta.get_official_sources();m=meta.table(src['meta']);p=meta.table(src['paths'])
+          assert 'nominal eQTL summary statistics files (*.all.tsv.gz)' in src['columns']
+          plan={'QTD000135':('QTS000015','artery_aorta','387'),'QTD000140':('QTS000015','artery_coronary','213'),'QTD000145':('QTS000015','artery_tibial','584'),'QTD000175':('QTS000015','brain_cortex','205'),'QTD000438':('QTS000025','brain_naive','560')}
+          out={'status':'HOLD_FILTERED_SQTL_CONTEXT_ONLY','scientific_validation':False,'fixed_gene_ids':sorted(genes),'datasets':{},'limits':['Post-readout separate exploratory 18-ID union; original 27-cell eQTL family unchanged.','Official .cc files retain selected strongest molecular traits per independent fine-mapped signal; not full nominal trait universe. Source-selected results are descriptive only.','Exact anchor only; molecular event counts not independent genes. Missing genes/events not negative; no formal coloc or studywide splice QTL significance.']}
+          def save():Path('sqtl-filtered.json').write_text(json.dumps(out,indent=2,allow_nan=False)+'\n')
+          save()
+          for ds,(study,tissue,n) in plan.items():
+              result={'status':'HOLD','sample_group':tissue,'dataset_n_not_model_N':int(n)}
+              try:
+                  for key,value in {'study_id':study,'sample_group':tissue,'sample_size':n,'quant_method':'leafcutter'}.items():
+                      assert m[ds][key]==p[ds][key]==value
+                  prefix=f'/pub/databases/spot/eQTL/sumstats/{study}/{ds}/{ds}'
+                  assert p[ds]['ftp_path'] in ('ftp://ftp.ebi.ac.uk'+prefix+'.cc.tsv.gz','ftp://ftp.ebi.ac.uk'+prefix+'.all.tsv.gz')
+                  path=prefix+'.cc.tsv.gz'
+                  assert p[ds]['ftp_path']=='ftp://ftp.ebi.ac.uk'+path
+                  q.ALLOWED_ORIGINAL_QTL_PATHS=frozenset({path})
+                  pos=35833363
+                  lines,prov=q.source_indexed_range('https://ftp.ebi.ac.uk'+path,{'start':pos,'end':pos})
+                  records={};unmapped=0;total=0
+                  for line in lines:
+                      if not line.strip() or line.startswith('#'):continue
+                      v=line.rstrip('\r\n').split('\t')
+                      if tuple(v)==cols:continue
+                      assert len(v)==len(cols)
+                      x=dict(zip(cols,v))
+                      if x['chromosome'].removeprefix('chr')!='10' or int(x['position'])!=pos:continue
+                      if (x['ref'],x['alt'])!=('C','T'):continue
+                      assert x['variant']==f'chr10_{pos}_C_T' and x['type']=='SNP' and x['rsid']=='rs2767060'
+                      total+=1
+                      gid=x['gene_id'].split('.')[0]
+                      if gid not in genes:
+                          unmapped+=1;continue
+                      beta,se,pv=map(float,(x['beta'],x['se'],x['pvalue']))
+                      assert all(math.isfinite(z) for z in (beta,se,pv)) and se>0 and 0<=pv<=1
+                      k=(gid,x['molecular_trait_id'],x['molecular_trait_object_id'])
+                      row={'gene_id':gid,'event':k[1],'object':k[2],'beta_ALT_T':beta,'se':se,'nominal_p':pv}
+                      assert k not in records or records[k]==row
+                      records[k]=row
+                  result.update(status='FILTERED_ANCHOR_CONTEXT_ONLY',exact_CT_rows=total,nonpanel_or_unmapped_rows=unmapped,events=list(records.values()),source=prov,filtered_path=path)
+              except Exception as e:result.update(error=type(e).__name__+': '+str(e)[:300])
+              out['datasets'][ds]=result;save();time.sleep(3)
+          events=[x for d in out['datasets'].values() for x in d.get('events',[])]
+          out['sources_complete']=sum(d['status']=='FILTERED_ANCHOR_CONTEXT_ONLY' for d in out['datasets'].values())
+          out['observed_event_tests']=len(events)
+          out['nominal_p_lt_05']=sum(x['nominal_p']<.05 for x in events)
+          # No post-selection multiplicity claim from filtered events.
+          out['observed_only_adjustment_not_studywide']=True
+          out['full_nominal_sources_available']=False
+          out['source_selection_bias']=True
+          save();print(json.dumps(out,indent=2,allow_nan=False))
+          if out['sources_complete']!=5:raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-g0014-sqtl-filtered
+          path: sqtl-filtered.json
+          if-no-files-found: warn
+          retention-days: 90

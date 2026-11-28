@@ -1,0 +1,319 @@
+{
+  "provenance": {
+    "run_id": 46140137663,
+    "job_id": 140964049140,
+    "commit": "06a0443895a8c0d9ed302d0cc5c0c8fa92d59860",
+    "artifacts": [
+      {
+        "id": 15261072587,
+        "digest": "sha256:215e8efe4aa9b41b58949402c9aac7b14fc4cafb9cc84ecb7bf7a889d8c91b1f",
+        "name": "is-g0014-sqtl-filtered"
+      }
+    ],
+    "readback": "Actual job stdout; output ZIP not independently downloaded."
+  },
+  "result": {
+    "status": "HOLD_FILTERED_SQTL_CONTEXT_ONLY",
+    "scientific_validation": false,
+    "fixed_gene_ids": [
+      "ENSG00000108100",
+      "ENSG00000177283",
+      "ENSG00000177291",
+      "ENSG00000226646",
+      "ENSG00000227313",
+      "ENSG00000227475",
+      "ENSG00000264780",
+      "ENSG00000271335",
+      "ENSG00000273312",
+      "ENSG00000280719",
+      "ENSG00000284265",
+      "ENSG00000287528",
+      "ENSG00000288893",
+      "ENSG00000294862",
+      "ENSG00000299958",
+      "ENSG00000299999",
+      "ENSG00000301879",
+      "ENSG00000309863"
+    ],
+    "datasets": {
+      "QTD000135": {
+        "status": "FILTERED_ANCHOR_CONTEXT_ONLY",
+        "sample_group": "artery_aorta",
+        "dataset_n_not_model_N": 387,
+        "exact_CT_rows": 2,
+        "nonpanel_or_unmapped_rows": 0,
+        "events": [
+          {
+            "gene_id": "ENSG00000271335",
+            "event": "10:35336076:35336220:clu_48285_-",
+            "object": "clu_48285_-",
+            "beta_ALT_T": -0.19055,
+            "se": 0.0943554,
+            "nominal_p": 0.0441529
+          },
+          {
+            "gene_id": "ENSG00000108100",
+            "event": "10:35566185:35569054:clu_22991_+",
+            "object": "clu_22991_+",
+            "beta_ALT_T": 0.137363,
+            "se": 0.082267,
+            "nominal_p": 0.0958149
+          }
+        ],
+        "source": {
+          "method": "ONE_TBI_GET_PLUS_ONE_CONTIGUOUS_HTTPS_RANGE",
+          "tabix_index_SHA256": "cd897b077a0eab21daaf68541e68199ce90fc6b8a9c608224511f7730722c64e",
+          "tabix_index_uncompressed_bytes": 4117135,
+          "index_metadata_chromosome_count": 23,
+          "index_and_one_range_query": {
+            "indexed_chromosome_name": "10",
+            "index_candidate_bins": 6,
+            "index_selected_chunks": 1,
+            "compressed_range_start": 63198322,
+            "compressed_range_end": 63263857,
+            "compressed_range_bytes": 65536,
+            "first_virtual_offset_within_bgzf_block": 11023,
+            "required_last_block_relative_byte_offset": 0,
+            "one_contiguous_range_spans_all_candidate_tabix_chunks": true
+          },
+          "raw_source_metadata": {
+            "publisher_compressed_range_SHA256": "0413790853aba5e6747e364da5c3e36e04bb225deee6146dcd5022b296f1496d",
+            "publisher_server_content_range": "bytes 63198322-63263857/620748463",
+            "original_full_4GB_source_downloaded": false
+          },
+          "original_BGZF_blocks_decompressed": 7,
+          "original_BGZF_uncompressed_bytes": 445937,
+          "individual_QTL_rows_saved_in_artifact": false,
+          "whole_QTD000434_source_downloaded": false,
+          "requests_to_original_EBI_source": 2,
+          "automatic_retry_count": 0
+        },
+        "filtered_path": "/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000135/QTD000135.cc.tsv.gz"
+      },
+      "QTD000140": {
+        "status": "FILTERED_ANCHOR_CONTEXT_ONLY",
+        "sample_group": "artery_coronary",
+        "dataset_n_not_model_N": 213,
+        "exact_CT_rows": 2,
+        "nonpanel_or_unmapped_rows": 0,
+        "events": [
+          {
+            "gene_id": "ENSG00000271335",
+            "event": "10:35316409:35335928:clu_48285_-",
+            "object": "clu_48285_-",
+            "beta_ALT_T": -0.275561,
+            "se": 0.120285,
+            "nominal_p": 0.023022
+          },
+          {
+            "gene_id": "ENSG00000108100",
+            "event": "10:35566185:35569054:clu_22991_+",
+            "object": "clu_22991_+",
+            "beta_ALT_T": 0.10206,
+            "se": 0.105115,
+            "nominal_p": 0.332764
+          }
+        ],
+        "source": {
+          "method": "ONE_TBI_GET_PLUS_ONE_CONTIGUOUS_HTTPS_RANGE",
+          "tabix_index_SHA256": "b8e2a3e95a9889a182cc2f2fa1bbb1c76a632e180b4c5a206beed9817401a096",
+          "tabix_index_uncompressed_bytes": 3521159,
+          "index_metadata_chromosome_count": 23,
+          "index_and_one_range_query": {
+            "indexed_chromosome_name": "10",
+            "index_candidate_bins": 6,
+            "index_selected_chunks": 1,
+            "compressed_range_start": 32522089,
+            "compressed_range_end": 32587624,
+            "compressed_range_bytes": 65536,
+            "first_virtual_offset_within_bgzf_block": 11593,
+            "required_last_block_relative_byte_offset": 0,
+            "one_contiguous_range_spans_all_candidate_tabix_chunks": true
+          },
+          "raw_source_metadata": {
+            "publisher_compressed_range_SHA256": "5ad0dcc38de85addeb871615439e312b722805a49fb88830862b7da0174816a3",
+            "publisher_server_content_range": "bytes 32522089-32587624/333562853",
+            "original_full_4GB_source_downloaded": false
+          },
+          "original_BGZF_blocks_decompressed": 7,
+          "original_BGZF_uncompressed_bytes": 445367,
+          "individual_QTL_rows_saved_in_artifact": false,
+          "whole_QTD000434_source_downloaded": false,
+          "requests_to_original_EBI_source": 2,
+          "automatic_retry_count": 0
+        },
+        "filtered_path": "/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000140/QTD000140.cc.tsv.gz"
+      },
+      "QTD000145": {
+        "status": "FILTERED_ANCHOR_CONTEXT_ONLY",
+        "sample_group": "artery_tibial",
+        "dataset_n_not_model_N": 584,
+        "exact_CT_rows": 2,
+        "nonpanel_or_unmapped_rows": 0,
+        "events": [
+          {
+            "gene_id": "ENSG00000271335",
+            "event": "10:35336076:35336220:clu_48285_-",
+            "object": "clu_48285_-",
+            "beta_ALT_T": -0.0849027,
+            "se": 0.0782546,
+            "nominal_p": 0.278401
+          },
+          {
+            "gene_id": "ENSG00000108100",
+            "event": "10:35566185:35569054:clu_22991_+",
+            "object": "clu_22991_+",
+            "beta_ALT_T": 0.137724,
+            "se": 0.0744361,
+            "nominal_p": 0.0647986
+          }
+        ],
+        "source": {
+          "method": "ONE_TBI_GET_PLUS_ONE_CONTIGUOUS_HTTPS_RANGE",
+          "tabix_index_SHA256": "7494992b583133353eee42be25dad458a193127b470bcd3abcbbc4e208423d72",
+          "tabix_index_uncompressed_bytes": 4412391,
+          "index_metadata_chromosome_count": 23,
+          "index_and_one_range_query": {
+            "indexed_chromosome_name": "10",
+            "index_candidate_bins": 6,
+            "index_selected_chunks": 1,
+            "compressed_range_start": 92056393,
+            "compressed_range_end": 92131596,
+            "compressed_range_bytes": 75204,
+            "first_virtual_offset_within_bgzf_block": 52205,
+            "required_last_block_relative_byte_offset": 9668,
+            "one_contiguous_range_spans_all_candidate_tabix_chunks": true
+          },
+          "raw_source_metadata": {
+            "publisher_compressed_range_SHA256": "d75fe4e6c10c46682052c070917b8247658730a07d7477329ea81f525cc5ec2e",
+            "publisher_server_content_range": "bytes 92056393-92131596/873795343",
+            "original_full_4GB_source_downloaded": false
+          },
+          "original_BGZF_blocks_decompressed": 8,
+          "original_BGZF_uncompressed_bytes": 470035,
+          "individual_QTL_rows_saved_in_artifact": false,
+          "whole_QTD000434_source_downloaded": false,
+          "requests_to_original_EBI_source": 2,
+          "automatic_retry_count": 0
+        },
+        "filtered_path": "/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000145/QTD000145.cc.tsv.gz"
+      },
+      "QTD000175": {
+        "status": "FILTERED_ANCHOR_CONTEXT_ONLY",
+        "sample_group": "brain_cortex",
+        "dataset_n_not_model_N": 205,
+        "exact_CT_rows": 2,
+        "nonpanel_or_unmapped_rows": 0,
+        "events": [
+          {
+            "gene_id": "ENSG00000271335",
+            "event": "10:35336076:35336220:clu_52729_-",
+            "object": "clu_52729_-",
+            "beta_ALT_T": -0.00127903,
+            "se": 0.131759,
+            "nominal_p": 0.992265
+          },
+          {
+            "gene_id": "ENSG00000108100",
+            "event": "10:35337207:35501501:clu_25217_+",
+            "object": "clu_25217_+",
+            "beta_ALT_T": 0.0281331,
+            "se": 0.133517,
+            "nominal_p": 0.83334
+          }
+        ],
+        "source": {
+          "method": "ONE_TBI_GET_PLUS_ONE_CONTIGUOUS_HTTPS_RANGE",
+          "tabix_index_SHA256": "2c799fd7e5e4f24d1631bac72d53521a92ca9d487ccf35869796dee7d48bc372",
+          "tabix_index_uncompressed_bytes": 3476471,
+          "index_metadata_chromosome_count": 23,
+          "index_and_one_range_query": {
+            "indexed_chromosome_name": "10",
+            "index_candidate_bins": 6,
+            "index_selected_chunks": 1,
+            "compressed_range_start": 26092907,
+            "compressed_range_end": 26158442,
+            "compressed_range_bytes": 65536,
+            "first_virtual_offset_within_bgzf_block": 33585,
+            "required_last_block_relative_byte_offset": 0,
+            "one_contiguous_range_spans_all_candidate_tabix_chunks": true
+          },
+          "raw_source_metadata": {
+            "publisher_compressed_range_SHA256": "75d3d1aadc973175eeff867abde3b48fa2a41af33f72c5b0f0910c4943b9e742",
+            "publisher_server_content_range": "bytes 26092907-26158442/286990467",
+            "original_full_4GB_source_downloaded": false
+          },
+          "original_BGZF_blocks_decompressed": 8,
+          "original_BGZF_uncompressed_bytes": 488655,
+          "individual_QTL_rows_saved_in_artifact": false,
+          "whole_QTD000434_source_downloaded": false,
+          "requests_to_original_EBI_source": 2,
+          "automatic_retry_count": 0
+        },
+        "filtered_path": "/pub/databases/spot/eQTL/sumstats/QTS000015/QTD000175/QTD000175.cc.tsv.gz"
+      },
+      "QTD000438": {
+        "status": "FILTERED_ANCHOR_CONTEXT_ONLY",
+        "sample_group": "brain_naive",
+        "dataset_n_not_model_N": 560,
+        "exact_CT_rows": 2,
+        "nonpanel_or_unmapped_rows": 1,
+        "events": [
+          {
+            "gene_id": "ENSG00000271335",
+            "event": "10:35290792:35296456:clu_24780_+",
+            "object": "clu_24780_+",
+            "beta_ALT_T": -0.0343887,
+            "se": 0.0856523,
+            "nominal_p": 0.688215
+          }
+        ],
+        "source": {
+          "method": "ONE_TBI_GET_PLUS_ONE_CONTIGUOUS_HTTPS_RANGE",
+          "tabix_index_SHA256": "eaa5bbf5ac3e4c2ef8eb03d4111d83c450e72debb722a49b1ca6e2a88219cdfb",
+          "tabix_index_uncompressed_bytes": 4043949,
+          "index_metadata_chromosome_count": 22,
+          "index_and_one_range_query": {
+            "indexed_chromosome_name": "10",
+            "index_candidate_bins": 6,
+            "index_selected_chunks": 1,
+            "compressed_range_start": 73641253,
+            "compressed_range_end": 73706788,
+            "compressed_range_bytes": 65536,
+            "first_virtual_offset_within_bgzf_block": 20924,
+            "required_last_block_relative_byte_offset": 0,
+            "one_contiguous_range_spans_all_candidate_tabix_chunks": true
+          },
+          "raw_source_metadata": {
+            "publisher_compressed_range_SHA256": "6218551da19dac7a11147ccf5ba6a4753a738adf68ad9e4ddd2c2d5517df5cf5",
+            "publisher_server_content_range": "bytes 73641253-73706788/775731780",
+            "original_full_4GB_source_downloaded": false
+          },
+          "original_BGZF_blocks_decompressed": 6,
+          "original_BGZF_uncompressed_bytes": 370756,
+          "individual_QTL_rows_saved_in_artifact": false,
+          "whole_QTD000434_source_downloaded": false,
+          "requests_to_original_EBI_source": 2,
+          "automatic_retry_count": 0
+        },
+        "filtered_path": "/pub/databases/spot/eQTL/sumstats/QTS000025/QTD000438/QTD000438.cc.tsv.gz"
+      }
+    },
+    "limits": [
+      "Post-readout separate exploratory 18-ID union; original 27-cell eQTL family unchanged.",
+      "Official .cc files retain selected strongest molecular traits per independent fine-mapped signal; not full nominal trait universe. Source-selected results are descriptive only.",
+      "Exact anchor only; molecular event counts not independent genes. Missing genes/events not negative; no formal coloc or studywide splice QTL significance."
+    ],
+    "sources_complete": 5,
+    "observed_event_tests": 9,
+    "nominal_p_lt_05": 2,
+    "observed_only_adjustment_not_studywide": true,
+    "full_nominal_sources_available": false,
+    "source_selection_bias": true
+  },
+  "interpretation": [
+    "Two nominal associations occur in distinct intron events; not independent replication or tissue specificity.",
+    "Same gene ID has historical aorta nominal eQTL p=.0178269, adjusted .4813263. No confirmed mechanism.",
+    "Five selected trait files read; full nominal source unavailable. No studywide significance or formal coloc."
+  ]
+}

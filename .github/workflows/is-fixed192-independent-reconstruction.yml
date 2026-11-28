@@ -1,0 +1,98 @@
+name: IS fixed 192 independent numerical reconstruction
+on:
+  push:
+    branches: [research/is-g0014-qtl-pilot-20261128]
+    paths: ['.github/workflows/is-fixed192-independent-reconstruction.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dea5733170cebab70946721e4d599ddff91c13bd
+          persist-credentials: false
+      - name: Retrieve all original extraction artifacts and combined result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, subprocess, zipfile, json
+          from pathlib import Path
+          pins={'anchor':(14986197928,'5c978c3fc19cb61c2a9f2fb7e8de99ba81ccf3a0d30b0f9d1371c344e9dc7aef'),'EAS_LAS':(14988307356,'d6b2f99ac546e8e6c3ad67cb3712503fd4bd2e5ea3eff926e61bd113d1c6a314'),'EUR_LAS':(14988241724,'f7b7e89dda4b62197a91e71349ddac74144b8b879e568f58ff10f5276a8f85d2'),'EUR_CES':(14988230332,'f70d337c0504120728fb3fba66c0134d532cb08e06a1a1a24cd1c123f664a735'),'EAS_CES':(14987349976,'473cce3ca5eb0158a0d9753f1400b081bd1aa7980f9c799767fc6b853178ed7b'),'EUR_SVS':(14987194157,'ee3b2e3ba6a97bbdf4253ef363ef23c6c40bcc83f2034383530406d55559889d'),'EAS_SVS':(14987128458,'8ada0afe0d96baacb2c5dd691b04a48f213a4dee5fcdfdb52a5a3d2cc1cafee7'),'EUR_AIS':(14986258163,'18adf696f99ff224363acd11cb559b7a41bf262886aafe20304d783004be73e6'),'combined':(14987743346,'41fc1002cf10b3ac7ab94c7af945822b73dbdd4072b04e549a28eba156f09690')}
+          for name,(aid,digest) in pins.items():
+              p=Path(name+'.zip')
+              with p.open('wb') as f:subprocess.run(['gh','api',f'repos/kimtk94/IS_Analysis_V3/actions/artifacts/{aid}/zip'],stdout=f,check=True)
+              assert p.stat().st_size<10000000 and hashlib.sha256(p.read_bytes()).hexdigest()==digest,name
+              expected=['manifest.json','EAS_AIS.json'] if name=='anchor' else ['contrasts.json'] if name=='combined' else [name+'.json']
+              with zipfile.ZipFile(p) as z:
+                  assert sorted(z.namelist())==sorted(expected)
+                  for fn in expected:
+                      assert z.getinfo(fn).file_size<10000000
+                      data=z.read(fn);json.loads(data);Path(fn).write_bytes(data)
+          print('Nine artifact ZIP digests and expected members verified')
+          PY
+      - name: Independently recompute every fixed-family contrast
+        run: |
+          python3 - <<'PY'
+          import json,csv,math,subprocess
+          from pathlib import Path
+          from statistics import NormalDist
+          def read(name):return json.loads(Path(name+'.json').read_text())
+          def req(x,m):
+              if not x:raise ValueError(m)
+          marker=Path('docs/publication/external_validation_20261125/marker_request.tsv')
+          req(subprocess.check_output(['git','hash-object',str(marker)],text=True).strip()=='3035e008ddc29133c5f72008977c0dfe8a07551e','marker blob')
+          with marker.open() as f:panel={x['marker_id']:x for x in csv.DictReader(f,delimiter='\t')}
+          req(len(panel)==24,'marker count')
+          old=read('contrasts'); manifest=read('manifest')
+          req(manifest==old['manifest'],'anchor manifest mismatch')
+          studies=[a+'_'+t for a in ('EAS','EUR') for t in ('AIS','CES','LAS','SVS')]
+          data={s:read(s) for s in studies}
+          for s,d in data.items():
+              req(d==old['studies'][s] and d['study']==s and set(d['rows'])==set(panel),'extraction artifact parity '+s)
+              for rid,x in d['rows'].items():
+                  if x['status']!='MATCHED_HARMONISED_ROW':continue
+                  m=panel[rid]
+                  req(x['rsid']==m['rsid'] and str(x['GRCh38_pos'])==m['position'] and str(x['GRCh38_chr'])==m['chromosome'] and x['historical_ALT']==m['requested_effect_allele'] and x['historical_REF']==m['requested_other_allele'],'marker identity '+rid)
+                  req(all(math.isfinite(x[k]) for k in ('beta_alt','se','p','alt_eaf')) and x['se']>0 and 0<=x['p']<=1 and 0<x['alt_eaf']<1,'invalid original fields')
+          pairs=[('EAS_'+t,'EUR_'+t) for t in ('AIS','CES','LAS','SVS')]+[(a+'_SVS',a+'_'+t) for a in ('EUR','EAS') for t in ('CES','LAS')]
+          expected={(rid,a,b) for rid in panel for a,b in pairs}
+          archived={(x['region_id'],x['first'],x['second']):x for x in old['contrasts']}
+          req(len(old['contrasts'])==len(archived)==192 and set(archived)==expected,'fixed test identity')
+          rows=[]; errors={};zsim=NormalDist().inv_cdf(1-.05/(2*192))
+          def equal(name,a,b):
+              err=abs(a-b);errors[name]=max(errors.get(name,0.),err)
+              req(math.isclose(a,b,rel_tol=1e-9,abs_tol=1e-12),'numeric drift '+name)
+          for rid,a,b in sorted(expected):
+              u,v=data[a]['rows'][rid],data[b]['rows'][rid];x=archived[(rid,a,b)]
+              row={'region_id':rid,'rsid':panel[rid]['rsid'],'first':a,'second':b}
+              if u['status']!='MATCHED_HARMONISED_ROW' or v['status']!='MATCHED_HARMONISED_ROW':
+                  req(x['status']=='HOLD_UNMATCHED','missingness drift');row.update(status='HOLD_UNMATCHED',source_status=[u['status'],v['status']]);rows.append(row);continue
+              req(x['status']=='CONDITIONAL_REPORTED_BETA_CONTRAST' and x['rsid']==row['rsid'],'contrast identity')
+              delta=u['beta_alt']-v['beta_alt'];s0=math.hypot(u['se'],v['se']);sw=u['se']+v['se']
+              p0=math.erfc(abs(delta)/s0/math.sqrt(2));pw=math.erfc(abs(delta)/sw/math.sqrt(2))
+              p0adj=min(1,192*p0);pwadj=min(1,192*pw)
+              for key,val in [('delta',delta),('p_zero_covariance',p0),('p_max_variance',pw),('bonferroni_192_zero',p0adj),('bonferroni_192_max',pwadj)]:equal(key,val,x[key])
+              for i,val in enumerate([delta-1.959964*sw,delta+1.959964*sw]):equal('ci95_max_variance',val,x['ci95_max_variance'][i])
+              row.update(status=x['status'],delta=delta,se_zero=s0,se_max=sw,p_zero=p0,p_max=pw,adjusted_zero=p0adj,adjusted_max=pwadj,simultaneous_ci=[delta-zsim*sw,delta+zsim*sw])
+              req((pwadj<.05)==(x['bonferroni_192_max']<.05),'significance drift')
+              rows.append(row)
+          matched=[x for x in rows if x['status']=='CONDITIONAL_REPORTED_BETA_CONTRAST']
+          hits=[x for x in matched if x['adjusted_max']<.05]
+          ncell=sum(x['status']=='MATCHED_HARMONISED_ROW' for d in data.values() for x in d['rows'].values())
+          req(ncell==170 and len(matched)==158 and len(hits)==4 and sum(x['adjusted_zero']<.05 for x in matched)==11,'denominator/hit drift')
+          out={'status':'NUMERICAL_RECONSTRUCTION_ONLY','scientific_validation':False,'family':192,'matched_cells':ncell,'matched_contrasts':len(matched),'missing_contrasts':192-len(matched),'significant_zero':sum(x['adjusted_zero']<.05 for x in matched),'significant_max':len(hits),'max_absolute_numeric_difference':errors,'hits':hits,'rows':rows,'limits':['Independent arithmetic from nine hash-verified archived extraction/combined ZIPs, not independent raw-source extraction, GWAS or cohort replication.','Max covariance variance bound assumes comparable estimands; historical marker selection and project-wide multiplicity remain unresolved.','Missing contrasts retained in denominator; no imputation.']}
+          Path('reconstruction.json').write_text(json.dumps(out,indent=2,allow_nan=False)+'\n')
+          print(json.dumps({k:v for k,v in out.items() if k!='rows'},indent=2,allow_nan=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: is-fixed192-independent-reconstruction
+          path: reconstruction.json
+          if-no-files-found: error
+          retention-days: 90

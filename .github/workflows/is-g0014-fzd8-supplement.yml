@@ -1,0 +1,76 @@
+name: IS G0014 FZD8 publisher supplement inventory
+on:
+  push:
+    branches: [research/is-g0014-qtl-pilot-20261128]
+    paths: ['.github/workflows/is-g0014-fzd8-supplement.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install workbook reader
+        run: python -m pip install openpyxl==3.1.5
+      - name: Verify publisher workbook identity and inspect fixed tables
+        run: |
+          python - <<'PY'
+          import json,hashlib,urllib.request,urllib.parse,io,re,zipfile
+          from pathlib import Path
+          from xml.etree import ElementTree as ET
+          import openpyxl
+          filename='41586_2023_6592_MOESM3_ESM.xlsx'
+          xmlurl='https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10567551/fullTextXML'
+          url='https://static-content.springer-cdn.net/esm/art%3A10.1038%2Fs41586-023-06592-6/MediaObjects/'+filename
+          out={'status':'HOLD_PUBLIC_SUPPLEMENT','scientific_validation':False,'article':'10.1038/s41586-023-06592-6','file':filename,'tables':{},'limits':['Publisher selected significant associations only, not full pQTL summary statistics or formal colocalization.','No protein or SNP absence inference outside verified table scope.']}
+          def save():Path('supplement.json').write_text(json.dumps(out,indent=2,allow_nan=False,default=str)+'\n')
+          def get(url,cap,hosts):
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'IS-bounded-public-supplement-audit/1.0'}),timeout=75) as r:
+                  assert r.status==200 and urllib.parse.urlparse(r.geturl()).hostname in hosts
+                  raw=r.read(cap+1)
+              assert 0<len(raw)<=cap
+              return raw
+          try:
+              xml=get(xmlurl,12000000,{'www.ebi.ac.uk'})
+              root=ET.fromstring(xml)
+              assert any(x.text=='10.1038/s41586-023-06592-6' for x in root.iter() if x.tag.endswith('article-id'))
+              refs=[v for e in root.iter() for v in e.attrib.values() if filename in v]
+              assert refs,'workbook not referenced by article XML'
+              out['xml_sha256']=hashlib.sha256(xml).hexdigest();out['workbook_refs']=refs
+              raw=get(url,100000000,{'static-content.springer-cdn.net','static-content.springer.com'})
+              with zipfile.ZipFile(io.BytesIO(raw)) as z:
+                  assert sum(x.file_size for x in z.infolist())<=800000000
+              out['workbook_sha256']=hashlib.sha256(raw).hexdigest();out['workbook_bytes']=len(raw);out['url']=url
+              wb=openpyxl.load_workbook(io.BytesIO(raw),read_only=True,data_only=True)
+              out['sheetnames']=wb.sheetnames
+              pat=re.compile(r'(?<![A-Za-z0-9])(?:FZD8|Q9H461|OID30818)(?![A-Za-z0-9])',re.I)
+              for name in ('ST9','ST10','ST17'):
+                  if name not in wb.sheetnames:
+                      out['tables'][name]={'status':'HOLD_SHEET_MISSING'};continue
+                  ws=wb[name];headers=[];hits=[];n=0
+                  for i,row in enumerate(ws.iter_rows(values_only=True),1):
+                      assert i<=1000000
+                      n=i
+                      if i<=6:headers.append([v for v in row])
+                      if any(isinstance(v,str) and pat.search(v) for v in row):
+                          if len(hits)>=100:raise ValueError('target row cap')
+                          hits.append({'row':i,'values':list(row)})
+                  out['tables'][name]={'status':'SHEET_TOKEN_INVENTORY_ONLY','rows_scanned':n,'headers':headers,'hits':hits}
+                  save()
+              wb.close()
+              out['status']='PUBLIC_SUPPLEMENT_TOKEN_INVENTORY_ONLY'
+          except Exception as e:out['error']=type(e).__name__+': '+str(e)[:400]
+          save();print(json.dumps(out,indent=2,allow_nan=False,default=str))
+          if out['status'].startswith('HOLD'):raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: is-g0014-fzd8-supplement
+          path: supplement.json
+          if-no-files-found: warn
+          retention-days: 90
