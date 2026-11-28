@@ -19,8 +19,9 @@ jobs:
           python3 - <<'PY'
           import json, math, time
           from pathlib import Path
-          from scripts.is.qtl_original_indexed_http_range import source_indexed_range
-          from scripts.is.audit_p3a_indexed_qtl_real_chr10 import OFFICIAL_COLUMN_ORDER
+          from importlib import import_module
+          source_indexed_range=import_module('scripts.is.qtl_original_indexed_http_range').source_indexed_range
+          OFFICIAL_COLUMN_ORDER=import_module('scripts.is.audit_p3a_indexed_qtl_real_chr10').OFFICIAL_COLUMN_ORDER
           genes=dict(zip(('ENSG00000108100','ENSG00000177283','ENSG00000177291','ENSG00000226646','ENSG00000227313','ENSG00000227475','ENSG00000264780','ENSG00000271335','ENSG00000273312'),('CCNY','FZD8','GJD4','RP11-382K22.1','RP11-309N24.1','RP11-810B23.1','MIR4683','RP11-324I22.4','RP11-425A6.5')))
           assert len(genes)==9
           anchor=35833363
